@@ -11,40 +11,40 @@ shinyUI(fluidPage(
        tags$ul(tags$li(h5(p(em("COMING SOON: Abundance and catch-based estimation of biomass, relative biomass, SPR and F and catch limits."))))),
 sidebarLayout(
    sidebarPanel(
-       fileInput('file1', 'Choose length composition input file',
-              accept = c(
-                'text/csv',
-                'text/comma-separated-values',
-                'text/tab-separated-values',
-                'text/plain',
-                '.csv'
-              )
-            ),
-    fileInput('file2', 'Choose catch time series input file',
-              accept = c(
-                'text/csv',
-                'text/comma-separated-values',
-                'text/tab-separated-values',
-                'text/plain',
-                '.csv'
-              )
-            ),
-#Mute for now, pull back in when index methods are ready
-    # fileInput('file3', 'Choose abundance series input file',
-    #           accept = c(
-    #             'text/csv',
-    #             'text/comma-separated-values',
-    #             'text/tab-separated-values',
-    #             'text/plain',
-    #             '.csv'
-    #           )
-    #         ),
+wellPanel(
+  h4(strong("Choose data file")),
+  fluidRow(column(width=12,fileInput('file1', 'Length composition',
+                                    accept = c(
+                                      'text/csv',
+                                      'text/comma-separated-values',
+                                      'text/tab-separated-values',
+                                      'text/plain',
+                                      '.csv'
+                                    )
+  ))),
+ fluidRow(column(width=12,fileInput('file2', 'Catch time series',
+                           accept = c(
+                             'text/csv',
+                             'text/comma-separated-values',
+                             'text/tab-separated-values',
+                             'text/plain',
+                             '.csv'
+                           )
+  ))),
+  #Mute for now, pull back in when index methods are ready
+  # fileInput('file3', 'Abundance index',
+  #           accept = c(
+  #             'text/csv',
+  #             'text/comma-separated-values',
+  #             'text/tab-separated-values',
+  #             'text/plain',
+  #             '.csv'
+  #           )
+  #         ),
+  
+),
 
-    fluidRow(column(width=4,textInput("Scenario_name", "Scenario label", value="Scenario 1"))),
-    h5(p(em("Each Scenario folder is saved. Changing the scenario name therefore creates a new folder of results"))),
-    h5(p(em("Each folder can then be used as a sensitivity exploration."))),
-    h5(p(em(""))),
-
+    wellPanel(
     h3("Model Dimension inputs"),
     h5(p(em("Start year recommendations are:"))),
        tags$ul(tags$li(h5(p(em("If length data only, count the year back from the first year of length data based on maximum age likely contained in length data"))))),
@@ -55,6 +55,8 @@ sidebarLayout(
               column(width=4,numericInput("endyr","Ending year", value=2019,min=1, max=10000, step=1)),    
               column(width=4,numericInput("Nages","Max. age", value=30,min=1, max=1000, step=1))),    
     ),
+      ),
+ #   ),
     wellPanel(
     h3("Life history inputs"),
     wellPanel(
@@ -128,6 +130,14 @@ sidebarLayout(
     wellPanel(
             uiOutput("Jitter_value")
               ),
+
+    wellPanel(
+    fluidRow(column(width=8,textInput("Scenario_name", strong("Choose the name of your scenario"), value="Scenario 1"))),
+    h5(p(em("Each scenario folder is saved. Changing the scenario name therefore creates a new folder of results."))),
+    h5(p(em("Using different scenario names when changing data or parameter values allows easy sensitivity exploration."))),
+    h5(p(em(""))),
+      ),
+
     actionButton("run_SS",strong("Run Model"),
       width="100%",
       icon("play-circle"),
