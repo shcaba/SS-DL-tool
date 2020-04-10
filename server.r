@@ -376,7 +376,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		SS_plots(Model.output,verbose=FALSE)
 		
  		output$SSout_table <- renderTable({
- 				Output_table<-Model.output[,c(1,3,7,8,9,11,13,25,37,40)]
+ 				Output_table<-Model.output$sprseries[-nrow(Model.output$sprseries),c(1,3,7,8,9,11,12,13,25,37,40)]
  			})
 		# }
 	})

@@ -76,6 +76,7 @@ wellPanel(
                    uiOutput("Male_parms_inputs2")
     ),
     ),
+#    shinysj::hide()
     wellPanel(
     h3("Productivity"),
     fluidRow(column(width=6,numericInput("h","Steepness", value=0.9,min=0.2, max=1, step=0.01)),
@@ -154,7 +155,10 @@ wellPanel(
             h4("Life history"),
             column(6,plotOutput("Mplot")),
             column(6,plotOutput("VBGFplot"))
-                  )       
+                  ),       
+          tabPanel("Model output",
+            tableOutput("SSout_table")
+            )
           ) 
    )
    )
