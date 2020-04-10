@@ -1,6 +1,7 @@
-
+require(shinyjs)
 
 shinyUI(fluidPage(
+  useShinyjs(),
   titlePanel("Welcome to the Stock Synthesis data-limited tool"),
       h5(p(strong("This tool uses the Stock Synthesis framework to implement the following types of models:"))),
        tags$ul(tags$li(h5(p(em("Length-based estimation of relative biomass, SPR and F."))))),
@@ -10,7 +11,7 @@ shinyUI(fluidPage(
        tags$ul(tags$li(h5(p(em("COMING SOON: Abundance and catch-based estimation of biomass, relative biomass, SPR and F and catch limits."))))),
 sidebarLayout(
    sidebarPanel(
-    fileInput('file1', 'Choose length composition input file',
+       fileInput('file1', 'Choose length composition input file',
               accept = c(
                 'text/csv',
                 'text/comma-separated-values',
@@ -28,18 +29,26 @@ sidebarLayout(
                 '.csv'
               )
             ),
-    fileInput('file3', 'Choose abundance series input file',
-              accept = c(
-                'text/csv',
-                'text/comma-separated-values',
-                'text/tab-separated-values',
-                'text/plain',
-                '.csv'
-              )
-            ),
+#Mute for now, pull back in when index methods are ready
+    # fileInput('file3', 'Choose abundance series input file',
+    #           accept = c(
+    #             'text/csv',
+    #             'text/comma-separated-values',
+    #             'text/tab-separated-values',
+    #             'text/plain',
+    #             '.csv'
+    #           )
+    #         ),
 
     fluidRow(column(width=4,textInput("Scenario_name", "Scenario label", value="Scenario 1"))),
+    h5(p(em("Each Scenario folder is saved. Changing the scenario name therefore creates a new folder of results"))),
+    h5(p(em("Each folder can then be used as a sensitivity exploration."))),
+    h5(p(em(""))),
+
     h3("Model Dimension inputs"),
+    h5(p(em("Start year recommendations are:"))),
+       tags$ul(tags$li(h5(p(em("If length data only, count the year back from the first year of length data based on maximum age likely contained in length data"))))),
+       tags$ul(tags$li(h5(p(em("If using catch data, use the first year of catches"))))),
     h5(p(em(""))),
     wellPanel(
       fluidRow(column(width=4,numericInput("styr", "Starting year", value=1980,min=1, max=10000, step=1)),
@@ -65,16 +74,30 @@ sidebarLayout(
                    uiOutput("Male_parms_inputs2")
     ),
     ),
+    wellPanel(
     h3("Productivity"),
     fluidRow(column(width=6,numericInput("h","Steepness", value=0.9,min=0.2, max=1, step=0.01)),
       column(width=6,numericInput("lnR0", "Initial recruitment (lnR0)", value=9,min=0, max=20, step=0.01))),
+    ),
+
+    wellPanel(
     h3("Selectivity"),
     fluidRow(selectInput("Sel_choice","Length selectivity type",c("Logistic","Dome-shaped"))),
-    fluidRow(column(width=6,numericInput("Sel50", "Length at 50% Selectivity", value=NA,min=0, max=10000, step=0.01)),
-            column(width=6,numericInput("Sel50_phase","Estimation phase", value=1,min=-1000, max=10, step=1))),   
-    fluidRow(column(width=6,numericInput("Selpeak", "Length at Peak Selectvity", value=NA,min=0, max=10000, step=0.01)),
-            column(width=6,numericInput("Selpeak_phase","Estimation phase", value=1,min=-1000, max=10, step=1))),   
-   
+    # fluidRow(column(width=6,numericInput("Sel50", "Length at 50% Selectivity", value=NA,min=0, max=10000, step=0.01)),
+    #         column(width=6,numericInput("Sel50_phase","Estimation phase", value=1,min=-1000, max=10, step=1))),   
+    # fluidRow(column(width=6,numericInput("Selpeak", "Length at Peak Selectvity", value=NA,min=0, max=10000, step=0.01)),
+    #         column(width=6,numericInput("Selpeak_phase","Estimation phase", value=1,min=-1000, max=10, step=1))),   
+              #if(input$Sel_choice=="Logistic")
+              #  {uiOutput("Sel_logistic")},
+              #if(input$Sel_choice=="Dome-shaped")
+              #  {uiOutput("Sel_domed")}
+       uiOutput("Sel_parms1"),
+       uiOutput("Sel_parms2"),
+       uiOutput("Sel_parms3"),
+       uiOutput("Sel_parms4"),
+       uiOutput("Sel_parms5")
+       
+   ),
    #Recruitment estimation
     fluidRow(column(width=10,checkboxInput("rec_choice","Estimate recruitment?",FALSE))),
     wellPanel(
@@ -109,7 +132,7 @@ sidebarLayout(
       width="100%",
       icon("play-circle"),
       style="font-size:120%;border:2px solid;background:#ccffcc"),
-    
+ 
   ),
       mainPanel(        
         tabsetPanel(

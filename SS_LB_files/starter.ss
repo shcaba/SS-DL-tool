@@ -11,7 +11,7 @@ SS_LB.ctl
 0 # Include prior_like for non-estimated parameters (0,1) 
 1 # Use Soft Boundaries to aid convergence (0,1) (recommended)
 1 # Number of datafiles to produce: 1st is input, 2nd is estimates, 3rd and higher are bootstrap
-1 # Turn off estimation for parameters entering after this phase
+5 # Turn off estimation for parameters entering after this phase
 1 # MCeval burn interval
 1 # MCeval thin interval
 0 # jitter initial parm value by this fraction

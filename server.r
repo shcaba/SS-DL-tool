@@ -47,12 +47,48 @@ output$Male_parms_inputs1<- renderUI({
 
 output$Male_parms_inputs2<- renderUI({
 	if(input$male_parms){
-    #h5(em("Male")),
     fluidRow(column(width=6,numericInput("Linf_m", "Asymptotic size (Linf)", value=NA,min=0, max=10000, step=0.01)),
             column(width=6,numericInput("t0_m","Age at length 0 (t0)", value=NA,min=0, max=10000, step=0.01)))    
     	}
 	})
 
+#Selectivity paramters
+output$Sel_parms1<- renderUI({
+    fluidRow(column(width=8,numericInput("Sel50", "Length at 50% Selectivity", value=NA,min=0, max=10000, step=0.01)),
+            column(width=4,numericInput("Sel50_phase","Est. phase", value=1,min=-1000, max=10, step=1)))    
+	})
+
+output$Sel_parms2<- renderUI({
+    	fluidRow(column(width=8,numericInput("Selpeak", "Length at Peak Selectvity", value=NA,min=0, max=10000, step=0.01)),
+            	column(width=4,numericInput("Selpeak_phase","Est. phase", value=1,min=-1000, max=10, step=1)))
+	})
+
+output$Sel_parms3<- renderUI({
+  		if(input$Sel_choice=="Dome-shaped")
+		{ 			
+    	fluidRow(column(width=8,numericInput("PeakDesc", "Length at first declining selectivity", value=NA,min=0, max=10000, step=0.01)),
+            	column(width=4,numericInput("PeakDesc_phase","Est. phase", value=1,min=-1000, max=10, step=1)))
+ 		}
+	})
+
+
+output$Sel_parms4<- renderUI({
+ 		if(input$Sel_choice=="Dome-shaped")
+ 		{ 			
+	    fluidRow(column(width=8,numericInput("LtPeakFinal", "Width of declining selectivity", value=NA,min=0, max=10000, step=0.01)),
+	            column(width=4,numericInput("LtPeakFinal_phase","Est. phase", value=1,min=-1000, max=10, step=1)))    			
+ 		}
+	})
+
+output$Sel_parms5<- renderUI({
+ 		if(input$Sel_choice=="Dome-shaped")
+ 		{ 			
+    	fluidRow(column(width=8,numericInput("FinalSel", "Selectivity at max bin size", value=NA,min=0, max=1, step=0.01)),
+            	column(width=4,numericInput("FinalSel_phase","Est. phase", value=1,min=-1000, max=10, step=1)))
+ 		}
+	})
+
+			
 #Recruitment parameter inputs
 output$Rec_options1<- renderUI({
     if(input$rec_choice){
@@ -185,7 +221,6 @@ SS.file.update<-observeEvent(input$run_SS,{
              Sys.sleep(0.5)
            }
   	#Copy and move files
-	  	browser()
 	  	file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE)
 		file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
 		if(file.exists(paste0(getwd(),"/Scenarios/SS_LB_files")))
@@ -254,18 +289,18 @@ SS.file.update<-observeEvent(input$run_SS,{
 		
 		fem_vbgf<-VBGF(input$Linf_f,input$k_f,input$t0_f,c(0:input$Nages))
 		#Females
-		ctl.file$MG_parms[1,3]<-input$M_f		#M
+		ctl.file$MG_parms[1,3]<-input$M_f			#M
 		ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]		#L0
-		ctl.file$MG_parms[3,3:4]<-input$Linf_f	#Linf
-		ctl.file$MG_parms[4,3:4]<-input$k_f		#k
+		ctl.file$MG_parms[3,3:4]<-input$Linf_f		#Linf
+		ctl.file$MG_parms[4,3:4]<-input$k_f			#k
 		#Maturity
-		ctl.file$MG_parms[9,3:4]<-input$L50_f			#Lmat50%
+		ctl.file$MG_parms[9,3:4]<-input$L50_f									#Lmat50%
 		ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f-input$L50_f)	#Maturity slope
 		#Males
-		ctl.file$MG_parms[13,3]<-input$M_f		#M
-		ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]	#L0
-		ctl.file$MG_parms[15,3:4]<-input$Linf_f	#Linf
-		ctl.file$MG_parms[16,3:4]<-input$k_f	#k
+		ctl.file$MG_parms[13,3]<-input$M_f			#M
+		ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]		#L0
+		ctl.file$MG_parms[15,3:4]<-input$Linf_f		#Linf
+		ctl.file$MG_parms[16,3:4]<-input$k_f		#k
 		if(input$male_parms)
 			{		
 				male_vbgf<-VBGF(input$Linf_m,input$k_m,input$t0_m,c(0:input$Nages))
@@ -282,13 +317,13 @@ SS.file.update<-observeEvent(input$run_SS,{
 		ctl.file$recdev_phase<- -1
 		if(input$rec_choice)
 			{
-				ctl.file$SR_parms[3,3:4]<-input$sigmaR 	#sigma R
+				ctl.file$SR_parms[3,3:4]<-input$sigmaR 			#sigma R
 				ctl.file$do_recdev<-1
-				ctl.file$MainRdevYrFirst<-input$Rdev_startyr
-				ctl.file$MainRdevYrLast<-input$Rdev_endyr
+				ctl.file$MainRdevYrFirst<-input$Rdev_startyr	#Start year of recruitment estimation
+				ctl.file$MainRdevYrLast<-input$Rdev_endyr		#Last year of recruitment estimation
 				ctl.file$recdev_phase<- 1
 			}
-				
+		
 		#Selectivity
 		ctl.file$age_selex_type<-10
 		if(input$Sel_choice=="Logistic")
@@ -297,13 +332,26 @@ SS.file.update<-observeEvent(input$run_SS,{
 			ctl.file$size_selex_parms[3,7]<- input$Sel50_phase
 			ctl.file$size_selex_parms[1,3:4]<- input$Selpeak
 			ctl.file$size_selex_parms[1,7]<- input$Selpeak_phase
-		}
+			ctl.file$size_selex_parms[2,3:4]<- 15
+			ctl.file$size_selex_parms[2,7]<- -1
+			ctl.file$size_selex_parms[4,3:4]<- 15
+			ctl.file$size_selex_parms[4,7]<- -1
+			ctl.file$size_selex_parms[6,3:4]<- 15
+			ctl.file$size_selex_parms[6,7]<- -1
+			}
 		if(input$Sel_choice=="Dome-shaped")
 		{
-			ctl.file$size_selex_parms[3,3:4]<- log(-((input$Sel50-input$Selpeak)^2/log(0.5)))
-			ctl.file$size_selex_parms[3,7]<- input$Sel50_phase
+			bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
 			ctl.file$size_selex_parms[1,3:4]<- input$Selpeak
 			ctl.file$size_selex_parms[1,7]<- input$Selpeak_phase
+			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-input$Selpeak-bin.width)/(input$PeakDesc-input$Selpeak-bin.width))
+			ctl.file$size_selex_parms[2,7]<- input$PeakDesc_phase
+			ctl.file$size_selex_parms[3,3:4]<- log(-((input$Sel50-input$Selpeak)^2/log(0.5)))
+			ctl.file$size_selex_parms[3,7]<- input$Sel50_phase
+			ctl.file$size_selex_parms[4,3:4]<- log(input$LtPeakFinal)
+			ctl.file$size_selex_parms[4,7]<- input$LtPeakFinal_phase
+			ctl.file$size_selex_parms[6,3:4]<- -log((1/(input$FinalSel+0.000000001)-1))
+			ctl.file$size_selex_parms[6,7]<- input$FinalSel_phase
 		}
 
 		#Change likelihood component weight of catch
@@ -326,6 +374,10 @@ SS.file.update<-observeEvent(input$run_SS,{
 		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
 		Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE)
 		SS_plots(Model.output,verbose=FALSE)
+		
+ 		output$SSout_table <- renderTable({
+ 				Output_table<-Model.output[,c(1,3,7,8,9,11,13,25,37,40)]
+ 			})
 		# }
 	})
 
