@@ -31,6 +31,18 @@ wellPanel(
                              '.csv'
                            )
   ))),
+ 
+  #Mute for now, pull back in when index methods are ready
+  # fileInput('file3', 'Age composition',
+  #           accept = c(
+  #             'text/csv',
+  #             'text/comma-separated-values',
+  #             'text/tab-separated-values',
+  #             'text/plain',
+  #             '.csv'
+  #           )
+  #         ),
+
   #Mute for now, pull back in when index methods are ready
   # fileInput('file3', 'Abundance index',
   #           accept = c(
@@ -43,28 +55,32 @@ wellPanel(
   #         ),
   
 ),
-
+    
+#    fluidRow(column(width=10,checkboxInput("mod_sims","Specify model years?",FALSE))),
     wellPanel(
-    h3("Model Dimension inputs"),
-    h5(p(em("Start year recommendations are:"))),
-       tags$ul(tags$li(h5(p(em("If length data only, count the year back from the first year of length data based on maximum age likely contained in length data"))))),
-       tags$ul(tags$li(h5(p(em("If using catch data, use the first year of catches"))))),
-    h5(p(em(""))),
-    wellPanel(
-      fluidRow(column(width=4,numericInput("styr", "Starting year", value=1980,min=1, max=10000, step=1)),
-              column(width=4,numericInput("endyr","Ending year", value=2019,min=1, max=10000, step=1)),    
-              column(width=4,numericInput("Nages","Max. age", value=30,min=1, max=1000, step=1))),    
-    ),
+    h3("Model years"),
+    h5(p(em("Starting values based on data"))),
+      tags$ul(tags$li(h5(p(em("If using only length or age data, default start year is before data begins to help with calculations"))))),
+    # h5(p(em("Start year recommendations are:"))),
+    #   tags$ul(tags$li(h5(p(em("If length data only, count the year back from the first year of length data based on maximum age likely contained in length data"))))),
+    #   tags$ul(tags$li(h5(p(em("If using catch data, use the first year of catches"))))),
+    # h5(p(em(""))),
+ #   wellPanel(
+        uiOutput("Model_dims1"),
+        uiOutput("Model_dims2"),
+  #  ),
       ),
  #   ),
     wellPanel(
     h3("Life history inputs"),
     wellPanel(
       h5(em("Female")),
-      fluidRow(column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01)),
-             column(width=6,numericInput("k_f","Growth coefficient k", value=NA,min=0, max=10000, step=0.01))),    
+      fluidRow(column(width=6,numericInput("Nages","Max. age", value=NA,min=1, max=1000, step=1)),
+             column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01))),    
       fluidRow(column(width=6,numericInput("Linf_f", "Asymptotic size (Linf)", value=NA,min=0, max=10000, step=0.01)),
-              column(width=6,numericInput("t0_f","Age at length 0 (t0)", value=NA,min=0, max=10000, step=0.01))),    
+              column(width=6,numericInput("k_f","Growth coefficient k", value=NA,min=0, max=10000, step=0.01))),    
+      fluidRow(column(width=6,numericInput("t0_f","Age at length 0 (t0)", value=NA,min=0, max=10000, step=0.01)),
+              column(width=6,numericInput("CV_lt_f","CV at length", value=NA,min=0, max=10000, step=0.01))),    
       fluidRow(column(width=6,numericInput("L50_f", "Length at 50% maturity", value=NA,min=0, max=10000, step=-0.01)),
               column(width=6,numericInput("L95_f","Length at 95% maturity", value=NA,min=0, max=10000, step=0.01))),    
     ),
@@ -157,7 +173,16 @@ wellPanel(
             column(6,plotOutput("VBGFplot"))
                   ),       
           tabPanel("Model output",
-            tableOutput("SSout_table")
+            tableOutput("SSout_table"),
+            ),
+          tabPanel("Jitter exploration",
+            
+            ),
+          tabPanel("Likelihood profile",
+            
+            ),
+          tabPanel("Sensitivity comparisons",
+            
             )
           ) 
    )

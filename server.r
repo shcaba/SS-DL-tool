@@ -30,6 +30,30 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox")
 ########################################	
 #User activated pop-up parameter values#
 ########################################
+#Model dimensions
+output$Model_dims1<- renderUI({
+			  	inFile1<- input$file1
+				inFile2<- input$file2
+				if (is.null(inFile1)&is.null(inFile2)) return(NULL)
+				if (!is.null(inFile1)&is.null(inFile2))
+					{
+						Lt.comp.data<-read.csv(inFile1$datapath,check.names=FALSE)
+			    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=as.numeric(colnames(Lt.comp.data)[-1])[1],min=1, max=10000, step=1)),
+              			column(width=4,numericInput("endyr","Ending year", value=max(as.numeric(colnames(Lt.comp.data)[-1])),min=1, max=10000, step=1)))						
+					}
+		})
+
+output$Model_dims2<- renderUI({
+			  	inFile1<- input$file1
+				inFile2<- input$file2
+				if (is.null(inFile2)) return(NULL)
+				if (!is.null(inFile2))
+					{
+						Ct.data<-read.csv(inFile2$datapath,check.names=FALSE)
+			    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=Ct.data[1,1],min=1, max=10000, step=1)),
+              			column(width=4,numericInput("endyr","Ending year", value=max(Ct.data[,1]),min=1, max=10000, step=1)))						
+					}	
+		})
 
 #Male life history parameters
 output$Male_parms_inputs_label<- renderUI({
@@ -41,14 +65,20 @@ output$Male_parms_inputs_label<- renderUI({
 output$Male_parms_inputs1<- renderUI({
 	if(input$male_parms){
     fluidRow(column(width=6,numericInput("M_m", "Natural mortality", value=NA,min=0, max=10000, step=0.01)),
-            column(width=6,numericInput("k_m","Growth coefficient k", value=NA,min=0, max=10000, step=0.01)))    
+            column(width=6,numericInput("Linf_m", "Asymptotic size (Linf)", value=NA,min=0, max=10000, step=0.01)))    
 		}
 	})
 
 output$Male_parms_inputs2<- renderUI({
 	if(input$male_parms){
-    fluidRow(column(width=6,numericInput("Linf_m", "Asymptotic size (Linf)", value=NA,min=0, max=10000, step=0.01)),
+    fluidRow(column(width=6,numericInput("k_m","Growth coefficient k", value=NA,min=0, max=10000, step=0.01)),
             column(width=6,numericInput("t0_m","Age at length 0 (t0)", value=NA,min=0, max=10000, step=0.01)))    
+    	}
+	})
+
+output$Male_parms_inputs3<- renderUI({
+	if(input$male_parms){
+    fluidRow(column(width=6,numericInput("CV_lt_m","CV at length", value=NA,min=0, max=10000, step=0.01)))
     	}
 	})
 
@@ -97,8 +127,8 @@ output$Rec_options1<- renderUI({
 	})
 output$Rec_options2<- renderUI({
     if(input$rec_choice){
-          fluidRow(column(width=6,numericInput("Rdev_startyr","Rec. devs. start year", value=1980,min=1, max=10000, step=1)),
-             column(width=6,numericInput("Rdev_endyr","Rec. devs. end year", value=2019,min=1, max=10000, step=1)))    
+          fluidRow(column(width=6,numericInput("Rdev_startyr","Rec. devs. start year", value=input$styr,min=1, max=10000, step=1)),
+             column(width=6,numericInput("Rdev_endyr","Rec. devs. end year", value=input$endyr,min=1, max=10000, step=1)))    
     	}
 	})
 #Jitter value
@@ -242,8 +272,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(1,length(year.in)+1),
-						c(0,rep(100,length(year.in))),
-						rep(100,length(year.in)+1)
+						c(100,rep(100,length(year.in))),
+						c(0.01,rep(1000,length(year.in)))
 						)
 		colnames(data.file$catch)<-catch.cols
 		}
@@ -281,6 +311,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 			t(Lt.comp.data)[-1,]*0),
 			nrow=length(samp.yrs),ncol=6+length(Lt.comp.data[,1])*2,byrow=FALSE))
 		colnames(data.file$lencomp)<-lt.data.names
+		data.file$N_agebins<-input$Nages
 		data.file$agebin_vector<-1:input$Nages
 		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
 
@@ -293,7 +324,9 @@ SS.file.update<-observeEvent(input$run_SS,{
 		ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]		#L0
 		ctl.file$MG_parms[3,3:4]<-input$Linf_f		#Linf
 		ctl.file$MG_parms[4,3:4]<-input$k_f			#k
-		#Maturity
+		ctl.file$MG_parms[5,3:4]<-input$CV_lt_f		#CV
+		ctl.file$MG_parms[6,3:4]<-input$CV_lt_f		#CV
+		#Maturity6
 		ctl.file$MG_parms[9,3:4]<-input$L50_f									#Lmat50%
 		ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f-input$L50_f)	#Maturity slope
 		#Males
@@ -301,20 +334,29 @@ SS.file.update<-observeEvent(input$run_SS,{
 		ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]		#L0
 		ctl.file$MG_parms[15,3:4]<-input$Linf_f		#Linf
 		ctl.file$MG_parms[16,3:4]<-input$k_f		#k
+		ctl.file$MG_parms[17,3:4]<-input$CV_lt_f	#CV
+		ctl.file$MG_parms[18,3:4]<-input$CV_lt_f	#CV
 		if(input$male_parms)
 			{		
 				male_vbgf<-VBGF(input$Linf_m,input$k_m,input$t0_m,c(0:input$Nages))
-				ctl.file$MG_parms[13,3]<-input$M_m		#M
-				ctl.file$MG_parms[14,3:4]<-male_vbgf[1]	#L0
-				ctl.file$MG_parms[15,3:4]<-input$Linf_m	#Linf
-				ctl.file$MG_parms[16,3:4]<-input$k_m	#k
+				ctl.file$MG_parms[13,3]<-input$M_m			#M
+				ctl.file$MG_parms[14,3:4]<-male_vbgf[1]		#L0
+				ctl.file$MG_parms[15,3:4]<-input$Linf_m		#Linf
+				ctl.file$MG_parms[16,3:4]<-input$k_m		#k
+				ctl.file$MG_parms[17,3:4]<-input$CV_lt_m	#CV
+				ctl.file$MG_parms[18,3:4]<-input$CV_lt_m	#CV
 			}
+
 		#S-R
 		ctl.file$SR_parms[1,3:4]<-input$lnR0	#lnR0
 		ctl.file$SR_parms[2,3:4]<-input$h 		#steepnes
+
 		#Recruitment estimation		
 		ctl.file$do_recdev<-0
 		ctl.file$recdev_phase<- -1
+		ctl.file$MainRdevYrFirst<-input$styr	#Start year of recruitment estimation
+		ctl.file$MainRdevYrLast<-input$endyr		#Last year of recruitment estimation
+		
 		if(input$rec_choice)
 			{
 				ctl.file$SR_parms[3,3:4]<-input$sigmaR 			#sigma R
@@ -355,8 +397,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 		}
 
 		#Change likelihood component weight of catch
-		if (is.null(inCatch)){ctl.file$lambdas[4]<-0}
-		if(!is.null(inCatch)){ctl.file$lambdas[4]<-1}
+		if (is.null(inCatch)){ctl.file$lambdas[1,4]<-0}
+		if(!is.null(inCatch)){ctl.file$lambdas[1,4]<-1}
 
 		SS_writectl(ctl.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
 
@@ -376,7 +418,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		SS_plots(Model.output,verbose=FALSE)
 		
  		output$SSout_table <- renderTable({
- 				Output_table<-Model.output$sprseries[-nrow(Model.output$sprseries),c(1,3,7,8,9,11,12,13,25,37,40)]
+ 				Output_table<-Model.output$sprseries[-nrow(Model.output$sprseries),c(1,5,6,7,8,9,11,12,13,25,37)]
  			})
 		# }
 	})

@@ -159,6 +159,7 @@
 #
 #_initial_F_parms; count = 0
 #_ LO HI INIT PRIOR PR_SD  PR_type  PHASE
+0 100 0.1 1 999 0 1 
 #2020 2070
 # F rates by fleet
 # Yr:  1980 1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020
@@ -257,6 +258,7 @@
 # 10=recrdev; 11=parm_prior; 12=parm_dev; 13=CrashPen; 14=Morphcomp; 15=Tag-comp; 16=Tag-negbin; 17=F_ballpark; 18=initEQregime
 #like_comp fleet  phase  value  sizefreq_method
  8 1 1 0 1
+ 9 1 1 1 1
 -9999  1  1  1  1  #  terminator
 #
 # lambdas (for info only; columns are phases)

@@ -41,7 +41,7 @@
 #_Catch data: yr, seas, fleet, catch, catch_se
 #_catch_se:  standard error of log(catch)
 #_NOTE:  catch data is ignored for survey fleets
--999 1 1 0 100
+-999 1 1 100 1000
 1980 1 1 100 1000
 1981 1 1 100 1000
 1982 1 1 100 1000
