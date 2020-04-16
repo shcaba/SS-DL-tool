@@ -141,22 +141,31 @@ output$Jitter_value<- renderUI({
 #############
 ### PLOTS ###
 #############
-
 #Plot length compoistions
+
 	output$Ltplot<-renderPlot({
 		inFile<- input$file1
 		if (is.null(inFile)) return(NULL)
 		Lt.comp.data<-read.csv(inFile$datapath,check.names=FALSE)
 		dat.gg<-cbind(Lt.comp.data[,1],melt(Lt.comp.data[,-1]))
+		if(ncol(dat.gg)==2)
+			{
+				dat.gg<-data.frame(dat.gg[,1],as.numeric(colnames(Lt.comp.data)[2]),dat.gg[,2])				
+			}
 		colnames(dat.gg)<-c("bin","year","ltnum")
 		ggplot(dat.gg,aes(bin,ltnum))+
-			geom_col(fill="#236192",color="white")+
-			facet_wrap(~year)+
-			xlab("Length bin")+
-			ylab("Frequency")
-		#qplot(bin, data=dat.gg, weight=ltnum,facets=~year, geom="histogram")+
-		#	scale_colour_manual(values="#236192")
-		#	scale_colour_manual(values="red")
+					geom_col(fill="#236192",color="white")+
+					facet_wrap(~year)+
+					xlab("Length bin")+
+					ylab("Frequency")			
+				#}
+		# if(ncol(dat.gg)==2){
+		# 	colnames(dat.gg)<-c("bin","ltnum")
+		# 	ggplot(dat.gg,aes(bin,ltnum))+
+		# 	geom_col(fill="#236192",color="white")+
+		# 	xlab("Length bin")+
+		# 	ylab("Frequency")
+		# 	}
 		})
 
 output$Ctplot<-renderPlot({
@@ -299,8 +308,22 @@ SS.file.update<-observeEvent(input$run_SS,{
 		Lt.comp.data<-read.csv(inFile$datapath,check.names=FALSE)
 		data.file$N_lbins<-nrow(Lt.comp.data)
 		data.file$lbin_vector<-Lt.comp.data[,1]
-		samp.yrs<-as.numeric(colnames(Lt.comp.data[1,-1]))
+		samp.yrs<-as.numeric(colnames(Lt.comp.data)[-1])
 		lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",Lt.comp.data[,1]),paste0("m",Lt.comp.data[,1]))
+		if(length(samp.yrs)==1){
+			data.file$lencomp<-data.frame(matrix(c(samp.yrs,
+			rep(1,length(samp.yrs)),
+			rep(1,length(samp.yrs)),
+			rep(1,length(samp.yrs)),
+			rep(0,length(samp.yrs)),
+			colSums(Lt.comp.data[-1]),
+			t(Lt.comp.data)[-1,],
+			t(Lt.comp.data)[-1,]*0),
+			nrow=length(samp.yrs),
+			ncol=6+length(Lt.comp.data[,1])*2,
+			byrow=FALSE))[,,drop=FALSE]
+		}
+		else{
 		data.file$lencomp<-data.frame(matrix(cbind(samp.yrs,
 			rep(1,length(samp.yrs)),
 			rep(1,length(samp.yrs)),
@@ -309,7 +332,10 @@ SS.file.update<-observeEvent(input$run_SS,{
 			colSums(Lt.comp.data[-1]),
 			t(Lt.comp.data)[-1,],
 			t(Lt.comp.data)[-1,]*0),
-			nrow=length(samp.yrs),ncol=6+length(Lt.comp.data[,1])*2,byrow=FALSE))
+			nrow=length(samp.yrs),
+			ncol=6+length(Lt.comp.data[,1])*2,
+			byrow=FALSE))[,,drop=FALSE]			
+		}
 		colnames(data.file$lencomp)<-lt.data.names
 		data.file$N_agebins<-input$Nages
 		data.file$agebin_vector<-1:input$Nages
