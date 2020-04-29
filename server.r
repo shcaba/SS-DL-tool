@@ -3,6 +3,7 @@ require(ggplot2)
 require(reshape2)
 
 shinyServer(function(input, output,session) {
+  useShinyjs()
 
 #################
 ### FUNCTIONS ###
@@ -38,7 +39,11 @@ output$Model_dims1<- renderUI({
 				if (!is.null(inFile1)&is.null(inFile2))
 					{
 						Lt.comp.data<-read.csv(inFile1$datapath,check.names=FALSE)
-			    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=as.numeric(colnames(Lt.comp.data)[-1])[1],min=1, max=10000, step=1)),
+			    		styr.in<-as.numeric(colnames(Lt.comp.data)[-1])[1]
+			    		if(!(anyNA(c(input$Linf_f,input$k_f,input$t0_f)))){
+			    			styr.in<-as.numeric(colnames(Lt.comp.data)[-1])[1]-round(VBGF.age(input$Linf_f,input$k_f,input$t0_f,input$Linf_f*0.95))
+			    		}
+						fluidRow(column(width=4,numericInput("styr", "Starting year", value=styr.in,min=1, max=10000, step=1)),
               			column(width=4,numericInput("endyr","Ending year", value=max(as.numeric(colnames(Lt.comp.data)[-1])),min=1, max=10000, step=1)))						
 					}
 		})
@@ -47,7 +52,7 @@ output$Model_dims2<- renderUI({
 			  	inFile1<- input$file1
 				inFile2<- input$file2
 				if (is.null(inFile2)) return(NULL)
-				if (!is.null(inFile2))
+				if (!is.null(inFile1)&!is.null(inFile2))
 					{
 						Ct.data<-read.csv(inFile2$datapath,check.names=FALSE)
 			    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=Ct.data[1,1],min=1, max=10000, step=1)),
@@ -78,7 +83,7 @@ output$Male_parms_inputs2<- renderUI({
 
 output$Male_parms_inputs3<- renderUI({
 	if(input$male_parms){
-    fluidRow(column(width=6,numericInput("CV_lt_m","CV at length", value=NA,min=0, max=10000, step=0.01)))
+    fluidRow(column(width=6,numericInput("CV_lt_m","CV at length", value=0.1,min=0, max=10000, step=0.01)))
     	}
 	})
 
@@ -134,7 +139,7 @@ output$Rec_options2<- renderUI({
 #Jitter value
 output$Jitter_value<- renderUI({
     if(input$jitter_choice){
-        fluidRow(column(width=6,numericInput("jitter_fraction","Jitter value", value=0,min=0, max=10, step=0.001)))   
+        fluidRow(column(width=6,numericInput("jitter_fraction","Jitter value", value=0.1,min=0, max=10, step=0.001)))   
     	}
 	})
 
@@ -157,6 +162,31 @@ output$Jitter_value<- renderUI({
 					geom_col(fill="#236192",color="white")+
 					facet_wrap(~year)+
 					xlab("Length bin")+
+					ylab("Frequency")			
+				#}
+		# if(ncol(dat.gg)==2){
+		# 	colnames(dat.gg)<-c("bin","ltnum")
+		# 	ggplot(dat.gg,aes(bin,ltnum))+
+		# 	geom_col(fill="#236192",color="white")+
+		# 	xlab("Length bin")+
+		# 	ylab("Frequency")
+		# 	}
+		})
+
+	output$Ageplot<-renderPlot({
+		inFile_age<- input$file3
+		if (is.null(inFile_age)) return(NULL)
+		Age.comp.data<-read.csv(inFile_age$datapath,check.names=FALSE)
+		dat.gg<-cbind(Age.comp.data[,1],melt(Age.comp.data[,-1]))
+		if(ncol(dat.gg)==2)
+			{
+				dat.gg<-data.frame(dat.gg[,1],as.numeric(colnames(Age.comp.data)[2]),dat.gg[,2])				
+			}
+		colnames(dat.gg)<-c("bin","year","ltnum")
+		ggplot(dat.gg,aes(bin,ltnum))+
+					geom_col(fill="#236192",color="white")+
+					facet_wrap(~year)+
+					xlab("Age bin")+
 					ylab("Frequency")			
 				#}
 		# if(ncol(dat.gg)==2){
@@ -259,18 +289,19 @@ SS.file.update<-observeEvent(input$run_SS,{
              progress$set(value = i)
              Sys.sleep(0.5)
            }
+  	
   	#Copy and move files
 	  	file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE)
 		file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
 		if(file.exists(paste0(getwd(),"/Scenarios/SS_LB_files")))
 		{file.remove(paste0(getwd(),"/Scenarios/SS_LB_files"))}
-
+	
+	#browser()			
 	#Read, edit then write new DATA file
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-input$Nages
-		
 	#Catches
 		inCatch<- input$file2
 		if (is.null(inCatch)) 
@@ -296,7 +327,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(1,length(year.in)+1),
-						c(0,Catch.data[,2]),
+						c(0.0001,Catch.data[,2]),
 						rep(0.01,length(year.in)+1)
 						)
 		colnames(data.file$catch)<-catch.cols
@@ -337,10 +368,58 @@ SS.file.update<-observeEvent(input$run_SS,{
 			byrow=FALSE))[,,drop=FALSE]			
 		}
 		colnames(data.file$lencomp)<-lt.data.names
+	
+	#Age composition data
+		inFile_age<- input$file3
+		if (is.null(inFile_age)){
 		data.file$N_agebins<-input$Nages
-		data.file$agebin_vector<-1:input$Nages
+		data.file$agebin_vector<-1:input$Nages		
+			}
+		if (!is.null(inFile_age)){
+		Age.comp.data<-read.csv(inFile_age$datapath,check.names=FALSE)
+		data.file$N_agebins<-nrow(Age.comp.data)
+		data.file$agebin_vector<-Age.comp.data[,1]
+		age.samp.yrs<-as.numeric(colnames(Age.comp.data)[-1])
+		age.data.names<-c(c("Yr","Seas","FltSvy","Gender","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",Age.comp.data[,1]),paste0("m",Age.comp.data[,1]))
+		if(length(age.samp.yrs)==1){
+			data.file$agecomp<-data.frame(matrix(c(samp.yrs,
+			rep(1,length(age.samp.yrs)),
+			rep(1,length(age.samp.yrs)),
+			rep(1,length(age.samp.yrs)),
+			rep(0,length(age.samp.yrs)),
+			rep(-1,length(age.samp.yrs)),
+			rep(-1,length(age.samp.yrs)),
+			rep(-1,length(age.samp.yrs)),
+			colSums(Age.comp.data[-1]),
+			t(Age.comp.data)[-1,],
+			t(Age.comp.data)[-1,]*0),
+			nrow=length(age.samp.yrs),
+			ncol=9+length(Age.comp.data[,1])*2,
+			byrow=FALSE))[,,drop=FALSE]
+		}
+		else{
+		data.file$agecomp<-data.frame(matrix(cbind(samp.yrs,
+			rep(1,length(age.samp.yrs)),
+			rep(1,length(age.samp.yrs)),
+			rep(1,length(age.samp.yrs)),
+			rep(0,length(age.samp.yrs)),
+			rep(-1,length(age.samp.yrs)),
+			rep(-1,length(age.samp.yrs)),
+			rep(-1,length(age.samp.yrs)),
+			colSums(Age.comp.data[-1]),
+			t(Age.comp.data)[-1,],
+			t(Age.comp.data)[-1,]*0),
+			nrow=length(age.samp.yrs),
+			ncol=9+length(Age.comp.data[,1])*2,
+			byrow=FALSE))[,,drop=FALSE]			
+		}
+		colnames(data.file$agecomp)<-age.data.names
+		}
+		
 		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
+		####################### END DATA FILE #####################################
 
+		####################### START CTL FILE ####################################
 		#Read, edit then write new CONTROL file
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
 		
@@ -427,8 +506,9 @@ SS.file.update<-observeEvent(input$run_SS,{
 		if(!is.null(inCatch)){ctl.file$lambdas[1,4]<-1}
 
 		SS_writectl(ctl.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
+		####################### END CTL FILE ####################################
 
-		#Jitter 
+	#Jitter 
 				starter.file<-SS_readstarter(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/starter.ss"))
 				starter.file$jitter_fraction<-0
 		
@@ -440,12 +520,85 @@ SS.file.update<-observeEvent(input$run_SS,{
 
 	#Run Stock Synthesis and plot output
 		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
-		Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE)
+		Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
+		if(class(Model.output)=="try-error")
+			{
+				Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+			}
 		SS_plots(Model.output,verbose=FALSE)
 		
+		#Convergence diagnostics
+		output$converge.grad <- renderText({
+ 				max.grad<-paste0("Maximum gradient: ",Model.output$maximum_gradient_component)
+			})
+ 		
+ 		output$converge.dec <- renderText({
+ 				if(Model.output$maximum_gradient_component<0.1)
+ 					{converge.dec<-"Model appears to be converged. Please check outputs for nonsense."}
+ 				else{converge.dec<-"Model has not converged. Please use the Jitter option or change starting values before re-running model."}
+			})
+ 		
+ 		#Relative biomass
+		output$SSout_relSB_table <- renderTable({
+				SB_indices<-c(which(rownames(Model.output$derived_quants)==paste0("Bratio_",input$endyr)),
+					which(rownames(Model.output$derived_quants)=="B_MSY/SSB_unfished"),
+					which(rownames(Model.output$derived_quants)==paste0("SPRratio_",input$endyr)),
+					which(rownames(Model.output$derived_quants)==paste0("OFLCatch_",(input$endyr+1))),
+					which(rownames(Model.output$derived_quants)==paste0("ForeCatch_",(input$endyr+1)))
+					)
+				Output_relSB_table<-data.frame(Model.output$derived_quants[SB_indices,1:3])
+					# Label=c(paste0("SO",input$endyr,"/SO_0"),
+					# 					  "SO_MSY/SO_0",
+					# 					  paste0("SPR",input$endyr),
+					# 					  paste0("OFL",(input$endyr+1)),
+					# 					  paste0("ABC",(input$endyr+1))
+					# 					  ))
+				Output_relSB_table[,1]<-c(paste0("SO",input$endyr,"/SO_0"),
+										  "SO_MSY/SO_0",
+										  paste0("1-SPR",input$endyr),
+										  paste0("OFL",(input$endyr+1)),
+										  paste0("ABC",(input$endyr+1))
+										  )
+				Output_relSB_table	
+					# rownames=c(expression(SO[input$endyr]/SO[0]),
+					# 					  expression(SO[MSY]/SO[0]),
+					# 					  expression(SPR[input$endyr]),
+					# 					  expression(OFL[input$endyr]),
+					# 					  expression(ABC[input$endyr])
+					# 					  ))
+				# Output_relSB_table[,1]<-c(expression('B',[input$endyr],'/B',[0]),
+				# 						  expression('B'[MSY]/'B'[0]),
+				# 						  expression('SPR'[input$endyr]),
+				# 						  expression('OFL'[input$endyr]),
+				# 						  expression('ABC'[input$endyr])
+				# 						  )	
+				})
+
+		#F estimate and relative to FMSY and proxies		
+		output$SSout_F_table <- renderTable({
+				F_indices<-c(which(rownames(Model.output$derived_quants)==paste0("F_",input$endyr)),
+							which(rownames(Model.output$derived_quants)=="annF_Btgt"),
+							which(rownames(Model.output$derived_quants)=="annF_SPR"),
+							which(rownames(Model.output$derived_quants)=="annF_MSY")
+							)
+				F_values<-Model.output$derived_quants[F_indices,1:3]
+ 			})
+		#Time series output
  		output$SSout_table <- renderTable({
  				Output_table<-Model.output$sprseries[-nrow(Model.output$sprseries),c(1,5,6,7,8,9,11,12,13,25,37)]
- 			})
+			})
+ 		
+ 		#Selectivity paramters
+ 		output$SSout_Sel_log_table1 <- renderTable({
+ 				Sel.index<-c(which(rownames(Model.output$parameters)=="Size_DblN_ascend_se_Fishery(1)"),
+ 				which(rownames(Model.output$parameters)=="Size_DblN_top_logit_Fishery(1)"))	
+				Output_Sel_table<-Model.output$parameters[Sel.index,c(3,5,11,18,19)]
+			})
+		output$SSout_Sel_dome_table1 <- renderTable({
+ 				Sel.index<-which(rownames(Model.output$parameters)=="Size_DblN_ascend_se_Fishery(1)")
+ 				Output_Sel_table<-Model.output$parameters[c(Sel.index:Sel.index+5),c(3,5,11,18,19)]
+			})
+ 			
 		# }
 	})
 

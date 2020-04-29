@@ -33,15 +33,15 @@ wellPanel(
   ))),
  
   #Mute for now, pull back in when index methods are ready
-  # fileInput('file3', 'Age composition',
-  #           accept = c(
-  #             'text/csv',
-  #             'text/comma-separated-values',
-  #             'text/tab-separated-values',
-  #             'text/plain',
-  #             '.csv'
-  #           )
-  #         ),
+  fileInput('file3', 'Age composition',
+            accept = c(
+              'text/csv',
+              'text/comma-separated-values',
+              'text/tab-separated-values',
+              'text/plain',
+              '.csv'
+            )
+          ),
 
   #Mute for now, pull back in when index methods are ready
   # fileInput('file3', 'Abundance index',
@@ -60,7 +60,7 @@ wellPanel(
     wellPanel(
     h3("Model years"),
     h5(p(em("Starting values based on data"))),
-      tags$ul(tags$li(h5(p(em("If using only length or age data, default start year is before data begins to help with calculations"))))),
+      tags$ul(tags$li(h5(p(em("If using only length or age data, starting model year is based on earliest year minus age at 95% Linf"))))),
     # h5(p(em("Start year recommendations are:"))),
     #   tags$ul(tags$li(h5(p(em("If length data only, count the year back from the first year of length data based on maximum age likely contained in length data"))))),
     #   tags$ul(tags$li(h5(p(em("If using catch data, use the first year of catches"))))),
@@ -80,7 +80,7 @@ wellPanel(
       fluidRow(column(width=6,numericInput("Linf_f", "Asymptotic size (Linf)", value=NA,min=0, max=10000, step=0.01)),
               column(width=6,numericInput("k_f","Growth coefficient k", value=NA,min=0, max=10000, step=0.01))),    
       fluidRow(column(width=6,numericInput("t0_f","Age at length 0 (t0)", value=NA,min=0, max=10000, step=0.01)),
-              column(width=6,numericInput("CV_lt_f","CV at length", value=NA,min=0, max=10000, step=0.01))),    
+              column(width=6,numericInput("CV_lt_f","CV at length", value=0.1,min=0, max=10000, step=0.01))),    
       fluidRow(column(width=6,numericInput("L50_f", "Length at 50% maturity", value=NA,min=0, max=10000, step=-0.01)),
               column(width=6,numericInput("L95_f","Length at 95% maturity", value=NA,min=0, max=10000, step=0.01))),    
     ),
@@ -95,12 +95,13 @@ wellPanel(
 #    shinysj::hide()
     wellPanel(
     h3("Productivity"),
-    fluidRow(column(width=6,numericInput("h","Steepness", value=0.9,min=0.2, max=1, step=0.01)),
+    fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
       column(width=6,numericInput("lnR0", "Initial recruitment (lnR0)", value=9,min=0, max=20, step=0.01))),
     ),
 
     wellPanel(
     h3("Selectivity"),
+    h5("The phase input indicates estimated parameters. To fix the parameter, set the phase value to a negative number"),
     fluidRow(selectInput("Sel_choice","Length selectivity type",c("Logistic","Dome-shaped"))),
     # fluidRow(column(width=6,numericInput("Sel50", "Length at 50% Selectivity", value=NA,min=0, max=10000, step=0.01)),
     #         column(width=6,numericInput("Sel50_phase","Estimation phase", value=1,min=-1000, max=10, step=1))),   
@@ -166,6 +167,8 @@ wellPanel(
             tabPanel("Data and Parameters",
             h4("Length composition data"),
             plotOutput("Ltplot"),
+            h4("Age composition data"),
+            plotOutput("Ageplot"),
             h4("Catch data"),
             plotOutput("Ctplot"),
             h4("Life history"),
@@ -173,10 +176,36 @@ wellPanel(
             column(6,plotOutput("VBGFplot"))
                   ),       
           tabPanel("Model output",
-            tableOutput("SSout_table"),
+            h4("Checking model convergence. Check also fit to length composition data"),
+            tableOutput("converge.grad"),
+            tableOutput("converge.dec"),
+            tags$head(tags$style("#converge.grad{color: black;
+                                 font-size: 20px;
+                                 font-style: italic;
+                                 }"
+                         )
+              ),
+            tags$head(tags$style("#converge.dec{color: green;
+                                 font-size: 20px;
+                                 font-style: italic;
+                                 }"
+                         )
+              ),
+            br(),
+            h4("Relative spawning output"),
+            tableOutput("SSout_relSB_table"),
+            br(),
+            h4("Fishing intensity"),
+            tableOutput("SSout_F_table"),
+            br(),
+            h4("Selectivity parameters"),
+            tableOutput("SSout_Sel_log_table1"),
+            br(),
+            h4("Time series"),
+            tableOutput("SSout_table")
             ),
           tabPanel("Jitter exploration",
-            
+              
             ),
           tabPanel("Likelihood profile",
             
