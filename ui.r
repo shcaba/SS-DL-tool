@@ -22,6 +22,16 @@ wellPanel(
                                       '.csv'
                                     )
   ))),
+  fileInput('file3', 'Age composition',
+            accept = c(
+              'text/csv',
+              'text/comma-separated-values',
+              'text/tab-separated-values',
+              'text/plain',
+              '.csv'
+            )
+          ),
+
  fluidRow(column(width=12,fileInput('file2', 'Catch time series',
                            accept = c(
                              'text/csv',
@@ -33,17 +43,6 @@ wellPanel(
   ))),
  
   #Mute for now, pull back in when index methods are ready
-  fileInput('file3', 'Age composition',
-            accept = c(
-              'text/csv',
-              'text/comma-separated-values',
-              'text/tab-separated-values',
-              'text/plain',
-              '.csv'
-            )
-          ),
-
-  #Mute for now, pull back in when index methods are ready
   # fileInput('file3', 'Abundance index',
   #           accept = c(
   #             'text/csv',
@@ -53,7 +52,10 @@ wellPanel(
   #             '.csv'
   #           )
   #         ),
-  
+  h4(strong("Clear data files")),
+     fluidRow(column(width=4,actionButton("reset_lt", "Length")),
+              column(width=4,actionButton("reset_age", "Ages")),
+              column(width=4,actionButton("reset_ct", "Catches"))),
 ),
     
 #    fluidRow(column(width=10,checkboxInput("mod_sims","Specify model years?",FALSE))),

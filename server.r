@@ -28,10 +28,43 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox")
   shell(command,invisible=TRUE,translate=TRUE)
 } 
 	
+
+########## Clear data files and plots ############
+
+  rv.Lt <- reactiveValues(data = NULL)
+  rv.Age <- reactiveValues(data = NULL)
+  rv.Ct <- reactiveValues(data = NULL)
+   
+ 
+  observeEvent(input$reset_lt, {
+    rv.Lt$data <- NULL
+    reset('file1')
+  })
+
+  # observeEvent(input$reset_lt, {
+		# output$Ltplot<-renderPlot({
+		# rv.Lt$data <- NULL
+		# if (is.null(rv.Lt$data)) return(NULL)  
+		# })
+  # })
+
+  observeEvent(input$reset_age, {
+    rv.Age$data <- NULL
+    reset('file3')
+  })
+
+  observeEvent(input$reset_ct, {
+    rv.Ct$data <- NULL
+    reset('file2')
+  })
+
+########################################
+
 ########################################	
 #User activated pop-up parameter values#
 ########################################
 #Model dimensions
+
 output$Model_dims1<- renderUI({
 			  	inFile1<- input$file1
 				inFile2<- input$file2
@@ -48,7 +81,8 @@ output$Model_dims1<- renderUI({
 					}
 		})
 
-output$Model_dims2<- renderUI({
+
+  output$Model_dims2<- renderUI({
 			  	inFile1<- input$file1
 				inFile2<- input$file2
 				if (is.null(inFile2)) return(NULL)
@@ -139,7 +173,8 @@ output$Rec_options2<- renderUI({
 #Jitter value
 output$Jitter_value<- renderUI({
     if(input$jitter_choice){
-        fluidRow(column(width=6,numericInput("jitter_fraction","Jitter value", value=0.1,min=0, max=10, step=0.001)))   
+        fluidRow(column(width=6,numericInput("jitter_fraction","Jitter value", value=0.1,min=0, max=10, step=0.001)),
+        	column(width=6,numericInput("Njitter","# of jitters", value=1,min=1, max=10000, step=1)))   
     	}
 	})
 
@@ -526,6 +561,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 				Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
 			}
 		SS_plots(Model.output,verbose=FALSE)
+		SSexecutivesummary(Model.output)		
 		
 		#Convergence diagnostics
 		output$converge.grad <- renderText({
