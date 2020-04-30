@@ -198,8 +198,8 @@ wellPanel(
             h4("Fishing intensity"),
             tableOutput("SSout_F_table"),
             br(),
-            h4("Selectivity parameters"),
-            tableOutput("SSout_Sel_log_table1"),
+            h4("Estimated parameters"),
+            tableOutput("Parameters_table"),
             br(),
             h4("Time series"),
             tableOutput("SSout_table")

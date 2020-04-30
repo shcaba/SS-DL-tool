@@ -184,7 +184,7 @@ output$Jitter_value<- renderUI({
 			}
 		colnames(dat.gg)<-c("bin","year","ltnum")
 		ggplot(dat.gg,aes(bin,ltnum))+
-					geom_col(fill="#236192",color="white")+
+					geom_col(fill="#1D252D",color="white")+
 					facet_wrap(~year)+
 					xlab("Age bin")+
 					ylab("Frequency")			
@@ -588,23 +588,13 @@ SS.file.update<-observeEvent(input$run_SS,{
  				Output_table<-Model.output$sprseries[-nrow(Model.output$sprseries),c(1,5,6,7,8,9,11,12,13,25,37)]
 			})
  		
- 		#Selectivity paramters
- 		output$SSout_Sel_log_table1 <- renderTable({
- 				Sel.index<-c(which(rownames(Model.output$parameters)=="Size_DblN_ascend_se_Fishery(1)"),
- 				which(rownames(Model.output$parameters)=="Size_DblN_top_logit_Fishery(1)"))	
-				Output_Sel_table<-Model.output$parameters[Sel.index,c(3,5,11,18,19)]
+ 		#Paramters
+ 		
+ 		output$Parameters_table <- renderTable({
+ 				Model.output$estimated_non_dev_parameters
 			})
-		output$SSout_Sel_dome_table1 <- renderTable({
- 				Sel.index<-which(rownames(Model.output$parameters)=="Size_DblN_ascend_se_Fishery(1)")
- 				Output_Sel_table<-Model.output$parameters[c(Sel.index:Sel.index+5),c(3,5,11,18,19)]
-			})
- 			
-		# }
+
 	})
-
-
-
-
 
 
 })
