@@ -83,8 +83,12 @@ wellPanel(
               column(width=6,numericInput("k_f","Growth coefficient k", value=NA,min=0, max=10000, step=0.01))),    
       fluidRow(column(width=6,numericInput("t0_f","Age at length 0 (t0)", value=NA,min=0, max=10000, step=0.01)),
               column(width=6,numericInput("CV_lt_f","CV at length", value=0.1,min=0, max=10000, step=0.01))),    
-      fluidRow(column(width=6,numericInput("L50_f", "Length at 50% maturity", value=NA,min=0, max=10000, step=-0.01)),
+      fluidRow(column(width=6,numericInput("L50_f", "Length at 50% maturity", value=NA,min=0, max=10000, step=0.01)),
               column(width=6,numericInput("L95_f","Length at 95% maturity", value=NA,min=0, max=10000, step=0.01))),    
+      fluidRow(column(width=6,numericInput("WLa_f", "Weight-Length alpha", value=0.00001,min=0, max=10000, step=0.000000001)),
+              column(width=6,numericInput("WLb_f","Weight-length beta", value=3,min=0, max=10000, step=0.01))),    
+      # fluidRow(column(width=6,numericInput("Fec_a", "Length at 50% maturity", value=NA,min=0, max=10000, step=-0.01)),
+      #         column(width=6,numericInput("Fec_b","Length at 95% maturity", value=NA,min=0, max=10000, step=0.01))),    
     ),
     fluidRow(column(width=10,checkboxInput("male_parms","Males specific values?",FALSE))),
     #fluidRow(column(width=7, h3("Males specific values?")),column(width=2,checkboxInput("male_parms","Males specific values?",FALSE,width="150%"))),
@@ -92,7 +96,8 @@ wellPanel(
                    uiOutput("Male_parms_inputs_label"),
                    uiOutput("Male_parms_inputs1"),
                    uiOutput("Male_parms_inputs2"),
-                   uiOutput("Male_parms_inputs3")
+                   uiOutput("Male_parms_inputs3"),
+                   uiOutput("Male_parms_inputs4")
     ),
     ),
 #    shinysj::hide()

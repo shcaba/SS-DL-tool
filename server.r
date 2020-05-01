@@ -121,6 +121,14 @@ output$Male_parms_inputs3<- renderUI({
     	}
 	})
 
+output$Male_parms_inputs4<- renderUI({
+	if(input$male_parms){
+      fluidRow(column(width=6,numericInput("WLa_m", "Weight-Length alpha", value=0.00001,min=0, max=10000, step=0.000000001)),
+              column(width=6,numericInput("WLb_m","Weight-length beta", value=3,min=0, max=10000, step=0.01)))    
+    	}
+	})
+
+
 #Selectivity paramters
 output$Sel_parms1<- renderUI({
     fluidRow(column(width=8,numericInput("Sel50", "Length at 50% Selectivity", value=NA,min=0, max=10000, step=0.01)),
@@ -563,7 +571,9 @@ SS.file.update<-observeEvent(input$run_SS,{
 		#Make SS tables
 		SSexecutivesummary(Model.output)		
 		#Run multiple jitters
-		if(input$Njitter>1)
+		if(input$jitter_choice)
+		{
+	if(input$Njitter>1)
 		{
 			 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = FALSE)
 			 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
@@ -574,7 +584,6 @@ SS.file.update<-observeEvent(input$run_SS,{
 		if(input$Njitter==1){return(NULL)}
 		if(input$Njitter>1)
 		{
-		browser()
 		#	 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = FALSE)
 		#	 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
 		#	 profilesummary <- SSsummarize(profilemodels)
@@ -593,6 +602,9 @@ SS.file.update<-observeEvent(input$run_SS,{
 			 print(jitterplot)
 		}
 	})
+	}
+		
+	
 		#Convergence diagnostics
 		output$converge.grad <- renderText({
  				max.grad<-paste0("Maximum gradient: ",Model.output$maximum_gradient_component)
