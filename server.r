@@ -291,7 +291,6 @@ output$VBGFplot<-renderPlot({
   	 }
 	})
 
-
 #############################################
 ### PREPARE FILES andD RUN Stock Synthsis ###
 #############################################
@@ -457,7 +456,6 @@ SS.file.update<-observeEvent(input$run_SS,{
 		####################### START CTL FILE ####################################
 		#Read, edit then write new CONTROL file
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
-		
 		fem_vbgf<-VBGF(input$Linf_f,input$k_f,input$t0_f,c(0:input$Nages))
 		#Females
 		ctl.file$MG_parms[1,3]<-input$M_f			#M
@@ -560,17 +558,55 @@ SS.file.update<-observeEvent(input$run_SS,{
 			{
 				Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
 			}
+		#Make SS plots	
 		SS_plots(Model.output,verbose=FALSE)
+		#Make SS tables
 		SSexecutivesummary(Model.output)		
-		
+		#Run multiple jitters
+		if(input$Njitter>1)
+		{
+			 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = FALSE)
+			 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
+			 profilesummary <- SSsummarize(profilemodels)
+		}		
+	
+	output$Jitterplot<-renderPlot({
+		if(input$Njitter==1){return(NULL)}
+		if(input$Njitter>1)
+		{
+		browser()
+		#	 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = FALSE)
+		#	 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
+		#	 profilesummary <- SSsummarize(profilemodels)
+			 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
+			 ref.like<-profilesummary$likelihoods[1,1]
+			 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value")
+			 abline(h=ref.like)
+			 
+			 likebc<-if(any(ref.like==jitter.likes)) (length(jitter.likes[ref.like==jitter.likes])/input$Njitter)*100 else 0
+			 likelessbc<-if(any(ref.like>jitter.likes)) (length(jitter[ref.like>jitter.likes])/input$Njitter)*100 else 0
+			 like10<-if(any(ref.like>jitter.likes)) (length(jitter[(ref.like+10)<jitter.likes])/input$Njitter)*100 else 0
+			 like2<-if(any(ref.like>jitter.likes)) ((length(jitter[(ref.like+2)>jitter.likes])-(likelessbc+likebc))/input$Njitter)*100 else 0
+			 like_2_10<-100-(likebc+likelessbc+like10+like2)
+
+			legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
+			 print(jitterplot)
+		}
+	})
 		#Convergence diagnostics
 		output$converge.grad <- renderText({
  				max.grad<-paste0("Maximum gradient: ",Model.output$maximum_gradient_component)
+ 					
+			})
+
+		output$converge.covar <- renderText({
+ 				covar<-paste0("Was covariance file created? ",Model.output$inputs$covar)
+ 					
 			})
  		
  		output$converge.dec <- renderText({
- 				if(Model.output$maximum_gradient_component<0.1)
- 					{converge.dec<-"Model appears to be converged. Please check outputs for nonsense."}
+ 				if(Model.output$maximum_gradient_component<0.1 & Model.output$inputs$covar==TRUE)
+ 					{converge.dec<-"Model appears to have converged. Please check outputs for nonsense."}
  				else{converge.dec<-"Model has not converged. Please use the Jitter option or change starting values before re-running model."}
 			})
  		

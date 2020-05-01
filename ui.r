@@ -91,7 +91,8 @@ wellPanel(
     wellPanel(
                    uiOutput("Male_parms_inputs_label"),
                    uiOutput("Male_parms_inputs1"),
-                   uiOutput("Male_parms_inputs2")
+                   uiOutput("Male_parms_inputs2"),
+                   uiOutput("Male_parms_inputs3")
     ),
     ),
 #    shinysj::hide()
@@ -148,7 +149,12 @@ wellPanel(
                 ),
      fluidRow(column(width=10,checkboxInput("jitter_choice","Jitter starting values?",FALSE))),
     wellPanel(
-            uiOutput("Jitter_value")
+            uiOutput("Jitter_value"),
+            h5("Jittering refers to changing the input starting values."),
+            h5("Jittering provides a quick way to adjust starting values for two main purposes:"),
+              tags$ul(tags$li(h5(p("Start the model at different values to assist model convergence.")))),
+              tags$ul(tags$li(h5(p("Validate global versus local model convergence. This requires running many models at different jittered starting values to make sure a lower minimized likelihood value is not found. If a lower likelihood value is found, that would be considered the best fit model.")))),
+            h5("Run just 1 jitter value to find a converged model. Then run multiple jittered models to confrim that model is the best fit model."),
               ),
 
     wellPanel(
@@ -180,6 +186,7 @@ wellPanel(
           tabPanel("Model output",
             h4("Checking model convergence. Check also fit to length composition data"),
             tableOutput("converge.grad"),
+            tableOutput("converge.covar"),
             tableOutput("converge.dec"),
             tags$head(tags$style("#converge.grad{color: black;
                                  font-size: 20px;
@@ -207,7 +214,7 @@ wellPanel(
             tableOutput("SSout_table")
             ),
           tabPanel("Jitter exploration",
-              
+            plotOutput("Jitterplot")  
             ),
           tabPanel("Likelihood profile",
             
