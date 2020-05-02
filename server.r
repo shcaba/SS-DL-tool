@@ -412,6 +412,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		colnames(data.file$lencomp)<-lt.data.names
 	
 	#Age composition data
+		#browser()
 		inFile_age<- input$file3
 		if (is.null(inFile_age)){
 		data.file$N_agebins<-input$Nages
