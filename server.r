@@ -338,7 +338,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		if(file.exists(paste0(getwd(),"/Scenarios/SS_LB_files")))
 		{file.remove(paste0(getwd(),"/Scenarios/SS_LB_files"))}
 	
-	#browser()			
+	browser()			
 	#Read, edit then write new DATA file
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		data.file$styr<-input$styr
@@ -417,11 +417,16 @@ SS.file.update<-observeEvent(input$run_SS,{
 		if (is.null(inFile_age)){
 		data.file$N_agebins<-input$Nages
 		data.file$agebin_vector<-1:input$Nages		
+		data.file$ageerror<-data.frame(matrix(c(rep(-1,(input$Nages+1)),rep(0.001,(input$Nages+1))),2,(input$Nages+1),byrow=TRUE))
+		colnames(data.file$ageerror)<-paste0("age",1:input$Nages)		
 			}
 		if (!is.null(inFile_age)){
 		Age.comp.data<-read.csv(inFile_age$datapath,check.names=FALSE)
-		data.file$N_agebins<-nrow(Age.comp.data)
+		age.classes<-nrow(Age.comp.data)
+		data.file$N_agebins<-age.classes
 		data.file$agebin_vector<-Age.comp.data[,1]
+		data.file$ageerror<-data.frame(matrix(c(rep(-1,(age.classes+1)),rep(0.001,(age.classes+1))),2,(age.classes+1),byrow=TRUE))		
+		colnames(data.file$ageerror)<-paste0("age",1:input$Nages)		
 		age.samp.yrs<-as.numeric(colnames(Age.comp.data)[-1])
 		age.data.names<-c(c("Yr","Seas","FltSvy","Gender","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",Age.comp.data[,1]),paste0("m",Age.comp.data[,1]))
 		if(length(age.samp.yrs)==1){
