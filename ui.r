@@ -217,7 +217,9 @@ wellPanel(
             tableOutput("SSout_table")
             ),
           tabPanel("Jitter exploration",
-            plotOutput("Jitterplot")  
+            plotOutput("Jitterplot"),
+            h4("Blue values indicate minimum likelihood values; red indicate values higher than the minimum."),  
+            h4("Any iteration with a blue value can be used as the new best-fit (reference) model.")  
             ),
           tabPanel("Likelihood profile",
             
