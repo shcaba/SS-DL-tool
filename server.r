@@ -92,19 +92,6 @@ output$Model_dims1<- renderUI({
 
 		})
 
-
-  # output$Model_dims2<- renderUI({
-		# 	  	#inFile1<- input$file1
-		# 		inFile2<- input$file2
-		# 		if (is.null(inFile2)) return(NULL)
-		# 		if (!is.null(inFile2))
-		# 			{
-		# 				Ct.data<-read.csv(inFile2$datapath,check.names=FALSE)
-		# 	    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=min(Ct.data[,1]),min=1, max=10000, step=1)),
-  #             			column(width=4,numericInput("endyr","Ending year", value=max(Ct.data[,1]),min=1, max=10000, step=1)))						
-		# 			}	
-		# })
-
 #Male life history parameters
 output$Male_parms_inputs_label<- renderUI({
 	if(input$male_parms){
