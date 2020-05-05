@@ -1,6 +1,11 @@
 require(r4ss)
 require(ggplot2)
 require(reshape2)
+require(rlist)
+require(viridis)
+#require(paletteer)
+#require(RColorBrewer)
+#require(ggthemes)
 
 shinyServer(function(input, output,session) {
   useShinyjs()
@@ -64,7 +69,6 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox")
 #User activated pop-up parameter values#
 ########################################
 #Model dimensions
-
 output$Model_dims1<- renderUI({
 			  	inFile1<- input$file1
 				inFile2<- input$file2
@@ -72,27 +76,34 @@ output$Model_dims1<- renderUI({
 				if (!is.null(inFile1)&is.null(inFile2))
 					{
 						Lt.comp.data<-read.csv(inFile1$datapath,check.names=FALSE)
-			    		styr.in<-as.numeric(colnames(Lt.comp.data)[-1])[1]
+			    		styr.in<-min(Lt.comp.data[,1])
 			    		if(!(anyNA(c(input$Linf_f,input$k_f,input$t0_f)))){
-			    			styr.in<-as.numeric(colnames(Lt.comp.data)[-1])[1]-round(VBGF.age(input$Linf_f,input$k_f,input$t0_f,input$Linf_f*0.95))
+			    			styr.in<-min(Lt.comp.data[,1])-round(VBGF.age(input$Linf_f,input$k_f,input$t0_f,input$Linf_f*0.95))
 			    		}
 						fluidRow(column(width=4,numericInput("styr", "Starting year", value=styr.in,min=1, max=10000, step=1)),
-              			column(width=4,numericInput("endyr","Ending year", value=max(as.numeric(colnames(Lt.comp.data)[-1])),min=1, max=10000, step=1)))						
+              			column(width=4,numericInput("endyr","Ending year", value=max(Lt.comp.data[,1]),min=1, max=10000, step=1)))						
 					}
-		})
-
-
-  output$Model_dims2<- renderUI({
-			  	inFile1<- input$file1
-				inFile2<- input$file2
-				if (is.null(inFile2)) return(NULL)
-				if (!is.null(inFile1)&!is.null(inFile2))
+				if (!is.null(inFile2))
 					{
 						Ct.data<-read.csv(inFile2$datapath,check.names=FALSE)
-			    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=Ct.data[1,1],min=1, max=10000, step=1)),
+			    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=min(Ct.data[,1]),min=1, max=10000, step=1)),
               			column(width=4,numericInput("endyr","Ending year", value=max(Ct.data[,1]),min=1, max=10000, step=1)))						
 					}	
+
 		})
+
+
+  # output$Model_dims2<- renderUI({
+		# 	  	#inFile1<- input$file1
+		# 		inFile2<- input$file2
+		# 		if (is.null(inFile2)) return(NULL)
+		# 		if (!is.null(inFile2))
+		# 			{
+		# 				Ct.data<-read.csv(inFile2$datapath,check.names=FALSE)
+		# 	    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=min(Ct.data[,1]),min=1, max=10000, step=1)),
+  #             			column(width=4,numericInput("endyr","Ending year", value=max(Ct.data[,1]),min=1, max=10000, step=1)))						
+		# 			}	
+		# })
 
 #Male life history parameters
 output$Male_parms_inputs_label<- renderUI({
@@ -152,7 +163,7 @@ output$Sel_parms3<- renderUI({
 output$Sel_parms4<- renderUI({
  		if(input$Sel_choice=="Dome-shaped")
  		{ 			
-	    fluidRow(column(width=8,numericInput("LtPeakFinal", "Width of declining selectivity", value=NA,min=0, max=10000, step=0.01)),
+	    fluidRow(column(width=8,numericInput("LtPeakFinal", "Width of declining selectivity", value=1,min=0, max=10000, step=0.01)),
 	            column(width=4,numericInput("LtPeakFinal_phase","Est. phase", value=1,min=-1000, max=10, step=1)))    			
  		}
 	})
@@ -160,7 +171,7 @@ output$Sel_parms4<- renderUI({
 output$Sel_parms5<- renderUI({
  		if(input$Sel_choice=="Dome-shaped")
  		{ 			
-    	fluidRow(column(width=8,numericInput("FinalSel", "Selectivity at max bin size", value=NA,min=0, max=1, step=0.01)),
+    	fluidRow(column(width=8,numericInput("FinalSel", "Selectivity at max bin size", value=0.9999999,min=0, max=0.9999999, step=0.0000001)),
             	column(width=4,numericInput("FinalSel_phase","Est. phase", value=1,min=-1000, max=10, step=1)))
  		}
 	})
@@ -190,22 +201,30 @@ output$Jitter_value<- renderUI({
 ### PLOTS ###
 #############
 #Plot length compoistions
-
 	output$Ltplot<-renderPlot({
 		inFile<- input$file1
 		if (is.null(inFile)) return(NULL)
 		Lt.comp.data<-read.csv(inFile$datapath,check.names=FALSE)
-		dat.gg<-cbind(Lt.comp.data[,1],melt(Lt.comp.data[,-1]))
-		if(ncol(dat.gg)==2)
-			{
-				dat.gg<-data.frame(dat.gg[,1],as.numeric(colnames(Lt.comp.data)[2]),dat.gg[,2])				
-			}
-		colnames(dat.gg)<-c("bin","year","ltnum")
-		ggplot(dat.gg,aes(bin,ltnum))+
-					geom_col(fill="#236192",color="white")+
-					facet_wrap(~year)+
+		lt.dat.plot<-(Lt.comp.data)[,c(-4)]
+		dat.gg<-melt(lt.dat.plot,id=colnames(lt.dat.plot)[1:3])
+		# dat.gg<-cbind(Lt.comp.data[,1],melt(Lt.comp.data[,-1]))
+		# if(ncol(dat.gg)==2)
+		# 	{
+		# 		dat.gg<-data.frame(dat.gg[,1],as.numeric(colnames(Lt.comp.data)[2]),dat.gg[,2])				
+		# 	}
+		#colnames(dat.gg)<-c("bin","fleet","sex","year","ltnum")
+		colnames(dat.gg)<-c("year","fleet","sex","bin","ltnum")
+		ggplot(dat.gg,aes(bin,ltnum,fill=factor(fleet)))+
+					geom_col(color="white",position="dodge")+
+		 			#geom_col(fill="#236192",color="white")+
+					facet_wrap(~year,scales="free_y")+
 					xlab("Length bin")+
-					ylab("Frequency")			
+					ylab("Frequency")+
+					labs(fill="Fleet")+
+					scale_fill_viridis(discrete=TRUE, option="viridis")
+					#scale_fill_brewer(palette = "BuPu")
+					
+						
 				#}
 		# if(ncol(dat.gg)==2){
 		# 	colnames(dat.gg)<-c("bin","ltnum")
@@ -245,10 +264,22 @@ output$Ctplot<-renderPlot({
 		inCatch<- input$file2
 		if (is.null(inCatch)) return(NULL)
 		Catch.data<-read.csv(inCatch$datapath,header=TRUE)
+		if(ncol(Catch.data)>2){
 		ggplot(Catch.data,aes(get(colnames(Catch.data)[1]),get(colnames(Catch.data)[2])))+
 			geom_col(fill="#658D1B",color="white")+
 			xlab("Year")+
-			ylab("Removals")				
+			ylab("Removals")					
+		}
+		if(ncol(Catch.data)>2){
+			Catch.data<-melt(Catch.data,id=c("year"))
+			colnames(Catch.data)<-c("year","fleet","catch")
+			ggplot(Catch.data,aes(year,catch,fill=fleet))+
+			geom_col(color="white",position="dodge")+
+			#geom_col(fill="#658D1B",color="white")+
+			xlab("Year")+
+			ylab("Removals")+
+			scale_fill_viridis(discrete=TRUE, option="viridis")				
+			}
 		})
 
 output$Mplot<-renderPlot({
@@ -333,45 +364,87 @@ SS.file.update<-observeEvent(input$run_SS,{
            }
   	
   	#Copy and move files
-	  	file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE)
+	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
+			{
+				unlink(paste0(getwd(),"/Scenarios/",input$Scenario_name),recursive=TRUE)
+#				file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+			}
+	  	file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
 		file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
-		if(file.exists(paste0(getwd(),"/Scenarios/SS_LB_files")))
-		{file.remove(paste0(getwd(),"/Scenarios/SS_LB_files"))}
 	
-	browser()			
-	#Read, edit then write new DATA file
+		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
+		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
+		
+		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-input$Nages
+
 	#Catches
 		inCatch<- input$file2
 		if (is.null(inCatch)) 
 		{
+		inFile<- input$file1
+		Lt.comp.data<-read.csv(inFile$datapath,check.names=FALSE)
+		data.file$Nfleets<-max(Lt.comp.data[,2])
+		if(data.file$Nfleets>1){
+			for(i in 1:(data.file$Nfleets-1))
+			{
+				data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
+				data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
+				data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
+				data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
+			}
+			data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)
+			data.file$CPUEinfo[,1]<-1:data.file$Nfleets
+		}
 		year.in<-input$styr:input$endyr
 		catch.cols<-colnames(data.file$catch)
-		data.file$catch<-data.frame(
+		catch_temp<-list()
+		for(i in 1:data.file$Nfleets)
+		{
+		catch_temp[[i]]<-data.frame(
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
-						rep(1,length(year.in)+1),
+						rep(i,length(year.in)+1),
 						c(100,rep(100,length(year.in))),
 						c(0.01,rep(1000,length(year.in)))
-						)
+						)			
+		}
+		data.file$catch<-list.rbind(catch_temp)
 		colnames(data.file$catch)<-catch.cols
 		}
 
 		if(!is.null(inCatch))
 		{
 		Catch.data<-read.csv(inCatch$datapath,header=TRUE)
+		data.file$Nfleets<-ncol(Catch.data)-1
+		if(data.file$Nfleets>1){
+			for(i in 1:(data.file$Nfleets-1))
+			{
+				data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
+				data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
+				data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
+				data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
+			}
+			data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)
+			data.file$CPUEinfo[,1]<-1:data.file$Nfleets
+		}
 		year.in<-Catch.data[,1]
 		catch.cols<-colnames(data.file$catch)
-		data.file$catch<-data.frame(
+		catch_temp<-list()
+		for(i in 1:data.file$Nfleets)
+		{
+			catch_temp[[i]]<-data.frame(
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
-						rep(1,length(year.in)+1),
-						c(0.0001,Catch.data[,2]),
+						rep(i,length(year.in)+1),
+						c(0.0001,Catch.data[,i+1]),
 						rep(0.01,length(year.in)+1)
 						)
+		}
+		data.file$catch<-list.rbind(catch_temp)
 		colnames(data.file$catch)<-catch.cols
 		}
 
@@ -379,40 +452,71 @@ SS.file.update<-observeEvent(input$run_SS,{
 		inFile<- input$file1
 		if (is.null(inFile)) return(NULL)
 		Lt.comp.data<-read.csv(inFile$datapath,check.names=FALSE)
-		data.file$N_lbins<-nrow(Lt.comp.data)
-		data.file$lbin_vector<-Lt.comp.data[,1]
-		samp.yrs<-as.numeric(colnames(Lt.comp.data)[-1])
-		lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",Lt.comp.data[,1]),paste0("m",Lt.comp.data[,1]))
-		if(length(samp.yrs)==1){
-			data.file$lencomp<-data.frame(matrix(c(samp.yrs,
-			rep(1,length(samp.yrs)),
-			rep(1,length(samp.yrs)),
-			rep(1,length(samp.yrs)),
-			rep(0,length(samp.yrs)),
-			colSums(Lt.comp.data[-1]),
-			t(Lt.comp.data)[-1,],
-			t(Lt.comp.data)[-1,]*0),
-			nrow=length(samp.yrs),
-			ncol=6+length(Lt.comp.data[,1])*2,
-			byrow=FALSE))[,,drop=FALSE]
+		data.file$N_lbins<-ncol(Lt.comp.data)-4
+		data.file$lbin_vector<-as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
+		lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",data.file$lbin_vector),paste0("m",data.file$lbin_vector))
+		lt.data.females<-lt.data.males<-lt.data.unknowns<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
+		#female lengths
+		if(nrow(subset(Lt.comp.data,Sex==1))>0){
+		Lt.comp.data_female<-subset(Lt.comp.data,Sex==1)	
+		samp.yrs<-Lt.comp.data_female[,1]
+		lt.data.females<-data.frame(cbind(samp.yrs,
+				rep(1,length(samp.yrs)),
+				Lt.comp.data_female[,2],
+				Lt.comp.data_female[,3],
+				rep(0,length(samp.yrs)),
+				Lt.comp.data_female[,4],
+				Lt.comp.data_female[,5:ncol(Lt.comp.data_female)],
+				Lt.comp.data_female[,5:ncol(Lt.comp.data_female)]*0)
+				)
 		}
-		else{
-		data.file$lencomp<-data.frame(matrix(cbind(samp.yrs,
-			rep(1,length(samp.yrs)),
-			rep(1,length(samp.yrs)),
-			rep(1,length(samp.yrs)),
-			rep(0,length(samp.yrs)),
-			colSums(Lt.comp.data[-1]),
-			t(Lt.comp.data)[-1,],
-			t(Lt.comp.data)[-1,]*0),
-			nrow=length(samp.yrs),
-			ncol=6+length(Lt.comp.data[,1])*2,
-			byrow=FALSE))[,,drop=FALSE]			
-		}
-		colnames(data.file$lencomp)<-lt.data.names
+		#male lengths
+		if(nrow(subset(Lt.comp.data,Sex==2))>0){
+			Lt.comp.data_male<-subset(Lt.comp.data,Sex==2)
+			samp.yrs_males<-Lt.comp.data_male[,1]
+			lt.data.males<-data.frame(cbind(samp.yrs_males,
+				rep(1,length(samp.yrs_males)),
+				Lt.comp.data_male[,2],
+				Lt.comp.data_male[,3],
+				rep(0,length(samp.yrs_males)),
+				Lt.comp.data_male[,4],
+				Lt.comp.data_male[,5:ncol(Lt.comp.data_male)]*0,
+				Lt.comp.data_male[,5:ncol(Lt.comp.data_male)])
+				)
+			}
+		#unknown sex lengths
+		if(nrow(subset(Lt.comp.data,Sex==0))>0){
+			Lt.comp.data_unknown<-subset(Lt.comp.data,Sex==0)
+			samp.yrs_males<-Lt.comp.data_unknown[,1]
+			lt.data.unknowns<-data.frame(cbind(samp.yrs_unknown,
+				rep(1,length(samp.yrs_unknown)),
+				Lt.comp.data_unknown[,2],
+				Lt.comp.data_unknown[,3],
+				rep(0,length(samp.yrs_unknown)),
+				Lt.comp.data_unknown[,4],
+				Lt.comp.data_unknown[,5:ncol(Lt.comp.data_unknown)],
+				Lt.comp.data_unknown[,5:ncol(Lt.comp.data_unknown)]*0)
+				)
+			}
+		colnames(lt.data.females)<-colnames(lt.data.males)<-colnames(lt.data.unknowns)<-lt.data.names
+		data.file$lencomp<-na.omit(rbind(lt.data.females,lt.data.males,lt.data.unknowns))
+		#}
+		#else{
+		# data.file$lencomp<-data.frame(matrix(cbind(samp.yrs,
+		# 	rep(1,length(samp.yrs)),
+		# 	rep(1,length(samp.yrs)),
+		# 	rep(1,length(samp.yrs)),
+		# 	rep(0,length(samp.yrs)),
+		# 	colSums(Lt.comp.data[-1]),
+		# 	t(Lt.comp.data)[-1,],
+		# 	t(Lt.comp.data)[-1,]*0),
+		# 	nrow=length(samp.yrs),
+		# 	ncol=6+length(Lt.comp.data[,1])*2,
+		# 	byrow=FALSE))[,,drop=FALSE]			
+		# }
+#		colnames(data.file$lencomp)<-lt.data.names
 	
 	#Age composition data
-		#browser()
 		inFile_age<- input$file3
 		if (is.null(inFile_age)){
 		data.file$N_agebins<-input$Nages
@@ -469,7 +573,6 @@ SS.file.update<-observeEvent(input$run_SS,{
 
 		####################### START CTL FILE ####################################
 		#Read, edit then write new CONTROL file
-		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
 		fem_vbgf<-VBGF(input$Linf_f,input$k_f,input$t0_f,c(0:input$Nages))
 		#Females
 		ctl.file$MG_parms[1,3]<-input$M_f			#M
@@ -519,7 +622,6 @@ SS.file.update<-observeEvent(input$run_SS,{
 			}
 		
 		#Selectivity
-		ctl.file$age_selex_type<-10
 		if(input$Sel_choice=="Logistic")
 		{
 			ctl.file$size_selex_parms[3,3:4]<- log(-((input$Sel50-input$Selpeak)^2/log(0.5)))
@@ -547,14 +649,37 @@ SS.file.update<-observeEvent(input$run_SS,{
 			ctl.file$size_selex_parms[6,3:4]<- -log((1/(input$FinalSel+0.000000001)-1))
 			ctl.file$size_selex_parms[6,7]<- input$FinalSel_phase
 		}
-
+		#Add other fleets
+		if(data.file$Nfleets>1){
+			for(i in 1:(data.file$Nfleets-1))
+			{
+				ctl.file$init_F<-rbind(ctl.file$init_F,ctl.file$init_F[1,])
+				ctl.file$size_selex_types<-rbind(ctl.file$size_selex_types,ctl.file$size_selex_types[1,])
+				ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
+				ctl.file$size_selex_parms<-rbind(ctl.file$size_selex_parms,ctl.file$size_selex_parms[1:6,])
+			}
+			#Re-label so r4ss can interpret these new entries
+			rownames(ctl.file$init_F)<-paste0("InitF_seas_1_flt_",1:data.file$Nfleets,"Fishery",1:data.file$Nfleets)
+			rownames(ctl.file$age_selex_types)<-rownames(ctl.file$size_selex_types)<-paste0("Fishery",1:data.file$Nfleets)
+			size_selex_parms_rownames<-list()
+			for(f_i in 1:data.file$Nfleets)
+			{
+				size_selex_parms_rownames[[f_i]]<-c(paste0("SizeSel_P_1_Fishery",f_i,"(",f_i,")"),
+					paste0("SizeSel_P_2_Fishery",f_i,"(",f_i,")"),
+					paste0("SizeSel_P_3_Fishery",f_i,"(",f_i,")"),
+					paste0("SizeSel_P_4_Fishery",f_i,"(",f_i,")"),
+					paste0("SizeSel_P_5_Fishery",f_i,"(",f_i,")"),
+					paste0("SizeSel_P_6_Fishery",f_i,"(",f_i,")"))		
+			}
+			size_selex_parms_rownames<-unlist(size_selex_parms_rownames)
+			rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
+		}
 		#Change likelihood component weight of catch
 		if (is.null(inCatch)){ctl.file$lambdas[1,4]<-0}
 		if(!is.null(inCatch)){ctl.file$lambdas[1,4]<-1}
 
 		SS_writectl(ctl.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
 		####################### END CTL FILE ####################################
-
 	#Jitter 
 				starter.file<-SS_readstarter(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/starter.ss"))
 				starter.file$jitter_fraction<-0
@@ -590,22 +715,23 @@ SS.file.update<-observeEvent(input$run_SS,{
 		if(input$Njitter==1){return(NULL)}
 		if(input$Njitter>1)
 		{
-		#	 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = FALSE)
-		#	 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
-		#	 profilesummary <- SSsummarize(profilemodels)
 			 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
 			 ref.like<-profilesummary$likelihoods[1,1]
-			 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value")
+			 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+			 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
 			 abline(h=ref.like)
 			 
 			 likebc<-if(any(ref.like==jitter.likes)) (length(jitter.likes[ref.like==jitter.likes])/input$Njitter)*100 else 0
-			 likelessbc<-if(any(ref.like>jitter.likes)) (length(jitter[ref.like>jitter.likes])/input$Njitter)*100 else 0
-			 like10<-if(any(ref.like>jitter.likes)) (length(jitter[(ref.like+10)<jitter.likes])/input$Njitter)*100 else 0
-			 like2<-if(any(ref.like>jitter.likes)) ((length(jitter[(ref.like+2)>jitter.likes])-(likelessbc+likebc))/input$Njitter)*100 else 0
+			 likelessbc<-if(any(ref.like>jitter.likes)) (length(jitter.likes[ref.like>jitter.likes])/input$Njitter)*100 else 0
+			 like10<-if(any(ref.like>jitter.likes)) (length(jitter.likes[(ref.like+10)<jitter.likes])/input$Njitter)*100 else 0
+			 like2<-if(any(ref.like>jitter.likes)) ((length(jitter.likes[(ref.like+2)>jitter.likes])-(likelessbc+likebc))/input$Njitter)*100 else 0
 			 like_2_10<-100-(likebc+likelessbc+like10+like2)
 
 			legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
-			 print(jitterplot)
+			setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+			png("jitterplot.png")
+			print(jitterplot)
+			dev.off()
 		}
 	})
 	}
