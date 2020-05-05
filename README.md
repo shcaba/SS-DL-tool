@@ -6,11 +6,11 @@ The tool builds Stock Synthesis files for provided data and life history informa
 ## SS-DL tool features the following data-limited applications
 * Length-only models. These are akin to LBSPR (Hordyk et al. 2015) and LIME (Rudd and Thorson ). Both styles of length-only models can be performed in this tool.
 * Age-only models
-* Catch only methods via the Simple Stock Synthesis approach (Cope 2013)
-* Extended Simple Stock Syntehsis (XSSS; Cope et al. 2013; Cope et al. 2015; Wetzel and Punt 2013)
+* Catch only methods via the Simple Stock Synthesis approach (Cope 2013) *COMING SOON*
+* Extended Simple Stock Syntehsis (XSSS; Cope et al. 2013; Cope et al. 2015; Wetzel and Punt 2013) *COMING SOON*
 * Length + catch models 
-* Age-structured production models
-* Fully integrated stock assessments
+* Catch and index (age-structured production) models *COMING SOON*
+* Fully integrated stock assessments *COMING SOON*
 <br></br>
 
 ## Some notable features of the tool
