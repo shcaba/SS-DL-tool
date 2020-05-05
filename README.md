@@ -19,9 +19,19 @@ The tool builds Stock Synthesis files for provided data and life history informa
 * Recruitment estimation is provided for models with length or age data.
 * A jittering option is provided to allow for model stability evaluation and global  away from starting values.
 * Simple model sensitivity explortaion
+* Output plots are saved in the scenarion folder, as well as tables of model output summaries.
 <br></br>
+
 ## Future features will include:
 * Likelihood profile implementation
 * Model sensitivity comparisons
 * Bayesian uncertainty estimation
+<br></br>
+
+## General guidance using the SS DL tool
+* Length and age samples need to be representative of the stock being measured. This usually means random samples covering the area of interest. Beware of serial depletion in lengths that may keep the length struture artificially high (i.e., hyperstability). 
+* Selectivity starting parameters can be determined from the length compositions. Modes in catch are L95% starting values, and halfway between that value and the length at first capture is a good L50% starting values.
+* Be sure to check the fit to the length compositions.
+* Check for model convergence in the "Model output" tab. Also check to see if the selectivity estimates make sense.
+* If convergence is an issue, try the "Jitter" feature. Once you find a converged model, you can increase the number of jitters you do to make sure that model is the best fit model.
 

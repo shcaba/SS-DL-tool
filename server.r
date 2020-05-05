@@ -662,8 +662,15 @@ SS.file.update<-observeEvent(input$run_SS,{
 			rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
 		}
 		#Change likelihood component weight of catch
-		if (is.null(inCatch)){ctl.file$lambdas[1,4]<-0}
-		if(!is.null(inCatch)){ctl.file$lambdas[1,4]<-1}
+		if (is.null(inCatch))
+			{
+				ctl.file$lambdas[1,4]<-0
+			}
+		if(!is.null(inCatch))
+			{
+				ctl.file$lambdas[1,4]<-1
+				ctl.file$lambdas[2,4]<-0
+			}
 
 		SS_writectl(ctl.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
 		####################### END CTL FILE ####################################
