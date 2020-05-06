@@ -645,6 +645,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 				ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
 				ctl.file$size_selex_parms<-rbind(ctl.file$size_selex_parms,ctl.file$size_selex_parms[1:6,])
 			}
+
 			#Re-label so r4ss can interpret these new entries
 			rownames(ctl.file$init_F)<-paste0("InitF_seas_1_flt_",1:data.file$Nfleets,"Fishery",1:data.file$Nfleets)
 			rownames(ctl.file$age_selex_types)<-rownames(ctl.file$size_selex_types)<-paste0("Fishery",1:data.file$Nfleets)
@@ -670,6 +671,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 			{
 				ctl.file$lambdas[1,4]<-1
 				ctl.file$lambdas[2,4]<-0
+				ctl.file$init_F[,3]<-0.000001
+				ctl.file$init_F[,7]<--1
 			}
 
 		SS_writectl(ctl.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
