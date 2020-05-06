@@ -2,8 +2,8 @@
 #Pacific ocean perch 2017
 1 # Benchmarks: 0=skip; 1=calc F_spr,F_btgt,F_msy 
 2 # MSY: 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt); 4=set to F(endyr) 
-0.25 # SPR target (e.g. 0.40)
-0.25 # Biomass target (e.g. 0.40)
+0.5 # SPR target (e.g. 0.40)
+0.4 # Biomass target (e.g. 0.40)
 #_Bmark_years: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)
 0	0	0	0	0	0	0	0	0	0
 2 #Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below
