@@ -160,6 +160,17 @@ wellPanel(
             h5("Run just 1 jitter value to find a converged model. Then run multiple jittered models to confrim that model is the best fit model."),
               ),
 
+     fluidRow(column(width=10,checkboxInput("RP_choices","Define reference points?",FALSE))),
+    wellPanel(
+          uiOutput("RP_selection1"),
+          uiOutput("RP_selection2")
+        ),
+     
+    fluidRow(column(width=10,checkboxInput("Forecast_choice","Define forecasts?",FALSE))),
+    wellPanel(
+          uiOutput("Forecasts")
+        ),
+ 
     wellPanel(
     fluidRow(column(width=8,textInput("Scenario_name", strong("Choose the name of your scenario"), value="Scenario 1"))),
     h5(p(em("Each scenario folder is saved. Changing the scenario name therefore creates a new folder of results."))),

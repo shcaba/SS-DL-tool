@@ -184,6 +184,28 @@ output$Jitter_value<- renderUI({
     	}
 	})
 
+#Choose reference points
+output$RP_selection1<- renderUI({
+    if(input$RP_choices){
+        fluidRow(column(width=6,numericInput("SPR_target","SPR target", value=0.5,min=0, max=1, step=0.001)),
+        	column(width=6,numericInput("B_target","Biomass target", value=0.4,min=0, max=1, step=0.001)))   
+    	}
+	})
+
+output$RP_selection2<- renderUI({
+    if(input$RP_choices){
+        fluidRow(column(width=6,numericInput("slope_hi","Control rule: Upper ratio value", value=0.4,min=0, max=1, step=0.001)),
+        	column(width=6,numericInput("slope_low","Control rule: Lower ratio value", value=0.1,min=0, max=1, step=0.001)))   
+    	}
+	})
+
+output$Forecasts<- renderUI({
+    if(input$Forecast_choice){
+        fluidRow(column(width=6,numericInput("forecast_num","# of forecast years", value=1,min=1, max=1000, step=1)),
+        	column(width=6,numericInput("forecast_buffer","Control rule buffer", value=0.913,min=0, max=1, step=0.001)))   
+    	}
+	})
+
 #############
 ### PLOTS ###
 #############
@@ -251,7 +273,8 @@ output$Ctplot<-renderPlot({
 		inCatch<- input$file2
 		if (is.null(inCatch)) return(NULL)
 		Catch.data<-read.csv(inCatch$datapath,header=TRUE)
-		if(ncol(Catch.data)>2){
+		colnames(Catch.data)[1]<-"year"
+		if(ncol(Catch.data)==2){
 		ggplot(Catch.data,aes(get(colnames(Catch.data)[1]),get(colnames(Catch.data)[2])))+
 			geom_col(fill="#658D1B",color="white")+
 			xlab("Year")+
@@ -445,7 +468,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		lt.data.females<-lt.data.males<-lt.data.unknowns<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
 		#female lengths
 		if(nrow(subset(Lt.comp.data,Sex==1))>0){
-		Lt.comp.data_female<-subset(Lt.comp.data,Sex==1)	
+		Lt.comp.data_female<-subset(Lt.comp.data,Sex==1 & Nsamps>0)	
 		samp.yrs<-Lt.comp.data_female[,1]
 		lt.data.females<-data.frame(cbind(samp.yrs,
 				rep(1,length(samp.yrs)),
@@ -459,7 +482,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		}
 		#male lengths
 		if(nrow(subset(Lt.comp.data,Sex==2))>0){
-			Lt.comp.data_male<-subset(Lt.comp.data,Sex==2)
+			Lt.comp.data_male<-subset(Lt.comp.data,Sex==2 & Nsamps>0)
 			samp.yrs_males<-Lt.comp.data_male[,1]
 			lt.data.males<-data.frame(cbind(samp.yrs_males,
 				rep(1,length(samp.yrs_males)),
@@ -473,8 +496,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 			}
 		#unknown sex lengths
 		if(nrow(subset(Lt.comp.data,Sex==0))>0){
-			Lt.comp.data_unknown<-subset(Lt.comp.data,Sex==0)
-			samp.yrs_males<-Lt.comp.data_unknown[,1]
+			Lt.comp.data_unknown<-subset(Lt.comp.data,Sex==0 & Nsamps>0)
+			samp.yrs_unknown<-Lt.comp.data_unknown[,1]
 			lt.data.unknowns<-data.frame(cbind(samp.yrs_unknown,
 				rep(1,length(samp.yrs_unknown)),
 				Lt.comp.data_unknown[,2],
