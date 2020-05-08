@@ -79,17 +79,29 @@ output$Model_dims1<- renderUI({
 			    		styr.in<-min(Lt.comp.data[,1])
 			    		if(!(anyNA(c(input$Linf_f,input$k_f,input$t0_f)))){
 			    			styr.in<-min(Lt.comp.data[,1])-round(VBGF.age(input$Linf_f,input$k_f,input$t0_f,input$Linf_f*0.95))
+			    		print(styr.in)
+			    		print(max(Lt.comp.data[,1]))
 			    		}
 						fluidRow(column(width=4,numericInput("styr", "Starting year", value=styr.in,min=1, max=10000, step=1)),
               			column(width=4,numericInput("endyr","Ending year", value=max(Lt.comp.data[,1]),min=1, max=10000, step=1)))						
 					}
+				# if (!is.null(inFile2))
+				# 	{
+				# 		Ct.data<-read.csv(inFile2$datapath,check.names=FALSE)
+			 #    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=min(Ct.data[,1]),min=1, max=10000, step=1)),
+    #           			column(width=4,numericInput("endyr","Ending year", value=max(Ct.data[,1]),min=1, max=10000, step=1)))						
+				# 	}	
+		})
+
+output$Model_dims2<- renderUI({
+				inFile2<- input$file2
+				if (is.null(inFile2)) return(NULL)
 				if (!is.null(inFile2))
 					{
 						Ct.data<-read.csv(inFile2$datapath,check.names=FALSE)
 			    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=min(Ct.data[,1]),min=1, max=10000, step=1)),
               			column(width=4,numericInput("endyr","Ending year", value=max(Ct.data[,1]),min=1, max=10000, step=1)))						
 					}	
-
 		})
 
 #Male life history parameters
@@ -753,6 +765,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		{
 			 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
 			 ref.like<-min(jitter.likes)
+	     	 png("jitterplot.png")
 			 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
 			 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
 			 abline(h=ref.like)
@@ -769,7 +782,6 @@ SS.file.update<-observeEvent(input$run_SS,{
 
 			legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
 			setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
-			png("jitterplot.png")
 			dev.off()
 			print(jitterplot)		
 		}

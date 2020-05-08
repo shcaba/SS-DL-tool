@@ -69,6 +69,7 @@ wellPanel(
     # h5(p(em(""))),
  #   wellPanel(
         uiOutput("Model_dims1"),
+        uiOutput("Model_dims2"),
       ),
  #   ),
     wellPanel(
