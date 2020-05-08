@@ -466,6 +466,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		data.file$lbin_vector<-as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
 		lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",data.file$lbin_vector),paste0("m",data.file$lbin_vector))
 		lt.data.females<-lt.data.males<-lt.data.unknowns<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
+		colnames(Lt.comp.data)[1:4]<-c("Year","Fleet","Sex","Nsamps")
 		#female lengths
 		if(nrow(subset(Lt.comp.data,Sex==1))>0){
 		Lt.comp.data_female<-subset(Lt.comp.data,Sex==1 & Nsamps>0)	
@@ -721,7 +722,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 				Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
 			}
 		#Make SS plots	
-		SS_plots(Model.output,verbose=FALSE)
+		SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
 		#Make SS tables
 		SSexecutivesummary(Model.output)		
 			 
@@ -742,7 +743,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		 	 #R-run to get new best fit model
 			 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
 		 	 Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
-			 SS_plots(Model.output,verbose=FALSE)
+			 SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
 			 SSexecutivesummary(Model.output)		
 		}		
 	
@@ -769,8 +770,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 			legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
 			setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
 			png("jitterplot.png")
-			print(jitterplot)
 			dev.off()
+			print(jitterplot)		
 		}
 	})
 	}
