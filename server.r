@@ -634,8 +634,10 @@ SS.file.update<-observeEvent(input$run_SS,{
 		#Selectivity
 		if(input$Sel_choice=="Logistic")
 		{
+			bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
 			ctl.file$size_selex_parms[3,3:4]<- log(-((input$Sel50-input$Selpeak)^2/log(0.5)))
 			ctl.file$size_selex_parms[3,7]<- input$Sel50_phase
+			ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
 			ctl.file$size_selex_parms[1,3:4]<- input$Selpeak
 			ctl.file$size_selex_parms[1,7]<- input$Selpeak_phase
 			ctl.file$size_selex_parms[2,3:4]<- 15
@@ -648,6 +650,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		if(input$Sel_choice=="Dome-shaped")
 		{
 			bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
+			ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
 			ctl.file$size_selex_parms[1,3:4]<- input$Selpeak
 			ctl.file$size_selex_parms[1,7]<- input$Selpeak_phase
 			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-input$Selpeak-bin.width)/(input$PeakDesc-input$Selpeak-bin.width))
@@ -721,6 +724,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		SS_plots(Model.output,verbose=FALSE)
 		#Make SS tables
 		SSexecutivesummary(Model.output)		
+			 
 		#Run multiple jitters
 		if(input$jitter_choice)
 		{
@@ -729,6 +733,17 @@ SS.file.update<-observeEvent(input$run_SS,{
 			 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = FALSE)
 			 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
 			 profilesummary <- SSsummarize(profilemodels)
+			 minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
+			 #Find best fit model
+			 index.minlikes<-c(1:length(minlikes))[minlikes]
+			 file.copy(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
+	         starter.file$init_values_src<-1
+		 	 SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
+		 	 #R-run to get new best fit model
+			 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
+		 	 Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+			 SS_plots(Model.output,verbose=FALSE)
+			 SSexecutivesummary(Model.output)		
 		}		
 	
 	output$Jitterplot<-renderPlot({
