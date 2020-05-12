@@ -122,20 +122,20 @@
 1990 # first year of main recr_devs; early devs can preceed this era
 2015 # last year of main recr_devs; forecast devs start in following year
 -3 #_recdev phase 
-0 # (0/1) to read 13 advanced options
-#_Cond 0 #_recdev_early_start (0=none; neg value makes relative to recdev_start)
-#_Cond -4 #_recdev_early_phase
-#_Cond -4 #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)
-#_Cond 1 #_lambda for Fcast_recr_like occurring before endyr+1
-#_Cond 980 #_last_yr_nobias_adj_in_MPD; begin of ramp
-#_Cond 1950 #_first_yr_fullbias_adj_in_MPD; begin of plateau
-#_Cond 2015 #_last_yr_fullbias_adj_in_MPD
-#_Cond 2020 #_end_yr_for_ramp_in_MPD (can be in forecast to shape ramp, but SS sets bias_adj to 0.0 for fcast yrs)
-#_Cond 1 #_max_bias_adj_in_MPD (typical ~0.8; -3 sets all years to 0.0; -2 sets all non-forecast yrs w/ estimated recdevs to 1.0; -1 sets biasadj=1.0 for all yrs w/ recdevs)
-#_Cond 0 #_period of cycles in recruitment (N parms read below)
-#_Cond -5 #min rec_dev
-#_Cond 5 #max rec_dev
-#_Cond 0 #_read_recdevs
+1 # (0/1) to read 13 advanced options
+0 #_Cond 0 #_recdev_early_start (0=none; neg value makes relative to recdev_start)
+-4 #_Cond -4 #_recdev_early_phase
+-4 #_Cond -4 #_forecast_recruitment phase (incl. late recr) (0 value resets to maxphase+1)
+1 #_Cond 1 #_lambda for Fcast_recr_like occurring before endyr+1
+1990 #_Cond 980 #_last_yr_nobias_adj_in_MPD; begin of ramp
+1990 #_Cond 1950 #_first_yr_fullbias_adj_in_MPD; begin of plateau
+2015 #_Cond 2015 #_last_yr_fullbias_adj_in_MPD
+2015 #_Cond 2020 #_end_yr_for_ramp_in_MPD (can be in forecast to shape ramp, but SS sets bias_adj to 0.0 for fcast yrs)
+1 #_Cond 1 #_max_bias_adj_in_MPD (typical ~0.8; -3 sets all years to 0.0; -2 sets all non-forecast yrs w/ estimated recdevs to 1.0; -1 sets biasadj=1.0 for all yrs w/ recdevs)
+0 #_Cond 0 #_period of cycles in recruitment (N parms read below)
+-5 #_Cond -5 #min rec_dev
+5 #_Cond 5 #max rec_dev
+0 #_Cond 0 #_read_recdevs
 #_end of advanced SR options
 #
 #_placeholder for full parameter lines for recruitment cycles

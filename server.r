@@ -188,6 +188,28 @@ output$Rec_options2<- renderUI({
              column(width=6,numericInput("Rdev_endyr","Rec. devs. end year", value=input$endyr,min=1, max=10000, step=1)))    
     	}
 	})
+
+output$Rec_options3<- renderUI({
+    if(input$biasC_choice){
+          fluidRow(column(width=6,numericInput("NobiasC_early","Early last year", value=input$styr,min=1, max=10000, step=1)),
+             column(width=6,numericInput("NobiasC_recent","1st recent year", value=input$endyr,min=1, max=10000, step=1)))    
+    	}
+	})
+
+output$Rec_options4<- renderUI({
+    if(input$biasC_choice){
+          fluidRow(column(width=6,numericInput("BiasC_startyr","Start year", value=input$styr,min=1, max=10000, step=1)),
+             column(width=6,numericInput("BiasC_endyr","End year", value=input$endyr,min=1, max=10000, step=1)))    
+    	}
+	})
+
+output$Rec_options5<- renderUI({
+    if(input$biasC_choice){
+          fluidRow(column(width=6,numericInput("BiasC","Maximum bias adjustment", value=1,min=0, max=1, step=0.001)))
+    	}
+	})
+
+
 #Jitter value
 output$Jitter_value<- renderUI({
     if(input$jitter_choice){
@@ -634,6 +656,10 @@ SS.file.update<-observeEvent(input$run_SS,{
 		ctl.file$recdev_phase<- -1
 		ctl.file$MainRdevYrFirst<-input$styr	#Start year of recruitment estimation
 		ctl.file$MainRdevYrLast<-input$endyr		#Last year of recruitment estimation
+		ctl.file$last_early_yr_nobias_adj<-input$styr		#End year of early rev devs (no bias)
+		ctl.file$first_yr_fullbias_adj<-input$styr			#First year full bias
+		ctl.file$last_yr_fullbias_adj<-input$endyr			#Last year full bias
+		ctl.file$first_recent_yr_nobias_adj<-input$endyr	#First year recent no bias
 		
 		if(input$rec_choice)
 			{
@@ -642,6 +668,18 @@ SS.file.update<-observeEvent(input$run_SS,{
 				ctl.file$MainRdevYrFirst<-input$Rdev_startyr	#Start year of recruitment estimation
 				ctl.file$MainRdevYrLast<-input$Rdev_endyr		#Last year of recruitment estimation
 				ctl.file$recdev_phase<- 1
+			if(input$biasC_choice)
+				{
+					#With bias correction
+					ctl.file$recdev_early_start<--1								#Year early rec dev phase starts 
+					ctl.file$recdev_early_phase<-3								#Early rec dev phase
+					ctl.file$Fcast_recr_phase<-0								#Forecast rec dev phase
+					ctl.file$last_early_yr_nobias_adj<-input$NobiasC_early		#End year of early rev devs (no bias)
+					ctl.file$first_yr_fullbias_adj<-input$BiasC_startyr			#First year full bias
+					ctl.file$last_yr_fullbias_adj<-input$BiasC_endyr			#Last year full bias
+					ctl.file$first_recent_yr_nobias_adj<-input$NobiasC_recent	#First year recent no bias
+					ctl.file$max_bias_adj<-input$BiasC							#Max bias adjustment				
+				}
 			}
 		
 		#Selectivity

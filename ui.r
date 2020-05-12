@@ -149,7 +149,13 @@ wellPanel(
 
        }"),
                    uiOutput("Rec_options1"),
-                   uiOutput("Rec_options2")
+                   uiOutput("Rec_options2"),
+                  fluidRow(column(width=10,checkboxInput("biasC_choice","Bias correct recruitments?",FALSE))),
+                   h5("Years of no bias correction"),
+                   uiOutput("Rec_options3"),
+                   h5("Years of bias correction"),
+                   uiOutput("Rec_options4"),
+                   uiOutput("Rec_options5") 
                 ),
      fluidRow(column(width=10,checkboxInput("jitter_choice","Jitter starting values?",FALSE))),
     wellPanel(
