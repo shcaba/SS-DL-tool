@@ -1,8 +1,11 @@
+require(shiny)
+require(shinyjs)
 require(r4ss)
 require(ggplot2)
 require(reshape2)
 require(rlist)
 require(viridis)
+require(sss)
 #require(paletteer)
 #require(RColorBrewer)
 #require(ggthemes)
@@ -63,11 +66,29 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox")
     reset('file2')
   })
 
+# observeEvent(, {
+#     if(is.null(input$file1))
+#     {
+#    		shinyjs::hideElement(id= "panel_LH")
+#     }
+#   })
+observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)), {
+    	shinyjs::showElement(id= "panel_SSS")
+  })
+
+
+observeEvent(req(!is.null(input$file1)), {
+    	shinyjs::showElement(id= "panel_SS")
+  })
+
+
 ########################################
 
 ########################################	
 #User activated pop-up parameter values#
 ########################################
+
+
 #Model dimensions
 output$Model_dims1<- renderUI({
 			  	inFile1<- input$file1
@@ -104,6 +125,17 @@ output$Model_dims2<- renderUI({
 					}	
 		})
 
+output$Female_parms_inputs_label <- reactive({
+if(!is.null(input$file1))
+	{
+		(output$Female_parms_inputs_label<- renderUI({
+			      fluidRow(column(width=6,numericInput("Nages","Max. age", value=NA,min=1, max=1000, step=1)),
+		             column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01)))    
+			      }))
+		}
+})
+
+
 #Male life history parameters
 output$Male_parms_inputs_label<- renderUI({
 	if(input$male_parms){
@@ -138,6 +170,40 @@ output$Male_parms_inputs4<- renderUI({
     	}
 	})
 
+
+#Male life history parameters
+output$Male_parms_inputs_label_SSS<- renderUI({
+	if(input$male_parms_SSS){
+   		 h5(em("Male"))
+   			}		
+		})
+
+output$Male_parms_inputs1_SSS<- renderUI({
+	if(input$male_parms_SSS){
+    fluidRow(column(width=6,numericInput("M_m", "Natural mortality", value=NA,min=0, max=10000, step=0.01)),
+            column(width=6,numericInput("Linf_m", "Asymptotic size (Linf)", value=NA,min=0, max=10000, step=0.01)))    
+		}
+	})
+
+output$Male_parms_inputs2_SSS<- renderUI({
+	if(input$male_parms_SSS){
+    fluidRow(column(width=6,numericInput("k_m","Growth coefficient k", value=NA,min=0, max=10000, step=0.01)),
+            column(width=6,numericInput("t0_m","Age at length 0 (t0)", value=NA,min=0, max=10000, step=0.01)))    
+    	}
+	})
+
+output$Male_parms_inputs3_SSS<- renderUI({
+	if(input$male_parms_SSS){
+    fluidRow(column(width=6,numericInput("CV_lt_m","CV at length", value=0.1,min=0, max=10000, step=0.01)))
+    	}
+	})
+
+output$Male_parms_inputs4_SSS<- renderUI({
+	if(input$male_parms_SSS){
+      fluidRow(column(width=6,numericInput("WLa_m", "Weight-Length alpha", value=0.00001,min=0, max=10000, step=0.000000001)),
+              column(width=6,numericInput("WLb_m","Weight-length beta", value=3,min=0, max=10000, step=0.01)))    
+    	}
+	})
 
 #Selectivity paramters
 output$Sel_parms1<- renderUI({
@@ -243,19 +309,23 @@ output$Forecasts<- renderUI({
 #############
 ### PLOTS ###
 #############
+
+observeEvent(req(!is.null(input$file1)), {
+    	shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions"}))
+  })
+
+
 #Plot length compoistions
-	output$Ltplot<-renderPlot({
+observeEvent(req(!is.null(input$file1)), {
+		output$Ltplot<-renderPlot({
 		inFile<- input$file1
-		if (is.null(inFile)) return(NULL)
+		# if (is.null(inFile)) {
+		# 	return(NULL) 
+		# 	shinyjs::hide("Ltplot")} 
+		# else{
 		Lt.comp.data<-read.csv(inFile$datapath,check.names=FALSE)
 		lt.dat.plot<-(Lt.comp.data)[,c(-4)]
 		dat.gg<-melt(lt.dat.plot,id=colnames(lt.dat.plot)[1:3])
-		# dat.gg<-cbind(Lt.comp.data[,1],melt(Lt.comp.data[,-1]))
-		# if(ncol(dat.gg)==2)
-		# 	{
-		# 		dat.gg<-data.frame(dat.gg[,1],as.numeric(colnames(Lt.comp.data)[2]),dat.gg[,2])				
-		# 	}
-		#colnames(dat.gg)<-c("bin","fleet","sex","year","ltnum")
 		colnames(dat.gg)<-c("year","fleet","sex","bin","ltnum")
 		ggplot(dat.gg,aes(bin,ltnum,fill=factor(fleet)))+
 					geom_col(color="white",position="dodge")+
@@ -265,22 +335,21 @@ output$Forecasts<- renderUI({
 					ylab("Frequency")+
 					labs(fill="Fleet")+
 					scale_fill_viridis(discrete=TRUE, option="viridis")
+					#scale_x_discrete(breaks=c(1,5,10,20),labels=as.character(levels(dat.gg$bin))[c(1,5,10,20)])
 					#scale_fill_brewer(palette = "BuPu")
-					
-						
-				#}
-		# if(ncol(dat.gg)==2){
-		# 	colnames(dat.gg)<-c("bin","ltnum")
-		# 	ggplot(dat.gg,aes(bin,ltnum))+
-		# 	geom_col(fill="#236192",color="white")+
-		# 	xlab("Length bin")+
-		# 	ylab("Frequency")
-		# 	}
+		# }
 		})
+	})
+
+observeEvent(req(!is.null(input$file3)), {
+    	shinyjs::show(output$age_comp_plots_label<-renderText({"Age compositions"}))
+  })
 
 	output$Ageplot<-renderPlot({
 		inFile_age<- input$file3
-		if (is.null(inFile_age)) return(NULL)
+		if (is.null(inFile_age)) {
+			return(NULL)
+			shinyjs::hide("Ageplot") }
 		Age.comp.data<-read.csv(inFile_age$datapath,check.names=FALSE)
 		dat.gg<-cbind(Age.comp.data[,1],melt(Age.comp.data[,-1]))
 		if(ncol(dat.gg)==2)
@@ -293,19 +362,17 @@ output$Forecasts<- renderUI({
 					facet_wrap(~year)+
 					xlab("Age bin")+
 					ylab("Frequency")			
-				#}
-		# if(ncol(dat.gg)==2){
-		# 	colnames(dat.gg)<-c("bin","ltnum")
-		# 	ggplot(dat.gg,aes(bin,ltnum))+
-		# 	geom_col(fill="#236192",color="white")+
-		# 	xlab("Length bin")+
-		# 	ylab("Frequency")
-		# 	}
 		})
+
+observeEvent(req(!is.null(input$file2)), {
+    	shinyjs::show(output$catch_comp_plots_label<-renderText({"Removal history"}))
+  })
 
 output$Ctplot<-renderPlot({
 		inCatch<- input$file2
-		if (is.null(inCatch)) return(NULL)
+		if (is.null(inCatch)) {
+			return(NULL)
+			shinyjs::hide("Ctplot")}
 		Catch.data<-read.csv(inCatch$datapath,header=TRUE)
 		colnames(Catch.data)[1]<-"year"
 		if(ncol(Catch.data)==2){
@@ -377,10 +444,13 @@ output$VBGFplot<-renderPlot({
 #############################################
 ### PREPARE FILES andD RUN Stock Synthsis ###
 #############################################
+SS.file.update<-o
+		      	#theme(axis.title = elem
 
-SS.file.update<-observeEvent(input$run_SS,{
-		# if(is.null(inFile) | !anyNA(input$styr,
-		# 							input$endyr,
+		      	})
+bserveEvent(input$run_SS,{
+		# if(is.null(inFile) | !anyNA(inp$
+			styr,ndyr,
 		# 							input$Nages,
 		# 							input$M_f,
 		# 							input$k_f,
@@ -416,6 +486,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 	  	file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
 		file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
 	
+		#if()
+
 		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
@@ -795,38 +867,49 @@ SS.file.update<-observeEvent(input$run_SS,{
 		 	 Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
 			 SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
 			 SSexecutivesummary(Model.output)		
+			 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
+			 ref.like<-min(jitter.likes)
+	    	 #Make plot and save to folder
+	    	 setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+	     	 png("jitterplot.png")
+			 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+			 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
+			 abline(h=ref.like)
+			 # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
+			 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
+			 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
+			 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
+			 # like_2_10<-round(100-(likebc+like10+like2),0)
+			 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
+			 dev.off()
 		}		
 	
 	output$Jitterplot<-renderPlot({
 		if(input$Njitter==1){return(NULL)}
 		if(input$Njitter>1)
 		{
-			 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
-			 ref.like<-min(jitter.likes)
-	     	 png("jitterplot.png")
-			 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+			 #jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
+			 #ref.like<-min(jitter.likes)
+	    	 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
 			 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
 			 abline(h=ref.like)
-			 # likebc<-if(any(ref.like==jitter.likes)) (length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100 else 0
-			 # likelessbc<-if(any(ref.like>jitter.likes)) (length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100 else 0
-			 # like10<-if(any(ref.like>jitter.likes)) (length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100 else 0
-			 # like2<-if(any(ref.like>jitter.likes)) ((length(jitter.likes[(ref.like+2)>jitter.likes])-(likelessbc+likebc))/(input$Njitter+1))*100 else 0
-			 # like_2_10<-100-(likebc+likelessbc+like10+like2)
-			 likebc<-(length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100
-			 likelessbc<-(length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100
-			 like10<-(length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100
-			 like2<-((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100
-			 like_2_10<-100-(likebc+like10+like2)
-
-			legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
-			setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
-			dev.off()
-			print(jitterplot)		
+			 # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
+			 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
+			 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
+			 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
+			 # like_2_10<-round(100-(likebc+like10+like2),0)
+			 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")	
 		}
 	})
+	
+		output$Jittercomps<-renderPlot({
+			SSplotComparisons(profilesummary, legendlabels = c(1:input$Njitter), ylimAdj = 1.30, subplot = c(1,3), new = FALSE)
+	
+			})
 	}
 		
 	
+
 		#Convergence diagnostics
 		output$converge.grad <- renderText({
  				max.grad<-paste0("Maximum gradient: ",Model.output$maximum_gradient_component)
