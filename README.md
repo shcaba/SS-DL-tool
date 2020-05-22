@@ -3,6 +3,20 @@
 The SS-DL tool uses Stock Synthesis (Methot and Wetzel 2013) to implement several common data-limited assessment methods all in one modelling framework. Under a unified modelling framework, additional data can be added as it becomes avaialble.
 The tool builds Stock Synthesis files for provided data and life history information. It produces full plots and tables for each model run via the r4ss package, as well as additional screen output for easy interpretation.
 <br></br>
+
+## Installing libraries and running the SS-DL tool
+```R
+install.packages("shiny","shinyjs","r4ss","ggplot2","reshape2","tidyr","rlist","viridis","sss")
+
+Load the Shiny library
+library(shiny)
+
+Running the tool can be accomplished in any of the 
+1) runApp(ENTER HERE USER PATH TO FOLDER CONTAINING THE SS-DL files)
+2) Open the server.r or ui.r files in RStudio and push the "Run App" button at the top rigt corner of the source panel. I recommend using the "Run External" option within the "Run App" button (see small arrow in button to change options)
+3)runGitHub("SS-DL-tool", "shcaba")
+```
+
 ## SS-DL tool features the following data-limited applications
 * Length-only models. These are akin to LBSPR (Hordyk et al. 2015) and LIME (Rudd and Thorson ). Both styles of length-only models can be performed in this tool.
 * Age-only models

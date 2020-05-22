@@ -444,13 +444,9 @@ output$VBGFplot<-renderPlot({
 #############################################
 ### PREPARE FILES andD RUN Stock Synthsis ###
 #############################################
-SS.file.update<-o
-		      	#theme(axis.title = elem
-
-		      	})
-bserveEvent(input$run_SS,{
+SS.file.update<-observeEvent(input$run_SS,{
 		# if(is.null(inFile) | !anyNA(inp$
-			styr,ndyr,
+		#							styr,ndyr,
 		# 							input$Nages,
 		# 							input$M_f,
 		# 							input$k_f,
@@ -902,8 +898,8 @@ bserveEvent(input$run_SS,{
 		}
 	})
 	
-		output$Jittercomps<-renderPlot({
-			SSplotComparisons(profilesummary, legendlabels = c(1:input$Njitter), ylimAdj = 1.30, subplot = c(1,3), new = FALSE)
+		output$Jitterplot<-renderPlot({
+			SSplotComparisons(mysummary, legendlabels = c(1:input$Njitter), ylimAdj = 1.30, subplot = c(1,3), new = FALSE)
 	
 			})
 	}
