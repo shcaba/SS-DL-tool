@@ -1,3 +1,4 @@
+require(shiny)
 require(shinyjs)
 
 shinyUI(fluidPage(
@@ -72,12 +73,12 @@ wellPanel(
         uiOutput("Model_dims2"),
       ),
  #   ),
-    wellPanel(
+    shinyjs::hidden(wellPanel(id="panel_SS",
     h3("Life history inputs"),
     wellPanel(
       h5(em("Female")),
       fluidRow(column(width=6,numericInput("Nages","Max. age", value=NA,min=1, max=1000, step=1)),
-             column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01))),    
+              column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01))),    
       fluidRow(column(width=6,numericInput("Linf_f", "Asymptotic size (Linf)", value=NA,min=0, max=10000, step=0.01)),
               column(width=6,numericInput("k_f","Growth coefficient k", value=NA,min=0, max=10000, step=0.01))),    
       fluidRow(column(width=6,numericInput("t0_f","Age at length 0 (t0)", value=NA,min=0, max=10000, step=0.01)),
@@ -98,8 +99,57 @@ wellPanel(
                    uiOutput("Male_parms_inputs3"),
                    uiOutput("Male_parms_inputs4")
     ),
+    )
     ),
-#    shinysj::hide()
+
+    shinyjs::hidden(wellPanel(id="panel_SSS",
+    h3("Life history inputs"),
+    wellPanel(
+      h4(em("Female")),
+      fluidRow(column(width=6,numericInput("Nages","Max. age", value=NA,min=1, max=1000, step=1))),
+      h5(strong("Natural mortality")),            
+      fluidRow(column(width=4,selectInput("M_prior","Prior type",c("fixed","lognormal","truncated normal","uniform","beta"))),
+              column(width=4,numericInput("M_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
+              column(width=4,numericInput("M_f_SD", "SD", value=0,min=0, max=10000, step=0.001))),    
+      h5(strong("Growth")),            
+      h5(strong("Linf")),            
+      fluidRow(column(width=4,selectInput("Linf_f_prior","Prior type",c("fixed","lognormal","truncated normal","uniform","beta"))),
+              column(width=4,numericInput("Linf_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
+              column(width=4,numericInput("Linf_f_SD", "SD", value=0,min=0, max=10000, step=0.001))),    
+    h5(strong("k")),            
+      fluidRow(column(width=4,selectInput("k_f_prior","Prior type",c("fixed","lognormal","truncated normal","uniform","beta"))),
+              column(width=4,numericInput("k_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
+              column(width=4,numericInput("k_f_SD", "SD", value=0,min=0, max=10000, step=0.001))),    
+    h5(strong("t0")),            
+      fluidRow(column(width=4,selectInput("t0_f_prior","Prior type",c("fixed","lognormal","truncated normal","uniform","beta"))),
+              column(width=4,numericInput("t0_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
+              column(width=4,numericInput("t0_f_SD", "SD", value=0,min=0, max=10000, step=0.001))),    
+    
+    h5(strong("Length CV")),            
+      fluidRow(column(width=4,selectInput("CV_f_prior","Prior type",c("fixed","lognormal","truncated normal","uniform","beta"))),
+              column(width=4,numericInput("CV_f_mean", "Mean", value=0.1,min=0, max=10000, step=0.001)),    
+              column(width=4,numericInput("CV_f_SD", "SD", value=0,min=0, max=10000, step=0.001))),    
+   
+    h5(strong("Maturity and weight-length relationships")),            
+      fluidRow(column(width=6,numericInput("L50_f", "Length at 50% maturity", value=NA,min=0, max=10000, step=0.01)),
+              column(width=6,numericInput("L95_f","Length at 95% maturity", value=NA,min=0, max=10000, step=0.01))),    
+      fluidRow(column(width=6,numericInput("Fec_a", "Length at 50% maturity", value=NA,min=0, max=10000, step=-0.01)),
+              column(width=6,numericInput("Fec_b","Length at 95% maturity", value=NA,min=0, max=10000, step=0.01))),    
+      fluidRow(column(width=6,numericInput("WLa_f", "Weight-Length alpha", value=0.00001,min=0, max=10000, step=0.000000001)),
+              column(width=6,numericInput("WLb_f","Weight-length beta", value=3,min=0, max=10000, step=0.01))),    
+    ),
+    fluidRow(column(width=10,checkboxInput("male_parms_SSS","Males specific values?",FALSE))),
+    #fluidRow(column(width=7, h3("Males specific values?")),column(width=2,checkboxInput("male_parms_SSS","Males specific values?",FALSE,width="150%"))),
+    wellPanel(
+                   uiOutput("Male_parms_inputs_label_SSS"),
+                   uiOutput("Male_parms_inputs1_SSS"),
+                   uiOutput("Male_parms_inputs2_SSS"),
+                   uiOutput("Male_parms_inputs3_SSS"),
+                   uiOutput("Male_parms_inputs4_SSS")
+    ),
+    )
+    ),
+
     wellPanel(
     h3("Productivity"),
     fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
@@ -194,12 +244,12 @@ wellPanel(
       mainPanel(        
         tabsetPanel(
             tabPanel("Data and Parameters",
-            h4("Length composition data"),
-            plotOutput("Ltplot"),
-            h4("Age composition data"),
-            plotOutput("Ageplot"),
-            h4("Catch data"),
-            plotOutput("Ctplot"),
+              textOutput("lt_comp_plots_label"),
+              plotOutput("Ltplot"),
+              textOutput("age_comp_plots_label"),
+              plotOutput("Ageplot"),
+              textOutput("catch_comp_plots_label"),
+              plotOutput("Ctplot"),
             h4("Life history"),
             column(6,plotOutput("Mplot")),
             column(6,plotOutput("VBGFplot"))
@@ -243,6 +293,9 @@ wellPanel(
             
             ),
           tabPanel("Sensitivity comparisons",
+            
+            ),
+          tabPanel("Ensemble models",
             
             )
           ) 

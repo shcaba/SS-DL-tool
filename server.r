@@ -1,9 +1,17 @@
+require(shiny)
+require(shinyjs)
 require(r4ss)
 require(dplyr)
 require(ggplot2)
-library(tidyr)
+require(reshape2)
+require(dplyr) 
+require(tidyr)
 require(rlist)
 require(viridis)
+require(sss)
+#require(paletteer)
+#require(RColorBrewer)
+#require(ggthemes)
 
 theme_report <- function(base_size = 11) {
 
@@ -28,24 +36,48 @@ theme_set(theme_report())
 shinyServer(function(input, output,session) {
   useShinyjs()
 
-# Functions -----------------------------------------
 
-VBGF<-function(Linf, k, t0, ages){
-   Linf * (1 - exp(-k * (ages - t0)))
-  }
-
- VBGF.age<-function(Linf,k,t0,lt){
-    t0 - (log(1 - (lt / Linf)) / k)
-  }
+theme_report <- function(base_size = 11) { 
  
-RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){
-  navigate <- paste("cd ", path, sep="")
-  command <- paste(navigate," & ", ss.exe, ss.cmd,sep="")
-  shell(command, invisible=TRUE, translate=TRUE)
+  half_line <- base_size/2 
+   
+  theme_light(base_size = base_size) + 
+    theme( 
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(), 
+      axis.ticks.length = unit(half_line / 2.2, "pt"), 
+      strip.background = element_rect(fill = NA, colour = NA), 
+      strip.text.x = element_text(colour = "black"), 
+      strip.text.y = element_text(colour = "black"), 
+      panel.border = element_rect(fill = NA), 
+      legend.key.size = unit(0.9, "lines"), 
+      legend.key = element_rect(colour = NA, fill = NA), 
+      legend.background = element_rect(colour = NA, fill = NA) 
+    ) 
 } 
-	
+theme_set(theme_report()) 
 
-# Clear data files and plots ----------------------------------
+#################
+### FUNCTIONS ###
+#################
+VBGF<-function(Linf, k, t0, ages){ 
+   Linf * (1 - exp(-k * (ages - t0))) 
+  } 
+
+
+VBGF.age<-function(Linf,k,t0,lt){ 
+    t0 - (log(1 - (lt / Linf)) / k) 
+  } 
+  
+
+RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){ 
+  navigate <- paste("cd ", path, sep="") 
+  command <- paste(navigate," & ", ss.exe, ss.cmd,sep="") 
+  shell(command, invisible=TRUE, translate=TRUE) 
+}  
+
+
+########## Clear data files and plots ############
 
   rv.Lt <- reactiveValues(data = NULL)
   rv.Age <- reactiveValues(data = NULL)
@@ -74,322 +106,454 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){
     reset('file2')
   })
 
+# observeEvent(, {
+#     if(is.null(input$file1))
+#     {
+#    		shinyjs::hideElement(id= "panel_LH")
+#     }
+#   })
+observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)), {
+    	shinyjs::showElement(id= "panel_SSS")
+  })
+
+
+observeEvent(req(!is.null(input$file1)), {
+    	shinyjs::showElement(id= "panel_SS")
+  })
+
+
+########################################
 
 	
 # User activated pop-up parameter values ---------------
 
 #Model dimensions
-output$Model_dims1 <- renderUI({
-			  inFile1 = input$file1
-				inFile2 = input$file2
-				
-				if (is.null(inFile1) & is.null(inFile2)) return(NULL)
-				if (!is.null(inFile1) & is.null(inFile2)){
-						Lt.comp.data = read.csv(inFile1$datapath,check.names=FALSE)
-			    		styr.in =  min(Lt.comp.data[,1])
-			    		if(!(anyNA(c(input$Linf_f, input$k_f,input$t0_f)))){
-			    			styr.in = min(Lt.comp.data[,1])-round(VBGF.age(input$Linf_f, input$k_f, input$t0_f, input$Linf_f*0.95))
-			    		print(styr.in)
-			    		print(max(Lt.comp.data[,1]))
-			    		}
-						fluidRow(column(width=4, numericInput("styr", "Starting year", 
-						                                      value=styr.in, min=1, max=10000, step=1)),
-              			column(width=4, numericInput("endyr","Ending year", 
-              			                             value=max(Lt.comp.data[,1]), min=1, max=10000, step=1)))						
-					}
-				# if (!is.null(inFile2))
-				# 	{
-				# 		Ct.data<-read.csv(inFile2$datapath,check.names=FALSE)
-			 #    		fluidRow(column(width=4,numericInput("styr", "Starting year", value=min(Ct.data[,1]),min=1, max=10000, step=1)),
-    #           			column(width=4,numericInput("endyr","Ending year", value=max(Ct.data[,1]),min=1, max=10000, step=1)))						
-				# 	}	
+output$Model_dims1 <- renderUI({ 
+			  inFile1 = input$file1 
+				inFile2 = input$file2 
+				 
+				if (is.null(inFile1) & is.null(inFile2)) return(NULL) 
+				if (!is.null(inFile1) & is.null(inFile2)){ 
+						Lt.comp.data = read.csv(inFile1$datapath,check.names=FALSE) 
+			    		styr.in =  min(Lt.comp.data[,1]) 
+			    		if(!(anyNA(c(input$Linf_f, input$k_f,input$t0_f)))){ 
+			    			styr.in = min(Lt.comp.data[,1])-round(VBGF.age(input$Linf_f, input$k_f, input$t0_f, input$Linf_f*0.95)) 
+			    		print(styr.in) 
+			    		print(max(Lt.comp.data[,1])) 
+			    		} 
+						fluidRow(column(width=4, numericInput("styr", "Starting year",  
+						                                      value=styr.in, min=1, max=10000, step=1)), 
+              			column(width=4, numericInput("endyr","Ending year",  
+              			                             value=max(Lt.comp.data[,1]), min=1, max=10000, step=1)))						 
+					} 
 		})
 
-output$Model_dims2 <- renderUI({
-				inFile2 <- input$file2
-				if (is.null(inFile2)) return(NULL)
-				if (!is.null(inFile2)){
-				  
-						Ct.data = read.csv(inFile2$datapath,check.names=FALSE)
-			    		fluidRow(column(width=4, numericInput("styr", "Starting year", 
-			    		                                     value=min(Ct.data[,1]), min=1, max=10000, step=1)),
-              			    column(width=4, numericInput("endyr", "Ending year", 
-              			                            value=max(Ct.data[,1]), min=1, max=10000, step=1)))						
-					}	
-		})
+output$Model_dims2 <- renderUI({ 
+				inFile2 <- input$file2 
+				if (is.null(inFile2)) return(NULL) 
+				if (!is.null(inFile2)){ 				   
+						Ct.data = read.csv(inFile2$datapath,check.names=FALSE) 
+			    		fluidRow(column(width=4, numericInput("styr", "Starting year",  
+			    		                                     value=min(Ct.data[,1]), min=1, max=10000, step=1)), 
+              			    column(width=4, numericInput("endyr", "Ending year",  
+              			                            value=max(Ct.data[,1]), min=1, max=10000, step=1)))						 
+					}	 
+		}) 
+
+
+output$Female_parms_inputs_label <- reactive({
+if(!is.null(input$file1))
+	{
+		(output$Female_parms_inputs_label<- renderUI({
+			      fluidRow(column(width=6,numericInput("Nages","Max. age", value=NA,min=1, max=1000, step=1)),
+		             column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01)))    
+			      }))
+		}
+})
+
+
+#Male life history parameters 
+output$Male_parms_inputs_label <- renderUI({ 
+	if(input$male_parms){ 
+   		 h5(em("Male")) 
+   			}		 
+		}) 
+
+output$Male_parms_inputs1 <- renderUI({ 
+	if(input$male_parms){ 
+    fluidRow(column(width=6, numericInput("M_m", "Natural mortality",  
+                                          value=NA, min=0, max=10000, step=0.01)), 
+            column(width=6, numericInput("Linf_m", "Asymptotic size (Linf)",  
+                                         value=NA, min=0, max=10000, step=0.01)))     
+		} 
+	}) 
+
+output$Male_parms_inputs2 <- renderUI({ 
+	if(input$male_parms){ 
+    fluidRow(column(width=6, numericInput("k_m", "Growth coefficient k",  
+                                         value=NA, min=0, max=10000, step=0.01)), 
+             column(width=6, numericInput("t0_m", "Age at length 0 (t0)",   
+                                        value=NA, min=0, max=10000, step=0.01)))     
+    	} 
+	}) 
+
+output$Male_parms_inputs3 <- renderUI({ 
+	if(input$male_parms){ 
+    fluidRow(column(width=6, numericInput("CV_lt_m", "CV at length",  
+                                          value=0.1, min=0, max=10000, step=0.01))) 
+    	} 
+	})  
+
+output$Male_parms_inputs4 <- renderUI({ 
+	if(input$male_parms){ 
+      fluidRow(column(width=6, numericInput("WLa_m", "Weight-Length alpha",  
+                                            value=0.00001, min=0, max=10000, step=0.000000001)), 
+               column(width=6, numericInput("WLb_m", "Weight-length beta",  
+                                            value=3, min=0, max=10000, step=0.01)))     
+    	} 
+	}) 
+ 
+
 
 #Male life history parameters
-output$Male_parms_inputs_label <- renderUI({
-	if(input$male_parms){
+output$Male_parms_inputs_label_SSS<- renderUI({
+	if(input$male_parms_SSS){
    		 h5(em("Male"))
    			}		
 		})
 
-output$Male_parms_inputs1 <- renderUI({
-	if(input$male_parms){
-    fluidRow(column(width=6, numericInput("M_m", "Natural mortality", 
-                                          value=NA, min=0, max=10000, step=0.01)),
-            column(width=6, numericInput("Linf_m", "Asymptotic size (Linf)", 
-                                         value=NA, min=0, max=10000, step=0.01)))    
+output$Male_parms_inputs1_SSS<- renderUI({
+	if(input$male_parms_SSS){
+    fluidRow(column(width=6,numericInput("M_m", "Natural mortality", 
+    									value=NA,min=0, max=10000, step=0.01)),
+            column(width=6,numericInput("Linf_m", "Asymptotic size (Linf)", 
+            							value=NA,min=0, max=10000, step=0.01)))    
 		}
 	})
 
-output$Male_parms_inputs2 <- renderUI({
-	if(input$male_parms){
-    fluidRow(column(width=6, numericInput("k_m", "Growth coefficient k", 
-                                         value=NA, min=0, max=10000, step=0.01)),
-             column(width=6, numericInput("t0_m", "Age at length 0 (t0)",  
-                                        value=NA, min=0, max=10000, step=0.01)))    
+output$Male_parms_inputs2_SSS<- renderUI({
+	if(input$male_parms_SSS){
+    fluidRow(column(width=6,numericInput("k_m","Growth coefficient k", 
+    									value=NA,min=0, max=10000, step=0.01)),
+            column(width=6,numericInput("t0_m","Age at length 0 (t0)", 
+            							value=NA,min=0, max=10000, step=0.01)))    
     	}
 	})
 
-output$Male_parms_inputs3 <- renderUI({
-	if(input$male_parms){
-    fluidRow(column(width=6, numericInput("CV_lt_m", "CV at length", 
-                                          value=0.1, min=0, max=10000, step=0.01)))
+output$Male_parms_inputs3_SSS<- renderUI({
+	if(input$male_parms_SSS){
+    fluidRow(column(width=6,numericInput("CV_lt_m","CV at length", 
+    									value=0.1,min=0, max=10000, step=0.01)))
     	}
 	})
 
-output$Male_parms_inputs4 <- renderUI({
-	if(input$male_parms){
-      fluidRow(column(width=6, numericInput("WLa_m", "Weight-Length alpha", 
-                                            value=0.00001, min=0, max=10000, step=0.000000001)),
-               column(width=6, numericInput("WLb_m", "Weight-length beta", 
-                                            value=3, min=0, max=10000, step=0.01)))    
+output$Male_parms_inputs4_SSS<- renderUI({
+	if(input$male_parms_SSS){
+      fluidRow(column(width=6,numericInput("WLa_m", "Weight-Length alpha", 
+      										value=0.00001,min=0, max=10000, step=0.000000001)),
+              column(width=6,numericInput("WLb_m","Weight-length beta", 
+              								value=3,min=0, max=10000, step=0.01)))    
     	}
 	})
-
 
 #Selectivity paramters
-output$Sel_parms1 <- renderUI({
-    fluidRow(column(width=8, numericInput("Sel50", "Length at 50% Selectivity", 
-                                          value=NA, min=0, max=10000, step=0.01)),
-            column(width=4, numericInput("Sel50_phase", "Est. phase", 
-                                         value=1, min=-1000, max=10, step=1)))    
-	})
-
-output$Sel_parms2<- renderUI({
-    	fluidRow(column(width=8, numericInput("Selpeak", "Length at Peak Selectvity", 
-    	                                      value=NA, min=0, max=10000, step=0.01)),
-            	 column(width=4, numericInput("Selpeak_phase", "Est. phase", 
-            	                             value=1, min=-1000, max=10, step=1)))
-	})
-
-output$Sel_parms3 <- renderUI({
-  		if(input$Sel_choice=="Dome-shaped"){ 			
-    	fluidRow(column(width=8, numericInput("PeakDesc", "Length at first declining selectivity", 
-    	                                      value=NA, min=0, max=10000, step=0.01)),
-            	 column(width=4, numericInput("PeakDesc_phase", "Est. phase", 
-            	                             value=1, min=-1000, max=10, step=1)))
- 		}
-	})
-
-
-output$Sel_parms4 <- renderUI({
- 		if(input$Sel_choice=="Dome-shaped"){ 			
-	    fluidRow(column(width=8, numericInput("LtPeakFinal", "Width of declining selectivity", 
-	                                          value=1, min=0, max=10000, step=0.01)),
-	             column(width=4, numericInput("LtPeakFinal_phase", "Est. phase",  
-	                                          value=1, min=-1000, max=10, step=1)))    			
- 		}
-	})
-
-output$Sel_parms5 <- renderUI({
- 		if(input$Sel_choice=="Dome-shaped"){ 			
-    	fluidRow(column(width=8, numericInput("FinalSel", "Selectivity at max bin size", 
-    	                                      value=0.9999999, min=0, max=0.9999999, step=0.0000001)),
-            	column(width=4, numericInput("FinalSel_phase", "Est. phase", 
-            	                             value=1, min=-1000, max=10, step=1)))
- 		}
-	})
+output$Sel_parms1 <- renderUI({ 
+    fluidRow(column(width=8, numericInput("Sel50", "Length at 50% Selectivity",  
+                                          value=NA, min=0, max=10000, step=0.01)), 
+            column(width=4, numericInput("Sel50_phase", "Est. phase",  
+                                         value=1, min=-1000, max=10, step=1)))     
+	}) 
+ 
+output$Sel_parms2<- renderUI({ 
+    	fluidRow(column(width=8, numericInput("Selpeak", "Length at Peak Selectvity",  
+    	                                      value=NA, min=0, max=10000, step=0.01)), 
+            	 column(width=4, numericInput("Selpeak_phase", "Est. phase",  
+            	                             value=1, min=-1000, max=10, step=1))) 
+	}) 
+ 
+output$Sel_parms3 <- renderUI({ 
+  		if(input$Sel_choice=="Dome-shaped"){ 			 
+    	fluidRow(column(width=8, numericInput("PeakDesc", "Length at first declining selectivity",  
+    	                                      value=NA, min=0, max=10000, step=0.01)), 
+            	 column(width=4, numericInput("PeakDesc_phase", "Est. phase",  
+            	                             value=1, min=-1000, max=10, step=1))) 
+ 		} 
+	}) 
+ 
+ 
+output$Sel_parms4 <- renderUI({ 
+ 		if(input$Sel_choice=="Dome-shaped"){ 			 
+	    fluidRow(column(width=8, numericInput("LtPeakFinal", "Width of declining selectivity",  
+	                                          value=1, min=0, max=10000, step=0.01)), 
+	             column(width=4, numericInput("LtPeakFinal_phase", "Est. phase",   
+	                                          value=1, min=-1000, max=10, step=1)))    			 
+ 		} 
+	}) 
+ 
+output$Sel_parms5 <- renderUI({ 
+ 		if(input$Sel_choice=="Dome-shaped"){ 			 
+    	fluidRow(column(width=8, numericInput("FinalSel", "Selectivity at max bin size",  
+    	                                      value=0.9999999, min=0, max=0.9999999, step=0.0000001)), 
+            	column(width=4, numericInput("FinalSel_phase", "Est. phase",  
+            	                             value=1, min=-1000, max=10, step=1))) 
+ 		} 
+	}) 
 
 			
 #Recruitment parameter inputs
-output$Rec_options1 <- renderUI({
-    if(input$rec_choice){
-        fluidRow(column(width=6, numericInput("sigmaR", "Rec. varaibility (sR)", 
-                                              value=0.5, min=0, max=10, step=0.01)))   
-    	}
-	})
-output$Rec_options2 <- renderUI({
-    if(input$rec_choice){
-          fluidRow(column(width=6, numericInput("Rdev_startyr", "Rec. devs. start year", 
-                                                value=input$styr, min=1, max=10000, step=1)),
-                   column(width=6, numericInput("Rdev_endyr", "Rec. devs. end year", 
-                                                value=input$endyr, min=1, max=10000, step=1)))    
-    	}
-	})
-
-output$Rec_options3 <- renderUI({
-    if(input$biasC_choice){
-          fluidRow(column(width=6, numericInput("NobiasC_early", "Early last year", 
-                                                value=input$styr, min=1, max=10000, step=1)),
-                   column(width=6, numericInput("NobiasC_recent", "1st recent year", 
-                                                value=input$endyr, min=1, max=10000, step=1)))    
-    	}
-	})
-
-output$Rec_options4 <- renderUI({
-    if(input$biasC_choice){
-          fluidRow(column(width=6, numericInput("BiasC_startyr", "Start year", 
-                                                value=input$styr, min=1, max=10000, step=1)),
-                   column(width=6, numericInput("BiasC_endyr", "End year", 
-                                                value=input$endyr, min=1, max=10000, step=1)))    
-    	}
-	})
-
-output$Rec_options5 <- renderUI({
-    if(input$biasC_choice){
-          fluidRow(column(width=6, numericInput("BiasC","Maximum bias adjustment", value=1,min=0, max=1, step=0.001)))
-    	}
-	})
-
+output$Rec_options1 <- renderUI({ 
+    if(input$rec_choice){ 
+        fluidRow(column(width=6, numericInput("sigmaR", "Rec. varaibility (sR)",  
+                                              value=0.5, min=0, max=10, step=0.01)))    
+    	} 
+	}) 
+output$Rec_options2 <- renderUI({ 
+    if(input$rec_choice){ 
+          fluidRow(column(width=6, numericInput("Rdev_startyr", "Rec. devs. start year",  
+                                                value=input$styr, min=1, max=10000, step=1)), 
+                   column(width=6, numericInput("Rdev_endyr", "Rec. devs. end year",  
+                                                value=input$endyr, min=1, max=10000, step=1)))     
+    	} 
+	}) 
+ 
+output$Rec_options3 <- renderUI({ 
+    if(input$biasC_choice){ 
+          fluidRow(column(width=6, numericInput("NobiasC_early", "Early last year",  
+                                                value=input$styr, min=1, max=10000, step=1)), 
+                   column(width=6, numericInput("NobiasC_recent", "1st recent year",  
+                                                value=input$endyr, min=1, max=10000, step=1)))     
+    	} 
+	}) 
+ 
+output$Rec_options4 <- renderUI({ 
+    if(input$biasC_choice){ 
+          fluidRow(column(width=6, numericInput("BiasC_startyr", "Start year",  
+                                                value=input$styr, min=1, max=10000, step=1)), 
+                   column(width=6, numericInput("BiasC_endyr", "End year",  
+                                                value=input$endyr, min=1, max=10000, step=1)))     
+    	} 
+	}) 
+ 
+output$Rec_options5 <- renderUI({ 
+    if(input$biasC_choice){ 
+          fluidRow(column(width=6, numericInput("BiasC","Maximum bias adjustment", value=1,min=0, max=1, step=0.001))) 
+    	} 
+	})  
 
 #Jitter value
-output$Jitter_value <- renderUI({
-    if(input$jitter_choice){
-        fluidRow(column(width=6, numericInput("jitter_fraction", "Jitter value", 
-                                             value=0.1, min=0, max=10, step=0.001)),
-        	       column(width=6, numericInput("Njitter", "# of jitters", 
-        	                                   value=1, min=1, max=10000, step=1)))   
-    	}
-	})
+output$Jitter_value <- renderUI({ 
+    if(input$jitter_choice){ 
+        fluidRow(column(width=6, numericInput("jitter_fraction", "Jitter value",  
+                                             value=0.1, min=0, max=10, step=0.001)), 
+        	       column(width=6, numericInput("Njitter", "# of jitters",  
+        	                                   value=1, min=1, max=10000, step=1)))    
+    	} 
+	}) 
 
 #Choose reference points
-output$RP_selection1<- renderUI({
-    if(input$RP_choices){
-        fluidRow(column(width=6, numericInput("SPR_target", "SPR target", 
-                                              value=0.5, min=0, max=1, step=0.001)),
-        	       column(width=6, numericInput("B_target", "Biomass target",
-        	                                    value=0.4, min=0, max=1, step=0.001)))   
-    	}
+output$RP_selection1<- renderUI({ 
+    if(input$RP_choices){ 
+        fluidRow(column(width=6, numericInput("SPR_target", "SPR target",  
+                                              value=0.5, min=0, max=1, step=0.001)), 
+        	       column(width=6, numericInput("B_target", "Biomass target", 
+        	                                    value=0.4, min=0, max=1, step=0.001)))    
+    	} 
+	}) 
+ 
+output$RP_selection2<- renderUI({ 
+    if(input$RP_choices){ 
+        fluidRow(column(width=6, numericInput("slope_hi", "Control rule: Upper ratio value",  
+                                              value=0.4, min=0, max=1, step=0.001)), 
+        	       column(width=6, numericInput("slope_low", "Control rule: Lower ratio value",  
+        	                                    value=0.1, min=0, max=1, step=0.001)))    
+    	} 
+	}) 
+ 
+output$Forecasts<- renderUI({ 
+    if(input$Forecast_choice){ 
+        fluidRow(column(width=6, numericInput("forecast_num", "# of forecast years",  
+                                              value=1, min=1, max=1000, step=1)), 
+        	       column(width=6, numericInput("forecast_buffer", "Control rule buffer",  
+        	                                    value=0.913, min=0, max=1, step=0.001)))    
+    	} 
+	}) 
+
+#############
+### PLOTS ###
+#############
+
+observeEvent(req(!is.null(input$file1)), {
+    	shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions"}))
+  })
+
+
+#Plot length compoistions
+# length compositions 
+observeEvent(req(!is.null(input$file1)), {
+	output$Ltplot<-renderPlot({ 
+		  inFile <- input$file1 
+		  if (is.null(inFile)) return(NULL) 
+		   
+		  read.csv(inFile$datapath, check.names=FALSE) %>%  
+		    rename_all(tolower) %>%  
+		    dplyr::select(-nsamps) %>%  
+		    pivot_longer(c(-year, -fleet, -sex)) %>%  
+		    mutate(Fleet = factor(fleet), 
+		           name = as.numeric(gsub("[^0-9.-]", "", name))) %>%  
+		    ggplot(aes(name, value, fill=Fleet)) + 
+		    geom_col(position="dodge") + 
+		    facet_wrap(~year, scales="free_y") + 
+		    xlab("Length bin") + 
+		    ylab("Frequency") + 
+		    scale_fill_viridis_d() 
+		}) 
 	})
 
-output$RP_selection2<- renderUI({
-    if(input$RP_choices){
-        fluidRow(column(width=6, numericInput("slope_hi", "Control rule: Upper ratio value", 
-                                              value=0.4, min=0, max=1, step=0.001)),
-        	       column(width=6, numericInput("slope_low", "Control rule: Lower ratio value", 
-        	                                    value=0.1, min=0, max=1, step=0.001)))   
-    	}
-	})
+# observeEvent(req(!is.null(input$file1)), {
+# 		output$Ltplot<-renderPlot({
+# 		inFile<- input$file1
+# 		# if (is.null(inFile)) {
+# 		# 	return(NULL) 
+# 		# 	shinyjs::hide("Ltplot")} 
+# 		# else{
+# 		Lt.comp.data<-read.csv(inFile$datapath,check.names=FALSE)
+# 		lt.dat.plot<-(Lt.comp.data)[,c(-4)]
+# 		dat.gg<-melt(lt.dat.plot,id=colnames(lt.dat.plot)[1:3])
+# 		colnames(dat.gg)<-c("year","fleet","sex","bin","ltnum")
+# 		ggplot(dat.gg,aes(bin,ltnum,fill=factor(fleet)))+
+# 					geom_col(color="white",position="dodge")+
+# 		 			#geom_col(fill="#236192",color="white")+
+# 					facet_wrap(~year,scales="free_y")+
+# 					xlab("Length bin")+
+# 					ylab("Frequency")+
+# 					labs(fill="Fleet")+
+# 					scale_fill_viridis(discrete=TRUE, option="viridis")
+# 					#scale_x_discrete(breaks=c(1,5,10,20),labels=as.character(levels(dat.gg$bin))[c(1,5,10,20)])
+# 					#scale_fill_brewer(palette = "BuPu")
+# 		# }
+# 		})
+# 	})
 
-output$Forecasts<- renderUI({
-    if(input$Forecast_choice){
-        fluidRow(column(width=6, numericInput("forecast_num", "# of forecast years", 
-                                              value=1, min=1, max=1000, step=1)),
-        	       column(width=6, numericInput("forecast_buffer", "Control rule buffer", 
-        	                                    value=0.913, min=0, max=1, step=0.001)))   
-    	}
-	})
+observeEvent(req(!is.null(input$file3)), {
+    	shinyjs::show(output$age_comp_plots_label<-renderText({"Age compositions"}))
+  })
 
-# Plots -----------------------------------
-# length compositions
-	output$Ltplot<-renderPlot({
-		  inFile <- input$file1
-		  if (is.null(inFile)) return(NULL)
-		  
-		  read.csv(inFile$datapath, check.names=FALSE) %>% 
-		    rename_all(tolower) %>% 
-		    dplyr::select(-nsamps) %>% 
-		    pivot_longer(c(-year, -fleet, -sex)) %>% 
-		    mutate(Fleet = factor(fleet),
-		           name = as.numeric(gsub("[^0-9.-]", "", name))) %>% 
-		    ggplot(aes(name, value, fill=Fleet)) +
-		    geom_col(position="dodge") +
-		    facet_wrap(~year, scales="free_y") +
-		    xlab("Length bin") +
-		    ylab("Frequency") +
-		    scale_fill_viridis_d()
-		})
+output$Ageplot <- renderPlot({ 
+		inFile_age <- input$file3 
+		if (is.null(inFile_age)) return(NULL) 
+		 
+		read.csv(inFile_age$datapath, check.names=FALSE) %>%  
+		      pivot_longer(-1, names_to = "year", values_to = "ltnum") %>%  
+		      rename(bin = Bins) %>%  
+		  ggplot(aes(bin, ltnum)) + 
+					geom_col(fill="#1D252D", color="white") + 
+					facet_wrap(~year) + 
+					xlab("Age bin") + 
+					ylab("Frequency")			 
+	}) 
+ 
 
-# age compositions ----
-	output$Ageplot <- renderPlot({
-		inFile_age <- input$file3
-		if (is.null(inFile_age)) return(NULL)
-		
-		read.csv(inFile_age$datapath, check.names=FALSE) %>% 
-		      pivot_longer(-1, names_to = "year", values_to = "ltnum") %>% 
-		      rename(bin = Bins) %>% 
-		  ggplot(aes(bin, ltnum)) +
-					geom_col(fill="#1D252D", color="white") +
-					facet_wrap(~year) +
-					xlab("Age bin") +
-					ylab("Frequency")			
-	})
+ observeEvent(req(!is.null(input$file2)), {
+    	shinyjs::show(output$catch_comp_plots_label<-renderText({"Removal history"}))
+  })
 
-# catch plot----		
-output$Ctplot <- renderPlot({
-		inCatch <- input$file2
-		if (is.null(inCatch)) return(NULL)
-
-		read.csv(inCatch$datapath, check.names=FALSE) %>% 
-		    pivot_longer(-1, names_to = "Fleet", values_to = "catch") %>% 
-		    ggplot(aes_string(names(.)[1], "catch", color = "Fleet")) + 
-		    geom_point() + 
-		    geom_line() +
-		    ylab("Removals") +
-		    xlab("Year") + 
-		    scale_color_viridis_d()
-		})
-
-# M plot ----
-output$Mplot<-renderPlot({
-			mf.in = input$M_f
-			mm.in = input$M_f
-			if(input$male_parms){
-			  mm.in = input$M_m
-			  }		
-			if(any(is.na(c(mf.in, mm.in)))) return(NULL)
-			
-			Female_M = data.frame(Ages = 0:input$Nages, PopN = exp(-mf.in * 0:input$Nages), Sex="Female")
-			Male_M = data.frame(Ages = 0:input$Nages, PopN=exp(-mm.in * 0:input$Nages), Sex="Male")
-			M_sexes <- rbind(Female_M, Male_M)
-			ggplot(M_sexes,aes(Ages, PopN, color=Sex))+
-					geom_line(aes(linetype=Sex), lwd=2)+
-					ylab("Cohort decline by M")
-		})
-
-# vbgf plot ----
-output$VBGFplot<-renderPlot({
-   	f_Linf = m_Linf = input$Linf_f
-   	f_k = m_k = input$k_f
-   	f_t0 = m_t0 = input$t0_f
-	f_L50 = input$L50_f
-	f_L95 = input$L95_f
-	maxage = input$Nages
-	if(input$male_parms){
-				m_Linf = input$Linf_m
-			   	m_k = input$k_m
-			   	m_t0 = input$t0_m
-			}		
-   if(any(is.na(c(f_Linf, f_k, f_t0)))=="FALSE"){
-		vbgf_female = data.frame(Age = 0:input$Nages, 
-		                         Length = VBGF(f_Linf, f_k, f_t0, 0:input$Nages), Sex="Female")
-    vbgf_male = data.frame(Age = 0:input$Nages, 
-                           Length=VBGF(m_Linf, m_k, f_t0, 0:input$Nages), Sex="Male")
-      	rbind(vbgf_female,vbgf_male) %>% 
-      	  ggplot(aes(Age, Length, color=Sex)) +
-      				geom_line(aes(linetype=Sex), lwd=2) -> vbgf.plot 
-      	
-      if(any(is.na(c(f_L50, f_L95)))=="FALSE"){
-        age.mat = data.frame(Age = VBGF.age(f_Linf, f_k, f_t0, c(f_L50, f_L95)),
-                             Length = c(f_L50, f_L95), Sex="Female")
-        vbgf.plot +
-        	geom_point(data = age.mat, aes(Age, Length), color = "darkorange", size=6) +
-        	geom_text(data = age.mat,label=c("Lmat50%", "Lmat95%"),
-        	          nudge_x = -0.1 * input$Nages, color="black") -> vbgf.plot
-       }
-  	 vbgf.plot
-  	 }
-	})
+output$Ctplot <- renderPlot({ 
+		inCatch <- input$file2 
+		if (is.null(inCatch)) return(NULL) 
+ 
+		read.csv(inCatch$datapath, check.names=FALSE) %>%  
+		    pivot_longer(-1, names_to = "Fleet", values_to = "catch") %>%  
+		    ggplot(aes_string(names(.)[1], "catch", color = "Fleet")) +  
+		    geom_point() +  
+		    geom_line() + 
+		    ylab("Removals") + 
+		    xlab("Year") +  
+		    scale_color_viridis_d() 
+		}) 
 
 
-# PREPARE FILES and RUN Stock Synthsis ----
+# output$Ctplot<-renderPlot({
+# 		inCatch<- input$file2
+# 		if (is.null(inCatch)) {
+# 			return(NULL)
+# 			shinyjs::hide("Ctplot")}
+# 		Catch.data<-read.csv(inCatch$datapath,header=TRUE)
+# 		colnames(Catch.data)[1]<-"year"
+# 		if(ncol(Catch.data)==2){
+# 		ggplot(Catch.data,aes(get(colnames(Catch.data)[1]),get(colnames(Catch.data)[2])))+
+# 			geom_col(fill="#658D1B",color="white")+
+# 			xlab("Year")+
+# 			ylab("Removals")					
+# 		}
+# 		if(ncol(Catch.data)>2){
+# 			Catch.data<-melt(Catch.data,id=c("year"))
+# 			colnames(Catch.data)<-c("year","fleet","catch")
+# 			ggplot(Catch.data,aes(year,catch,fill=fleet))+
+# 			geom_col(color="white",position="dodge")+
+# 			#geom_col(fill="#658D1B",color="white")+
+# 			xlab("Year")+
+# 			ylab("Removals")+
+# 			scale_fill_viridis(discrete=TRUE, option="viridis")				
+# 			}
+# 		})
 
+#Plot M by age
+output$Mplot<-renderPlot({ 
+			mf.in = input$M_f 
+			mm.in = input$M_f 
+			if(input$male_parms){ 
+			  mm.in = input$M_m 
+			  }		 
+			if(any(is.na(c(mf.in, mm.in)))) return(NULL) 
+			 
+			Female_M = data.frame(Ages = 0:input$Nages, PopN = exp(-mf.in * 0:input$Nages), Sex="Female") 
+			Male_M = data.frame(Ages = 0:input$Nages, PopN=exp(-mm.in * 0:input$Nages), Sex="Male") 
+			M_sexes <- rbind(Female_M, Male_M) 
+			ggplot(M_sexes,aes(Ages, PopN, color=Sex))+ 
+					geom_line(aes(linetype=Sex), lwd=2)+ 
+					ylab("Cohort decline by M") 
+		}) 
+
+#Plot VBGF and maturity
+output$VBGFplot<-renderPlot({ 
+   	f_Linf = m_Linf = input$Linf_f 
+   	f_k = m_k = input$k_f 
+   	f_t0 = m_t0 = input$t0_f 
+	f_L50 = input$L50_f 
+	f_L95 = input$L95_f 
+	maxage = input$Nages 
+	if(input$male_parms){ 
+				m_Linf = input$Linf_m 
+			   	m_k = input$k_m 
+			   	m_t0 = input$t0_m 
+			}		 
+   if(any(is.na(c(f_Linf, f_k, f_t0)))=="FALSE"){ 
+		vbgf_female = data.frame(Age = 0:input$Nages,  
+		                         Length = VBGF(f_Linf, f_k, f_t0, 0:input$Nages), Sex="Female") 
+    vbgf_male = data.frame(Age = 0:input$Nages,  
+                           Length=VBGF(m_Linf, m_k, f_t0, 0:input$Nages), Sex="Male") 
+      	rbind(vbgf_female,vbgf_male) %>%  
+      	  ggplot(aes(Age, Length, color=Sex)) + 
+      				geom_line(aes(linetype=Sex), lwd=2) -> vbgf.plot  
+      	 
+      if(any(is.na(c(f_L50, f_L95)))=="FALSE"){ 
+        age.mat = data.frame(Age = VBGF.age(f_Linf, f_k, f_t0, c(f_L50, f_L95)), 
+                             Length = c(f_L50, f_L95), Sex="Female") 
+        vbgf.plot + 
+        	geom_point(data = age.mat, aes(Age, Length), color = "darkorange", size=6) + 
+        	geom_text(data = age.mat,label=c("Lmat50%", "Lmat95%"), 
+        	          nudge_x = -0.1 * input$Nages, color="black") -> vbgf.plot 
+       } 
+  	 vbgf.plot 
+  	 } 
+	}) 
+
+#############################################
+### PREPARE FILES andD RUN Stock Synthsis ###
+#############################################
 SS.file.update<-observeEvent(input$run_SS,{
-		# if(is.null(inFile) | !anyNA(input$styr,
-		# 							input$endyr,
+		# if(is.null(inFile) | !anyNA(inp$
+		#							styr,ndyr,
 		# 							input$Nages,
 		# 							input$M_f,
 		# 							input$k_f,
@@ -425,6 +589,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 	  	file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
 		file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
 	
+		#if()
+
 		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
@@ -804,38 +970,49 @@ SS.file.update<-observeEvent(input$run_SS,{
 		 	 Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
 			 SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
 			 SSexecutivesummary(Model.output)		
+			 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
+			 ref.like<-min(jitter.likes)
+	    	 #Make plot and save to folder
+	    	 setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+	     	 png("jitterplot.png")
+			 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+			 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
+			 abline(h=ref.like)
+			 # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
+			 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
+			 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
+			 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
+			 # like_2_10<-round(100-(likebc+like10+like2),0)
+			 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
+			 dev.off()
 		}		
 	
 	output$Jitterplot<-renderPlot({
 		if(input$Njitter==1){return(NULL)}
 		if(input$Njitter>1)
 		{
-			 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
-			 ref.like<-min(jitter.likes)
-	     	 png("jitterplot.png")
-			 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+			 #jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
+			 #ref.like<-min(jitter.likes)
+	    	 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
 			 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
 			 abline(h=ref.like)
-			 # likebc<-if(any(ref.like==jitter.likes)) (length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100 else 0
-			 # likelessbc<-if(any(ref.like>jitter.likes)) (length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100 else 0
-			 # like10<-if(any(ref.like>jitter.likes)) (length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100 else 0
-			 # like2<-if(any(ref.like>jitter.likes)) ((length(jitter.likes[(ref.like+2)>jitter.likes])-(likelessbc+likebc))/(input$Njitter+1))*100 else 0
-			 # like_2_10<-100-(likebc+likelessbc+like10+like2)
-			 likebc<-(length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100
-			 likelessbc<-(length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100
-			 like10<-(length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100
-			 like2<-((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100
-			 like_2_10<-100-(likebc+like10+like2)
-
-			legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
-			setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
-			dev.off()
-			print(jitterplot)		
+			 # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
+			 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
+			 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
+			 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
+			 # like_2_10<-round(100-(likebc+like10+like2),0)
+			 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")	
 		}
 	})
+	
+		output$Jitterplot<-renderPlot({
+			SSplotComparisons(mysummary, legendlabels = c(1:input$Njitter), ylimAdj = 1.30, subplot = c(1,3), new = FALSE)
+	
+			})
 	}
 		
 	
+
 		#Convergence diagnostics
 		output$converge.grad <- renderText({
  				max.grad<-paste0("Maximum gradient: ",Model.output$maximum_gradient_component)
