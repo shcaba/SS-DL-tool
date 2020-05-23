@@ -15,7 +15,7 @@ Running the tool can be accomplished in any of the following ways:
 1) runApp(ENTER HERE USER PATH TO FOLDER CONTAINING THE SS-DL files)
 2) Open the server.r or ui.r files in RStudio and push the "Run App" button (top rigt corner of the source panel). 
 I recommend using the "Run External" option within the "Run App" button (see small arrow in button to change options)
-3) runGitHub("SS-DL-tool", "shcaba")
+3) runGitHub("SS-DL-tool", "shcaba",destdir=mydir) where mydir is the path you chose to obtain results.
 ```
 
 ## SS-DL tool features the following data-limited applications
