@@ -589,8 +589,6 @@ SS.file.update<-observeEvent(input$run_SS,{
 	  	file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
 		file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
 	
-		#if()
-
 		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
