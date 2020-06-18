@@ -8,6 +8,11 @@ The tool builds Stock Synthesis files for provided data and life history informa
 ```R
 install.packages("shiny","shinyjs","r4ss","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","sss")
 
+Make sure the following packages are using the most recent versions:
+install.packages("devtools")
+library(devtools)
+devtools::install_github("shcaba/SSS", build_vignettes = TRUE)
+
 Load the Shiny library
 library(shiny)
 

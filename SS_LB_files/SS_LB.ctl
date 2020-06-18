@@ -58,7 +58,7 @@
 #
 1 #_maturity_option:  1=length logistic; 2=age logistic; 3=read age-maturity matrix by growth_pattern; 4=read age-fecundity; 5=disabled; 6=read length-maturity
 0 #_First_Mature_Age
-1 #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W
+3 #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W
 0 #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn
 1 #_parameter_offset_approach (1=none, 2= M, G, CV_G as offset from female-GP1, 3=like SS2 V1.x)
 #
@@ -78,8 +78,8 @@
 # Sex: 1  BioPattern: 1  Maturity&Fecundity
  0.0001 1000 36.3 19.7 99 0 -99 0 0 0 0 0 0 0 # Mat50%_Fem_GP_1
  -2 4 -0.5 -1 99 0 -99 0 0 0 0 0 0 0 # Mat_slope_Fem_GP_1
- -3 3 1 1 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_scalar_Fem_GP_1
- -3 3 0 0 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_exp_len_Fem_GP_1
+ 0 3 1 1 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_scalar_Fem_GP_1
+ 0 3 1 1 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_exp_len_Fem_GP_1
 # Sex: 2  BioPattern: 1  NatMort
  0.001 2 0.18 -2.92 0.22 3 -1 0 0 0 0 0 0 0 # NatM_p_1_Mal_GP_1
 # Sex: 2  BioPattern: 1  Growth

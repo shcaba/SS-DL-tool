@@ -173,7 +173,7 @@
 #_yr month fleet sex part Nsamp datavector(female-male)
 # Commercial Fishery 
 # fishyr	month	fleet	gender	partition	effN	L11	L12	L13	L14	L15	L16	L17	L18	L19	L20	L21	L22	L23	L24	L25	L26	L27	L28	L29	L30	L31	L32	L33	L34	L35	L36	L37	L38	L39	L40	L41	L42	L43	L44	L45	L46	L47	L11	L12	L13	L14	L15	L16	L17	L18	L19	L20	L21	L22	L23	L24	L25	L26	L27	L28	L29	L30	L31	L32	L33	L34	L35	L36	L37	L38	L39	L40	L41	L42	L43	L44	L45	L46	L47
- -9999 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+#-9999	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 # Large sections of lengths had negative sample size in the previous model and have been omitted above
 #
 0 #_N_age_bins
