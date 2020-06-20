@@ -109,37 +109,40 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){
 onclick("est_LHparms",id="panel_SS_est")
 
 
-observe({
-      shinyjs::hide("panel_SSS")
-      shinyjs::hide("panel_SSLO_LH")
-      shinyjs::hide("panel_SSLO_fixed")
-      shinyjs::hide("panel_SS_LH")
-    	shinyjs::hide("panel_SS_fixed")
-    	shinyjs::hide("panel_SS_est")
+# observe({
+#       shinyjs::hide("panel_SSS")
+#       shinyjs::hide("panel_SSLO_LH")
+#       shinyjs::hide("panel_SSLO_fixed")
+#       shinyjs::hide("panel_SS_LH_fixed")
+#     	shinyjs::hide("panel_SS_fixed")
+#       shinyjs::hide("panel_SS_LH_est")
+#     	shinyjs::hide("panel_SS_est")
     	
-    	shinyjs::hide("panel_SS_stock_status") 
+#     	shinyjs::hide("panel_SS_stock_status") 
  
-    	shinyjs::hide("panel_SSS_prod")
-    	shinyjs::hide("panel_SS_prod_fixed")
-    	shinyjs::hide("panel_SS_prod_est")
+#     	shinyjs::hide("panel_SSS_prod")
+#     	shinyjs::hide("panel_SS_prod_fixed")
+#     	shinyjs::hide("panel_SS_prod_est")
  
-    	shinyjs::hide("panel_selectivity")
+#     	shinyjs::hide("panel_selectivity")
  
-    	shinyjs::hide("panel_SS_recdevs")
+#     	shinyjs::hide("panel_SS_recdevs")
  
-    	shinyjs::hide("panel_SS_jitter")    		
+#     	shinyjs::hide("panel_SS_jitter")    		
 
-      shinyjs::hide("run_SSS")
-      shinyjs::hide("run_SS")
-  })
+#       shinyjs::hide("run_SSS")
+#       shinyjs::hide("run_SS")
+#   })
+
 
 observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)), {
       shinyjs::show("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
-      shinyjs::hide("panel_SS_LH")
-    	shinyjs::hide("panel_SS_fixed")
-    	shinyjs::hide("panel_SS_est")
+      shinyjs::hide("panel_SS_LH_fixed")
+      shinyjs::hide("panel_SS_fixed")
+      shinyjs::hide("panel_SS_LH_est")
+      shinyjs::hide("panel_SS_est")
 
     	shinyjs::show("panel_SS_stock_status") 
 
@@ -158,13 +161,14 @@ observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)
 
   })
 
-observeEvent(req(any(c(!is.null(input$file1),!is.null(input$file3)))&is.null(input$file2)), {
+observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2))), {
       shinyjs::hide("panel_SSS")
       shinyjs::show("panel_SSLO_LH")
       shinyjs::show("panel_SSLO_fixed")
-      shinyjs::hide("panel_SS_LH")
-    	shinyjs::hide("panel_SS_fixed")
-	   	shinyjs::hide("panel_SS_est")
+      shinyjs::hide("panel_SS_LH_fixed")
+      shinyjs::hide("panel_SS_fixed")
+      shinyjs::hide("panel_SS_LH_est")
+      shinyjs::hide("panel_SS_est")
 
     	shinyjs::hide("panel_SS_stock_status") 
 
@@ -182,6 +186,32 @@ observeEvent(req(any(c(!is.null(input$file1),!is.null(input$file3)))&is.null(inp
       shinyjs::show("run_SS")
   })	
 
+observeEvent(req(any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2)))), {
+#print(all(!is.null(c(input$file1,input$file2)),is.null(input$file3)))
+#print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
+      shinyjs::hide("panel_SSS")
+      shinyjs::hide("panel_SSLO_LH")
+      shinyjs::hide("panel_SSLO_fixed")
+      shinyjs::show("panel_SS_LH_fixed")
+      shinyjs::show("panel_SS_fixed")
+      shinyjs::hide("panel_SS_LH_est")
+      shinyjs::hide("panel_SS_est")
+
+      shinyjs::hide("panel_SS_stock_status") 
+
+      shinyjs::hide("panel_SSS_prod")
+      shinyjs::show("panel_SS_prod_fixed")
+      shinyjs::hide("panel_SS_prod_est")
+
+      shinyjs::show("panel_selectivity")
+
+      shinyjs::show("panel_SS_recdevs")
+
+      shinyjs::show("panel_SS_jitter")        
+ 
+      shinyjs::hide("run_SSS")
+      shinyjs::show("run_SS")
+   })
 
 # observeEvent(all(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))), {
 # #print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
@@ -210,11 +240,12 @@ observeEvent(req(any(c(!is.null(input$file1),!is.null(input$file3)))&is.null(inp
 
 # observeEvent(all(input$est_LHparms&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))), {
 #       shinyjs::hide("panel_SSS")
-#       shinyjs::hide("panel_SSLO_LH")
-#       shinyjs::hide("panel_SSLO_fixed")
-#       shinyjs::show("panel_SS_LH")
-#       shinyjs::hide("panel_SS_fixed")
-#       shinyjs::show("panel_SS_est")
+      # shinyjs::hide("panel_SSLO_LH")
+      # shinyjs::hide("panel_SSLO_fixed")
+      # shinyjs::hide("panel_SS_LH_fixed")
+      # shinyjs::hide("panel_SS_fixed")
+      # shinyjs::show("panel_SS_LH_est")
+      # shinyjs::show("panel_SS_est")
 
 #     	shinyjs::hide("panel_SS_stock_status") 
 
