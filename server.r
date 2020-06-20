@@ -139,6 +139,7 @@ observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)
       shinyjs::show("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
+      shinyjs::hide("panel_SS_LH_fixed_est_tog")
       shinyjs::hide("panel_SS_LH_fixed")
       shinyjs::hide("panel_SS_fixed")
       shinyjs::hide("panel_SS_LH_est")
@@ -165,6 +166,7 @@ observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2)))
       shinyjs::hide("panel_SSS")
       shinyjs::show("panel_SSLO_LH")
       shinyjs::show("panel_SSLO_fixed")
+      shinyjs::hide("panel_SS_LH_fixed_est_tog")
       shinyjs::hide("panel_SS_LH_fixed")
       shinyjs::hide("panel_SS_fixed")
       shinyjs::hide("panel_SS_LH_est")
@@ -186,12 +188,18 @@ observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2)))
       shinyjs::show("run_SS")
   })	
 
-observeEvent(req(any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2)))), {
+# est.onoff<-reactive({
+# input$est_parms
+#   })
+
+observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
 #print(all(!is.null(c(input$file1,input$file2)),is.null(input$file3)))
 #print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
+      #print(est.onoff)
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
+      shinyjs::show("panel_SS_LH_fixed_est_tog")
       shinyjs::show("panel_SS_LH_fixed")
       shinyjs::show("panel_SS_fixed")
       shinyjs::hide("panel_SS_LH_est")
@@ -212,6 +220,64 @@ observeEvent(req(any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.nu
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
    })
+
+
+observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
+#print(all(!is.null(c(input$file1,input$file2)),is.null(input$file3)))
+#print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
+      #print(est.onoff)
+      shinyjs::hide("panel_SSS")
+      shinyjs::hide("panel_SSLO_LH")
+      shinyjs::hide("panel_SSLO_fixed")
+      shinyjs::show("panel_SS_LH_fixed_est_tog")
+      shinyjs::hide("panel_SS_LH_fixed")
+      shinyjs::hide("panel_SS_fixed")
+      shinyjs::show("panel_SS_LH_est")
+      shinyjs::show("panel_SS_est")
+
+      shinyjs::hide("panel_SS_stock_status") 
+
+      shinyjs::hide("panel_SSS_prod")
+      shinyjs::hide("panel_SS_prod_fixed")
+      shinyjs::show("panel_SS_prod_est")
+
+      shinyjs::show("panel_selectivity")
+
+      shinyjs::show("panel_SS_recdevs")
+
+      shinyjs::show("panel_SS_jitter")        
+ 
+      shinyjs::hide("run_SSS")
+      shinyjs::show("run_SS")
+   })
+
+# observeEvent(req(any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2)))), {
+# #print(all(!is.null(c(input$file1,input$file2)),is.null(input$file3)))
+# #print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
+#       shinyjs::hide("panel_SSS")
+#       shinyjs::hide("panel_SSLO_LH")
+#       shinyjs::hide("panel_SSLO_fixed")
+#       shinyjs::hide("panel_SS_LH_fixed")
+#       shinyjs::hide("panel_SS_fixed")
+#       shinyjs::show("panel_SS_LH_est")
+#       shinyjs::show("panel_SS_est")
+
+#       shinyjs::hide("panel_SS_stock_status") 
+
+#       shinyjs::hide("panel_SSS_prod")
+#       shinyjs::hide("panel_SS_prod_fixed")
+#       shinyjs::show("panel_SS_prod_est")
+
+#       shinyjs::show("panel_selectivity")
+
+#       shinyjs::show("panel_SS_recdevs")
+
+#       shinyjs::show("panel_SS_jitter")        
+ 
+#       shinyjs::hide("run_SSS")
+#       shinyjs::show("run_SS")
+#    })
+
 
 # observeEvent(all(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))), {
 # #print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))

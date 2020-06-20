@@ -107,6 +107,15 @@ wellPanel(
     )
     ),
 
+shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
+  fluidRow(column(width=10,switchInput("est_parms","Estimate parameters?",
+    value=FALSE,
+    onLabel = "YES",
+    offLabel = "NO",
+    onStatus = "success",
+    offStatus = "danger"))),             
+)),
+
   shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed",
     h3("Life history inputs"),
         wellPanel(id="panel_SS_fixed",
@@ -139,6 +148,7 @@ wellPanel(
 
     shinyjs::hidden(wellPanel(id="panel_SS_LH_est",
     h3("Life history inputs"),
+#      fluidRow(column(width=10,switchInput("est_parms2","Estimate parameters?",value=TRUE))),      
       wellPanel(id="panel_SS_est",
       h4(em("Female")),
       fluidRow(column(width=6,numericInput("Nages","Max. age", value=NA,min=1, max=1000, step=1))),
