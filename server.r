@@ -86,7 +86,7 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){
  
   observeEvent(input$reset_lt, {
     rv.Lt$data <- NULL
-    reset('file1')
+    shinyjs::reset('file1')
   })
 
   # observeEvent(input$reset_lt, {
@@ -98,28 +98,140 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){
 
   observeEvent(input$reset_age, {
     rv.Age$data <- NULL
-    reset('file3')
+    shinyjs::reset('file3')
   })
 
   observeEvent(input$reset_ct, {
     rv.Ct$data <- NULL
-    reset('file2')
+      shinyjs::reset('file2')
   })
 
-# observeEvent(, {
-#     if(is.null(input$file1))
-#     {
-#    		shinyjs::hideElement(id= "panel_LH")
-#     }
-#   })
+onclick("est_LHparms",id="panel_SS_est")
+
+
+observe({
+      shinyjs::hide("panel_SSS")
+      shinyjs::hide("panel_SSLO_LH")
+      shinyjs::hide("panel_SSLO_fixed")
+      shinyjs::hide("panel_SS_LH")
+    	shinyjs::hide("panel_SS_fixed")
+    	shinyjs::hide("panel_SS_est")
+    	
+    	shinyjs::hide("panel_SS_stock_status") 
+ 
+    	shinyjs::hide("panel_SSS_prod")
+    	shinyjs::hide("panel_SS_prod_fixed")
+    	shinyjs::hide("panel_SS_prod_est")
+ 
+    	shinyjs::hide("panel_selectivity")
+ 
+    	shinyjs::hide("panel_SS_recdevs")
+ 
+    	shinyjs::hide("panel_SS_jitter")    		
+
+      shinyjs::hide("run_SSS")
+      shinyjs::hide("run_SS")
+  })
+
 observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)), {
-    	shinyjs::showElement(id= "panel_SSS")
+      shinyjs::show("panel_SSS")
+      shinyjs::hide("panel_SSLO_LH")
+      shinyjs::hide("panel_SSLO_fixed")
+      shinyjs::hide("panel_SS_LH")
+    	shinyjs::hide("panel_SS_fixed")
+    	shinyjs::hide("panel_SS_est")
+
+    	shinyjs::show("panel_SS_stock_status") 
+
+    	shinyjs::show("panel_SSS_prod")
+    	shinyjs::hide("panel_SS_prod_fixed")
+    	shinyjs::hide("panel_SS_prod_est")
+
+    	shinyjs::show("panel_selectivity")
+
+    	shinyjs::hide("panel_SS_recdevs")
+
+    	shinyjs::hide("panel_SS_jitter")    		
+
+    	shinyjs::show("run_SSS")
+    	shinyjs::hide("run_SS")
+
   })
 
+observeEvent(req(any(c(!is.null(input$file1),!is.null(input$file3)))&is.null(input$file2)), {
+      shinyjs::hide("panel_SSS")
+      shinyjs::show("panel_SSLO_LH")
+      shinyjs::show("panel_SSLO_fixed")
+      shinyjs::hide("panel_SS_LH")
+    	shinyjs::hide("panel_SS_fixed")
+	   	shinyjs::hide("panel_SS_est")
 
-observeEvent(req(!is.null(input$file1)), {
-    	shinyjs::showElement(id= "panel_SS")
-  })
+    	shinyjs::hide("panel_SS_stock_status") 
+
+	   	shinyjs::hide("panel_SSS_prod")
+    	shinyjs::show("panel_SS_prod_fixed")
+    	shinyjs::hide("panel_SS_prod_est")
+
+    	shinyjs::show("panel_selectivity")
+
+    	shinyjs::show("panel_SS_recdevs")
+
+    	shinyjs::show("panel_SS_jitter")    		
+ 
+    	shinyjs::hide("run_SSS")
+      shinyjs::show("run_SS")
+  })	
+
+
+# observeEvent(all(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))), {
+# #print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
+#       shinyjs::hide("panel_SSS")
+#       shinyjs::hide("panel_SSLO_LH")
+#       shinyjs::hide("panel_SSLO_fixed")
+#       shinyjs::show("panel_SS_LH")
+#       shinyjs::show("panel_SS_fixed")
+#       shinyjs::hide("panel_SS_est")
+
+#       shinyjs::hide("panel_SS_stock_status") 
+
+#       shinyjs::hide("panel_SSS_prod")
+#       shinyjs::show("panel_SS_prod_fixed")
+#       shinyjs::hide("panel_SS_prod_est")
+
+#       shinyjs::show("panel_selectivity")
+
+#       shinyjs::show("panel_SS_recdevs")
+
+#       shinyjs::show("panel_SS_jitter")        
+ 
+#       shinyjs::hide("run_SSS")
+#       shinyjs::show("run_SS")
+#    })
+
+# observeEvent(all(input$est_LHparms&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))), {
+#       shinyjs::hide("panel_SSS")
+#       shinyjs::hide("panel_SSLO_LH")
+#       shinyjs::hide("panel_SSLO_fixed")
+#       shinyjs::show("panel_SS_LH")
+#       shinyjs::hide("panel_SS_fixed")
+#       shinyjs::show("panel_SS_est")
+
+#     	shinyjs::hide("panel_SS_stock_status") 
+
+#  	  	shinyjs::hide("panel_SSS_prod")
+#     	shinyjs::hide("panel_SS_prod_fixed")
+#      	shinyjs::show("panel_SS_prod_est")
+
+#      	shinyjs::show("panel_selectivity")
+
+#    	  shinyjs::show("panel_SS_recdevs")
+
+#     	shinyjs::show("panel_SS_jitter")    		
+ 
+#       shinyjs::hide("run_SSS")
+#       shinyjs::show("run_SS")
+#    })
+
 
 
 ########################################
@@ -393,7 +505,6 @@ observeEvent(req(!is.null(input$file1)), {
 	output$Ltplot<-renderPlot({ 
 		  inFile <- input$file1 
 		  if (is.null(inFile)) return(NULL) 
-		   
 		  read.csv(inFile$datapath, check.names=FALSE) %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
@@ -465,7 +576,7 @@ output$Ctplot <- renderPlot({
 		    pivot_longer(-1, names_to = "Fleet", values_to = "catch") %>%  
 		    ggplot(aes_string(names(.)[1], "catch", color = "Fleet")) +  
 		    geom_point() +  
-		    geom_line() + 
+		    geom_line(lwd=1.5) + 
 		    ylab("Removals") + 
 		    xlab("Year") +  
 		    scale_color_viridis_d() 
@@ -549,7 +660,97 @@ output$VBGFplot<-renderPlot({
 	}) 
 
 #############################################
-### PREPARE FILES andD RUN Stock Synthsis ###
+######## PREPARE FILES andD RUN SSS #########
+#############################################
+SSS.run<-observeEvent(input$run_SSS,{
+		progress <- shiny::Progress$new(session, min=1, max=2)
+           on.exit(progress$close())
+       
+           progress$set(message = 'Model run in progress',
+                        detail = '')
+       
+           for (i in 1:2) {
+             progress$set(value = i)
+             Sys.sleep(0.5)
+           }
+  	
+  	#Copy and move files
+	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
+			{
+				unlink(paste0(getwd(),"/Scenarios/",input$Scenario_name),recursive=TRUE)
+#				file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+			}
+	  	#if(input$)
+	  		{
+	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_BH"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
+				file.rename(paste0(getwd(),"/Scenarios/sssexample_BH"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
+			}
+	
+	  	#if()
+	  		{
+	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
+				file.rename(paste0(getwd(),"/Scenarios/sssexample_RickPow"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
+			}
+		
+		#Read data and control files
+		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.dat")) 
+		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
+		
+		#Read, edit then write new DATA file
+		data.file$styr<-input$styr
+		data.file$endyr<-input$endyr
+		data.file$Nages<-input$Nages
+
+	#Catches
+		inCatch<- input$file2
+		Catch.data<-read.csv(inCatch$datapath,header=TRUE)
+		data.file$Nfleets<-ncol(Catch.data)
+		if((data.file$Nfleets-1)>1){
+			for(i in 1:(data.file$Nfleets-1))
+			{
+				data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
+				data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
+			}
+			data.file$fleetinfo$fleetname<-c(paste0("Fishery",1:data.file$Nfleets),"Depl")
+			data.file$CPUEinfo[,1]<-1:data.file$Nfleets
+		}
+		year.in<-Catch.data[,1]
+		catch.cols<-colnames(data.file$catch)
+		catch_temp<-list()
+		for(i in 1:data.file$Nfleets)
+		{
+			catch_temp[[i]]<-data.frame(
+						c(-999,year.in),
+						rep(1,length(year.in)+1),
+						rep(i,length(year.in)+1),
+						c(0.0001,Catch.data[,i+1]),
+						rep(0.01,length(year.in)+1)
+						)
+		}
+		data.file$catch<-list.rbind(catch_temp)
+		colnames(data.file$catch)<-catch.cols
+		
+	#Length composition data
+		if(input$Linf_f_mean_sss>30){data.file$binwidth<-2}
+		data.file$minimum_size<-floor(input$Linf_f_mean_sss/10)
+		data.file$maximum_size<-ceiling(input$Linf_f_mean_sss+(input$Linf_f_mean_sss*0.1))
+		
+	#Age composition data
+		if (is.null(inFile_age)){
+		data.file$N_agebins<-input$Nages
+		data.file$agebin_vector<-1:input$Nages		
+		data.file$ageerror<-data.frame(matrix(c(rep(-1,(input$Nages+1)),rep(0.001,(input$Nages+1))),2,(input$Nages+1),byrow=TRUE))
+		colnames(data.file$ageerror)<-paste0("age",1:input$Nages)		
+			}
+		
+		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.dat"),overwrite=TRUE)			
+		####################### END DATA FILE #####################################
+
+})
+
+
+#############################################
+### PREPARE FILES andD RUN Length and Age-based Stock Synthsis ###
 #############################################
 SS.file.update<-observeEvent(input$run_SS,{
 		# if(is.null(inFile) | !anyNA(inp$
@@ -947,66 +1148,69 @@ SS.file.update<-observeEvent(input$run_SS,{
 		#Make SS plots	
 		SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
 		#Make SS tables
-		SSexecutivesummary(Model.output)		
+		try(SSexecutivesummary(Model.output))		
 			 
 		#Run multiple jitters
 		if(input$jitter_choice)
 		{
-	if(input$Njitter>1)
-		{
-			 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = FALSE)
-			 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
-			 profilesummary <- SSsummarize(profilemodels)
-			 minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
-			 #Find best fit model
-			 index.minlikes<-c(1:length(minlikes))[minlikes]
-			 file.copy(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
-	         starter.file$init_values_src<-1
-		 	 SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
-		 	 #R-run to get new best fit model
-			 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
-		 	 Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
-			 SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
-			 SSexecutivesummary(Model.output)		
-			 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
-			 ref.like<-min(jitter.likes)
-	    	 #Make plot and save to folder
-	    	 setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
-	     	 png("jitterplot.png")
-			 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
-			 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
-			 abline(h=ref.like)
-			 # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
-			 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
-			 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
-			 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
-			 # like_2_10<-round(100-(likebc+like10+like2),0)
-			 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
-			 dev.off()
+			if(input$Njitter>1)
+			{
+				 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = FALSE)
+				 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
+				 profilesummary <- SSsummarize(profilemodels)
+				 minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
+				 #Find best fit model
+				 index.minlikes<-c(1:length(minlikes))[minlikes]
+				 file.copy(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
+		         starter.file$init_values_src<-1
+			 	 SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
+			 	 #R-run to get new best fit model
+				 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
+			 	 Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+				 SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
+				 SSexecutivesummary(Model.output)		
+				 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
+				 ref.like<-min(jitter.likes)
+		    	 #Make plot and save to folder
+		    	 setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+		     	 png("jitterplot.png")
+				 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+				 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
+				 abline(h=ref.like)
+				 # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
+				 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
+				 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
+				 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
+				 # like_2_10<-round(100-(likebc+like10+like2),0)
+				 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
+				 dev.off()
+
+				output$Jitterplot<-renderPlot({
+				#	if(input$Njitter==1){return(NULL)}
+				#	if(input$Njitter>1)
+				# {
+				 #jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
+				 #ref.like<-min(jitter.likes)
+		    	 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+				 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
+				 abline(h=ref.like)
+				 # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
+				 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
+				 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
+				 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
+				 # like_2_10<-round(100-(likebc+like10+like2),0)
+				 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")	
+				# }
+				})
+			#Spawning output comp
+			output$Jittercompplot1<-renderPlot({
+				SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(1), new = FALSE)
+				})
+			#Relative stock status comp
+			output$Jittercompplot2<-renderPlot({
+				SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE)
+				})
 		}		
-	
-	output$Jitterplot<-renderPlot({
-		if(input$Njitter==1){return(NULL)}
-		if(input$Njitter>1)
-		{
-			 #jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
-			 #ref.like<-min(jitter.likes)
-	    	 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
-			 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
-			 abline(h=ref.like)
-			 # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
-			 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
-			 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
-			 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
-			 # like_2_10<-round(100-(likebc+like10+like2),0)
-			 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")	
-		}
-	})
-	
-		output$Jitterplot<-renderPlot({
-			SSplotComparisons(mysummary, legendlabels = c(1:input$Njitter), ylimAdj = 1.30, subplot = c(1,3), new = FALSE)
-	
-			})
 	}
 		
 	
