@@ -347,6 +347,79 @@ Nages<-reactive({
     Nages
   })
 
+M_f_in<-reactive({
+  M_f_in<-NA
+    if(all(c(is.null(input$M_f),is.null(input$M_f_fix),is.null(input$M_f_mean),is.null(input$M_f_mean_sss)))) return(NULL)
+    if(!is.na(input$M_f)) {M_f_in<-input$M_f}
+    if(!is.na(input$M_f_fix)) {M_f_in<-input$M_f_fix}
+    if(!is.na(input$M_f_mean)) {M_f_in<-input$M_f_mean}
+    if(!is.na(input$M_f_mean_sss)) {M_f_in<-input$M_f_mean_sss}
+    M_f_in
+  })
+
+M_m_in<-reactive({
+  M_m_in<-NA
+    if(all(c(is.null(input$M_m),is.null(input$M_m_fix),is.null(input$M_m_mean),is.null(input$M_m_mean_sss)))) return(NULL)
+    if(!is.na(input$M_m)) {M_m_in<-input$M_m}
+    if(!is.na(input$M_m_fix)) {M_m_in<-input$M_m_fix}
+    if(!is.na(input$M_m_mean)) {M_m_in<-input$M_m_mean}
+    if(!is.na(input$M_m_mean_sss)) {M_m_in<-input$M_m_mean_sss}
+    M_m_in
+  })
+
+
+Linf<-reactive({
+  Linf<-NA
+    if(all(c(is.null(input$Linf_f),is.null(input$Linf_f_fix),is.null(input$Linf_f_mean),is.null(input$Linf_f_mean_sss)))) return(NULL)
+    if(!is.na(input$Linf_f)) {Linf<-input$Linf_f}
+    if(!is.na(input$Linf_f_fix)) {Linf<-input$Linf_f_fix}
+    if(!is.na(input$Linf_f_mean)) {Linf<-input$Linf_f_mean}
+    if(!is.na(input$Linf_f_mean_sss)) {Linf<-input$Linf_f_mean_sss}
+    Linf
+  })
+
+k_vbgf<-reactive({
+  k_vbgf<-NA
+    if(all(c(is.null(input$k_f),is.null(input$k_f_fix),is.null(input$k_f_mean),is.null(input$k_f_mean_sss)))) return(NULL)
+    if(!is.na(input$k_f)) {k_vbgf<-input$k_f}
+    if(!is.na(input$k_f_fix)) {k_vbgf<-input$k_f_fix}
+    if(!is.na(input$k_f_mean)) {k_vbgf<-input$k_f_mean}
+    if(!is.na(input$k_f_mean_sss)) {k_vbgf<-input$k_f_mean_sss}
+    k_vbgf
+  })
+
+
+t0_vbgf<-reactive({
+  t0_vbgf<-NA
+    if(all(c(is.null(input$t0_f),is.null(input$t0_f_fix),is.null(input$t0_f_mean),is.null(input$t0_f_mean_sss)))) return(NULL)
+    if(!is.na(input$t0_f)) {t0_vbgf<-input$t0_f}
+    if(!is.na(input$t0_f_fix)) {t0_vbgf<-input$t0_f_fix}
+    if(!is.na(input$t0_f_mean)) {t0_vbgf<-input$t0_f_mean}
+    if(!is.na(input$t0_f_mean_sss)) {t0_vbgf<-input$t0_f_mean_sss}
+    t0_vbgf
+  })
+
+
+L50<-reactive({
+  L50<-NA
+    if(all(c(is.null(input$L50_f),is.null(input$L50_f_fix),is.null(input$L50_f_est),is.null(input$L50_f_sss)))) return(NULL)
+    if(!is.na(input$L50_f)) {L50<-input$L50_f}
+    if(!is.na(input$L50_f_fix)) {L50<-input$L50_f_fix}
+    if(!is.na(input$L50_f_est)) {L50<-input$L50_f_mean}
+    if(!is.na(input$L50_f_sss)) {L50<-input$L50_f_mean_sss}
+    L50
+  })
+
+L95<-reactive({
+  L95<-NA
+    if(all(c(is.null(input$L95_f),is.null(input$L95_f_fix),is.null(input$L95_f_est),is.null(input$L95_f_sss)))) return(NULL)
+    if(!is.na(input$L95_f)) {L95<-input$L95_f}
+    if(!is.na(input$L95_f_fix)) {L95<-input$L95_f_fix}
+    if(!is.na(input$L95_f_est)) {L95<-input$L95_f_mean}
+    if(!is.na(input$L95_f_sss)) {L95<-input$L95_f_mean_sss}
+    L95
+  })
+
 output$Model_dims1 <- renderUI({ 
         inFile1 = input$file1 
         inFile2 = input$file2 
@@ -355,8 +428,8 @@ output$Model_dims1 <- renderUI({
         if (!is.null(inFile1) & is.null(inFile2)){ 
             Lt.comp.data = read.csv(inFile1$datapath,check.names=FALSE) 
               styr.in =  min(Lt.comp.data[,1]) 
-              if(!(anyNA(c(input$Linf_f, input$k_f,input$t0_f)))){ 
-                styr.in = min(Lt.comp.data[,1])-round(VBGF.age(input$Linf_f, input$k_f, input$t0_f, input$Linf_f*0.95)) 
+              if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))){ 
+                styr.in = min(Lt.comp.data[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
               } 
             fluidRow(column(width=4, numericInput("styr", "Starting year",  
                                                   value=styr.in, min=1, max=10000, step=1)), 
@@ -716,10 +789,10 @@ output$Ctplot <- renderPlot({
 
 #Plot M by age
 output$Mplot<-renderPlot({ 
-			mf.in = input$M_f 
-			mm.in = input$M_f 
+			mf.in = M_f_in() 
+			mm.in = M_f_in() 
 			if(input$male_parms){ 
-			  mm.in = input$M_m 
+			  mm.in = M_m_in() 
 			  }		 
 			if(any(is.na(c(mf.in, mm.in)))) return(NULL) 
 			Female_M = data.frame(Ages = 0:Nages(), PopN = exp(-mf.in * 0:Nages()), Sex="Female") 
@@ -732,11 +805,11 @@ output$Mplot<-renderPlot({
 
 #Plot VBGF and maturity
 output$VBGFplot<-renderPlot({ 
-   	f_Linf = m_Linf = input$Linf_f 
-   	f_k = m_k = input$k_f 
-   	f_t0 = m_t0 = input$t0_f 
-	f_L50 = input$L50_f 
-	f_L95 = input$L95_f 
+   	f_Linf = m_Linf = Linf() 
+   	f_k = m_k = k_vbgf() 
+   	f_t0 = m_t0 = t0_vbgf() 
+	f_L50 = L50() 
+	f_L95 = L95() 
 	maxage = Nages() 
 	if(input$male_parms){ 
 				m_Linf = input$Linf_m 
@@ -763,7 +836,6 @@ output$VBGFplot<-renderPlot({
   	 vbgf.plot 
   	 } 
 	}) 
-#browser()
 
 #############################################
 ######## PREPARE FILES andD RUN SSS #########
