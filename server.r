@@ -337,48 +337,57 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(input$file1),!is.nul
 # User activated pop-up parameter values ---------------
 
 #Model dimensions
+Nages<-reactive({
+    Nages<-NA
+    if(all(c(is.null(input$M_f),is.null(input$M_f_fix),is.null(input$M_f_mean),is.null(input$M_f_mean_sss)))) return(NULL)
+    if(!is.na(input$M_f)) {Nages<-5.4/input$M_f}
+    if(!is.na(input$M_f_fix)) {Nages<-5.4/input$M_f_fix}
+    if(!is.na(input$M_f_mean)) {Nages<-5.4/input$M_f_mean}
+    if(!is.na(input$M_f_mean_sss)) {Nages<-5.4/input$M_f_mean_sss}
+    Nages
+  })
+
 output$Model_dims1 <- renderUI({ 
-			  inFile1 = input$file1 
-				inFile2 = input$file2 
-				 
-				if (is.null(inFile1) & is.null(inFile2)) return(NULL) 
-				if (!is.null(inFile1) & is.null(inFile2)){ 
-						Lt.comp.data = read.csv(inFile1$datapath,check.names=FALSE) 
-			    		styr.in =  min(Lt.comp.data[,1]) 
-			    		if(!(anyNA(c(input$Linf_f, input$k_f,input$t0_f)))){ 
-			    			styr.in = min(Lt.comp.data[,1])-round(VBGF.age(input$Linf_f, input$k_f, input$t0_f, input$Linf_f*0.95)) 
-			    		print(styr.in) 
-			    		print(max(Lt.comp.data[,1])) 
-			    		} 
-						fluidRow(column(width=4, numericInput("styr", "Starting year",  
-						                                      value=styr.in, min=1, max=10000, step=1)), 
-              			column(width=4, numericInput("endyr","Ending year",  
-              			                             value=max(Lt.comp.data[,1]), min=1, max=10000, step=1)))						 
-					} 
-		})
+        inFile1 = input$file1 
+        inFile2 = input$file2 
+         
+        if (is.null(inFile1) & is.null(inFile2)) return(NULL) 
+        if (!is.null(inFile1) & is.null(inFile2)){ 
+            Lt.comp.data = read.csv(inFile1$datapath,check.names=FALSE) 
+              styr.in =  min(Lt.comp.data[,1]) 
+              if(!(anyNA(c(input$Linf_f, input$k_f,input$t0_f)))){ 
+                styr.in = min(Lt.comp.data[,1])-round(VBGF.age(input$Linf_f, input$k_f, input$t0_f, input$Linf_f*0.95)) 
+              } 
+            fluidRow(column(width=4, numericInput("styr", "Starting year",  
+                                                  value=styr.in, min=1, max=10000, step=1)), 
+                    column(width=4, numericInput("endyr","Ending year",  
+                                                 value=max(Lt.comp.data[,1]), min=1, max=10000, step=1)))            
+          } 
+    })
+
 
 output$Model_dims2 <- renderUI({ 
-				inFile2 <- input$file2 
-				if (is.null(inFile2)) return(NULL) 
-				if (!is.null(inFile2)){ 				   
-						Ct.data = read.csv(inFile2$datapath,check.names=FALSE) 
-			    		fluidRow(column(width=4, numericInput("styr", "Starting year",  
-			    		                                     value=min(Ct.data[,1]), min=1, max=10000, step=1)), 
-              			    column(width=4, numericInput("endyr", "Ending year",  
-              			                            value=max(Ct.data[,1]), min=1, max=10000, step=1)))						 
-					}	 
-		}) 
+        inFile2 <- input$file2 
+        if (is.null(inFile2)) return(NULL) 
+        if (!is.null(inFile2)){            
+            Ct.data = read.csv(inFile2$datapath,check.names=FALSE) 
+              fluidRow(column(width=4, numericInput("styr", "Starting year",  
+                                                   value=min(Ct.data[,1]), min=1, max=10000, step=1)), 
+                        column(width=4, numericInput("endyr", "Ending year",  
+                                                value=max(Ct.data[,1]), min=1, max=10000, step=1)))            
+          }  
+    }) 
 
 
-output$Female_parms_inputs_label <- reactive({
-if(!is.null(input$file1))
-	{
-		(output$Female_parms_inputs_label<- renderUI({
-			      fluidRow(column(width=6,numericInput("Nages","Max. age", value=NA,min=1, max=1000, step=1)),
-		             column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01)))    
-			      }))
-		}
-})
+# output$Female_parms_inputs_label <- reactive({
+# if(!is.null(input$file1))
+# 	{
+# 		(output$Female_parms_inputs_label<- renderUI({
+# 			      fluidRow(column(width=6,numericInput("Nages","Max. age", value=NA,min=1, max=1000, step=1)),
+# 		             column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01)))    
+# 			      }))
+# 		}
+# })
 
 
 #Male life history parameters 
@@ -713,9 +722,8 @@ output$Mplot<-renderPlot({
 			  mm.in = input$M_m 
 			  }		 
 			if(any(is.na(c(mf.in, mm.in)))) return(NULL) 
-			 
-			Female_M = data.frame(Ages = 0:input$Nages, PopN = exp(-mf.in * 0:input$Nages), Sex="Female") 
-			Male_M = data.frame(Ages = 0:input$Nages, PopN=exp(-mm.in * 0:input$Nages), Sex="Male") 
+			Female_M = data.frame(Ages = 0:Nages(), PopN = exp(-mf.in * 0:Nages()), Sex="Female") 
+			Male_M = data.frame(Ages = 0:Nages(), PopN=exp(-mm.in * 0:Nages()), Sex="Male") 
 			M_sexes <- rbind(Female_M, Male_M) 
 			ggplot(M_sexes,aes(Ages, PopN, color=Sex))+ 
 					geom_line(aes(linetype=Sex), lwd=2)+ 
@@ -729,17 +737,17 @@ output$VBGFplot<-renderPlot({
    	f_t0 = m_t0 = input$t0_f 
 	f_L50 = input$L50_f 
 	f_L95 = input$L95_f 
-	maxage = input$Nages 
+	maxage = Nages() 
 	if(input$male_parms){ 
 				m_Linf = input$Linf_m 
 			   	m_k = input$k_m 
 			   	m_t0 = input$t0_m 
 			}		 
    if(any(is.na(c(f_Linf, f_k, f_t0)))=="FALSE"){ 
-		vbgf_female = data.frame(Age = 0:input$Nages,  
-		                         Length = VBGF(f_Linf, f_k, f_t0, 0:input$Nages), Sex="Female") 
-    vbgf_male = data.frame(Age = 0:input$Nages,  
-                           Length=VBGF(m_Linf, m_k, f_t0, 0:input$Nages), Sex="Male") 
+		vbgf_female = data.frame(Age = 0:Nages(),  
+		                         Length = VBGF(f_Linf, f_k, f_t0, 0:Nages()), Sex="Female") 
+    vbgf_male = data.frame(Age = 0:Nages(),  
+                           Length=VBGF(m_Linf, m_k, f_t0, 0:Nages()), Sex="Male") 
       	rbind(vbgf_female,vbgf_male) %>%  
       	  ggplot(aes(Age, Length, color=Sex)) + 
       				geom_line(aes(linetype=Sex), lwd=2) -> vbgf.plot  
@@ -750,11 +758,12 @@ output$VBGFplot<-renderPlot({
         vbgf.plot + 
         	geom_point(data = age.mat, aes(Age, Length), color = "darkorange", size=6) + 
         	geom_text(data = age.mat,label=c("Lmat50%", "Lmat95%"), 
-        	          nudge_x = -0.1 * input$Nages, color="black") -> vbgf.plot 
+        	          nudge_x = -0.1 * Nages(), color="black") -> vbgf.plot 
        } 
   	 vbgf.plot 
   	 } 
 	}) 
+#browser()
 
 #############################################
 ######## PREPARE FILES andD RUN SSS #########
@@ -796,7 +805,7 @@ SSS.run<-observeEvent(input$run_SSS,{
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
-		data.file$Nages<-input$Nages
+		data.file$Nages<-Nages()
 
 	#Catches
 		inCatch<- input$file2
@@ -834,10 +843,10 @@ SSS.run<-observeEvent(input$run_SSS,{
 		
 	#Age composition data
 		if (is.null(inFile_age)){
-		data.file$N_agebins<-input$Nages
-		data.file$agebin_vector<-1:input$Nages		
-		data.file$ageerror<-data.frame(matrix(c(rep(-1,(input$Nages+1)),rep(0.001,(input$Nages+1))),2,(input$Nages+1),byrow=TRUE))
-		colnames(data.file$ageerror)<-paste0("age",1:input$Nages)		
+		data.file$N_agebins<-Nages()
+		data.file$agebin_vector<-1:Nages()		
+		data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+		colnames(data.file$ageerror)<-paste0("age",1:Nages())		
 			}
 		
 		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.dat"),overwrite=TRUE)			
@@ -894,7 +903,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
-		data.file$Nages<-input$Nages
+		data.file$Nages<-Nages()
 
 	#Catches
 		inCatch<- input$file2
@@ -1035,10 +1044,10 @@ SS.file.update<-observeEvent(input$run_SS,{
 	#Age composition data
 		inFile_age<- input$file3
 		if (is.null(inFile_age)){
-		data.file$N_agebins<-input$Nages
-		data.file$agebin_vector<-1:input$Nages		
-		data.file$ageerror<-data.frame(matrix(c(rep(-1,(input$Nages+1)),rep(0.001,(input$Nages+1))),2,(input$Nages+1),byrow=TRUE))
-		colnames(data.file$ageerror)<-paste0("age",1:input$Nages)		
+		data.file$N_agebins<-Nages()
+		data.file$agebin_vector<-1:Nages()		
+		data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+		colnames(data.file$ageerror)<-paste0("age",1:Nages())		
 			}
 		if (!is.null(inFile_age)){
 		Age.comp.data<-read.csv(inFile_age$datapath,check.names=FALSE)
@@ -1046,7 +1055,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		data.file$N_agebins<-age.classes
 		data.file$agebin_vector<-Age.comp.data[,1]
 		data.file$ageerror<-data.frame(matrix(c(rep(-1,(age.classes+1)),rep(0.001,(age.classes+1))),2,(age.classes+1),byrow=TRUE))		
-		colnames(data.file$ageerror)<-paste0("age",1:input$Nages)		
+		colnames(data.file$ageerror)<-paste0("age",1:Nages())		
 		age.samp.yrs<-as.numeric(colnames(Age.comp.data)[-1])
 		age.data.names<-c(c("Yr","Seas","FltSvy","Gender","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",Age.comp.data[,1]),paste0("m",Age.comp.data[,1]))
 		if(length(age.samp.yrs)==1){
@@ -1089,34 +1098,72 @@ SS.file.update<-observeEvent(input$run_SS,{
 
 		####################### START CTL FILE ####################################
 		#Read, edit then write new CONTROL file
-		fem_vbgf<-VBGF(input$Linf_f,input$k_f,input$t0_f,c(0:input$Nages))
-		#Females
-		ctl.file$MG_parms[1,3]<-input$M_f			#M
-		ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]		#L0
-		ctl.file$MG_parms[3,3:4]<-input$Linf_f		#Linf
-		ctl.file$MG_parms[4,3:4]<-input$k_f			#k
-		ctl.file$MG_parms[5,3:4]<-input$CV_lt_f		#CV
-		ctl.file$MG_parms[6,3:4]<-input$CV_lt_f		#CV
-		#Maturity6
-		ctl.file$MG_parms[9,3:4]<-input$L50_f									#Lmat50%
-		ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f-input$L50_f)	#Maturity slope
-		#Males
-		ctl.file$MG_parms[13,3]<-input$M_f			#M
-		ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]		#L0
-		ctl.file$MG_parms[15,3:4]<-input$Linf_f		#Linf
-		ctl.file$MG_parms[16,3:4]<-input$k_f		#k
-		ctl.file$MG_parms[17,3:4]<-input$CV_lt_f	#CV
-		ctl.file$MG_parms[18,3:4]<-input$CV_lt_f	#CV
-		if(input$male_parms)
-			{		
-				male_vbgf<-VBGF(input$Linf_m,input$k_m,input$t0_m,c(0:input$Nages))
-				ctl.file$MG_parms[13,3]<-input$M_m			#M
-				ctl.file$MG_parms[14,3:4]<-male_vbgf[1]		#L0
-				ctl.file$MG_parms[15,3:4]<-input$Linf_m		#Linf
-				ctl.file$MG_parms[16,3:4]<-input$k_m		#k
-				ctl.file$MG_parms[17,3:4]<-input$CV_lt_m	#CV
-				ctl.file$MG_parms[18,3:4]<-input$CV_lt_m	#CV
-			}
+    #LENGTH or AGE-ONLY
+		if(all(!is.null(c(input$file1,input$file3)),is.null(input$file2))==TRUE)
+    {
+    fem_vbgf<-VBGF(input$Linf_f,input$k_f,input$t0_f,c(0:Nages()))
+    #Females
+    ctl.file$MG_parms[1,3]<-input$M_f     #M
+    ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]   #L0
+    ctl.file$MG_parms[3,3:4]<-input$Linf_f    #Linf
+    ctl.file$MG_parms[4,3:4]<-input$k_f     #k
+    ctl.file$MG_parms[5,3:4]<-input$CV_lt_f   #CV
+    ctl.file$MG_parms[6,3:4]<-input$CV_lt_f   #CV
+    #Maturity6
+    ctl.file$MG_parms[9,3:4]<-input$L50_f                 #Lmat50%
+    ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f-input$L50_f)  #Maturity slope
+    #Males
+    ctl.file$MG_parms[13,3]<-input$M_f      #M
+    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]    #L0
+    ctl.file$MG_parms[15,3:4]<-input$Linf_f   #Linf
+    ctl.file$MG_parms[16,3:4]<-input$k_f    #k
+    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f  #CV
+    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f  #CV
+    if(input$male_parms)
+      {   
+        male_vbgf<-VBGF(input$Linf_m,input$k_m,input$t0_m,c(0:Nages()))
+        ctl.file$MG_parms[13,3]<-input$M_m      #M
+        ctl.file$MG_parms[14,3:4]<-male_vbgf[1]   #L0
+        ctl.file$MG_parms[15,3:4]<-input$Linf_m   #Linf
+        ctl.file$MG_parms[16,3:4]<-input$k_m    #k
+        ctl.file$MG_parms[17,3:4]<-input$CV_lt_m  #CV
+        ctl.file$MG_parms[18,3:4]<-input$CV_lt_m  #CV
+      }
+
+    }
+
+    if(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))==TRUE)
+    {
+    fem_vbgf<-VBGF(input$Linf_f_fix,input$k_f_fix,input$t0_f_fix,c(0:Nages()))
+    #Females
+    ctl.file$MG_parms[1,3]<-input$M_f_fix     #M
+    ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]   #L0
+    ctl.file$MG_parms[3,3:4]<-input$Linf_f_fix    #Linf
+    ctl.file$MG_parms[4,3:4]<-input$k_f_fix     #k
+    ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_fix   #CV
+    ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_fix   #CV
+    #Maturity6
+    ctl.file$MG_parms[9,3:4]<-input$L50_f_fix                 #Lmat50%
+    ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_fix-input$L50_f_fix)  #Maturity slope
+    #Males
+    ctl.file$MG_parms[13,3]<-input$M_f_fix      #M
+    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]    #L0
+    ctl.file$MG_parms[15,3:4]<-input$Linf_f_fix   #Linf
+    ctl.file$MG_parms[16,3:4]<-input$k_f_fix    #k
+    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_fix  #CV
+    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_fix  #CV
+    if(input$male_parms)
+      {   
+        male_vbgf<-VBGF(input$Linf_m_fix,input$k_m_fix,input$t0_m_fix,c(0:Nages()))
+        ctl.file$MG_parms[13,3]<-input$M_m_fix      #M
+        ctl.file$MG_parms[14,3:4]<-male_vbgf[1]   #L0
+        ctl.file$MG_parms[15,3:4]<-input$Linf_m_fix   #Linf
+        ctl.file$MG_parms[16,3:4]<-input$k_m_fix    #k
+        ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_fix  #CV
+        ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_fix  #CV
+      }
+      
+    }
 
 		#S-R
 		ctl.file$SR_parms[1,3:4]<-input$lnR0	#lnR0
