@@ -108,33 +108,7 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){
 
 onclick("est_LHparms",id="panel_SS_est")
 
-
-# observe({
-#       shinyjs::hide("panel_SSS")
-#       shinyjs::hide("panel_SSLO_LH")
-#       shinyjs::hide("panel_SSLO_fixed")
-#       shinyjs::hide("panel_SS_LH_fixed")
-#     	shinyjs::hide("panel_SS_fixed")
-#       shinyjs::hide("panel_SS_LH_est")
-#     	shinyjs::hide("panel_SS_est")
-    	
-#     	shinyjs::hide("panel_SS_stock_status") 
- 
-#     	shinyjs::hide("panel_SSS_prod")
-#     	shinyjs::hide("panel_SS_prod_fixed")
-#     	shinyjs::hide("panel_SS_prod_est")
- 
-#     	shinyjs::hide("panel_selectivity")
- 
-#     	shinyjs::hide("panel_SS_recdevs")
- 
-#     	shinyjs::hide("panel_SS_jitter")    		
-
-#       shinyjs::hide("run_SSS")
-#       shinyjs::hide("run_SS")
-#   })
-
-
+#SSS panels
 observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)), {
       shinyjs::show("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
@@ -148,7 +122,8 @@ observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)
     	shinyjs::show("panel_SS_stock_status") 
 
     	shinyjs::show("panel_SSS_prod")
-    	shinyjs::hide("panel_SS_prod_fixed")
+    	shinyjs::hide("panel_SS_LO_prod")
+      shinyjs::hide("panel_SS_prod_fixed")
     	shinyjs::hide("panel_SS_prod_est")
 
     	shinyjs::show("panel_selectivity")
@@ -162,6 +137,7 @@ observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)
 
   })
 
+#SS-LO panels
 observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2))), {
       shinyjs::hide("panel_SSS")
       shinyjs::show("panel_SSLO_LH")
@@ -175,7 +151,8 @@ observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2)))
     	shinyjs::hide("panel_SS_stock_status") 
 
 	   	shinyjs::hide("panel_SSS_prod")
-    	shinyjs::show("panel_SS_prod_fixed")
+    	shinyjs::show("panel_SS_LO_prod")
+      shinyjs::hide("panel_SS_prod_fixed")
     	shinyjs::hide("panel_SS_prod_est")
 
     	shinyjs::show("panel_selectivity")
@@ -188,14 +165,8 @@ observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2)))
       shinyjs::show("run_SS")
   })	
 
-# est.onoff<-reactive({
-# input$est_parms
-#   })
 
 observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
-#print(all(!is.null(c(input$file1,input$file2)),is.null(input$file3)))
-#print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
-      #print(est.onoff)
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -208,6 +179,7 @@ observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all
       shinyjs::hide("panel_SS_stock_status") 
 
       shinyjs::hide("panel_SSS_prod")
+      shinyjs::hide("panel_SS_LO_prod")
       shinyjs::show("panel_SS_prod_fixed")
       shinyjs::hide("panel_SS_prod_est")
 
@@ -223,9 +195,6 @@ observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all
 
 
 observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
-#print(all(!is.null(c(input$file1,input$file2)),is.null(input$file3)))
-#print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
-      #print(est.onoff)
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -238,6 +207,7 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(input$file1),!is.nul
       shinyjs::hide("panel_SS_stock_status") 
 
       shinyjs::hide("panel_SSS_prod")
+      shinyjs::hide("panel_SS_LO_prod")
       shinyjs::hide("panel_SS_prod_fixed")
       shinyjs::show("panel_SS_prod_est")
 
@@ -251,85 +221,6 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(input$file1),!is.nul
       shinyjs::show("run_SS")
    })
 
-# observeEvent(req(any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2)))), {
-# #print(all(!is.null(c(input$file1,input$file2)),is.null(input$file3)))
-# #print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
-#       shinyjs::hide("panel_SSS")
-#       shinyjs::hide("panel_SSLO_LH")
-#       shinyjs::hide("panel_SSLO_fixed")
-#       shinyjs::hide("panel_SS_LH_fixed")
-#       shinyjs::hide("panel_SS_fixed")
-#       shinyjs::show("panel_SS_LH_est")
-#       shinyjs::show("panel_SS_est")
-
-#       shinyjs::hide("panel_SS_stock_status") 
-
-#       shinyjs::hide("panel_SSS_prod")
-#       shinyjs::hide("panel_SS_prod_fixed")
-#       shinyjs::show("panel_SS_prod_est")
-
-#       shinyjs::show("panel_selectivity")
-
-#       shinyjs::show("panel_SS_recdevs")
-
-#       shinyjs::show("panel_SS_jitter")        
- 
-#       shinyjs::hide("run_SSS")
-#       shinyjs::show("run_SS")
-#    })
-
-
-# observeEvent(all(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))), {
-# #print(c(isTruthy(input$est_LHparms==FALSE)&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))))
-#       shinyjs::hide("panel_SSS")
-#       shinyjs::hide("panel_SSLO_LH")
-#       shinyjs::hide("panel_SSLO_fixed")
-#       shinyjs::show("panel_SS_LH")
-#       shinyjs::show("panel_SS_fixed")
-#       shinyjs::hide("panel_SS_est")
-
-#       shinyjs::hide("panel_SS_stock_status") 
-
-#       shinyjs::hide("panel_SSS_prod")
-#       shinyjs::show("panel_SS_prod_fixed")
-#       shinyjs::hide("panel_SS_prod_est")
-
-#       shinyjs::show("panel_selectivity")
-
-#       shinyjs::show("panel_SS_recdevs")
-
-#       shinyjs::show("panel_SS_jitter")        
- 
-#       shinyjs::hide("run_SSS")
-#       shinyjs::show("run_SS")
-#    })
-
-# observeEvent(all(input$est_LHparms&any(!is.null(c(input$file1,input$file2)),!is.null(c(input$file2,input$file3)))), {
-#       shinyjs::hide("panel_SSS")
-      # shinyjs::hide("panel_SSLO_LH")
-      # shinyjs::hide("panel_SSLO_fixed")
-      # shinyjs::hide("panel_SS_LH_fixed")
-      # shinyjs::hide("panel_SS_fixed")
-      # shinyjs::show("panel_SS_LH_est")
-      # shinyjs::show("panel_SS_est")
-
-#     	shinyjs::hide("panel_SS_stock_status") 
-
-#  	  	shinyjs::hide("panel_SSS_prod")
-#     	shinyjs::hide("panel_SS_prod_fixed")
-#      	shinyjs::show("panel_SS_prod_est")
-
-#      	shinyjs::show("panel_selectivity")
-
-#    	  shinyjs::show("panel_SS_recdevs")
-
-#     	shinyjs::show("panel_SS_jitter")    		
- 
-#       shinyjs::hide("run_SSS")
-#       shinyjs::show("run_SS")
-#    })
-
-
 
 ########################################
 
@@ -337,89 +228,6 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(input$file1),!is.nul
 # User activated pop-up parameter values ---------------
 
 #Model dimensions
-Nages<-reactive({
-    Nages<-NA
-    if(all(c(is.null(input$M_f),is.null(input$M_f_fix),is.null(input$M_f_mean),is.null(input$M_f_mean_sss)))) return(NULL)
-    if(!is.na(input$M_f)) {Nages<-5.4/input$M_f}
-    if(!is.na(input$M_f_fix)) {Nages<-5.4/input$M_f_fix}
-    if(!is.na(input$M_f_mean)) {Nages<-5.4/input$M_f_mean}
-    if(!is.na(input$M_f_mean_sss)) {Nages<-5.4/input$M_f_mean_sss}
-    Nages
-  })
-
-M_f_in<-reactive({
-  M_f_in<-NA
-    if(all(c(is.null(input$M_f),is.null(input$M_f_fix),is.null(input$M_f_mean),is.null(input$M_f_mean_sss)))) return(NULL)
-    if(!is.na(input$M_f)) {M_f_in<-input$M_f}
-    if(!is.na(input$M_f_fix)) {M_f_in<-input$M_f_fix}
-    if(!is.na(input$M_f_mean)) {M_f_in<-input$M_f_mean}
-    if(!is.na(input$M_f_mean_sss)) {M_f_in<-input$M_f_mean_sss}
-    M_f_in
-  })
-
-M_m_in<-reactive({
-  M_m_in<-NA
-    if(all(c(is.null(input$M_m),is.null(input$M_m_fix),is.null(input$M_m_mean),is.null(input$M_m_mean_sss)))) return(NULL)
-    if(!is.na(input$M_m)) {M_m_in<-input$M_m}
-    if(!is.na(input$M_m_fix)) {M_m_in<-input$M_m_fix}
-    if(!is.na(input$M_m_mean)) {M_m_in<-input$M_m_mean}
-    if(!is.na(input$M_m_mean_sss)) {M_m_in<-input$M_m_mean_sss}
-    M_m_in
-  })
-
-
-Linf<-reactive({
-  Linf<-NA
-    if(all(c(is.null(input$Linf_f),is.null(input$Linf_f_fix),is.null(input$Linf_f_mean),is.null(input$Linf_f_mean_sss)))) return(NULL)
-    if(!is.na(input$Linf_f)) {Linf<-input$Linf_f}
-    if(!is.na(input$Linf_f_fix)) {Linf<-input$Linf_f_fix}
-    if(!is.na(input$Linf_f_mean)) {Linf<-input$Linf_f_mean}
-    if(!is.na(input$Linf_f_mean_sss)) {Linf<-input$Linf_f_mean_sss}
-    Linf
-  })
-
-k_vbgf<-reactive({
-  k_vbgf<-NA
-    if(all(c(is.null(input$k_f),is.null(input$k_f_fix),is.null(input$k_f_mean),is.null(input$k_f_mean_sss)))) return(NULL)
-    if(!is.na(input$k_f)) {k_vbgf<-input$k_f}
-    if(!is.na(input$k_f_fix)) {k_vbgf<-input$k_f_fix}
-    if(!is.na(input$k_f_mean)) {k_vbgf<-input$k_f_mean}
-    if(!is.na(input$k_f_mean_sss)) {k_vbgf<-input$k_f_mean_sss}
-    k_vbgf
-  })
-
-
-t0_vbgf<-reactive({
-  t0_vbgf<-NA
-    if(all(c(is.null(input$t0_f),is.null(input$t0_f_fix),is.null(input$t0_f_mean),is.null(input$t0_f_mean_sss)))) return(NULL)
-    if(!is.na(input$t0_f)) {t0_vbgf<-input$t0_f}
-    if(!is.na(input$t0_f_fix)) {t0_vbgf<-input$t0_f_fix}
-    if(!is.na(input$t0_f_mean)) {t0_vbgf<-input$t0_f_mean}
-    if(!is.na(input$t0_f_mean_sss)) {t0_vbgf<-input$t0_f_mean_sss}
-    t0_vbgf
-  })
-
-
-L50<-reactive({
-  L50<-NA
-    if(all(c(is.null(input$L50_f),is.null(input$L50_f_fix),is.null(input$L50_f_est),is.null(input$L50_f_sss)))) return(NULL)
-    if(!is.na(input$L50_f)) {L50<-input$L50_f}
-    if(!is.na(input$L50_f_fix)) {L50<-input$L50_f_fix}
-    if(!is.na(input$L50_f_est)) {L50<-input$L50_f_mean}
-    if(!is.na(input$L50_f_sss)) {L50<-input$L50_f_mean_sss}
-    L50
-  })
-
-L95<-reactive({
-  L95<-NA
-    if(all(c(is.null(input$L95_f),is.null(input$L95_f_fix),is.null(input$L95_f_est),is.null(input$L95_f_sss)))) return(NULL)
-    if(!is.na(input$L95_f)) {L95<-input$L95_f}
-    if(!is.na(input$L95_f_fix)) {L95<-input$L95_f_fix}
-    if(!is.na(input$L95_f_est)) {L95<-input$L95_f_mean}
-    if(!is.na(input$L95_f_sss)) {L95<-input$L95_f_mean_sss}
-    L95
-  })
-
 output$Model_dims1 <- renderUI({ 
         inFile1 = input$file1 
         inFile2 = input$file2 
@@ -505,6 +313,87 @@ output$Male_parms_inputs4 <- renderUI({
 	}) 
  
 
+output$Male_parms_inputs_label_fix <- renderUI({ 
+  if(input$male_parms_fix){ 
+       h5(em("Male")) 
+        }    
+    }) 
+
+output$Male_parms_inputs1_fix <- renderUI({ 
+  if(input$male_parms_fix){ 
+    fluidRow(column(width=6, numericInput("M_m_fix", "Natural mortality",  
+                                          value=NA, min=0, max=10000, step=0.01)), 
+            column(width=6, numericInput("Linf_m_fix", "Asymptotic size (Linf)",  
+                                         value=NA, min=0, max=10000, step=0.01)))     
+    } 
+  }) 
+
+output$Male_parms_inputs2_fix <- renderUI({ 
+  if(input$male_parms_fix){ 
+    fluidRow(column(width=6, numericInput("k_m_fix", "Growth coefficient k",  
+                                         value=NA, min=0, max=10000, step=0.01)), 
+             column(width=6, numericInput("t0_m_fix", "Age at length 0 (t0)",   
+                                        value=NA, min=0, max=10000, step=0.01)))     
+      } 
+  }) 
+
+output$Male_parms_inputs3_fix <- renderUI({ 
+  if(input$male_parms_fix){ 
+    fluidRow(column(width=6, numericInput("CV_lt_m_fix", "CV at length",  
+                                          value=0.1, min=0, max=10000, step=0.01))) 
+      } 
+  })  
+
+output$Male_parms_inputs4_fix <- renderUI({ 
+  if(input$male_parms_fix){ 
+      fluidRow(column(width=6, numericInput("WLa_m_fix", "Weight-Length alpha",  
+                                            value=0.00001, min=0, max=10000, step=0.000000001)), 
+               column(width=6, numericInput("WLb_m_fix", "Weight-length beta",  
+                                            value=3, min=0, max=10000, step=0.01)))     
+      } 
+  }) 
+ 
+
+output$Male_parms_inputs_label_est <- renderUI({ 
+  if(input$male_parms_est){ 
+       h5(em("Male")) 
+        }    
+    }) 
+
+output$Male_parms_inputs1_est <- renderUI({ 
+  if(input$male_parms_est){ 
+     fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("M_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal"))),
+              column(width=3,style='padding:2px;',align="center",numericInput("M_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
+              column(width=3,style='padding:2px;',align="center",numericInput("M_m_SD", "SD", value=0,min=0, max=10000, step=0.001)),    
+              column(width=2,style='padding:2px;',align="center",numericInput("M_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))    
+    } 
+  }) 
+
+output$Male_parms_inputs2_est <- renderUI({ 
+  if(input$male_parms_est){ 
+    fluidRow(column(width=6, numericInput("k_m_est", "Growth coefficient k",  
+                                         value=NA, min=0, max=10000, step=0.01)), 
+             column(width=6, numericInput("t0_m_est", "Age at length 0 (t0)",   
+                                        value=NA, min=0, max=10000, step=0.01)))     
+      } 
+  }) 
+
+output$Male_parms_inputs3_est <- renderUI({ 
+  if(input$male_parms_est){ 
+    fluidRow(column(width=6, numericInput("CV_lt_m_est", "CV at length",  
+                                          value=0.1, min=0, max=10000, step=0.01))) 
+      } 
+  })  
+
+output$Male_parms_inputs4_est <- renderUI({ 
+  if(input$male_parms_est){ 
+      fluidRow(column(width=6, numericInput("WLa_m_est", "Weight-Length alpha",  
+                                            value=0.00001, min=0, max=10000, step=0.000000001)), 
+               column(width=6, numericInput("WLb_m_est", "Weight-length beta",  
+                                            value=3, min=0, max=10000, step=0.01)))     
+      } 
+  }) 
+ 
 
 #Male life history parameters
 output$Male_parms_inputs_label_SSS<- renderUI({
@@ -515,9 +404,9 @@ output$Male_parms_inputs_label_SSS<- renderUI({
 
 output$Male_parms_inputs1_SSS<- renderUI({
 	if(input$male_parms_SSS){
-    fluidRow(column(width=6,numericInput("M_m", "Natural mortality", 
+    fluidRow(column(width=6,numericInput("M_m_mean_sss", "Natural mortality", 
     									value=NA,min=0, max=10000, step=0.01)),
-            column(width=6,numericInput("Linf_m", "Asymptotic size (Linf)", 
+            column(width=6,numericInput("Linf_m_mean_sss", "Asymptotic size (Linf)", 
             							value=NA,min=0, max=10000, step=0.01)))    
 		}
 	})
@@ -669,6 +558,122 @@ output$Forecasts<- renderUI({
     	} 
 	}) 
 
+
+
+
+Nages<-reactive({
+    Nages<-NA
+    if(all(c(is.null(input$M_f),is.null(input$M_f_fix),is.null(input$M_f_mean),is.null(input$M_f_mean_sss)))) return(NULL)
+    if(!is.na(input$M_f)) {Nages<-5.4/input$M_f}
+    if(!is.na(input$M_f_fix)) {Nages<-5.4/input$M_f_fix}
+    if(!is.na(input$M_f_mean)) {Nages<-5.4/input$M_f_mean}
+    if(!is.na(input$M_f_mean_sss)) {Nages<-5.4/input$M_f_mean_sss}
+    Nages
+  })
+
+M_f_in<-reactive({
+    M_f_in<-NA
+    if(all(c(is.null(input$M_f),is.null(input$M_f_fix),is.null(input$M_f_mean),is.null(input$M_f_mean_sss)))) return(NULL)
+    if(!is.na(input$M_f)) {M_f_in<-input$M_f}
+    if(!is.na(input$M_f_fix)) {M_f_in<-input$M_f_fix}
+    if(!is.na(input$M_f_mean)) {M_f_in<-input$M_f_mean}
+    if(!is.na(input$M_f_mean_sss)) {M_f_in<-input$M_f_mean_sss}
+    M_f_in
+  })
+
+M_m_in<-reactive({
+    M_m_in<-NA
+    if(all(c(is.null(input$M_m),is.null(input$M_m_fix),is.null(input$M_m_mean),is.null(input$M_m_mean_sss)))) return(NULL)
+    if(any(input$male_parms&!is.na(input$M_m))) {M_m_in<-input$M_m}
+    if(any(input$male_parms_fix&!is.na(input$M_m_fix))) {M_m_in<-input$M_m_fix}
+    if(any(input$male_parms_est&!is.na(input$M_m_mean))) {M_m_in<-input$M_m_mean}
+    if(any(input$male_parms_SSS&!is.na(input$M_m_mean_sss))) {M_m_in<-input$M_m_mean_sss}
+    M_m_in
+  })
+
+
+Linf<-reactive({
+    Linf<-NA
+    if(all(c(is.null(input$Linf_f),is.null(input$Linf_f_fix),is.null(input$Linf_f_mean),is.null(input$Linf_f_mean_sss)))) return(NULL)
+    if(!is.na(input$Linf_f)) {Linf<-input$Linf_f}
+    if(!is.na(input$Linf_f_fix)) {Linf<-input$Linf_f_fix}
+    if(!is.na(input$Linf_f_mean)) {Linf<-input$Linf_f_mean}
+    if(!is.na(input$Linf_f_mean_sss)) {Linf<-input$Linf_f_mean_sss}
+    Linf
+  })
+
+Linf_m_in<-reactive({
+    Linf_m_in<-NA
+    if(all(c(is.null(input$Linf_m),is.null(input$Linf_m_fix),is.null(input$Linf_m_mean),is.null(input$Linf_m_mean_sss)))) return(NULL)
+    if(any(input$male_parms&!is.na(input$Linf_m))) {Linf_m_in<-input$Linf_m}
+    if(any(input$male_parms&!is.na(input$Linf_m_fix))) {Linf_m_in<-input$Linf_m_fix}
+    if(any(input$male_parms&!is.na(input$Linf_m_mean))) {Linf_m_in<-input$Linf_m_mean}
+    if(any(input$male_parms&!is.na(input$Linf_m_mean_sss))) {Linf_m_in<-input$Linf_m_mean_sss}
+    Linf_m_in
+  })
+
+
+k_vbgf<-reactive({
+    k_vbgf<-NA
+    if(all(c(is.null(input$k_f),is.null(input$k_f_fix),is.null(input$k_f_mean),is.null(input$k_f_mean_sss)))) return(NULL)
+    if(!is.na(input$k_f)) {k_vbgf<-input$k_f}
+    if(!is.na(input$k_f_fix)) {k_vbgf<-input$k_f_fix}
+    if(!is.na(input$k_f_mean)) {k_vbgf<-input$k_f_mean}
+    if(!is.na(input$k_f_mean_sss)) {k_vbgf<-input$k_f_mean_sss}
+    k_vbgf
+  })
+
+#Process life history input for plots
+k_vbgf_m_in<-reactive({
+    k_vbgf_m_in<-NA
+    if(all(c(is.null(input$k_m),is.null(input$k_m_fix),is.null(input$k_m_mean),is.null(input$k_m_mean_sss)))) return(NULL)
+    if(any(input$male_parms&!is.na(input$k_m))) {k_vbgf_m_in<-input$k_m}
+    if(any(input$male_parms&!is.na(input$k_m_fix))) {k_vbgf_m_in<-input$k_m_fix}
+    if(any(input$male_parms&!is.na(input$k_m_mean))) {k_vbgf_m_in<-input$k_m_mean}
+    if(any(input$male_parms&!is.na(input$k_m_mean_sss))) {k_vbgf_m_in<-input$k_m_mean_sss}
+    k_vbgf_m_in
+  })
+
+t0_vbgf<-reactive({
+    t0_vbgf<-NA
+    if(all(c(is.null(input$t0_f),is.null(input$t0_f_fix),is.null(input$t0_f_mean),is.null(input$t0_f_mean_sss)))) return(NULL)
+    if(!is.na(input$t0_f)) {t0_vbgf<-input$t0_f}
+    if(!is.na(input$t0_f_fix)) {t0_vbgf<-input$t0_f_fix}
+    if(!is.na(input$t0_f_mean)) {t0_vbgf<-input$t0_f_mean}
+    if(!is.na(input$t0_f_mean_sss)) {t0_vbgf<-input$t0_f_mean_sss}
+    t0_vbgf
+  })
+
+t0_vbgf_m_in<-reactive({
+    t0_vbgf_m_in<-NA
+    if(all(c(is.null(input$t0_m),is.null(input$t0_m_fix),is.null(input$t0_m_mean),is.null(input$t0_m_mean_sss)))) return(NULL)
+    if(any(input$male_parms&!is.na(input$t0_m))) {t0_vbgf_m_in<-input$t0_m}
+    if(any(input$male_parms&!is.na(input$t0_m_fix))) {t0_vbgf_m_in<-input$t0_m_fix}
+    if(any(input$male_parms&!is.na(input$t0_m_mean))) {t0_vbgf_m_in<-input$t0_m_mean}
+    if(any(input$male_parms&!is.na(input$t0_m_mean_sss))) {t0_vbgf_m_in<-input$t0_m_mean_sss}
+    t0_vbgf_m_in
+  })
+
+L50<-reactive({
+    L50<-NA
+    if(all(c(is.null(input$L50_f),is.null(input$L50_f_fix),is.null(input$L50_f_est),is.null(input$L50_f_sss)))) return(NULL)
+    if(!is.na(input$L50_f)) {L50<-input$L50_f}
+    if(!is.na(input$L50_f_fix)) {L50<-input$L50_f_fix}
+    if(!is.na(input$L50_f_est)) {L50<-input$L50_f_mean}
+    if(!is.na(input$L50_f_sss)) {L50<-input$L50_f_mean_sss}
+    L50
+  })
+
+L95<-reactive({
+    L95<-NA
+    if(all(c(is.null(input$L95_f),is.null(input$L95_f_fix),is.null(input$L95_f_est),is.null(input$L95_f_sss)))) return(NULL)
+    if(!is.na(input$L95_f)) {L95<-input$L95_f}
+    if(!is.na(input$L95_f_fix)) {L95<-input$L95_f_fix}
+    if(!is.na(input$L95_f_est)) {L95<-input$L95_f_mean}
+    if(!is.na(input$L95_f_sss)) {L95<-input$L95_f_mean_sss}
+    L95
+  })
+
 #############
 ### PLOTS ###
 #############
@@ -791,11 +796,13 @@ output$Ctplot <- renderPlot({
 output$Mplot<-renderPlot({ 
 			mf.in = M_f_in() 
 			mm.in = M_f_in() 
-			if(input$male_parms){ 
-			  mm.in = M_m_in() 
+      if(input$male_parms|input$male_parms_fix)
+#			if(input$male_parms|input$male_parms_SSS|input$male_parms_fix|input$male_vbgf_est)
+        { 
+			     mm.in = M_m_in() 
 			  }		 
-			if(any(is.na(c(mf.in, mm.in)))) return(NULL) 
-			Female_M = data.frame(Ages = 0:Nages(), PopN = exp(-mf.in * 0:Nages()), Sex="Female") 
+      if(any(is.na(c(mf.in, mm.in)))|any(is.null(c(mf.in, mm.in)))) return(NULL) 
+      Female_M = data.frame(Ages = 0:Nages(), PopN = exp(-mf.in * 0:Nages()), Sex="Female") 
 			Male_M = data.frame(Ages = 0:Nages(), PopN=exp(-mm.in * 0:Nages()), Sex="Male") 
 			M_sexes <- rbind(Female_M, Male_M) 
 			ggplot(M_sexes,aes(Ages, PopN, color=Sex))+ 
@@ -808,13 +815,14 @@ output$VBGFplot<-renderPlot({
    	f_Linf = m_Linf = Linf() 
    	f_k = m_k = k_vbgf() 
    	f_t0 = m_t0 = t0_vbgf() 
-	f_L50 = L50() 
-	f_L95 = L95() 
-	maxage = Nages() 
-	if(input$male_parms){ 
-				m_Linf = input$Linf_m 
-			   	m_k = input$k_m 
-			   	m_t0 = input$t0_m 
+	  f_L50 = L50() 
+	  f_L95 = L95() 
+	  maxage = Nages() 
+	if(any(input$male_parms,input$male_parms_SSS,input$male_parms_fix,input$male_parms_est))
+      { 
+				  m_Linf = Linf_m_in() 
+			   	m_k = k_vbgf_m_in() 
+			   	m_t0 = t0_vbgf_m_in() 
 			}		 
    if(any(is.na(c(f_Linf, f_k, f_t0)))=="FALSE"){ 
 		vbgf_female = data.frame(Age = 0:Nages(),  
@@ -1204,38 +1212,112 @@ SS.file.update<-observeEvent(input$run_SS,{
 
     }
 
+    #LENGTH and CATCH with fixed parameters
     if(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f_fix,input$k_f_fix,input$t0_f_fix,c(0:Nages()))
     #Females
-    ctl.file$MG_parms[1,3]<-input$M_f_fix     #M
-    ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]   #L0
-    ctl.file$MG_parms[3,3:4]<-input$Linf_f_fix    #Linf
-    ctl.file$MG_parms[4,3:4]<-input$k_f_fix     #k
-    ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_fix   #CV
-    ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_fix   #CV
+    ctl.file$MG_parms[1,3]<-input$M_f_fix           #M
+    ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]           #L0
+    ctl.file$MG_parms[3,3:4]<-input$Linf_f_fix      #Linf
+    ctl.file$MG_parms[4,3:4]<-input$k_f_fix         #k
+    ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_fix     #CV
+    ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_fix     #CV
     #Maturity6
-    ctl.file$MG_parms[9,3:4]<-input$L50_f_fix                 #Lmat50%
+    ctl.file$MG_parms[9,3:4]<-input$L50_f_fix                                     #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_fix-input$L50_f_fix)  #Maturity slope
     #Males
-    ctl.file$MG_parms[13,3]<-input$M_f_fix      #M
-    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]    #L0
-    ctl.file$MG_parms[15,3:4]<-input$Linf_f_fix   #Linf
-    ctl.file$MG_parms[16,3:4]<-input$k_f_fix    #k
-    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_fix  #CV
-    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_fix  #CV
+    ctl.file$MG_parms[13,3]<-input$M_f_fix          #M
+    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]          #L0
+    ctl.file$MG_parms[15,3:4]<-input$Linf_f_fix     #Linf
+    ctl.file$MG_parms[16,3:4]<-input$k_f_fix        #k
+    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_fix    #CV
+    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_fix    #CV
     if(input$male_parms)
       {   
         male_vbgf<-VBGF(input$Linf_m_fix,input$k_m_fix,input$t0_m_fix,c(0:Nages()))
-        ctl.file$MG_parms[13,3]<-input$M_m_fix      #M
-        ctl.file$MG_parms[14,3:4]<-male_vbgf[1]   #L0
+        ctl.file$MG_parms[13,3]<-input$M_m_fix        #M
+        ctl.file$MG_parms[14,3:4]<-male_vbgf[1]       #L0
         ctl.file$MG_parms[15,3:4]<-input$Linf_m_fix   #Linf
-        ctl.file$MG_parms[16,3:4]<-input$k_m_fix    #k
+        ctl.file$MG_parms[16,3:4]<-input$k_m_fix      #k
         ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_fix  #CV
         ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_fix  #CV
       }
       
     }
+
+    #LENGTH and CATCH with estimated parameters
+    if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))==TRUE)
+    {
+    fem_vbgf<-VBGF(input$Linf_f_mean,input$k_f_mean,input$t0_f_mean,c(0:Nages()))
+    #c("lognormal","truncated normal","uniform","beta")
+    prior.name<-c("no prior","symmetric beta", "beta","lognormal","gamma","normal")
+    prior.type<-c(0:3,5,6)
+    #Females
+    #M
+    if(input$M_f_prior=="lognormal"){ctl.file$MG_parms[1,3:4]<-c(input$M_f_mean,log(input$M_f_mean))}
+    else {ctl.file$MG_parms[1,3:4]<-c(input$M_f_mean,input$M_f_mean)}
+    ctl.file$MG_parms[1,5]<-input$M_f_SD                            
+    ctl.file$MG_parms[1,6]<-prior.type[prior.name==input$M_f_prior] 
+    ctl.file$MG_parms[1,7]<-input$M_f_phase                         
+        
+    #L0    
+    if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(fem_vbgf[1],log(fem_vbgf[1]))}
+    else {ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]}
+    ctl.file$MG_parms[2,5]<-input$t0_f_SD             
+    ctl.file$MG_parms[2,6]<-prior.type[prior.name==input$t0_f_prior]
+    ctl.file$MG_parms[2,7]<-input$t0_f_phase
+
+    #Linf
+    if(input$Linf_f_prior=="lognormal"){ctl.file$MG_parms[3,3:4]<-c(input$Linf_f_mean,log(input$Linf_f_mean))}     
+    else{ctl.file$MG_parms[3,3:4]<-input$Linf_f_mean}
+    ctl.file$MG_parms[3,5]<-input$Linf_f_SD         
+    ctl.file$MG_parms[3,6]<-prior.type[prior.name==input$Linf_f_prior]      
+    ctl.file$MG_parms[3,7]<-input$Linf_f_phase      
+
+    #k
+    if(input$k_f_prior=="lognormal"){ctl.file$MG_parms[4,3:4]<-c(input$k_f_mean,log(input$k_f_mean))}        
+    else {ctl.file$MG_parms[4,3:4]<-input$k_f_mean}
+    ctl.file$MG_parms[4,5]<-input$k_f_SD            
+    ctl.file$MG_parms[4,6]<-prior.type[prior.name==input$k_f_prior]        
+    ctl.file$MG_parms[4,7]<-input$k_f_phase         
+    
+    #CV young
+    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_mean,log(input$CV_lt_f_mean))}     
+    else{ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_mean}
+    ctl.file$MG_parms[5,5]<-input$CV_lt_f_SD       
+    ctl.file$MG_parms[5,6]<-prior.type[prior.name==input$CV_lt_f_prior]       
+    ctl.file$MG_parms[5,7]<-input$CV_lt_f_phase       
+    
+    #CV old
+    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_est}
+    ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean     
+    ctl.file$MG_parms[6,5]<-input$CV_lt_f_SD       
+    ctl.file$MG_parms[6,6]<-prior.type[prior.name==input$CV_lt_f_prior]  
+    ctl.file$MG_parms[6,7]<-input$CV_lt_f_phase 
+
+    #Maturity
+    ctl.file$MG_parms[9,3:4]<-input$L50_f_est                                     #Lmat50%
+    ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_est-input$L50_f_est)  #Maturity slope
+    #Males
+    ctl.file$MG_parms[13,3]<-input$M_f_est          #M
+    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]          #L0
+    ctl.file$MG_parms[15,3:4]<-input$Linf_f_est     #Linf
+    ctl.file$MG_parms[16,3:4]<-input$k_f_est        #k
+    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_est    #CV
+    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_est    #CV
+    if(input$male_parms)
+      {   
+        male_vbgf_est<-VBGF(input$Linf_m_mean,input$k_m_mean,input$t0_m_mean,c(0:Nages()))
+        ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
+        ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]    #L0
+        ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean   #Linf
+        ctl.file$MG_parms[16,3:4]<-input$k_m_mean      #k
+        ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_mean  #CV
+        ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_mean  #CV
+      }     
+    }
+
 
 		#S-R
 		ctl.file$SR_parms[1,3:4]<-input$lnR0	#lnR0
