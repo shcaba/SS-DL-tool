@@ -110,6 +110,8 @@ onclick("est_LHparms",id="panel_SS_est")
 
 #SSS panels
 observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)), {
+      shinyjs::show("panel_data_wt_lt")
+
       shinyjs::show("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -139,6 +141,8 @@ observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)
 
 #SS-LO panels
 observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2))), {
+      shinyjs::show("panel_data_wt_lt")
+      
       shinyjs::hide("panel_SSS")
       shinyjs::show("panel_SSLO_LH")
       shinyjs::show("panel_SSLO_fixed")
@@ -167,6 +171,8 @@ observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2)))
 
 
 observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
+      shinyjs::show("panel_data_wt_lt")
+      
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -195,6 +201,8 @@ observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all
 
 
 observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
+      shinyjs::show("panel_data_wt_lt")
+      
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -542,10 +550,12 @@ output$RP_selection1<- renderUI({
  
 output$RP_selection2<- renderUI({ 
     if(input$RP_choices){ 
-        fluidRow(column(width=6, numericInput("slope_hi", "Control rule: Upper ratio value",  
-                                              value=0.4, min=0, max=1, step=0.001)), 
-        	       column(width=6, numericInput("slope_low", "Control rule: Lower ratio value",  
-        	                                    value=0.1, min=0, max=1, step=0.001)))    
+        fluidRow(column(width=4, numericInput("CR_Ct_F", "Control rule type",  
+                                              value=1, min=0, max=1, step=0.001)), 
+        	       column(width=4, numericInput("slope_hi", "Upper ratio value",  
+        	                                    value=0.4, min=0, max=1, step=0.001)),    
+                 column(width=4, numericInput("slope_low", "Lower ratio value",  
+                                              value=0.1, min=0, max=1, step=0.001)))
     	} 
 	}) 
  
@@ -1411,6 +1421,13 @@ SS.file.update<-observeEvent(input$run_SS,{
 			size_selex_parms_rownames<-unlist(size_selex_parms_rownames)
 			rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
 		}
+
+    #Change data weights
+    # browser()
+
+    # Lt_dat_wts<-as.numeric(trimws(unlist(strsplit(input$Lt_datawts,","))))
+    # ctl.file$Variance_adjustments[1,]<-Lt_dat_wts
+
 		#Change likelihood component weight of catch
 		if (is.null(inCatch))
 			{
@@ -1435,6 +1452,30 @@ SS.file.update<-observeEvent(input$run_SS,{
 				starter.file$jitter_fraction<-input$jitter_fraction
 			}
  				SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
+
+
+#Forecast file modfications
+#Reference points
+forecast.file<-SS_readforecast(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/forecast.ss"))
+
+if(input$RP_choices){
+    forecast.file$SPRtarget<-input$SPR_target
+    forecast.file$Btarget<-input$B_target
+
+    forecast.file$ControlRuleMethod<-input$CR_Ct_F
+    forecast.file$SBforconstantF<-input$slope_hi
+    forecast.file$BfornoF<-input$slope_low  
+  }
+
+if(input$Forecast_choice)
+  {
+    forecast.file$Nforecastyrs<-input$forecast_num
+    forecast.file$Flimitfraction<-input$forecast_buffer
+  }
+
+SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)  
+
+########
 
 	#Run Stock Synthesis and plot output
 		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
