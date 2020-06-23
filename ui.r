@@ -396,7 +396,9 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_selectivity",
      wellPanel(
     h3("Selectivity"),
-    h5("The phase input indicates estimated parameters. To fix the parameter, set the phase value to a negative number"),
+    h4("Enter a parameters and phase value for each fleet and survey."), 
+    h4("For an example of 50% selectivity with two fleets, 35,40 and 2,2 for starting values and phases respectively."),
+    h5("The phase input indicates estimated parameters. To fix the parameter, set the phase value to a negative number."),
     fluidRow(selectInput("Sel_choice","Length selectivity type",c("Logistic","Dome-shaped"))),
     # fluidRow(column(width=6,numericInput("Sel50", "Length at 50% Selectivity", value=NA,min=0, max=10000, step=0.01)),
     #         column(width=6,numericInput("Sel50_phase","Estimation phase", value=1,min=-1000, max=10, step=1))),   
@@ -463,15 +465,15 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h5(p(em(""))),
       ),
 
-    actionButton("run_SS",strong("Run Model"),
+      actionButton("run_SS",strong("Run Model"),
       width="100%",
       icon("play-circle"),
       style="font-size:120%;border:2px solid;color:#FFFFFF;background:#658D1B"),
- actionButton("run_SSS",strong("Run SSS"),
+
+      actionButton("run_SSS",strong("Run SSS"),
       width="100%",
       icon("play-circle"),
       style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192"),
-    
   ),
       mainPanel(        
         tabsetPanel(

@@ -78,38 +78,74 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){
 
 
 ########## Clear data files and plots ############
+  rv.Lt <- reactiveValues(data = NULL,clear = FALSE)
+  rv.Age <- reactiveValues(data = NULL,clear = FALSE)
+  rv.Ct <- reactiveValues(data = NULL,clear = FALSE)
+  
 
-  rv.Lt <- reactiveValues(data = NULL)
-  rv.Age <- reactiveValues(data = NULL)
-  rv.Ct <- reactiveValues(data = NULL)
-   
- 
+########
+# rv <- reactiveValues(
+#     data = NULL,
+#     clear = FALSE
+#   )
+
+  observe({
+    req(input$file1)
+    req(!rv.Lt$clear)
+    rv.Lt$data <- read.csv(input$file1$datapath,check.names=FALSE)
+  })
+
+  observeEvent(input$file1, {
+    rv.Lt$clear <- FALSE
+  }, priority = 1000)
+
   observeEvent(input$reset_lt, {
     rv.Lt$data <- NULL
-    shinyjs::reset('file1')
-  })
+    rv.Lt$clear <- TRUE
+    reset('file1')
+  }, priority = 1000)
 
+#######
+
+   
+ 
   # observeEvent(input$reset_lt, {
-		# output$Ltplot<-renderPlot({
-		# rv.Lt$data <- NULL
-		# if (is.null(rv.Lt$data)) return(NULL)  
-		# })
+  #   rv.Lt$data <- NULL
+  #   shinyjs::reset('file1')
   # })
 
-  observeEvent(input$reset_age, {
-    rv.Age$data <- NULL
-    shinyjs::reset('file3')
-  })
+  # # observeEvent(input$reset_lt, {
+		# # output$Ltplot<-renderPlot({
+		# # rv.Lt$data <- NULL
+		# # if (is.null(rv.Lt$data)) return(NULL)  
+		# # })
+  # # })
 
-  observeEvent(input$reset_ct, {
-    rv.Ct$data <- NULL
-      shinyjs::reset('file2')
-  })
+  # observeEvent(input$reset_age, {
+  #   rv.Age$data <- NULL
+  #   shinyjs::reset('file3')
+  # })
+
+  # observeEvent(input$reset_ct, {
+  #   rv.Ct$data <- NULL
+  #     shinyjs::reset('file2')
+  # })
+
+#####################################################
 
 onclick("est_LHparms",id="panel_SS_est")
 
+
+observe({
+shinyjs::hide("run_SS")
+shinyjs::hide("run_SSS")
+  })
+
+
+
+
 #SSS panels
-observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)), {
+observeEvent(req(is.null(rv.Lt$data)&!is.null(input$file2)&is.null(input$file3)), {
       shinyjs::show("panel_data_wt_lt")
 
       shinyjs::show("panel_SSS")
@@ -140,7 +176,7 @@ observeEvent(req(is.null(input$file1)&!is.null(input$file2)&is.null(input$file3)
   })
 
 #SS-LO panels
-observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2))), {
+observeEvent(req(all(!is.null(c(rv.Lt$data,input$file3)),is.null(input$file2))), {
       shinyjs::show("panel_data_wt_lt")
       
       shinyjs::hide("panel_SSS")
@@ -170,7 +206,7 @@ observeEvent(req(all(!is.null(c(input$file1,input$file3)),is.null(input$file2)))
   })	
 
 
-observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
+observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
       shinyjs::show("panel_data_wt_lt")
       
       shinyjs::hide("panel_SSS")
@@ -200,7 +236,7 @@ observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all
    })
 
 
-observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
+observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
       shinyjs::show("panel_data_wt_lt")
       
       shinyjs::hide("panel_SSS")
@@ -237,12 +273,12 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(input$file1),!is.nul
 
 #Model dimensions
 output$Model_dims1 <- renderUI({ 
-        inFile1 = input$file1 
+        inFile1 = rv.Lt$data 
         inFile2 = input$file2 
          
         if (is.null(inFile1) & is.null(inFile2)) return(NULL) 
         if (!is.null(inFile1) & is.null(inFile2)){ 
-            Lt.comp.data = read.csv(inFile1$datapath,check.names=FALSE) 
+            Lt.comp.data = rv.Lt$data
               styr.in =  min(Lt.comp.data[,1]) 
               if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))){ 
                 styr.in = min(Lt.comp.data[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
@@ -447,32 +483,32 @@ output$Male_parms_inputs4_SSS<- renderUI({
 #Selectivity paramters
 output$Sel_parms1 <- renderUI({ 
     fluidRow(column(width=8, textInput("Sel50", "Length at 50% Selectivity",value="")), 
-            column(width=4, textInput("Sel50_phase", "Est. phase", value="1")))     
+            column(width=4, textInput("Sel50_phase", "Est. phase", value="")))     
 	}) 
  
 output$Sel_parms2<- renderUI({ 
     	fluidRow(column(width=8, textInput("Selpeak", "Length at Peak Selectvity", value="")), 
-            	 column(width=4, textInput("Selpeak_phase", "Est. phase", value="1"))) 
+            	 column(width=4, textInput("Selpeak_phase", "Est. phase", value=""))) 
 	}) 
  
 output$Sel_parms3 <- renderUI({ 
   		if(input$Sel_choice=="Dome-shaped"){ 			 
     	fluidRow(column(width=8, textInput("PeakDesc", "Length at first declining selectivity",value="")), 
-            	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value="1",))) 
+            	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value="",))) 
  		} 
 	}) 
  
 output$Sel_parms4 <- renderUI({ 
  		if(input$Sel_choice=="Dome-shaped"){ 			 
 	    fluidRow(column(width=8, textInput("LtPeakFinal", "Width of declining selectivity",value="1")), 
-	             column(width=4, textInput("LtPeakFinal_phase", "Est. phase",value="1")))    			 
+	             column(width=4, textInput("LtPeakFinal_phase", "Est. phase",value="")))    			 
  		} 
 	}) 
  
 output$Sel_parms5 <- renderUI({ 
  		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value="0.9999999")), 
-            	column(width=4, numericInput("FinalSel_phase", "Est. phase",value="1"))) 
+    	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value="0.999")), 
+            	column(width=4, numericInput("FinalSel_phase", "Est. phase",value=""))) 
  		} 
 	}) 
 
@@ -677,18 +713,18 @@ L95<-reactive({
 ### PLOTS ###
 #############
 
-observeEvent(req(!is.null(input$file1)), {
+observeEvent(req(!is.null(rv.Lt$data)), {
     	shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions"}))
   })
 
 
 #Plot length compoistions
 # length compositions 
-observeEvent(req(!is.null(input$file1)), {
+observeEvent(req(!is.null(rv.Lt$data)), {
 	output$Ltplot<-renderPlot({ 
-		  inFile <- input$file1 
+		  inFile <- rv.Lt$data 
 		  if (is.null(inFile)) return(NULL) 
-		  read.csv(inFile$datapath, check.names=FALSE) %>%  
+		  rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
@@ -988,8 +1024,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 		inCatch<- input$file2
 		if (is.null(inCatch)) 
 		{
-		inFile<- input$file1
-		Lt.comp.data<-read.csv(inFile$datapath,check.names=FALSE)
+		inFile<- rv.Lt$data
+		Lt.comp.data<-rv.Lt$data
 		data.file$Nfleets<-max(Lt.comp.data[,2])
 		if(data.file$Nfleets>1){
 			for(i in 1:(data.file$Nfleets-1))
@@ -1056,9 +1092,9 @@ SS.file.update<-observeEvent(input$run_SS,{
 		}
 
 	#Length composition data
-		inFile<- input$file1
+		inFile<- rv.Lt$data
 		if (is.null(inFile)) return(NULL)
-		Lt.comp.data<-read.csv(inFile$datapath,check.names=FALSE)
+		Lt.comp.data<-rv.Lt$data
 		data.file$N_lbins<-ncol(Lt.comp.data)-4
 		data.file$lbin_vector<-as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
 		lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",data.file$lbin_vector),paste0("m",data.file$lbin_vector))
@@ -1184,7 +1220,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 
 		#Read, edit then write new CONTROL file
     #LENGTH or AGE-ONLY
-		if(all(!is.null(c(input$file1,input$file3)),is.null(input$file2))==TRUE)
+		if(all(!is.null(c(rv.Lt$data,input$file3)),is.null(input$file2))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f,input$k_f,input$t0_f,c(0:Nages()))
     #Females
@@ -1218,7 +1254,7 @@ SS.file.update<-observeEvent(input$run_SS,{
     }
 
     #LENGTH and CATCH with fixed parameters
-    if(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))==TRUE)
+    if(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f_fix,input$k_f_fix,input$t0_f_fix,c(0:Nages()))
     #Females
@@ -1252,7 +1288,7 @@ SS.file.update<-observeEvent(input$run_SS,{
     }
 
     #LENGTH and CATCH with estimated parameters
-    if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(input$file1),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))==TRUE)
+    if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f_mean,input$k_f_mean,input$t0_f_mean,c(0:Nages()))
     #c("lognormal","truncated normal","uniform","beta")
