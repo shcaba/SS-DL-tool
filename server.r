@@ -446,44 +446,33 @@ output$Male_parms_inputs4_SSS<- renderUI({
 
 #Selectivity paramters
 output$Sel_parms1 <- renderUI({ 
-    fluidRow(column(width=8, numericInput("Sel50", "Length at 50% Selectivity",  
-                                          value=NA, min=0, max=10000, step=0.01)), 
-            column(width=4, numericInput("Sel50_phase", "Est. phase",  
-                                         value=1, min=-1000, max=10, step=1)))     
+    fluidRow(column(width=8, textInput("Sel50", "Length at 50% Selectivity",value="")), 
+            column(width=4, textInput("Sel50_phase", "Est. phase", value="1")))     
 	}) 
  
 output$Sel_parms2<- renderUI({ 
-    	fluidRow(column(width=8, numericInput("Selpeak", "Length at Peak Selectvity",  
-    	                                      value=NA, min=0, max=10000, step=0.01)), 
-            	 column(width=4, numericInput("Selpeak_phase", "Est. phase",  
-            	                             value=1, min=-1000, max=10, step=1))) 
+    	fluidRow(column(width=8, textInput("Selpeak", "Length at Peak Selectvity", value="")), 
+            	 column(width=4, textInput("Selpeak_phase", "Est. phase", value="1"))) 
 	}) 
  
 output$Sel_parms3 <- renderUI({ 
   		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, numericInput("PeakDesc", "Length at first declining selectivity",  
-    	                                      value=NA, min=0, max=10000, step=0.01)), 
-            	 column(width=4, numericInput("PeakDesc_phase", "Est. phase",  
-            	                             value=1, min=-1000, max=10, step=1))) 
+    	fluidRow(column(width=8, textInput("PeakDesc", "Length at first declining selectivity",value="")), 
+            	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value="1",))) 
  		} 
 	}) 
  
- 
 output$Sel_parms4 <- renderUI({ 
  		if(input$Sel_choice=="Dome-shaped"){ 			 
-	    fluidRow(column(width=8, numericInput("LtPeakFinal", "Width of declining selectivity",  
-	                                          value=1, min=0, max=10000, step=0.01)), 
-	             column(width=4, numericInput("LtPeakFinal_phase", "Est. phase",   
-	                                          value=1, min=-1000, max=10, step=1)))    			 
+	    fluidRow(column(width=8, textInput("LtPeakFinal", "Width of declining selectivity",value="1")), 
+	             column(width=4, textInput("LtPeakFinal_phase", "Est. phase",value="1")))    			 
  		} 
 	}) 
  
 output$Sel_parms5 <- renderUI({ 
  		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, numericInput("FinalSel", "Selectivity at max bin size",  
-    	                                      value=0.9999999, min=0, max=0.9999999, step=0.0000001)), 
-            	column(width=4, numericInput("FinalSel_phase", "Est. phase",  
-            	                             value=1, min=-1000, max=10, step=1))) 
+    	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value="0.9999999")), 
+            	column(width=4, numericInput("FinalSel_phase", "Est. phase",value="1"))) 
  		} 
 	}) 
 
@@ -1370,15 +1359,21 @@ SS.file.update<-observeEvent(input$run_SS,{
 				}
 			}
 		
+#browser()
 		#Selectivity
-		if(input$Sel_choice=="Logistic")
+		  Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
+      Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
+      Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
+      Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
+
+    if(input$Sel_choice=="Logistic")
 		{
 			bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
-			ctl.file$size_selex_parms[3,3:4]<- log(-((input$Sel50-input$Selpeak)^2/log(0.5)))
-			ctl.file$size_selex_parms[3,7]<- input$Sel50_phase
+			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
+			ctl.file$size_selex_parms[3,7]<- Sel50_phase[1]
 			ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
-			ctl.file$size_selex_parms[1,3:4]<- input$Selpeak
-			ctl.file$size_selex_parms[1,7]<- input$Selpeak_phase
+			ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
+			ctl.file$size_selex_parms[1,7]<- Selpeak_phase[1]
 			ctl.file$size_selex_parms[2,3:4]<- 15
 			ctl.file$size_selex_parms[2,7]<- -1
 			ctl.file$size_selex_parms[4,3:4]<- 15
@@ -1389,19 +1384,28 @@ SS.file.update<-observeEvent(input$run_SS,{
 		if(input$Sel_choice=="Dome-shaped")
 		{
 			bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
-			ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
-			ctl.file$size_selex_parms[1,3:4]<- input$Selpeak
-			ctl.file$size_selex_parms[1,7]<- input$Selpeak_phase
-			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-input$Selpeak-bin.width)/(input$PeakDesc-input$Selpeak-bin.width))
-			ctl.file$size_selex_parms[2,7]<- input$PeakDesc_phase
-			ctl.file$size_selex_parms[3,3:4]<- log(-((input$Sel50-input$Selpeak)^2/log(0.5)))
-			ctl.file$size_selex_parms[3,7]<- input$Sel50_phase
-			ctl.file$size_selex_parms[4,3:4]<- log(input$LtPeakFinal)
-			ctl.file$size_selex_parms[4,7]<- input$LtPeakFinal_phase
-			ctl.file$size_selex_parms[6,3:4]<- -log((1/(input$FinalSel+0.000000001)-1))
-			ctl.file$size_selex_parms[6,7]<- input$FinalSel_phase
+      
+      PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
+      PeakDesc_phase<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_phase,","))))
+      LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
+      LtPeakFinal_phase<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_phase,","))))
+      FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
+      FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
+			
+      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+			ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
+			ctl.file$size_selex_parms[1,7]<- Selpeak_phase[1]
+			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
+			ctl.file$size_selex_parms[2,7]<- PeakDesc_phase[1]
+			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
+			ctl.file$size_selex_parms[3,7]<- Sel50_phase[1]
+			ctl.file$size_selex_parms[4,3:4]<- log(LtPeakFinal[1])
+			ctl.file$size_selex_parms[4,7]<- LtPeakFinal_phase[1]
+			ctl.file$size_selex_parms[6,3:4]<- -log((1/(FinalSel[1]+0.000000001)-1))
+			ctl.file$size_selex_parms[6,7]<- FinalSel_phase[1]
 		}
-		#Add other fleets
+
+    #Add other fleets
 		if(data.file$Nfleets>1){
 			for(i in 1:(data.file$Nfleets-1))
 			{
@@ -1409,6 +1413,37 @@ SS.file.update<-observeEvent(input$run_SS,{
 				ctl.file$size_selex_types<-rbind(ctl.file$size_selex_types,ctl.file$size_selex_types[1,])
 				ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
 				ctl.file$size_selex_parms<-rbind(ctl.file$size_selex_parms,ctl.file$size_selex_parms[1:6,])
+        
+        if(input$Sel_choice=="Logistic")
+        {
+          ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
+          ctl.file$size_selex_parms[6*i+3,7]<- Sel50_phase[i+1]
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+          ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
+          ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
+          ctl.file$size_selex_parms[6*i+2,3:4]<- 15
+          ctl.file$size_selex_parms[6*i+2,7]<- -1
+          ctl.file$size_selex_parms[6*i+4,3:4]<- 15
+          ctl.file$size_selex_parms[6*i+4,7]<- -1
+          ctl.file$size_selex_parms[6*i+6,3:4]<- 15
+          ctl.file$size_selex_parms[6*i+6,7]<- -1          
+        }
+
+        if(input$Sel_choice=="Dome-shaped")
+        {
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+          ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
+          ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
+          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width))
+          ctl.file$size_selex_parms[6*i+2,7]<- PeakDesc_phase[i+1]
+          ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[1])^2/log(0.5)))
+          ctl.file$size_selex_parms[6*i+3,7]<- Sel50_phase[i+1]
+          ctl.file$size_selex_parms[6*i+4,3:4]<- log(LtPeakFinal[i+1])
+          ctl.file$size_selex_parms[6*i+4,7]<- LtPeakFinal_phase[i+1]
+          ctl.file$size_selex_parms[6*i+6,3:4]<- -log((1/(FinalSel[i+1]+0.000000001)-1))
+          ctl.file$size_selex_parms[6*i+6,7]<- FinalSel_phase[i+1]          
+        }
+    
     #Dirichlet data-weighting
         ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])
 			}
