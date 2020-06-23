@@ -64,6 +64,7 @@ wellPanel(
         # h3("Weight data"),
         # h5(em("Data weighting balances information content of data with model structure")),
         # h5(em("The default value is 1")),
+        #fluidRow(column(width=10,checkboxInput("dirichlet","Use Dirichlet weighting?",FALSE))),
         # h5(em("After the first run, you can use check the Francis or harmonic mean methods for suggested weightings")),
         # fluidRow(column(width=6,textInput("Lt_datawts", "Lengths weights by fleet", value=""))),    
       )

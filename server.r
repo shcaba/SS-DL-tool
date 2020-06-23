@@ -1010,6 +1010,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 				data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
 				data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
 			}
+      data.file$len_info[,5]<-1
+      data.file$len_info[,6]<-c(1:data.file$Nfleets)
 			data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)
 			data.file$CPUEinfo[,1]<-1:data.file$Nfleets
 		}
@@ -1042,6 +1044,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 				data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
 				data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
 			}
+      data.file$len_info[,5]<-1
+      data.file$len_info[,6]<-c(1:data.file$Nfleets)
 			data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)
 			data.file$CPUEinfo[,1]<-1:data.file$Nfleets
 		}
@@ -1184,9 +1188,11 @@ SS.file.update<-observeEvent(input$run_SS,{
 		}
 		
 		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
-		####################### END DATA FILE #####################################
 
+		####################### END DATA FILE #####################################
+##################################################################################
 		####################### START CTL FILE ####################################
+
 		#Read, edit then write new CONTROL file
     #LENGTH or AGE-ONLY
 		if(all(!is.null(c(input$file1,input$file3)),is.null(input$file2))==TRUE)
@@ -1403,6 +1409,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 				ctl.file$size_selex_types<-rbind(ctl.file$size_selex_types,ctl.file$size_selex_types[1,])
 				ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
 				ctl.file$size_selex_parms<-rbind(ctl.file$size_selex_parms,ctl.file$size_selex_parms[1:6,])
+    #Dirichlet data-weighting
+        ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])
 			}
 
 			#Re-label so r4ss can interpret these new entries
