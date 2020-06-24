@@ -1405,10 +1405,10 @@ SS.file.update<-observeEvent(input$run_SS,{
       Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
       Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
+      bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
 
     if(input$Sel_choice=="Logistic")
 		{
-			bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
 			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
 			ctl.file$size_selex_parms[3,7]<- Sel50_phase[1]
 			ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
@@ -1422,9 +1422,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 			ctl.file$size_selex_parms[6,7]<- -1
 			}
 		if(input$Sel_choice=="Dome-shaped")
-		{
-			bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
-      
+		{     
       PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
       PeakDesc_phase<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_phase,","))))
       LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
@@ -1432,8 +1430,8 @@ SS.file.update<-observeEvent(input$run_SS,{
       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
       FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
 			
-      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
-			ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
+      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
 			ctl.file$size_selex_parms[1,7]<- Selpeak_phase[1]
 			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
 			ctl.file$size_selex_parms[2,7]<- PeakDesc_phase[1]
@@ -1463,7 +1461,7 @@ SS.file.update<-observeEvent(input$run_SS,{
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
           ctl.file$size_selex_parms[6*i+2,3:4]<- 15
           ctl.file$size_selex_parms[6*i+2,7]<- -1
-          ctl.file$size_selex_parms[6*i+4,3:4]<- 15
+          ctl.file$size_selex_parms[6*i+4,3:4]<- -15
           ctl.file$size_selex_parms[6*i+4,7]<- -1
           ctl.file$size_selex_parms[6*i+6,3:4]<- 15
           ctl.file$size_selex_parms[6*i+6,7]<- -1          
