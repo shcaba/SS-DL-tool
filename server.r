@@ -1399,7 +1399,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 				}
 			}
 		
-browser()
+#browser()
 		#Selectivity
 		  Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
       Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
