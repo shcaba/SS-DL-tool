@@ -228,7 +228,7 @@
           -999            15           -15           -10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_start_logit_Fishery(1)
             -5            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
 
-            -5             5             0             0            99             0          2          0          0          0          0          0          0          0  #  ln(EffN_mult)_fleet2_length (fixed to 1)
+            -5             5             15             15            1.813             0          -2          0          0          0          0          0          0          0  #  ln(EffN_mult)_fleet2_length (fixed to 1)
 
 # 1   Fishery AgeSelex
 #_no timevary selex parameters

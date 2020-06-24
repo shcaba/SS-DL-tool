@@ -629,10 +629,10 @@ output$Forecasts<- renderUI({
 Nages<-reactive({
     Nages<-NA
     if(all(c(is.null(input$M_f),is.null(input$M_f_fix),is.null(input$M_f_mean),is.null(input$M_f_mean_sss)))) return(NULL)
-    if(!is.na(input$M_f)) {Nages<-5.4/input$M_f}
-    if(!is.na(input$M_f_fix)) {Nages<-5.4/input$M_f_fix}
-    if(!is.na(input$M_f_mean)) {Nages<-5.4/input$M_f_mean}
-    if(!is.na(input$M_f_mean_sss)) {Nages<-5.4/input$M_f_mean_sss}
+    if(!is.na(input$M_f)) {Nages<-ceiling(5.4/input$M_f)}
+    if(!is.na(input$M_f_fix)) {Nages<-ceiling(5.4/input$M_f_fix)}
+    if(!is.na(input$M_f_mean)) {Nages<-ceiling(5.4/input$M_f_mean)}
+    if(!is.na(input$M_f_mean_sss)) {Nages<-ceiling(5.4/input$M_f_mean_sss)}
     Nages
   })
 
@@ -927,7 +927,7 @@ SSS.run<-observeEvent(input$run_SSS,{
 		data.file$Nages<-Nages()
 
 	#Catches
-		#inCatch<- input$file2
+    #inCatch<- input$file2
 		Catch.data<-rv.Ct$dat
 		data.file$Nfleets<-ncol(Catch.data)
 		if((data.file$Nfleets-1)>1){
@@ -1025,6 +1025,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		data.file$Nages<-Nages()
 
 	#Catches
+#    browser()
 		#inCatch<- input$file2
 		if (is.null(rv.Ct$data)) 
 		{
@@ -1053,7 +1054,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
-						c(100,rep(100,length(year.in))),
+						c(1000,rep(1000,length(year.in))),
 						c(0.01,rep(1000,length(year.in)))
 						)			
 		}
@@ -1443,6 +1444,11 @@ SS.file.update<-observeEvent(input$run_SS,{
 			ctl.file$size_selex_parms[6,7]<- FinalSel_phase[1]
 		}
 
+if(input$dirichlet)
+{
+  ctl.file$dirichlet_parms[,3:4]<-0
+  ctl.file$dirichlet_parms[,7]<-2
+}
     #Add other fleets
 		if(data.file$Nfleets>1){
 			for(i in 1:(data.file$Nfleets-1))
@@ -1486,6 +1492,11 @@ SS.file.update<-observeEvent(input$run_SS,{
         ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])
 			}
 
+if(input$dirichlet)
+{
+  ctl.file$dirichlet_parms[,3:4]<-0
+  ctl.file$dirichlet_parms[,7]<-2
+}
 			#Re-label so r4ss can interpret these new entries
 			rownames(ctl.file$init_F)<-paste0("InitF_seas_1_flt_",1:data.file$Nfleets,"Fishery",1:data.file$Nfleets)
 			rownames(ctl.file$age_selex_types)<-rownames(ctl.file$size_selex_types)<-paste0("Fishery",1:data.file$Nfleets)
@@ -1588,7 +1599,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
 			 	 Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
 				 SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
-				 SSexecutivesummary(Model.output)		
+				 try(SSexecutivesummary(Model.output))		
 				 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
 				 ref.like<-min(jitter.likes)
 		    	 #Make plot and save to folder
