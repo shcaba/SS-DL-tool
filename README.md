@@ -8,9 +8,14 @@ The tool builds Stock Synthesis files for provided data and life history informa
 ```R
 install.packages("devtools","shiny","shinyjs","r4ss","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","sss")
 
-Make sure the following package is using the most recent versions:
+Make sure the following packages are using the most recent versions:
 library(devtools)
 devtools::install_github("shcaba/SSS", build_vignettes = TRUE)
+
+install.packages("remotes")
+remotes::install_github("r4ss/r4ss")
+
+It is recommended to restart Rstudio after new installations.
 
 Running the tool can be accomplished in any of the following ways:
 1) shiny::runApp(ENTER HERE USER PATH TO FOLDER CONTAINING THE SS-DL files)
