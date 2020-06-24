@@ -538,7 +538,7 @@ output$Sel_parms4 <- renderUI({
 output$Sel_parms5 <- renderUI({ 
  		if(input$Sel_choice=="Dome-shaped"){ 			 
     	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value="0.999")), 
-            	column(width=4, numericInput("FinalSel_phase", "Est. phase",value=""))) 
+            	column(width=4, textInput("FinalSel_phase", "Est. phase",value=""))) 
  		} 
 	}) 
 
@@ -1399,7 +1399,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 				}
 			}
 		
-#browser()
+browser()
 		#Selectivity
 		  Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
       Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
