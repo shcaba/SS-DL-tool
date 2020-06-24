@@ -523,14 +523,14 @@ output$Sel_parms2<- renderUI({
  
 output$Sel_parms3 <- renderUI({ 
   		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, textInput("PeakDesc", "Length at first declining selectivity",value="")), 
+    	fluidRow(column(width=8, textInput("PeakDesc", "Length at 1st declining selectivity",value="1000")), 
             	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value="",))) 
  		} 
 	}) 
  
 output$Sel_parms4 <- renderUI({ 
  		if(input$Sel_choice=="Dome-shaped"){ 			 
-	    fluidRow(column(width=8, textInput("LtPeakFinal", "Width of declining selectivity",value="1")), 
+	    fluidRow(column(width=8, textInput("LtPeakFinal", "Width of declining selectivity",value="0.0001")), 
 	             column(width=4, textInput("LtPeakFinal_phase", "Est. phase",value="")))    			 
  		} 
 	}) 
