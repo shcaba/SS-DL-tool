@@ -84,11 +84,24 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){
   
 
 ########
-# rv <- reactiveValues(
-#     data = NULL,
-#     clear = FALSE
-#   )
+#Reset catches
+  observe({
+    req(input$file2)
+    req(!rv.Ct$clear)
+    rv.Ct$data <- read.csv(input$file2$datapath,check.names=FALSE)
+  })
 
+  observeEvent(input$file2, {
+    rv.Ct$clear <- FALSE
+  }, priority = 1000)
+
+  observeEvent(input$reset_ct, {
+    rv.Ct$data <- NULL
+    rv.Ct$clear <- TRUE
+    reset('file2')
+  }, priority = 1000)
+
+#Reset lengths
   observe({
     req(input$file1)
     req(!rv.Lt$clear)
@@ -104,6 +117,24 @@ RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){
     rv.Lt$clear <- TRUE
     reset('file1')
   }, priority = 1000)
+
+#Reset ages
+  observe({
+    req(input$file3)
+    req(!rv.Age$clear)
+    rv.Age$data <- read.csv(input$file3$datapath,check.names=FALSE)
+  })
+
+  observeEvent(input$file3, {
+    rv.Age$clear <- FALSE
+  }, priority = 1000)
+
+  observeEvent(input$reset_age, {
+    rv.Age$data <- NULL
+    rv.Age$clear <- TRUE
+    reset('file3')
+  }, priority = 1000)
+
 
 #######
 
@@ -145,7 +176,7 @@ shinyjs::hide("run_SSS")
 
 
 #SSS panels
-observeEvent(req(is.null(rv.Lt$data)&!is.null(input$file2)&is.null(input$file3)), {
+observeEvent(req(is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)), {
       shinyjs::show("panel_data_wt_lt")
 
       shinyjs::show("panel_SSS")
@@ -176,7 +207,7 @@ observeEvent(req(is.null(rv.Lt$data)&!is.null(input$file2)&is.null(input$file3))
   })
 
 #SS-LO panels
-observeEvent(req(all(!is.null(c(rv.Lt$data,input$file3)),is.null(input$file2))), {
+observeEvent(req(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))), {
       shinyjs::show("panel_data_wt_lt")
       
       shinyjs::hide("panel_SSS")
@@ -206,7 +237,7 @@ observeEvent(req(all(!is.null(c(rv.Lt$data,input$file3)),is.null(input$file2))),
   })	
 
 
-observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
+observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
       shinyjs::show("panel_data_wt_lt")
       
       shinyjs::hide("panel_SSS")
@@ -236,7 +267,7 @@ observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all
    })
 
 
-observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))), {
+observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
       shinyjs::show("panel_data_wt_lt")
       
       shinyjs::hide("panel_SSS")
@@ -274,7 +305,7 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null
 #Model dimensions
 output$Model_dims1 <- renderUI({ 
         inFile1 = rv.Lt$data 
-        inFile2 = input$file2 
+        inFile2 = rv.Ct$data 
          
         if (is.null(inFile1) & is.null(inFile2)) return(NULL) 
         if (!is.null(inFile1) & is.null(inFile2)){ 
@@ -292,10 +323,9 @@ output$Model_dims1 <- renderUI({
 
 
 output$Model_dims2 <- renderUI({ 
-        inFile2 <- input$file2 
-        if (is.null(inFile2)) return(NULL) 
-        if (!is.null(inFile2)){            
-            Ct.data = read.csv(inFile2$datapath,check.names=FALSE) 
+        Ct.data = rv.Ct$data
+        if (is.null(Ct.data)) return(NULL) 
+        if (!is.null(Ct.data)){            
               fluidRow(column(width=4, numericInput("styr", "Starting year",  
                                                    value=min(Ct.data[,1]), min=1, max=10000, step=1)), 
                         column(width=4, numericInput("endyr", "Ending year",  
@@ -764,15 +794,15 @@ observeEvent(req(!is.null(rv.Lt$data)), {
 # 		})
 # 	})
 
-observeEvent(req(!is.null(input$file3)), {
+observeEvent(req(!is.null(rv.Age$data)), {
     	shinyjs::show(output$age_comp_plots_label<-renderText({"Age compositions"}))
   })
 
 output$Ageplot <- renderPlot({ 
-		inFile_age <- input$file3 
+		inFile_age <- rv.Age$data 
 		if (is.null(inFile_age)) return(NULL) 
 		 
-		read.csv(inFile_age$datapath, check.names=FALSE) %>%  
+		  rv.Age$data %>%  
 		      pivot_longer(-1, names_to = "year", values_to = "ltnum") %>%  
 		      rename(bin = Bins) %>%  
 		  ggplot(aes(bin, ltnum)) + 
@@ -783,15 +813,15 @@ output$Ageplot <- renderPlot({
 	}) 
  
 
- observeEvent(req(!is.null(input$file2)), {
+ observeEvent(req(!is.null(rv.Ct$data)), {
     	shinyjs::show(output$catch_comp_plots_label<-renderText({"Removal history"}))
   })
 
 output$Ctplot <- renderPlot({ 
-		inCatch <- input$file2 
-		if (is.null(inCatch)) return(NULL) 
+		#inCatch <- input$file2 
+		if (is.null(rv.Ct$data)) return(NULL) 
  
-		read.csv(inCatch$datapath, check.names=FALSE) %>%  
+		rv.Ct$data %>%  
 		    pivot_longer(-1, names_to = "Fleet", values_to = "catch") %>%  
 		    ggplot(aes_string(names(.)[1], "catch", color = "Fleet")) +  
 		    geom_point() +  
@@ -800,32 +830,6 @@ output$Ctplot <- renderPlot({
 		    xlab("Year") +  
 		    scale_color_viridis_d() 
 		}) 
-
-
-# output$Ctplot<-renderPlot({
-# 		inCatch<- input$file2
-# 		if (is.null(inCatch)) {
-# 			return(NULL)
-# 			shinyjs::hide("Ctplot")}
-# 		Catch.data<-read.csv(inCatch$datapath,header=TRUE)
-# 		colnames(Catch.data)[1]<-"year"
-# 		if(ncol(Catch.data)==2){
-# 		ggplot(Catch.data,aes(get(colnames(Catch.data)[1]),get(colnames(Catch.data)[2])))+
-# 			geom_col(fill="#658D1B",color="white")+
-# 			xlab("Year")+
-# 			ylab("Removals")					
-# 		}
-# 		if(ncol(Catch.data)>2){
-# 			Catch.data<-melt(Catch.data,id=c("year"))
-# 			colnames(Catch.data)<-c("year","fleet","catch")
-# 			ggplot(Catch.data,aes(year,catch,fill=fleet))+
-# 			geom_col(color="white",position="dodge")+
-# 			#geom_col(fill="#658D1B",color="white")+
-# 			xlab("Year")+
-# 			ylab("Removals")+
-# 			scale_fill_viridis(discrete=TRUE, option="viridis")				
-# 			}
-# 		})
 
 #Plot M by age
 output$Mplot<-renderPlot({ 
@@ -923,8 +927,8 @@ SSS.run<-observeEvent(input$run_SSS,{
 		data.file$Nages<-Nages()
 
 	#Catches
-		inCatch<- input$file2
-		Catch.data<-read.csv(inCatch$datapath,header=TRUE)
+		#inCatch<- input$file2
+		Catch.data<-rv.Ct$dat
 		data.file$Nfleets<-ncol(Catch.data)
 		if((data.file$Nfleets-1)>1){
 			for(i in 1:(data.file$Nfleets-1))
@@ -1021,8 +1025,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 		data.file$Nages<-Nages()
 
 	#Catches
-		inCatch<- input$file2
-		if (is.null(inCatch)) 
+		#inCatch<- input$file2
+		if (is.null(rv.Ct$data)) 
 		{
 		inFile<- rv.Lt$data
 		Lt.comp.data<-rv.Lt$data
@@ -1057,9 +1061,9 @@ SS.file.update<-observeEvent(input$run_SS,{
 		colnames(data.file$catch)<-catch.cols
 		}
 
-		if(!is.null(inCatch))
+		if(!is.null(rv.Ct$data))
 		{
-		Catch.data<-read.csv(inCatch$datapath,header=TRUE)
+		Catch.data<-rv.Ct$data
 		data.file$Nfleets<-ncol(Catch.data)-1
 		if(data.file$Nfleets>1){
 			for(i in 1:(data.file$Nfleets-1))
@@ -1161,7 +1165,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 #		colnames(data.file$lencomp)<-lt.data.names
 	
 	#Age composition data
-		inFile_age<- input$file3
+		inFile_age<- rv.Age$data
 		if (is.null(inFile_age)){
 		data.file$N_agebins<-Nages()
 		data.file$agebin_vector<-1:Nages()		
@@ -1169,7 +1173,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		colnames(data.file$ageerror)<-paste0("age",1:Nages())		
 			}
 		if (!is.null(inFile_age)){
-		Age.comp.data<-read.csv(inFile_age$datapath,check.names=FALSE)
+		Age.comp.data<-rv.Age$data
 		age.classes<-nrow(Age.comp.data)
 		data.file$N_agebins<-age.classes
 		data.file$agebin_vector<-Age.comp.data[,1]
@@ -1220,7 +1224,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 
 		#Read, edit then write new CONTROL file
     #LENGTH or AGE-ONLY
-		if(all(!is.null(c(rv.Lt$data,input$file3)),is.null(input$file2))==TRUE)
+		if(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f,input$k_f,input$t0_f,c(0:Nages()))
     #Females
@@ -1254,7 +1258,7 @@ SS.file.update<-observeEvent(input$run_SS,{
     }
 
     #LENGTH and CATCH with fixed parameters
-    if(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))==TRUE)
+    if(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f_fix,input$k_f_fix,input$t0_f_fix,c(0:Nages()))
     #Females
@@ -1288,7 +1292,7 @@ SS.file.update<-observeEvent(input$run_SS,{
     }
 
     #LENGTH and CATCH with estimated parameters
-    if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(input$file2)),all(!is.null(input$file3),!is.null(input$file2))))==TRUE)
+    if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f_mean,input$k_f_mean,input$t0_f_mean,c(0:Nages()))
     #c("lognormal","truncated normal","uniform","beta")
@@ -1508,11 +1512,11 @@ SS.file.update<-observeEvent(input$run_SS,{
     # ctl.file$Variance_adjustments[1,]<-Lt_dat_wts
 
 		#Change likelihood component weight of catch
-		if (is.null(inCatch))
+		if (is.null(rv.Ct$data))
 			{
 				ctl.file$lambdas[1,4]<-0
 			}
-		if(!is.null(inCatch))
+		if(!is.null(rv.Ct$data))
 			{
 				ctl.file$lambdas[1,4]<-1
 				ctl.file$lambdas[2,4]<-0
