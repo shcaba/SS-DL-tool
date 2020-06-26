@@ -178,7 +178,8 @@ shinyjs::hide("run_SSS")
 #SSS panels
 observeEvent(req(is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)), {
       shinyjs::show("panel_data_wt_lt")
-
+      shinyjs::hide("panel_ct_wt_LO")
+      
       shinyjs::show("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -209,7 +210,8 @@ observeEvent(req(is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)),
 #SS-LO panels
 observeEvent(req(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))), {
       shinyjs::show("panel_data_wt_lt")
-      
+      if(length(unique(rv.Lt$data[,2]))>1){shinyjs::show("panel_ct_wt_LO")}
+      if(length(unique(rv.Lt$data[,2]))==1){shinyjs::hide("panel_ct_wt_LO")}
       shinyjs::hide("panel_SSS")
       shinyjs::show("panel_SSLO_LH")
       shinyjs::show("panel_SSLO_fixed")
@@ -239,7 +241,8 @@ observeEvent(req(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))), 
 
 observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
       shinyjs::show("panel_data_wt_lt")
-      
+      shinyjs::hide("panel_ct_wt_LO")
+       
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -269,6 +272,7 @@ observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all
 
 observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
       shinyjs::show("panel_data_wt_lt")
+      shinyjs::hide("panel_ct_wt_LO")
       
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
@@ -1005,7 +1009,7 @@ SS.file.update<-observeEvent(input$run_SS,{
              progress$set(value = i)
              Sys.sleep(0.5)
            }
-  	
+browser()  	
   	#Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
 			{
@@ -1048,13 +1052,18 @@ SS.file.update<-observeEvent(input$run_SS,{
 		year.in<-input$styr:input$endyr
 		catch.cols<-colnames(data.file$catch)
 		catch_temp<-list()
-		for(i in 1:data.file$Nfleets)
+		if(data.file$Nfleets==1){catch.level<-1000}
+    if(data.file$Nfleets>1){
+        catch.level<-as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,","))))
+        catch.level<-catch.level/sum(catch.level)*1000
+      }
+    for(i in 1:data.file$Nfleets)
 		{
 		catch_temp[[i]]<-data.frame(
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
-						c(1000,rep(1000,length(year.in))),
+						c(catch.level[i],rep(catch.level[i],length(year.in))),
 						c(0.01,rep(1000,length(year.in)))
 						)			
 		}
@@ -1594,10 +1603,15 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 index.minlikes<-c(1:length(minlikes))[minlikes]
 				 file.copy(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
 		         starter.file$init_values_src<-1
+             starter.file$jitter_fraction<-0
 			 	 SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
 			 	 #R-run to get new best fit model
 				 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
-			 	 Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+         Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
+          if(class(Model.output)=="try-error")
+          {
+            Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+          }
 				 SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
 				 try(SSexecutivesummary(Model.output))		
 				 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]

@@ -59,6 +59,14 @@ wellPanel(
               column(width=4,actionButton("reset_age", "Ages")),
               column(width=4,actionButton("reset_ct", "Catches"))),
 ),
+    shinyjs::hidden(wellPanel(id="panel_ct_wt_LO",
+        h3("Weight fleet lengths by relative catch"),
+        h5(em("The relative catch contribution needs specification with multiple length-only fleets")),
+        h5(em("Example: Two fleets, with fleet 2 catching 2 times the amount as fleet 1, the entry would be 1,2.")),
+        h5(em("Each entry will be relative to the highest value.")),
+        fluidRow(column(width=10,textInput("Wt_fleet_Ct","Relative catch values",value=""))),
+      )
+    ),
     
     shinyjs::hidden(wellPanel(id="panel_data_wt_lt",
         h3("Weight data"),
