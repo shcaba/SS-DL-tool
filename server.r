@@ -1009,7 +1009,6 @@ SS.file.update<-observeEvent(input$run_SS,{
              progress$set(value = i)
              Sys.sleep(0.5)
            }
-browser()  	
   	#Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
 			{
@@ -1029,7 +1028,6 @@ browser()
 		data.file$Nages<-Nages()
 
 	#Catches
-#    browser()
 		#inCatch<- input$file2
 		if (is.null(rv.Ct$data)) 
 		{
@@ -1409,7 +1407,6 @@ browser()
 				}
 			}
 		
-#browser()
 		#Selectivity
 		  Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
       Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
@@ -1524,8 +1521,6 @@ if(input$dirichlet)
 		}
 
     #Change data weights
-    # browser()
-
     # Lt_dat_wts<-as.numeric(trimws(unlist(strsplit(input$Lt_datawts,","))))
     # ctl.file$Variance_adjustments[1,]<-Lt_dat_wts
 
@@ -1617,7 +1612,8 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
 				 ref.like<-min(jitter.likes)
 		    	 #Make plot and save to folder
-		    	 setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+		    	 main.dir<-getwd()
+           setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
 		     	 png("jitterplot.png")
 				 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
 				 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
@@ -1658,7 +1654,9 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE)
 				})
 		}		
-	}
+	setwd(main.dir)
+           
+  }
 		
 	
 
