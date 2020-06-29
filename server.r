@@ -81,12 +81,12 @@ if(OS.in=="Windows")
   } 
 if(OS.in=="Mac")  
   {
-    command <- paste0(navigate,"/./ss_mac", ss.cmd) 
+    command <- paste0(path,"/./ss_mac", ss.cmd) 
     system(command)
   } 
 if(OS.in=="Linux") 
   {
-    command <- paste0(navigate,"/./ss_linux", ss.cmd) 
+    command <- paste0(path,"/./ss_linux", ss.cmd) 
     system(command)
   } 
 }  
