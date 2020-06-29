@@ -71,21 +71,22 @@ VBGF.age<-function(Linf,k,t0,lt){
   } 
   
 
-RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS="Windows"){ 
+RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
   navigate <- paste("cd ", path, sep="") 
-if(OS=="Windows") 
+browser()
+if(OS.in=="Windows") 
   {
     command <- paste0(navigate," & ", "ss", ss.cmd) 
     shell(command, invisible=TRUE, translate=TRUE)
   } 
-if(OS=="Mac")  
+if(OS.in=="Mac")  
   {
-    command <- paste0(navigate," & ","./ss_mac", ss.cmd) 
+    command <- paste0(navigate,"/./ss_mac", ss.cmd) 
     system(command)
   } 
-if(OS=="Linux") 
+if(OS.in=="Linux") 
   {
-    command <- paste0(navigate," & ","./ss_linux", ss.cmd) 
+    command <- paste0(navigate,"/./ss_linux", ss.cmd) 
     system(command)
   } 
 }  
@@ -1615,9 +1616,9 @@ if(input$Forecast_choice)
 SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)  
 
 ########
-
+browser()
 	#Run Stock Synthesis and plot output
-		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="")
+		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
 		Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
 		if(class(Model.output)=="try-error")
 			{
@@ -1644,7 +1645,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
              starter.file$jitter_fraction<-0
 			 	 SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
 			 	 #R-run to get new best fit model
-				 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="")
+				 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
          Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
           if(class(Model.output)=="try-error")
           {
