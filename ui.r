@@ -60,7 +60,7 @@ wellPanel(
               column(width=4,actionButton("reset_ct", "Catches"))),
 ),
     shinyjs::hidden(wellPanel(id="panel_ct_wt_LO",
-        h3("Weight fleet lengths by relative catch"),
+        h4(strong("Weight fleet lengths by relative catch")),
         h5(em("The relative catch contribution needs specification with multiple length-only fleets")),
         h5(em("Example: Two fleets, with fleet 2 catching 2 times the amount as fleet 1, the entry would be 1,2.")),
         h5(em("Each entry will be relative to the highest value.")),
@@ -69,7 +69,7 @@ wellPanel(
     ),
     
     shinyjs::hidden(wellPanel(id="panel_data_wt_lt",
-        h3("Weight data"),
+        h4(strong("Weight data")),
         h5(em("Data weighting balances information content of data with model structure")),
         h5(em("The default value is 1")),
         fluidRow(column(width=10,checkboxInput("dirichlet","Use Dirichlet weighting?",FALSE))),
@@ -79,7 +79,7 @@ wellPanel(
     ),
 
     shinyjs::hidden(wellPanel(id="panel_SSLO_LH",
-    h3("Life history inputs"),
+    h4(strong("Life history inputs")),
         wellPanel(id="panel_SSLO_fixed",
         h5(em("Female")),
         fluidRow(column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01))),    
@@ -129,7 +129,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 )),
 
   shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed",
-    h3("Life history inputs"),
+    h4(strong("Life history inputs")),
         wellPanel(id="panel_SS_fixed",
         h5(em("Female")),
         fluidRow(column(width=6,numericInput("M_f_fix", "Natural mortality", value=NA,min=0, max=10000, step=0.01))),    
@@ -158,7 +158,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     ),
 
     shinyjs::hidden(wellPanel(id="panel_SS_LH_est",
-    h3("Life history inputs"),
+    h4(strong("Life history inputs")),
 #      fluidRow(column(width=10,switchInput("est_parms2","Estimate parameters?",value=TRUE))),      
       wellPanel(id="panel_SS_est",
       h4(em("Female")),
@@ -263,7 +263,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
    #  ),
 
     shinyjs::hidden(wellPanel(id="panel_SSS",
-    h3("Life history inputs"),
+    h4(strong("Life history inputs")),
     wellPanel(
       h4(em("Female")),
       h5(strong("Natural mortality")),            
@@ -311,7 +311,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
 #SSS Stock status input
     shinyjs::hidden(wellPanel(id="panel_SS_stock_status",
-    h3("Relative stock status"),
+    h4(strong("Relative stock status")),
       #wellPanel(
          fluidRow(column(width=6,numericInput("status_year", "Initial recruitment (lnR0)", value=NA,min=1000, max=3000, step=1))),
          fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("Depl_sss","Prior type",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
@@ -323,7 +323,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
 #Stock-recruitment/Productivity
     shinyjs::hidden(wellPanel(id="panel_SSS_prod",
-    h3("Stock-recruitment parameters"),
+    h4(strong("Stock-recruitment parameters")),
      # wellPanel(
          fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_sss","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
               column(width=4,style='padding:2px;',align="center",numericInput("h_mean_sss", "Mean", value=0.7,min=0, max=10000, step=0.001)),    
@@ -334,7 +334,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     ),  
 
     shinyjs::hidden(wellPanel(id="panel_SS_LO_prod",
-    h3("Stock-recruitment parameters"),
+    h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
      fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01))),
    #    ),
@@ -342,7 +342,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     ),  
 
     shinyjs::hidden(wellPanel(id="panel_SS_prod_fixed",
-    h3("Stock-recruitment parameters"),
+    h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
      fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
       column(width=6,numericInput("lnR0", "Initial recruitment (lnR0)", value=9,min=0, max=20, step=0.01))),
@@ -351,7 +351,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     ),  
 
     shinyjs::hidden(wellPanel(id="panel_SS_prod_est",
-    h3("Stock-recruitment parameters"),
+    h4(strong("Stock-recruitment parameters")),
      # wellPanel(
          fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_sss","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
               column(width=3,style='padding:2px;',align="center",numericInput("h_mean_sss", "Mean", value=0.7,min=0, max=10000, step=0.001)),    
@@ -402,8 +402,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
 #Selectivity
     shinyjs::hidden(wellPanel(id="panel_selectivity",
-     wellPanel(
-    h3("Selectivity"),
+  #   wellPanel(
+    h4(strong("Selectivity")),
     h5("Enter parameter and phase values for each fleet and survey."), 
     h5("Example using 50% selectivity with two fleets: Inputs could be 35,40 and 2,2 for starting values and phases respectively."),
     h5("The phase input indicates estimated parameters. To fix the parameter, set the phase value to a negative number."),
@@ -424,7 +424,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
        uiOutput("Sel_parms4"),
        uiOutput("Sel_parms5")
        
-        ),
+  #      ),
       )
    ), 
 
@@ -442,20 +442,22 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       ),
 
     #Reference Points
+     shinyjs::hidden(wellPanel(id="panel_RPs",
      fluidRow(column(width=10,checkboxInput("RP_choices","Define reference points?",FALSE))),
-    wellPanel(
           uiOutput("RP_selection1"),
           uiOutput("RP_selection2")
+          )
         ),
      
   #Forecast options
+    shinyjs::hidden(wellPanel(id="panel_Forecasts",
     fluidRow(column(width=10,checkboxInput("Forecast_choice","Define forecasts?",FALSE))),
-    wellPanel(
           uiOutput("Forecasts")
+        )
         ),
 
-    wellPanel(
-    h3("Model dimensions: years and ages"),
+    shinyjs::hidden(wellPanel(id="panel_Mod_dims",
+    h4(strong("Model dimensions: years and ages")),
     h5(p(em("Starting year values based on inputs"))),
       tags$ul(tags$li(h5(p(em("If catch data is used, starting and ending model years are based on the time series of catch"))))),
       tags$ul(tags$li(h5(p(em("If using only length or age data, starting model year is based on earliest year minus age at 95% Linf"))))),
@@ -463,12 +465,23 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     #   tags$ul(tags$li(h5(p(em("If length data only, count the year back from the first year of length data based on maximum age likely contained in length data"))))),
     #   tags$ul(tags$li(h5(p(em("If using catch data, use the first year of catches"))))),
     # h5(p(em(""))),
- #   wellPanel(
-        uiOutput("Model_dims1"),
-        uiOutput("Model_dims2"),
-      ),
+      uiOutput("Model_dims1"),
+      uiOutput("Model_dims2"),
+      )
+    ),
    
+    #wellPanel(
+    awesomeRadio(
+      inputId = "OS_choice",
+      label = "Which OS?", 
+      choices = c("Windows","Mac","Linux"),
+      selected = "Windows",
+      inline=TRUE,
+      status = "warning"),
+    #), 
+
     wellPanel(
+    h4(strong("Scenario name")),
     fluidRow(column(width=8,textInput("Scenario_name", strong("Choose the name of your scenario"), value="Scenario 1"))),
     h5(p(em("Each scenario folder is saved. Changing the scenario name therefore creates a new folder of results."))),
     h5(p(em("Using different scenario names when changing data or parameter values allows easy sensitivity exploration."))),
@@ -485,6 +498,11 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       icon("play-circle"),
       style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192"),
   ),
+
+###########################################
+###########################################
+###########################################
+
       mainPanel(        
         tabsetPanel(
             tabPanel("Data and Parameters",

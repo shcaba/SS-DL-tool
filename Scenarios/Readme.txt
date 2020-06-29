@@ -1,1 +1,1 @@
-This folder contains all runs performed by the length-based models.
+This folder contains all model runs.

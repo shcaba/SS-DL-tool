@@ -9,6 +9,7 @@ require(tidyr)
 require(rlist)
 require(viridis)
 require(sss)
+require(shinyWidgets)
 #require(paletteer)
 #require(RColorBrewer)
 #require(ggthemes)
@@ -70,10 +71,23 @@ VBGF.age<-function(Linf,k,t0,lt){
   } 
   
 
-RUN.SS<-function(path, ss.exe="ss",ss.cmd=" -nohess -nox"){ 
+RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS="Windows"){ 
   navigate <- paste("cd ", path, sep="") 
-  command <- paste(navigate," & ", ss.exe, ss.cmd,sep="") 
-  shell(command, invisible=TRUE, translate=TRUE) 
+if(OS=="Windows") 
+  {
+    command <- paste0(navigate," & ", "ss", ss.cmd) 
+    shell(command, invisible=TRUE, translate=TRUE)
+  } 
+if(OS=="Mac")  
+  {
+    command <- paste0(navigate," & ","./ss_mac", ss.cmd) 
+    system(command)
+  } 
+if(OS=="Linux") 
+  {
+    command <- paste0(navigate," & ","./ss_linux", ss.cmd) 
+    system(command)
+  } 
 }  
 
 
@@ -168,6 +182,7 @@ onclick("est_LHparms",id="panel_SS_est")
 
 
 observe({
+shinyjs::hide("OS_choice")
 shinyjs::hide("run_SS")
 shinyjs::hide("run_SSS")
   })
@@ -202,6 +217,13 @@ observeEvent(req(is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)),
 
     	shinyjs::hide("panel_SS_jitter")    		
 
+      shinyjs::show("panel_RPs")
+      shinyjs::show("panel_Forecasts")
+
+      shinyjs::show("panel_Mod_dims")
+
+      shinyjs::show("OS_choice")
+
     	shinyjs::show("run_SSS")
     	shinyjs::hide("run_SS")
 
@@ -233,6 +255,13 @@ observeEvent(req(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))), 
     	shinyjs::show("panel_SS_recdevs")
 
     	shinyjs::show("panel_SS_jitter")    		
+
+      shinyjs::show("panel_RPs")
+      shinyjs::show("panel_Forecasts")
+
+      shinyjs::show("panel_Mod_dims")
+
+      shinyjs::show("OS_choice")
  
     	shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
@@ -265,6 +294,13 @@ observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all
 
       shinyjs::show("panel_SS_jitter")        
  
+      shinyjs::show("panel_RPs")
+      shinyjs::show("panel_Forecasts")
+
+      shinyjs::show("panel_Mod_dims")
+
+      shinyjs::show("OS_choice")
+
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
    })
@@ -296,6 +332,13 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null
 
       shinyjs::show("panel_SS_jitter")        
  
+      shinyjs::show("panel_RPs")
+      shinyjs::show("panel_Forecasts")
+
+      shinyjs::show("panel_Mod_dims")
+      
+      shinyjs::show("OS_choice")
+
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
    })
@@ -1574,7 +1617,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 ########
 
 	#Run Stock Synthesis and plot output
-		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
+		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="")
 		Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
 		if(class(Model.output)=="try-error")
 			{
@@ -1601,7 +1644,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
              starter.file$jitter_fraction<-0
 			 	 SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
 			 	 #R-run to get new best fit model
-				 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name), ss.exe="ss",ss.cmd="")
+				 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="")
          Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
           if(class(Model.output)=="try-error")
           {
