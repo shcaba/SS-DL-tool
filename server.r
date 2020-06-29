@@ -73,7 +73,7 @@ VBGF.age<-function(Linf,k,t0,lt){
 
 RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
   navigate <- paste("cd ", path, sep="") 
-browser()
+#browser()
 if(OS.in=="Windows") 
   {
     command <- paste0(navigate," & ", "ss", ss.cmd) 
@@ -81,13 +81,17 @@ if(OS.in=="Windows")
   } 
 if(OS.in=="Mac")  
   {
-    command <- paste0(path,"/./ss_mac", ss.cmd) 
-    system(command)
+    
+    command <- c(paste("cd", path), "chmod +x ./ss_mac","./ss_mac") 
+    system(paste(command, collapse=";"))
+    
+    #command <- paste0(path,"/./ss_mac", ss.cmd) 
+    #system(command, invisible=TRUE)
   } 
 if(OS.in=="Linux") 
   {
     command <- paste0(path,"/./ss_linux", ss.cmd) 
-    system(command)
+    system(command, invisible=TRUE)
   } 
 }  
 
@@ -1616,7 +1620,7 @@ if(input$Forecast_choice)
 SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)  
 
 ########
-browser()
+#browser()
 	#Run Stock Synthesis and plot output
 		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
 		Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
