@@ -69,9 +69,10 @@ wellPanel(
     ),
     
     shinyjs::hidden(wellPanel(id="panel_data_wt_lt",
-        h4(strong("Weight data")),
-        h5(em("Data weighting balances information content of data with model structure")),
-        h5(em("The default value is 1")),
+        h4(strong("Data-weighting")),
+        h5(em("Data weighting balances information content of biological data with model structure")),
+        h5(em("Data weighting balances across factors (e.g, fleets, sex, etc.)")),
+        h5(em("The default value is equally weighting among factors based on input effective sample size inputs")),
         fluidRow(column(width=10,prettyCheckbox("dirichlet","Use Dirichlet weighting?",
           value=FALSE, 
           shape="curve",

@@ -83,15 +83,15 @@ if(OS.in=="Mac")
   {
     
     command <- c(paste("cd", path), "chmod +x ./ss_mac","./ss_mac") 
-    system(paste(command, collapse=";"))
+    system(paste(command, collapse=";"),invisible=TRUE)
     
     #command <- paste0(path,"/./ss_mac", ss.cmd) 
     #system(command, invisible=TRUE)
   } 
 if(OS.in=="Linux") 
   {
-    command <- paste0(path,"/./ss_linux", ss.cmd) 
-    system(command, invisible=TRUE)
+    command <- c(paste("cd", path), "chmod +x ./ss_linux","./ss_linux") 
+    system(paste(command, collapse=";"), invisible=TRUE)
   } 
 }  
 
