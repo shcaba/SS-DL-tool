@@ -353,7 +353,6 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null
 
 	
 # User activated pop-up parameter values ---------------
-
 #Model dimensions
 output$Model_dims1 <- renderUI({ 
         inFile1 = rv.Lt$data 
@@ -371,19 +370,25 @@ output$Model_dims1 <- renderUI({
                     column(width=4, numericInput("endyr","Ending year",  
                                                  value=max(Lt.comp.data[,1]), min=1, max=10000, step=1)))            
           } 
+        if (!is.null(inFile2)){            
+              fluidRow(column(width=4, numericInput("styr", "Starting year",  
+                                                   value=min(inFile2[,1]), min=1, max=10000, step=1)), 
+                        column(width=4, numericInput("endyr", "Ending year",  
+                                                value=max(inFile2[,1]), min=1, max=10000, step=1)))            
+          }  
     })
 
 
-output$Model_dims2 <- renderUI({ 
-        Ct.data = rv.Ct$data
-        if (is.null(Ct.data)) return(NULL) 
-        if (!is.null(Ct.data)){            
-              fluidRow(column(width=4, numericInput("styr", "Starting year",  
-                                                   value=min(Ct.data[,1]), min=1, max=10000, step=1)), 
-                        column(width=4, numericInput("endyr", "Ending year",  
-                                                value=max(Ct.data[,1]), min=1, max=10000, step=1)))            
-          }  
-    }) 
+# output$Model_dims2 <- renderUI({ 
+#         Ct.data = rv.Ct$data
+# #        if (is.null(Ct.data)) return(NULL) 
+#         if (!is.null(Ct.data)){            
+#               fluidRow(column(width=4, numericInput("styr", "Starting year",  
+#                                                    value=min(Ct.data[,1]), min=1, max=10000, step=1)), 
+#                         column(width=4, numericInput("endyr", "Ending year",  
+#                                                 value=max(Ct.data[,1]), min=1, max=10000, step=1)))            
+#           }  
+#     }) 
 
 
 # output$Female_parms_inputs_label <- reactive({
@@ -972,7 +977,6 @@ SSS.run<-observeEvent(input$run_SSS,{
 		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.dat")) 
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
-		
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
