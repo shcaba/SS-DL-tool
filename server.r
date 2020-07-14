@@ -10,6 +10,7 @@ require(rlist)
 require(viridis)
 require(sss)
 require(shinyWidgets)
+require(shinyFiles)
 #require(paletteer)
 #require(RColorBrewer)
 #require(ggthemes)
@@ -95,6 +96,25 @@ if(OS.in=="Linux")
   } 
 }  
 
+pngfun <- function(wd, file,w=7,h=7,pt=12){
+  file <- file.path(wd, file)
+  cat('writing PNG to',file,'\n')
+  png(filename=file,
+      width=w,height=h,
+      units='in',res=300,pointsize=pt)
+}
+
+rc <- function(n,alpha=1){
+  # a subset of rich.colors by Arni Magnusson from the gregmisc package
+  # a.k.a. rich.colors.short, but put directly in this function
+  # to try to diagnose problem with transparency on one computer
+  x <- seq(0, 1, length = n)
+  r <- 1/(1 + exp(20 - 35 * x))
+  g <- pmin(pmax(0, -0.8 + 6 * x - 5 * x^2), 1)
+  b <- dnorm(x, 0.25, 0.15)/max(dnorm(x, 0.25, 0.15))
+  rgb.m <- matrix(c(r, g, b), ncol = 3)
+  rich.vector <- apply(rgb.m, 1, function(v) rgb(v[1], v[2], v[3], alpha=alpha))
+}
 
 ########## Clear data files and plots ############
   rv.Lt <- reactiveValues(data = NULL,clear = FALSE)
@@ -187,93 +207,139 @@ onclick("est_LHparms",id="panel_SS_est")
 
 
 observe({
-shinyjs::hide("OS_choice")
-shinyjs::hide("run_SS")
-shinyjs::hide("run_SSS")
+shinyjs::show("Data_panel")
+#shinyjs::hide("OS_choice")
+#shinyjs::hide("run_SS")
+#shinyjs::hide("run_SSS")
   })
 
+#To get the ObserveEvent to work, each statement in req needs to be unique.
+#This explains the workaround of ((as.numeric(input$tabs)*x)/x)<4, where x is the unique type of assessment being run
+#This input allows other tabs to have different side panels.
 
+#Switch back to data from different tabs
+observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
+        shinyjs::show("Data_panel")
+        shinyjs::hide("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+        
+        shinyjs::hide("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::hide("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
 
+        shinyjs::hide("panel_SS_stock_status") 
+
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
+
+        shinyjs::hide("panel_selectivity")
+
+        shinyjs::hide("panel_SS_recdevs")
+
+        shinyjs::hide("panel_SS_jitter")        
+
+        shinyjs::hide("panel_RPs")
+        shinyjs::hide("panel_Forecasts")
+
+        shinyjs::hide("panel_Mod_dims")
+
+        shinyjs::hide("OS_choice")
+        shinyjs::hide("Scenario_panel")
+        
+        shinyjs::hide("run_SSS")
+        shinyjs::hide("run_SS")        
+  })
 
 #SSS panels
-observeEvent(req(is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)), {
-      shinyjs::show("panel_data_wt_lt")
-      shinyjs::hide("panel_ct_wt_LO")
-      
-      shinyjs::show("panel_SSS")
-      shinyjs::hide("panel_SSLO_LH")
-      shinyjs::hide("panel_SSLO_fixed")
-      shinyjs::hide("panel_SS_LH_fixed_est_tog")
-      shinyjs::hide("panel_SS_LH_fixed")
-      shinyjs::hide("panel_SS_fixed")
-      shinyjs::hide("panel_SS_LH_est")
-      shinyjs::hide("panel_SS_est")
+observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)), {
+        shinyjs::show("Data_panel")
+        shinyjs::show("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+        
+        shinyjs::show("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::hide("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
 
-    	shinyjs::show("panel_SS_stock_status") 
+        shinyjs::show("panel_SS_stock_status") 
 
-    	shinyjs::show("panel_SSS_prod")
-    	shinyjs::hide("panel_SS_LO_prod")
-      shinyjs::hide("panel_SS_prod_fixed")
-    	shinyjs::hide("panel_SS_prod_est")
+        shinyjs::show("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
 
-    	shinyjs::show("panel_selectivity")
+        shinyjs::show("panel_selectivity")
 
-    	shinyjs::hide("panel_SS_recdevs")
+        shinyjs::hide("panel_SS_recdevs")
 
-    	shinyjs::hide("panel_SS_jitter")    		
+        shinyjs::hide("panel_SS_jitter")        
 
-      shinyjs::show("panel_RPs")
-      shinyjs::show("panel_Forecasts")
+        shinyjs::show("panel_RPs")
+        shinyjs::show("panel_Forecasts")
 
-      shinyjs::show("panel_Mod_dims")
+        shinyjs::show("panel_Mod_dims")
 
-      shinyjs::show("OS_choice")
-
-    	shinyjs::show("run_SSS")
-    	shinyjs::hide("run_SS")
-
+        shinyjs::show("OS_choice")
+        shinyjs::show("Scenario_panel")
+        
+        shinyjs::show("run_SSS")
+        shinyjs::hide("run_SS")        
   })
 
 #SS-LO panels
-observeEvent(req(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))), {
-      shinyjs::show("panel_data_wt_lt")
-      if(length(unique(rv.Lt$data[,2]))>1){shinyjs::show("panel_ct_wt_LO")}
-      if(length(unique(rv.Lt$data[,2]))==1){shinyjs::hide("panel_ct_wt_LO")}
-      shinyjs::hide("panel_SSS")
-      shinyjs::show("panel_SSLO_LH")
-      shinyjs::show("panel_SSLO_fixed")
-      shinyjs::hide("panel_SS_LH_fixed_est_tog")
-      shinyjs::hide("panel_SS_LH_fixed")
-      shinyjs::hide("panel_SS_fixed")
-      shinyjs::hide("panel_SS_LH_est")
-      shinyjs::hide("panel_SS_est")
+observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))), {
+        shinyjs::show("Data_panel")
+        shinyjs::show("panel_data_wt_lt")
+        if(length(unique(rv.Lt$data[,2]))>1){shinyjs::show("panel_ct_wt_LO")}
+        if(length(unique(rv.Lt$data[,2]))==1){shinyjs::hide("panel_ct_wt_LO")}
+        shinyjs::hide("panel_SSS")
+        shinyjs::show("panel_SSLO_LH")
+        shinyjs::show("panel_SSLO_fixed")
+        shinyjs::hide("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
 
-    	shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status") 
 
-	   	shinyjs::hide("panel_SSS_prod")
-    	shinyjs::show("panel_SS_LO_prod")
-      shinyjs::hide("panel_SS_prod_fixed")
-    	shinyjs::hide("panel_SS_prod_est")
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::show("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
 
-    	shinyjs::show("panel_selectivity")
+        shinyjs::show("panel_selectivity")
 
-    	shinyjs::show("panel_SS_recdevs")
+        shinyjs::show("panel_SS_recdevs")
 
-    	shinyjs::show("panel_SS_jitter")    		
+        shinyjs::show("panel_SS_jitter")        
 
-      shinyjs::show("panel_RPs")
-      shinyjs::show("panel_Forecasts")
+        shinyjs::show("panel_RPs")
+        shinyjs::show("panel_Forecasts")
 
-      shinyjs::show("panel_Mod_dims")
+        shinyjs::show("panel_Mod_dims")
 
-      shinyjs::show("OS_choice")
- 
-    	shinyjs::hide("run_SSS")
-      shinyjs::show("run_SS")
+        shinyjs::show("OS_choice")
+        shinyjs::show("Scenario_panel")
+   
+        shinyjs::hide("run_SSS")
+        shinyjs::show("run_SS")
   })	
 
 
-observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
+observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
+      shinyjs::show("Data_panel")
       shinyjs::show("panel_data_wt_lt")
       shinyjs::hide("panel_ct_wt_LO")
        
@@ -305,13 +371,15 @@ observeEvent(req(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all
       shinyjs::show("panel_Mod_dims")
 
       shinyjs::show("OS_choice")
+      shinyjs::show("Scenario_panel")
 
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
    })
 
 
-observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
+observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
+      shinyjs::show("Data_panel")
       shinyjs::show("panel_data_wt_lt")
       shinyjs::hide("panel_ct_wt_LO")
       
@@ -343,11 +411,53 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null
       shinyjs::show("panel_Mod_dims")
       
       shinyjs::show("OS_choice")
+      shinyjs::show("Scenario_panel")
 
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
    })
 
+observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
+        shinyjs::hide("Data_panel")
+        shinyjs::hide("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+        
+        shinyjs::hide("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::hide("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
+
+        shinyjs::hide("panel_SS_stock_status") 
+
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
+
+        shinyjs::hide("panel_selectivity")
+
+        shinyjs::hide("panel_SS_recdevs")
+
+        shinyjs::hide("panel_SS_jitter")        
+   
+        shinyjs::hide("panel_RPs")
+        shinyjs::hide("panel_Forecasts")
+
+        shinyjs::hide("panel_Mod_dims")
+        
+        shinyjs::hide("OS_choice")
+        shinyjs::hide("Scenario_panel")
+
+        shinyjs::hide("run_SSS")
+        shinyjs::hide("run_SS")
+
+        shinyjs::show("Sensi_Comparison_panel")
+
+   })
 
 ########################################
 
@@ -357,38 +467,45 @@ observeEvent(req(all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null
 output$Model_dims1 <- renderUI({ 
         inFile1 = rv.Lt$data 
         inFile2 = rv.Ct$data 
-         
         if (is.null(inFile1) & is.null(inFile2)) return(NULL) 
         if (!is.null(inFile1) & is.null(inFile2)){ 
-            Lt.comp.data = rv.Lt$data
-              styr.in =  min(Lt.comp.data[,1]) 
+              print(inFile1[,1])
+              styr.in =  min(inFile1[,1]) 
+              endyr.in = max(inFile1[,1])
+              print(styr.in)
+              print(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))
               if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))){ 
-                styr.in = min(Lt.comp.data[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
-              } 
+                styr.in = min(inFile1[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
+              }
+               
             fluidRow(column(width=4, numericInput("styr", "Starting year",  
                                                   value=styr.in, min=1, max=10000, step=1)), 
                     column(width=4, numericInput("endyr","Ending year",  
-                                                 value=max(Lt.comp.data[,1]), min=1, max=10000, step=1)))            
-          } 
-        if (!is.null(inFile2)){            
-              fluidRow(column(width=4, numericInput("styr", "Starting year",  
-                                                   value=min(inFile2[,1]), min=1, max=10000, step=1)), 
-                        column(width=4, numericInput("endyr", "Ending year",  
-                                                value=max(inFile2[,1]), min=1, max=10000, step=1)))            
-          }  
+                                                 value=endyr.in, min=1, max=10000, step=1)))            
+            } 
+
+        # if (!is.null(inFile2)){            
+        #       fluidRow(column(width=4, numericInput("styr", "Starting year",  
+        #                                            value=min(inFile2[,1]), min=1, max=10000, step=1)), 
+        #                 column(width=4, numericInput("endyr", "Ending year",  
+        #                                         value=max(inFile2[,1]), min=1, max=10000, step=1)))            
+        #     }
+  #         print(styr.in)
+  #         print(endyr.in)
+             
     })
 
 
-# output$Model_dims2 <- renderUI({ 
-#         Ct.data = rv.Ct$data
-# #        if (is.null(Ct.data)) return(NULL) 
-#         if (!is.null(Ct.data)){            
-#               fluidRow(column(width=4, numericInput("styr", "Starting year",  
-#                                                    value=min(Ct.data[,1]), min=1, max=10000, step=1)), 
-#                         column(width=4, numericInput("endyr", "Ending year",  
-#                                                 value=max(Ct.data[,1]), min=1, max=10000, step=1)))            
-#           }  
-#     }) 
+output$Model_dims2 <- renderUI({ 
+        Ct.data = rv.Ct$data
+#        if (is.null(Ct.data)) return(NULL) 
+        if (!is.null(Ct.data)){            
+              fluidRow(column(width=4, numericInput("styr", "Starting year",  
+                                                   value=min(Ct.data[,1]), min=1, max=10000, step=1)), 
+                        column(width=4, numericInput("endyr", "Ending year",  
+                                                value=max(Ct.data[,1]), min=1, max=10000, step=1)))            
+          }  
+    }) 
 
 
 # output$Female_parms_inputs_label <- reactive({
@@ -1069,7 +1186,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 			}
 	  	file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
 		file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
-	
+
 		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
@@ -1725,8 +1842,8 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
  		
  		output$converge.dec <- renderText({
  				if(Model.output$maximum_gradient_component<0.1 & Model.output$inputs$covar==TRUE)
- 					{converge.dec<-"Model appears to have converged. Please check outputs for nonsense."}
- 				else{converge.dec<-"Model has not converged. Please use the Jitter option or change starting values before re-running model."}
+ 					{converge.dec<-"Model appears converged. Please check outputs for nonsense."}
+ 				else{converge.dec<-"Model may not have converged. Please use the Jitter option or change starting values before re-running model."}
 			})
  		
  		#Relative biomass
@@ -1786,6 +1903,67 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 			})
 
 	})
+
+      roots <- getVolumes()()  
+      #print(roots) 
+      shinyDirChoose(input, "Sensi_dir", roots=roots, filetypes=c('', 'txt'))
+
+  output$Sensi_model_picks<-renderUI({
+      dirinfo <- parseDirPath(roots, input$Sensi_dir)
+      #print(dirinfo)
+      pickerInput(
+      inputId = "myPicker",
+      label = "Choose models to compare",
+      choices = list.files(dirinfo),
+      options = list(
+        `actions-box` = TRUE,
+        size = 10,
+        `selected-text-format` = "count > 3"
+        ),
+      multiple = TRUE
+    )
+ })
+
+ Sensi_model_dir_out<-reactive({
+      roots <- getVolumes()()  
+      shinyDirChoose(input, "Sensi_dir", roots=roots, filetypes=c('', 'txt'))
+      Sensi_model_dir <- parseDirPath(roots, input$Sensi_dir)
+      Sensi_model_dir_out<-paste0(Sensi_model_dir,input$myPicker)
+      #Sensi_model_dir
+ })
+
+
+SS.comparisons<-observeEvent(as.numeric(input$tabs)==5,{
+  #print(paste0(Sensi_model_dir(),input$myPicker[1]))
+  #print(Sensi_model_dir())
+#  print(input$myPicker)
+#  print(Sensi_model_dir_out())
+
+#Dir<-"C:/Users/Jason.Cope/Desktop/SS-DL-examples/N.Brazil/"
+#folder.name<-"BRS/" #Common folder name for all sensitivity runs
+#modelnames<-c("BRS_est recdevs_Linf119","BRS_M0.3","BRS_M0.5_jits","BRS_est recdevs_Linf119_M0.4_dome_sel")
+# if(!is.null(Sensi_model_dir_out()))
+# {
+# zz<-list()
+# Runs<-length(Sensi_model_dir_out())
+# for(i in 1:Runs) 
+# {
+#   #setwd(paste0(Dir,folder.name,modelnames[i]))
+#   zz[[i]]<-SS_output(Sensi_model_dir_out()[i])
+# }
+# mysummary<- SSsummarize(zz)
+
+# col.vec = rc(n=length(modelnames), alpha = 1)
+# shade = adjustcolor(col.vec[1], alpha.f = 0.10)
+
+# pngfun(wd = Dir, file = paste0(folder.name, "_data_compare.png"), h = 7,w = 12)
+# par(mfrow = c(1,3))
+# SSplotComparisons(mysummary, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, shadecol = shade, new = FALSE)
+# SSplotComparisons(mysummary, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, shadecol = shade, new = FALSE, legendloc = 'topleft')
+# dev.off()
+#}
+
+  })
 
 
 })

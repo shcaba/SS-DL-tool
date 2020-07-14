@@ -1,6 +1,7 @@
 require(shiny)
 require(shinyjs)
 require(shinyWidgets)
+require(shinyFiles)
 
 shinyUI(fluidPage(
   useShinyjs(),
@@ -13,7 +14,7 @@ shinyUI(fluidPage(
        tags$ul(tags$li(h5(p(em("COMING SOON: Abundance and catch-based estimation of biomass, relative biomass, SPR and F and catch limits."))))),
 sidebarLayout(
    sidebarPanel(
-wellPanel(
+shinyjs::hidden(wellPanel(id="Data_panel",
   h4(strong("Choose data file")),
   fluidRow(column(width=12,fileInput('file1', 'Length composition',
                                     accept = c(
@@ -58,6 +59,7 @@ wellPanel(
      fluidRow(column(width=4,actionButton("reset_lt", "Length")),
               column(width=4,actionButton("reset_age", "Ages")),
               column(width=4,actionButton("reset_ct", "Catches"))),
+)
 ),
     shinyjs::hidden(wellPanel(id="panel_ct_wt_LO",
         h4(strong("Weight fleet lengths by relative catch")),
@@ -480,37 +482,50 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     #   tags$ul(tags$li(h5(p(em("If using catch data, use the first year of catches"))))),
     # h5(p(em(""))),
       uiOutput("Model_dims1"),
-  #    uiOutput("Model_dims2"),
+      uiOutput("Model_dims2"),
       )
     ),
    
     #wellPanel(
-    awesomeRadio(
+    shinyjs::hidden(awesomeRadio(
       inputId = "OS_choice",
       label = "Which OS?", 
       choices = c("Windows","Mac","Linux"),
       selected = "Windows",
       inline=TRUE,
-      status = "warning"),
+      status = "warning")),
     #), 
 
-    wellPanel(
+    shinyjs::hidden(wellPanel(id="Scenario_panel",
     h4(strong("Scenario name")),
     fluidRow(column(width=8,textInput("Scenario_name", strong("Choose the name of your scenario"), value="Scenario 1"))),
     h5(p(em("Each scenario folder is saved. Changing the scenario name therefore creates a new folder of results."))),
     h5(p(em("Using different scenario names when changing data or parameter values allows easy sensitivity exploration."))),
     h5(p(em(""))),
+      )
       ),
 
-      actionButton("run_SS",strong("Run Model"),
+      shinyjs::hidden(actionButton("run_SS",strong("Run Model"),
       width="100%",
       icon("play-circle"),
-      style="font-size:120%;border:2px solid;color:#FFFFFF;background:#658D1B"),
+      style="font-size:120%;border:2px solid;color:#FFFFFF;background:#658D1B")),
 
-      actionButton("run_SSS",strong("Run SSS"),
+      shinyjs::hidden(actionButton("run_SSS",strong("Run SSS"),
       width="100%",
       icon("play-circle"),
-      style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192"),
+      style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192")),
+  
+  
+
+  shinyjs::hidden(wellPanel(id="Sensi_Comparison_panel",
+    shinyDirButton(
+      id="Sensi_dir",
+      label="Select folder",
+      title="Choose folder containing model scenarios"
+      ),
+    uiOutput("Sensi_model_picks")
+  )),
+
   ),
 
 ###########################################
@@ -518,7 +533,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 ###########################################
 
       mainPanel(        
-        tabsetPanel(
+        tabsetPanel(id="tabs",
             tabPanel("Data and Parameters",
               textOutput("lt_comp_plots_label"),
               plotOutput("Ltplot"),
@@ -528,8 +543,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
               plotOutput("Ctplot"),
             h4("Life history"),
             column(6,plotOutput("Mplot")),
-            column(6,plotOutput("VBGFplot"))
-                  ),       
+            column(6,plotOutput("VBGFplot")),
+                  value=1),       
           tabPanel("Model output",
             h4("Checking model convergence. Check also fit to length composition data"),
             tableOutput("converge.grad"),
@@ -558,8 +573,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             tableOutput("Parameters_table"),
             br(),
             h4("Time series"),
-            tableOutput("SSout_table")
-            ),
+            tableOutput("SSout_table"),
+            value=2),
           tabPanel("Jitter exploration",
             plotOutput("Jitterplot"),
             h4("Blue values indicate minimum likelihood values; red indicate values higher than the minimum."),  
@@ -567,17 +582,17 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             plotOutput("Jittercompplot1"),
             h4("Comparison of spawning output among jittered models. Model 0 is the initial model; numbered models are the sequential jittered models."),
             plotOutput("Jittercompplot2"),
-            h4("Comparison of relative stock status among jittered models. Model 0 is the initial model; numbered models are the sequential jittered models.")
-            ),
+            h4("Comparison of relative stock status among jittered models. Model 0 is the initial model; numbered models are the sequential jittered models."),
+            value=3),
           tabPanel("Likelihood profile",
             
-            ),
+            value=4),
           tabPanel("Sensitivity comparisons",
             
-            ),
+            value=5),
           tabPanel("Ensemble models",
             
-            )
+            value=6)
           ) 
    )
    )
