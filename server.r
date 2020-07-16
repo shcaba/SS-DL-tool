@@ -1575,7 +1575,8 @@ SS.file.update<-observeEvent(input$run_SS,{
 					ctl.file$max_bias_adj<-input$BiasC							#Max bias adjustment				
 				}
 			}
-		
+
+#browser()		
 		#Selectivity
 		  Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
       Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
@@ -1655,7 +1656,7 @@ if(input$dirichlet)
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
           ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width))
           ctl.file$size_selex_parms[6*i+2,7]<- PeakDesc_phase[i+1]
-          ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[1])^2/log(0.5)))
+          ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
           ctl.file$size_selex_parms[6*i+3,7]<- Sel50_phase[i+1]
           ctl.file$size_selex_parms[6*i+4,3:4]<- log(LtPeakFinal[i+1])
           ctl.file$size_selex_parms[6*i+4,7]<- LtPeakFinal_phase[i+1]
