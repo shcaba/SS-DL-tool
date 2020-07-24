@@ -255,6 +255,8 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")        
+  
+        shinyjs::hide("Sensi_Comparison_panel")
   })
 
 #SSS panels
@@ -295,6 +297,8 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         
         shinyjs::show("run_SSS")
         shinyjs::hide("run_SS")        
+
+        shinyjs::hide("Sensi_Comparison_panel")
   })
 
 #SS-LO panels
@@ -335,6 +339,8 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
    
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
+
+        shinyjs::hide("Sensi_Comparison_panel")
   })	
 
 
@@ -375,6 +381,8 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
 
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
+
+      shinyjs::hide("Sensi_Comparison_panel")
    })
 
 
@@ -415,6 +423,8 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
 
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
+
+      shinyjs::hide("Sensi_Comparison_panel")
    })
 
 observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
@@ -469,11 +479,8 @@ output$Model_dims1 <- renderUI({
         inFile2 = rv.Ct$data 
         if (is.null(inFile1) & is.null(inFile2)) return(NULL) 
         if (!is.null(inFile1) & is.null(inFile2)){ 
-              print(inFile1[,1])
               styr.in =  min(inFile1[,1]) 
               endyr.in = max(inFile1[,1])
-              print(styr.in)
-              print(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))
               if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))){ 
                 styr.in = min(inFile1[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
               }
@@ -1576,7 +1583,6 @@ SS.file.update<-observeEvent(input$run_SS,{
 				}
 			}
 
-#browser()		
 		#Selectivity
 		  Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
       Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
@@ -1905,66 +1911,86 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 
 	})
 
+    #Sensitivity comparisons
       roots <- getVolumes()()  
-      #print(roots) 
       shinyDirChoose(input, "Sensi_dir", roots=roots, filetypes=c('', 'txt'))
+      path1 <- reactive({
+        return(parseDirPath(roots, input$Sensi_dir))
+      })
 
   output$Sensi_model_picks<-renderUI({
-      dirinfo <- parseDirPath(roots, input$Sensi_dir)
-      #print(dirinfo)
+      #dirinfo <- parseDirPath(roots, input$Sensi_dir)
       pickerInput(
       inputId = "myPicker",
-      label = "Choose models to compare",
-      choices = list.files(dirinfo),
+      label = "Choose scenarios to compare",
+      #choices = list.files(dirinfo),
+      choices = list.files(path1()),
       options = list(
         `actions-box` = TRUE,
-        size = 10,
+        size = 12,
         `selected-text-format` = "count > 3"
         ),
       multiple = TRUE
     )
  })
 
- Sensi_model_dir_out<-reactive({
-      roots <- getVolumes()()  
-      shinyDirChoose(input, "Sensi_dir", roots=roots, filetypes=c('', 'txt'))
-      Sensi_model_dir <- parseDirPath(roots, input$Sensi_dir)
-      Sensi_model_dir_out<-paste0(Sensi_model_dir,input$myPicker)
-      #Sensi_model_dir
- })
+#SS.comparisons<-observeEvent(as.numeric(input$tabs)==5,{
+Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPicker)),{
+    if(!file.exists(paste0(path1(),"/Sensitivity Comparison Plots")))
+      {
+        dir.create(paste0(path1(),"/Sensitivity Comparison Plots"))
+      }
+    Sensi_model_dir_out<-paste0(path1(),"/",input$myPicker)
+  })
 
+  observeEvent(exists(Sensi_model_dir_out()),{
+       modelnames<-input$myPicker
+       zz<-list()
+       Runs<-length(Sensi_model_dir_out())
+       for(i in 1:Runs) {zz[[i]]<-SS_output(paste0(Sensi_model_dir_out()[i]))}
+       mysummary<- SSsummarize(zz)
 
-SS.comparisons<-observeEvent(as.numeric(input$tabs)==5,{
-  #print(paste0(Sensi_model_dir(),input$myPicker[1]))
-  #print(Sensi_model_dir())
-#  print(input$myPicker)
-#  print(Sensi_model_dir_out())
+       col.vec = rc(n=length(modelnames), alpha = 1)
+       shade = adjustcolor(col.vec[1], alpha.f = 0.10)
 
-#Dir<-"C:/Users/Jason.Cope/Desktop/SS-DL-examples/N.Brazil/"
-#folder.name<-"BRS/" #Common folder name for all sensitivity runs
-#modelnames<-c("BRS_est recdevs_Linf119","BRS_M0.3","BRS_M0.5_jits","BRS_est recdevs_Linf119_M0.4_dome_sel")
-# if(!is.null(Sensi_model_dir_out()))
-# {
-# zz<-list()
-# Runs<-length(Sensi_model_dir_out())
-# for(i in 1:Runs) 
-# {
-#   #setwd(paste0(Dir,folder.name,modelnames[i]))
-#   zz[[i]]<-SS_output(Sensi_model_dir_out()[i])
-# }
-# mysummary<- SSsummarize(zz)
-
-# col.vec = rc(n=length(modelnames), alpha = 1)
-# shade = adjustcolor(col.vec[1], alpha.f = 0.10)
-
-# pngfun(wd = Dir, file = paste0(folder.name, "_data_compare.png"), h = 7,w = 12)
-# par(mfrow = c(1,3))
-# SSplotComparisons(mysummary, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, shadecol = shade, new = FALSE)
-# SSplotComparisons(mysummary, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, shadecol = shade, new = FALSE, legendloc = 'topleft')
-# dev.off()
-#}
+       pngfun(wd = paste0(path1(),"/Sensitivity Comparison Plots"), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
+       par(mfrow = c(1,3))
+       SSplotComparisons(mysummary, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, shadecol = shade, new = FALSE)
+       SSplotComparisons(mysummary, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, shadecol = shade, new = FALSE, legendloc = 'topleft')
+       dev.off()
+       output$Sensi_comp_plot <- renderImage({
+       image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
+               input$Sensi_comp_file, '.png')),mustWork=FALSE)
+       return(list(
+        src = image.path,
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
 
   })
 
+# image.path<-eventReactive(exists(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
+#                input$Sensi_comp_file, '.png'))),{
+#   image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
+#                input$Sensi_comp_file, '.png')),mustWork=FALSE)
+#   })
+
+# output$Sensi_comp_plot <- renderImage({
+#        image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
+#                input$Sensi_comp_file, '.png')),mustWork=FALSE)
+#        return(list(
+#         src = image.path,
+#         contentType = "image/png",
+#        #  width = 400,
+#        # height = 300,
+#        style='height:60vh'))
+#   print(input$run_Sensi_comps[1])
+# },deleteFile=FALSE)
+
+
+
 
 })
+

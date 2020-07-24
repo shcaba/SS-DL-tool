@@ -518,12 +518,24 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
   
 
   shinyjs::hidden(wellPanel(id="Sensi_Comparison_panel",
+    h4(strong("Choose folder containing model scenarios")),
+    h5(em("")),
     shinyDirButton(
       id="Sensi_dir",
-      label="Select folder",
+      label="Select directory",
       title="Choose folder containing model scenarios"
       ),
-    uiOutput("Sensi_model_picks")
+    br(),
+    br(),
+    h4(strong("Comparison plot label")),
+    fluidRow(column(width=8,textInput("Sensi_comp_file", strong("Label comparison plot file"), value="Comparison 1"))),
+    br(),
+    uiOutput("Sensi_model_picks"),
+    br(),
+    actionButton("run_Sensi_comps",strong("Run Sensitivity Comparisons"),
+        width="100%",
+        icon("play-circle"),
+        style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192"),  
   )),
 
   ),
@@ -588,7 +600,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             
             value=4),
           tabPanel("Sensitivity comparisons",
-            
+            # uiOutput("Sensi_comp_plot"),            
+            imageOutput("Sensi_comp_plot"),            
             value=5),
           tabPanel("Ensemble models",
             
