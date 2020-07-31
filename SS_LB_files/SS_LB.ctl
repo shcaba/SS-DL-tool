@@ -114,7 +114,7 @@
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn #  parm_name
              1            15             9             9             9             0          1          0          0          0          0          0          0          0 # SR_LN(R0)
            0.2             1           0.8           0.8          0.24             3         -1          0          0          0          0          0          0          0 # SR_BH_steep
-           0.5           1.2           0.7           0.7            99             0         -6          0          0          0          0          0          0          0 # SR_sigmaR
+               0           2           0.7           0.7            99             0         -6          0          0          0          0          0          0          0 # SR_sigmaR
             -5             5             0             0            99             0        -99          0          0          0          0          0          0          0 # SR_regime
              0             2             0             1            99             0        -99          0          0          0          0          0          0          0 # SR_autocorr
 #_no timevary SR parameters

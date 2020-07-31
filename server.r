@@ -74,7 +74,6 @@ VBGF.age<-function(Linf,k,t0,lt){
 
 RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
   navigate <- paste("cd ", path, sep="") 
-#browser()
 if(OS.in=="Windows") 
   {
     command <- paste0(navigate," & ", "ss", ss.cmd) 
@@ -257,6 +256,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("run_SS")        
   
         shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
   })
 
 #SSS panels
@@ -299,6 +299,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::hide("run_SS")        
 
         shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
   })
 
 #SS-LO panels
@@ -341,6 +342,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("run_SS")
 
         shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
   })	
 
 
@@ -383,6 +385,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
       shinyjs::show("run_SS")
 
       shinyjs::hide("Sensi_Comparison_panel")
+      shinyjs::hide("Ensemble_panel")
    })
 
 
@@ -425,6 +428,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
       shinyjs::show("run_SS")
 
       shinyjs::hide("Sensi_Comparison_panel")
+      shinyjs::hide("Ensemble_panel")
    })
 
 observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
@@ -466,7 +470,49 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("run_SS")
 
         shinyjs::show("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
+   })
 
+observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
+        shinyjs::hide("Data_panel")
+        shinyjs::hide("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+        
+        shinyjs::hide("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::hide("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
+
+        shinyjs::hide("panel_SS_stock_status") 
+
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
+
+        shinyjs::hide("panel_selectivity")
+
+        shinyjs::hide("panel_SS_recdevs")
+
+        shinyjs::hide("panel_SS_jitter")        
+   
+        shinyjs::hide("panel_RPs")
+        shinyjs::hide("panel_Forecasts")
+
+        shinyjs::hide("panel_Mod_dims")
+        
+        shinyjs::hide("OS_choice")
+        shinyjs::hide("Scenario_panel")
+
+        shinyjs::hide("run_SSS")
+        shinyjs::hide("run_SS")
+
+        shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::show("Ensemble_panel")
    })
 
 ########################################
@@ -611,44 +657,144 @@ output$Male_parms_inputs4_fix <- renderUI({
 
 output$Male_parms_inputs_label_est <- renderUI({ 
   if(input$male_parms_est){ 
-       h5(em("Male")) 
+       h4(em("Male")) 
         }    
     }) 
 
-output$Male_parms_inputs1_est <- renderUI({ 
+output$Male_parms_inputs_M_est <- renderUI({ 
   if(input$male_parms_est){ 
-     fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("M_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal"))),
-              column(width=3,style='padding:2px;',align="center",numericInput("M_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
-              column(width=3,style='padding:2px;',align="center",numericInput("M_m_SD", "SD", value=0,min=0, max=10000, step=0.001)),    
-              column(width=2,style='padding:2px;',align="center",numericInput("M_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))    
-    } 
-  }) 
+      dropdownButton(
+        selectInput("M_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+        numericInput("M_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
+        numericInput("M_m_SD", "SD", value=0,min=0, max=10000, step=0.001),
+        numericInput("M_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+        circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
+    )
+  } 
+}) 
 
-output$Male_parms_inputs2_est <- renderUI({ 
-  if(input$male_parms_est){ 
-    fluidRow(column(width=6, numericInput("k_m_est", "Growth coefficient k",  
-                                         value=NA, min=0, max=10000, step=0.01)), 
-             column(width=6, numericInput("t0_m_est", "Age at length 0 (t0)",   
-                                        value=NA, min=0, max=10000, step=0.01)))     
-      } 
-  }) 
+output$Male_parms_inputs_space1 <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
+output$Male_parms_inputs_space2 <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
+output$Male_parms_inputs_space3 <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
+output$Male_parms_inputs_space4 <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
 
-output$Male_parms_inputs3_est <- renderUI({ 
+output$Male_parms_inputs_Growth_label <- renderUI({
   if(input$male_parms_est){ 
-    fluidRow(column(width=6, numericInput("CV_lt_m_est", "CV at length",  
-                                          value=0.1, min=0, max=10000, step=0.01))) 
-      } 
-  })  
+    h5(strong("Growth")) 
+    }
+}) 
 
-output$Male_parms_inputs4_est <- renderUI({ 
+output$Male_parms_inputs_Linf_est <- renderUI({ 
   if(input$male_parms_est){ 
-      fluidRow(column(width=6, numericInput("WLa_m_est", "Weight-Length alpha",  
-                                            value=0.00001, min=0, max=10000, step=0.000000001)), 
-               column(width=6, numericInput("WLb_m_est", "Weight-length beta",  
-                                            value=3, min=0, max=10000, step=0.01)))     
-      } 
-  }) 
- 
+      dropdownButton(
+        selectInput("Linf_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+        numericInput("Linf_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
+        numericInput("Linf_m_SD", "SD", value=0,min=0, max=10000, step=0.001),
+        numericInput("Linf_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+        circle = FALSE, right=TRUE, status = "danger", icon = icon("infinity"), width = "300px",label="Linf: Asymptotic size"
+      )
+  } 
+}) 
+
+output$Male_parms_inputs_k_est <- renderUI({ 
+  if(input$male_parms_est){ 
+      dropdownButton(
+        selectInput("k_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+        numericInput("k_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
+        numericInput("k_m_SD", "SD", value=0,min=0, max=10000, step=0.001),
+        numericInput("k_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+        circle = FALSE, right=TRUE, status = "danger", icon = icon("ruler-horizontal"), width = "300px",label="k: VB growth coefficient"
+          )
+  } 
+}) 
+
+output$Male_parms_inputs_t0_est <- renderUI({ 
+  if(input$male_parms_est){ 
+      dropdownButton(
+        selectInput("t0_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+        numericInput("t0_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
+        numericInput("t0_m_SD", "SD", value=0,min=0, max=10000, step=0.001),
+        numericInput("t0_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+        circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
+          )
+  } 
+}) 
+
+output$Male_parms_inputs_CV_est <- renderUI({ 
+  if(input$male_parms_est){ 
+      dropdownButton(
+        selectInput("CV_lt_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+        numericInput("CV_lt_m_mean", "Mean", value=0.1,min=0, max=10000, step=0.001),
+        numericInput("CV_lt_m_SD", "SD", value=0,min=0, max=10000, step=0.001),
+        numericInput("CV_lt_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+        circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
+          )
+  } 
+}) 
+  #h5(strong("M")),            
+  #     fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("M_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal"))),
+  #             column(width=3,style='padding:2px;',align="center",numericInput("M_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
+  #             column(width=3,style='padding:2px;',align="center",numericInput("M_m_SD", "SD", value=0,min=0, max=10000, step=0.001)),    
+  #             column(width=2,style='padding:2px;',align="center",numericInput("M_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))    
+  #   } 
+  # }) 
+
+
+# output$Male_parms_inputs_Linf_est <- renderUI({ 
+#   if(input$male_parms_est){ 
+#    #h5(strong("Linf")),            
+#       fluidRow(column(width=4,style='padding:1px;',align="center",selectInput("Linf_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal"))),
+#               column(width=3,style='padding:2px;',align="center",numericInput("Linf_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
+#               column(width=3,style='padding:2px;',align="center",numericInput("Linf_m_SD", "SD", value=0,min=0, max=10000, step=0.001)),    
+#               column(width=2,style='padding:2px;',align="center",numericInput("Linf_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))    
+#        } 
+#   }) 
+
+# output$Male_parms_inputs_k_est <- renderUI({ 
+#   if(input$male_parms_est){ 
+#      #h5(strong("k")),            
+#       fluidRow(column(width=4,style='padding:2px;',selectInput("k_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal"))),
+#               column(width=3,style='padding:2px;',numericInput("k_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
+#               column(width=3,style='padding:2px;',numericInput("k_m_SD", "SD", value=0,min=0, max=10000, step=0.001)),    
+#               column(width=2,style='padding:2px;',align="center",numericInput("k_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))   
+#        } 
+#   }) 
+
+# output$Male_parms_inputs_t0_est <- renderUI({ 
+#   if(input$male_parms_est){ 
+#   #h5(strong("t0")),            
+#       fluidRow(column(width=4,style='padding:2px;',selectInput("t0_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal"))),
+#               column(width=3,style='padding:2px;',numericInput("t0_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
+#               column(width=3,style='padding:2px;',numericInput("t0_m_SD", "SD", value=0,min=0, max=10000, step=0.001)),    
+#               column(width=2,style='padding:2px;',align="center",numericInput("t0_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))
+#     } 
+#   }) 
+
+# output$Male_parms_inputs_CV_est <- renderUI({ 
+#   if(input$male_parms_est){ 
+#      #h5(strong("Length CV")),            
+#       fluidRow(column(width=4,style='padding:2px;',selectInput("CV_lt_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal"))),
+#               column(width=3,style='padding:2px;',numericInput("CV_lt_m_mean", "Mean", value=0.1,min=0, max=10000, step=0.001)),    
+#               column(width=3,style='padding:2px;',numericInput("CV_lt_m_SD", "SD", value=0,min=0, max=10000, step=0.001)),    
+#               column(width=2,style='padding:2px;',align="center",numericInput("CV_lt_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))
+#     }   
+#   }) 
 
 #Male life history parameters
 output$Male_parms_inputs_label_SSS<- renderUI({
@@ -905,7 +1051,7 @@ L50<-reactive({
     if(all(c(is.null(input$L50_f),is.null(input$L50_f_fix),is.null(input$L50_f_est),is.null(input$L50_f_sss)))) return(NULL)
     if(!is.na(input$L50_f)) {L50<-input$L50_f}
     if(!is.na(input$L50_f_fix)) {L50<-input$L50_f_fix}
-    if(!is.na(input$L50_f_est)) {L50<-input$L50_f_mean}
+    if(!is.na(input$L50_f_est)) {L50<-input$L50_f_est}
     if(!is.na(input$L50_f_sss)) {L50<-input$L50_f_mean_sss}
     L50
   })
@@ -915,7 +1061,7 @@ L95<-reactive({
     if(all(c(is.null(input$L95_f),is.null(input$L95_f_fix),is.null(input$L95_f_est),is.null(input$L95_f_sss)))) return(NULL)
     if(!is.na(input$L95_f)) {L95<-input$L95_f}
     if(!is.na(input$L95_f_fix)) {L95<-input$L95_f_fix}
-    if(!is.na(input$L95_f_est)) {L95<-input$L95_f_mean}
+    if(!is.na(input$L95_f_est)) {L95<-input$L95_f_est}
     if(!is.na(input$L95_f_sss)) {L95<-input$L95_f_mean_sss}
     L95
   })
@@ -1473,6 +1619,9 @@ SS.file.update<-observeEvent(input$run_SS,{
         ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_fix  #CV
       }
       
+    #S-R
+    ctl.file$SR_parms[1,3:4]<-input$lnR0  #lnR0
+    ctl.file$SR_parms[2,3:4]<-input$h     #steepnes
     }
 
     #LENGTH and CATCH with estimated parameters
@@ -1519,7 +1668,8 @@ SS.file.update<-observeEvent(input$run_SS,{
     ctl.file$MG_parms[5,7]<-input$CV_lt_f_phase       
     
     #CV old
-    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_est}
+    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_mean,log(input$CV_lt_f_mean))}
+    else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean}
     ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean     
     ctl.file$MG_parms[6,5]<-input$CV_lt_f_SD       
     ctl.file$MG_parms[6,6]<-prior.type[prior.name==input$CV_lt_f_prior]  
@@ -1528,29 +1678,81 @@ SS.file.update<-observeEvent(input$run_SS,{
     #Maturity
     ctl.file$MG_parms[9,3:4]<-input$L50_f_est                                     #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_est-input$L50_f_est)  #Maturity slope
+    
     #Males
-    ctl.file$MG_parms[13,3]<-input$M_f_est          #M
-    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]          #L0
-    ctl.file$MG_parms[15,3:4]<-input$Linf_f_est     #Linf
-    ctl.file$MG_parms[16,3:4]<-input$k_f_est        #k
-    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_est    #CV
-    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_est    #CV
-    if(input$male_parms)
+    ctl.file$MG_parms[13,3:4]<-c(input$M_f_mean,log(input$M_f_mean))    #M
+    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]                              #L0
+    ctl.file$MG_parms[15,3:4]<-input$Linf_f_mean                        #Linf
+    ctl.file$MG_parms[16,3:4]<-input$k_f_mean                           #k
+    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_mean                       #CV
+    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_mean                       #CV
+    
+    if(input$male_parms_est)
       {   
         male_vbgf_est<-VBGF(input$Linf_m_mean,input$k_m_mean,input$t0_m_mean,c(0:Nages()))
-        ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
-        ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]    #L0
-        ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean   #Linf
-        ctl.file$MG_parms[16,3:4]<-input$k_m_mean      #k
-        ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_mean  #CV
-        ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_mean  #CV
+
+              # ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
+        # ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]    #L0
+        # ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean   #Linf
+        # ctl.file$MG_parms[16,3:4]<-input$k_m_mean      #k
+        # ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_mean  #CV
+        # ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_mean  #CV
+
+        #M
+        if(input$M_m_prior=="lognormal"){ctl.file$MG_parms[13,3:4]<-c(input$M_m_mean,log(input$M_m_mean))}
+        else {ctl.file$MG_parms[13,3:4]<-c(input$M_f_mean,input$M_f_mean)}
+        ctl.file$MG_parms[13,5]<-input$M_m_SD                            
+        ctl.file$MG_parms[13,6]<-prior.type[prior.name==input$M_m_prior] 
+        ctl.file$MG_parms[13,7]<-input$M_m_phase                         
+            
+        #L0    
+        if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_est[1],log(male_vbgf_est[1]))}
+        else {ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]}
+        ctl.file$MG_parms[14,5]<-input$t0_m_SD             
+        ctl.file$MG_parms[14,6]<-prior.type[prior.name==input$t0_m_prior]
+        ctl.file$MG_parms[14,7]<-input$t0_m_phase
+
+        #Linf
+        if(input$Linf_f_prior=="lognormal"){ctl.file$MG_parms[15,3:4]<-c(input$Linf_m_mean,log(input$Linf_m_mean))}     
+        else{ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean}
+        ctl.file$MG_parms[15,5]<-input$Linf_m_SD         
+        ctl.file$MG_parms[15,6]<-prior.type[prior.name==input$Linf_m_prior]      
+        ctl.file$MG_parms[15,7]<-input$Linf_m_phase      
+
+        #k
+        if(input$k_f_prior=="lognormal"){ctl.file$MG_parms[16,3:4]<-c(input$k_m_mean,log(input$k_m_mean))}        
+        else {ctl.file$MG_parms[16,3:4]<-input$k_m_mean}
+        ctl.file$MG_parms[16,5]<-input$k_m_SD            
+        ctl.file$MG_parms[16,6]<-prior.type[prior.name==input$k_m_prior]        
+        ctl.file$MG_parms[16,7]<-input$k_m_phase         
+        
+        #CV young
+        if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[17,3:4]<-c(input$CV_lt_m_mean,log(input$CV_lt_m_mean))}     
+        else{ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_mean}
+        ctl.file$MG_parms[17,5]<-input$CV_lt_m_SD       
+        ctl.file$MG_parms[17,6]<-prior.type[prior.name==input$CV_lt_m_prior]       
+        ctl.file$MG_parms[17,7]<-input$CV_lt_m_phase       
+        
+        #CV old
+        if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_mean,log(input$CV_lt_m_mean))}
+        else{ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_mean}
+        ctl.file$MG_parms[18,5]<-input$CV_lt_m_SD       
+        ctl.file$MG_parms[18,6]<-prior.type[prior.name==input$CV_lt_m_prior]  
+        ctl.file$MG_parms[18,7]<-input$CV_lt_m_phase 
       }     
+
+    #S-R
+    ctl.file$SR_parms[1,3:4]<-input$lnR0  #lnR0
+    
+    if(input$h_ss_prior=="lognormal"){ctl.file$SR_parms[2,3:4]<-c(input$h_mean_ss,log(h_mean_ss))}
+    else{ctl.file$SR_parms[2,3:4]<-input$h_mean_ss}    
+    ctl.file$SR_parms[2,5]<-input$h_SD_ss       
+    ctl.file$SR_parms[2,6]<-prior.type[prior.name==input$h_ss_prior]  
+    ctl.file$SR_parms[2,7]<-input$h_phase 
+    
     }
 
 
-		#S-R
-		ctl.file$SR_parms[1,3:4]<-input$lnR0	#lnR0
-		ctl.file$SR_parms[2,3:4]<-input$h 		#steepnes
 
 		#Recruitment estimation		
 		ctl.file$do_recdev<-0
@@ -1748,7 +1950,6 @@ if(input$Forecast_choice)
 SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)  
 
 ########
-#browser()
 	#Run Stock Synthesis and plot output
 		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
 		Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
@@ -1766,7 +1967,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 		{
 			if(input$Njitter>1)
 			{
-				 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = FALSE)
+				 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE)
 				 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
 				 profilesummary <- SSsummarize(profilemodels)
 				 minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
@@ -1789,7 +1990,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 ref.like<-min(jitter.likes)
 		    	 #Make plot and save to folder
 		    	 main.dir<-getwd()
-           setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+           setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/Jitter Results"))
 		     	 png("jitterplot.png")
 				 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
 				 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
@@ -1801,6 +2002,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 # like_2_10<-round(100-(likebc+like10+like2),0)
 				 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
 				 dev.off()
+          save(profilesummary)
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(1), new = FALSE,print=TRUE,plotdir=getwd())
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE,print=TRUE,plotdir=getwd())
         
@@ -1935,7 +2137,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
  })
 
 #SS.comparisons<-observeEvent(as.numeric(input$tabs)==5,{
-Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPicker)),{
+Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPicker)&as.numeric(input$tabs)==5),{
     if(!file.exists(paste0(path1(),"/Sensitivity Comparison Plots")))
       {
         dir.create(paste0(path1(),"/Sensitivity Comparison Plots"))
@@ -1948,16 +2150,17 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        zz<-list()
        Runs<-length(Sensi_model_dir_out())
        for(i in 1:Runs) {zz[[i]]<-SS_output(paste0(Sensi_model_dir_out()[i]))}
-       mysummary<- SSsummarize(zz)
+       modsummary.sensi<- SSsummarize(zz)
 
        col.vec = rc(n=length(modelnames), alpha = 1)
        shade = adjustcolor(col.vec[1], alpha.f = 0.10)
 
        pngfun(wd = paste0(path1(),"/Sensitivity Comparison Plots"), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
        par(mfrow = c(1,3))
-       SSplotComparisons(mysummary, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, shadecol = shade, new = FALSE)
-       SSplotComparisons(mysummary, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, shadecol = shade, new = FALSE, legendloc = 'topleft')
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, shadecol = shade, new = FALSE))
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, shadecol = shade, new = FALSE, legendloc = 'topleft'))
        dev.off()
+       save(modsummary.sensi,file=paste0(path1(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,".DMP"))
        output$Sensi_comp_plot <- renderImage({
        image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
                input$Sensi_comp_file, '.png')),mustWork=FALSE)
@@ -1971,6 +2174,13 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
 
   })
 
+test.in<-reactive({
+  print("A")
+#  print(input$run_Ensemble)
+#  print(as.numeric(input$tabs))
+ # print(input$myEnsemble)
+  return(10)
+  })
 # image.path<-eventReactive(exists(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
 #                input$Sensi_comp_file, '.png'))),{
 #   image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
@@ -1989,7 +2199,123 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
 #   print(input$run_Sensi_comps[1])
 # },deleteFile=FALSE)
 
+    #Ensemble modelling
+      #roots <- getVolumes()()  
+      shinyDirChoose(input, "Ensemble_dir", roots=roots, filetypes=c('', 'txt'))
+      path2 <- reactive({
+        return(parseDirPath(roots, input$Ensemble_dir))
+      })
 
+  output$Ensemble_model_picks<-renderUI({
+      pickerInput(
+      inputId = "myEnsemble",
+      label = "Choose scenarios to ensemble",
+      choices = list.files(path2()),
+      options = list(
+        `actions-box` = TRUE,
+        size = 12,
+        `selected-text-format` = "count > 3"
+        ),
+      multiple = TRUE
+    )
+ })
+
+
+#Ensemble_model_dir_out<-eventReactive(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==6),{
+observeEvent(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==6),{
+Ensemble_model_dir_out<-eventReactive(input$run_Ensemble,{
+#print(as.numeric(input$tabs))
+#print(input$run_Ensemble)
+    if(!file.exists(paste0(path2(),"/Ensemble outputs")))
+      {
+        dir.create(paste0(path2(),"/Ensemble outputs"))
+      }
+    Ensemble_model_dir_out<-paste0(path2(),"/",input$myEnsemble)
+  })
+print(Ensemble_model_dir_out())
+exists("Ensemble_model_dir_out()")
+})
+
+#exists(Ensemble_model_dir_out())
+  observeEvent(req(input$run_Ensemble&!is.null(input$myEnsemble)),{
+  Ensemble.outputs<-eventReactive(input$run_Ensemble,{
+       print(length(Ensemble_model_dir_out()))
+       modelnames<-input$myEnsemble
+       zz<-list()
+       Runs<-length(Ensemble_model_dir_out())
+       for(i in 1:Runs) {zz[[i]]<-SS_output(paste0(Ensemble_model_dir_out()[i]))}
+       modsummary.ensemble<- SSsummarize(zz)
+       Ensemble_wts<-as.numeric(trimws(unlist(strsplit(input$Ensemble_wts,","))))
+       Stand_ensemble_wts<-Ensemble_wts/sum(Ensemble_wts)
+       Nsamps_ensemble<-100000
+       Nsamps_ensemble_wts<-Nsamps_ensemble*Stand_ensemble_wts
+       #Calculate weighted values
+       #Unfished spawning outputs
+       SO.init.mods<-modsummary.ensemble$SpawnBio[2,1:(ncol(modsummary.ensemble$SpawnBio)-2)] 
+       SO.init.sd.mods<-modsummary.ensemble$SpawnBioSD[2,1:(ncol(modsummary.ensemble$SpawnBio)-2)] 
+       #Current spawning output
+       SO.cur.mods<-modsummary.ensemble$SpawnBio[nrow(modsummary.ensemble$SpawnBio),1:(ncol(modsummary.ensemble$SpawnBio)-2)] 
+       SO.cur.sd.mods<-modsummary.ensemble$SpawnBioSD[nrow(modsummary.ensemble$SpawnBio),1:(ncol(modsummary.ensemble$SpawnBio)-2)] 
+       #Current reatlive stock status
+       Bratio.mods<-modsummary.ensemble$Bratio[2,1:(ncol(modsummary.ensemble$Bratio)-2)] 
+       Bratio.sd.mods<-modsummary.ensemble$BratioSD[2,1:(ncol(modsummary.ensemble$Bratio)-2)] 
+       #SPR
+       SPR.mods<-modsummary.ensemble$SPRratio[2,1:(ncol(modsummary.ensemble$SPRratio)-2)] 
+       SPR.sd.mods<-modsummary.ensemble$SPRratioSD[2,1:(ncol(modsummary.ensemble$SPRratio)-2)] 
+       #Overfishing levels
+       
+       #Forecasted catches
+
+       #Create weighted ensembles
+       Ensemble.outputs<-list()
+       Ensemble.outputs[[1]]<-list.rbind(mapply(function(x) data.frame(SO=rrnorm(Nsamps_ensemble_wts[x],
+                                  SO.init.mods[x],
+                                  SO.init.sd.mods[x]),
+                                  Label=modelnames[x]),
+                                  x=1:length(SO.init.mods),
+                                  SIMPLIFY=FALSE))
+       Ensemble.outputs[[2]]<-list.rbind(mapply(function(x) data.frame(SO=rrnorm(Nsamps_ensemble_wts[x],
+                                  SO.cur.mods[x],
+                                  SO.cur.sd.mods[x]),
+                                  Label=modelnames[x]),
+                                  x=1:length(SO.cur.mods),
+                                  SIMPLIFY=FALSE))
+       Ensemble.outputs[[3]]<-list.rbind(mapply(function(x) data.frame(SO=rrnorm(Nsamps_ensemble_wts[x],
+                                  Bratio.mods[x],
+                                  Bratio.sd.mods[x]),
+                                  Label=modelnames[x]),
+                                  x=1:length(Bratio.mods),
+                                  SIMPLIFY=FALSE))
+       Ensemble.outputs[[4]]<-list.rbind(mapply(function(x) data.frame(SO=rrnorm(Nsamps_ensemble_wts[x],
+                                  SPR.mods[x],
+                                  SPR.sd.mods[x]),
+                                  Label=modelnames[x]),
+                                  x=1:length(SPR.mods),
+                                  SIMPLIFY=FALSE))
+       names(Ensemble.outputs)<-c("SOinitial","SOcurrent","RelativeSO_curr","SPR_curr")
+       save(Ensemble.outputs,file=paste0(path2(),"/Ensemble outputs/",input$Ensemble_file,".DMP"))
+       return(Ensemble.outputs)
+    })
+  })
+
+observeEvent(req(input$run_Ensemble&exists("Ensemble.outputs()")),{
+output$Ensemble_plots <- renderPlot({ 
+      hist(Ensemble.outputs()[[1]][,1])
+    })
+  })
+       #Create figures of weighted values
+
+
+      #  output$Sensi_comp_plot <- renderImage({
+      #  image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
+      #          input$Sensi_comp_file, '.png')),mustWork=FALSE)
+      #  return(list(
+      #   src = image.path,
+      #   contentType = "image/png",
+      #  #  width = 400,
+      #  # height = 300,
+      #  style='height:60vh'))
+      # },deleteFile=FALSE)
 
 
 })
