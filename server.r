@@ -1584,6 +1584,7 @@ SS.file.update<-observeEvent(input$run_SS,{
         ctl.file$MG_parms[17,3:4]<-input$CV_lt_m  #CV
         ctl.file$MG_parms[18,3:4]<-input$CV_lt_m  #CV
       }
+        ctl.file$SR_parms[2,3:4]<-input$h_LO     #steepnes
 
     }
 
