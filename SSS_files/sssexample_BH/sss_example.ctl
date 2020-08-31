@@ -39,7 +39,7 @@
 1 # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K; 4=not implemented
 3 #_Growth_Age_for_L1
 20 #_Growth_Age_for_L2 (999 to use as Linf)
-0.055 #_exponential decay for growth above maxage (fixed at 0.2 in 3.24; value should approx initial Z; -999 replicates 3.24)
+-999 #_exponential decay for growth above maxage (fixed at 0.2 in 3.24; value should approx initial Z; -999 replicates 3.24)
 0  #_placeholder for future growth feature
 0 #_SD_add_to_LAA (set to 0.1 for SS2 V1.x compatibility)
 3 #_CV_Growth_Pattern:  0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=F(A)
@@ -52,25 +52,25 @@
 #_growth_parms
 #_ LO HI INIT PRIOR PR_SD PR_type PHASE env_var&link dev_link dev_minyr dev_maxyr dev_PH Block Block_Fxn
 0.0000001  0.02 0.02 -2.92 0.44  3 -5  0 0 0 0 0 0 0 # NatM_p_1_Fem_GP_1
-15  25  20.7718 20.8  10  0 -3  0 0 0 0 0 0 0 # L_at_Amin_Fem_GP_1
-35  45  41.6366 41.4  10  0 -3  0 0 0 0 0 0 0 # L_at_Amax_Fem_GP_1
-0.1 0.4 0.165916  0.166 0.05  0 -3  0 0 0 0 0 0 0 # VonBert_K_Fem_GP_1
-0.03  5 1.34174 1.31  0.5 0 -5  0 0 0 0 0 0 0 # CV_young_Fem_GP_1
-0.03  5 2.56502 2.68  0.5 0 -5  0 0 0 0 0 0 0 # CV_old_Fem_GP_1
-0 3 1.00E-05  1.00E-05  99  0 -99 0 0 0 0 0 0 0 # Wtlen_1_Fem
-2 4 3.1026  3.1026  99  0 -99 0 0 0 0 0 0 0 # Wtlen_2_Fem
-20  40  32.1  32.1  99  0 -99 0 0 0 0 0 0 0 # Mat50%_Fem
+0.0001  1000  20.7718 20.8  10  0 -3  0 0 0 0 0 0 0 # L_at_Amin_Fem_GP_1
+1  1000  41.6366 41.4  10  0 -3  0 0 0 0 0 0 0 # L_at_Amax_Fem_GP_1
+0.001 0.4 0.165916  0.166 0.05  0 -3  0 0 0 0 0 0 0 # VonBert_K_Fem_GP_1
+0.01  5 1.34174 1.31  0.5 0 -5  0 0 0 0 0 0 0 # CV_young_Fem_GP_1
+0.01  5 2.56502 2.68  0.5 0 -5  0 0 0 0 0 0 0 # CV_old_Fem_GP_1
+-1 3 1.00E-05  1.00E-05  99  0 -99 0 0 0 0 0 0 0 # Wtlen_1_Fem
+1 5 3.1026  3.1026  99  0 -99 0 0 0 0 0 0 0 # Wtlen_2_Fem
+0.1  1000  32.1  32.1  99  0 -99 0 0 0 0 0 0 0 # Mat50%_Fem
 -2  4 -1  -1  99  0 -99 0 0 0 0 0 0 0 # Mat_slope_Fem
 0 6 8.66E-10  1 99  0 -99 0 0 0 0 0 0 0 # Eggs_scalar_Fem
 -3  5 4.9767  5 99  0 -99 0 0 0 0 0 0 0 # Eggs_exp_len_Fem
 0.0000001  0.02 0.02 -2.92 0.44  3 -5  0 0 0 0 0 0 0 # NatM_p_1_Mal_GP_1
-15  25  20.7718 20.8  10  0 -3  0 0 0 0 0 0 0 # L_at_Amin_Mal_GP_1
-35  45  41.6366 41.4  10  0 -3  0 0 0 0 0 0 0 # L_at_Amax_Mal_GP_1
-0.1 0.4 0.165916  0.166 0.05  0 -3  0 0 0 0 0 0 0 # VonBert_K_Mal_GP_1
-0.03  5 1.34174 1.31  0.5 0 -5  0 0 0 0 0 0 0 # CV_young_Mal_GP_1
-0.03  5 2.56502 2.68  0.5 0 -5  0 0 0 0 0 0 0 # CV_old_Mal_GP_1
-0 3 9.88E-06  9.88E-06  99  0 -99 0 0 0 0 0 0 0 # Wtlen_1_Mal
-2 4 3.1039  3.1039  99  0 -99 0 0 0 0 0 0 0 # Wtlen_2_Mal
+0.0001  1000  20.7718 20.8  10  0 -3  0 0 0 0 0 0 0 # L_at_Amin_Mal_GP_1
+0.1  1000  41.6366 41.4  10  0 -3  0 0 0 0 0 0 0 # L_at_Amax_Mal_GP_1
+0.01 0.4 0.165916  0.166 0.05  0 -3  0 0 0 0 0 0 0 # VonBert_K_Mal_GP_1
+0.01  5 1.34174 1.31  0.5 0 -5  0 0 0 0 0 0 0 # CV_young_Mal_GP_1
+0.01  5 2.56502 2.68  0.5 0 -5  0 0 0 0 0 0 0 # CV_old_Mal_GP_1
+-1 3 9.88E-06  9.88E-06  99  0 -99 0 0 0 0 0 0 0 # Wtlen_1_Mal
+1 5 3.1039  3.1039  99  0 -99 0 0 0 0 0 0 0 # Wtlen_2_Mal
 #0 2 1 1 99  0 -99 0 0 0 0 0 0 0 # RecrDist_GP_1
 #0 2 1 1 99  0 -99 0 0 0 0 0 0 0 # RecrDist_Area_1
 #0 2 1 1 99  0 -99 0 0 0 0 0 0 0 # RecrDist_Bseas_1
@@ -142,7 +142,7 @@
 #_size_selex_types
 #discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead
 #_Pattern Discard Male Special
- 1 0 0 0 # 1 Fishery
+ 24 0 0 0 # 1 Fishery
  0 0 0 0 # 2 Depl
 #
 #_age_selex_types
@@ -151,8 +151,12 @@
  10 0 0 0 # 2 Depl
 #
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name
-            10            50          30.1            30            10             0          -1          0          0          0          0          0          0          0  #  SizeSel_P1_Fishery
-         0.001            50       2.1564            15             5             0          -3          0          0          0          0          0          0          0  #  SizeSel_P2_Fishery
+             1            91       30.7974            36            99             0         -1          0          0          0          0          0          0          0  #  Size_DblN_peak_Fishery(1)
+           -15            20            15            15            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_top_logit_Fishery(1)
+           -15            15       5.15329             3            99             0         -1          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_Fishery(1)
+           -10            20            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
+          -999            15           -15           -10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_start_logit_Fishery(1)
+            -5            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
 # timevary selex parameters 
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type    PHASE  #  parm_name
 # info on dev vectors created for selex parms are reported with other devs after tag parameter section 

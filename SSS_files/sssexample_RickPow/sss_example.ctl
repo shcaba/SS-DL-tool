@@ -143,7 +143,7 @@
 #_size_selex_types
 #discard_options:_0=none;_1=define_retention;_2=retention&mortality;_3=all_discarded_dead
 #_Pattern Discard Male Special
- 1 0 0 0 # 1 Fishery
+ 24 0 0 0 # 1 Fishery
  0 0 0 0 # 2 Depl
 #
 #_age_selex_types
@@ -152,9 +152,13 @@
  10 0 0 0 # 2 Depl
 #
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name
-            10            50          30.1            30            10             0          -1          0          0          0          0          0          0          0  #  SizeSel_P1_Fishery
-         0.001            50       2.1564            15             5             0          -3          0          0          0          0          0          0          0  #  SizeSel_P2_Fishery
-# timevary selex parameters 
+           10            91       30.7974            36            99             0         -1          0          0          0          0          0          0          0  #  Size_DblN_peak_Fishery(1)
+           -15            15            15            15            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_top_logit_Fishery(1)
+            -4            12       5.15329             3            99             0         -1          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_Fishery(1)
+           -10             6            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
+          -999            15           -15           -10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_start_logit_Fishery(1)
+            -5            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
+## timevary selex parameters 
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type    PHASE  #  parm_name
 # info on dev vectors created for selex parms are reported with other devs after tag parameter section 
 #
