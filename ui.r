@@ -8,7 +8,7 @@ shinyUI(fluidPage(
   titlePanel("Welcome to the Stock Synthesis data-limited tool"),
       h5(p(strong("This tool uses the Stock Synthesis framework to implement the following types of models:"))),
        tags$ul(tags$li(h5(p(em("Length-based estimation of relative biomass, SPR and F."))))),
-       tags$ul(tags$li(h5(p(em("Length + catch-based estimation of biomass, relative biomass, SPR and F and catch limits."))))),
+       tags$ul(tags$li(h5(p(em("Length + catch-based estimation of biomass, relativ0e biomass, SPR and F and catch limits."))))),
        tags$ul(tags$li(h5(p(em("COMING SOON: Simple Stock Synthesis (SSS) estimator of sustainable catch."))))),
        tags$ul(tags$li(h5(p(em("COMING SOON: Extended Simple Stock Synthesis (XSSS) estimator of sustainable catch."))))),
        tags$ul(tags$li(h5(p(em("COMING SOON: Abundance and catch-based estimation of biomass, relative biomass, SPR and F and catch limits."))))),
@@ -178,46 +178,46 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 #      fluidRow(column(width=10,switchInput("est_parms2","Estimate parameters?",value=TRUE))),      
       wellPanel(id="panel_SS_est",
       h4(em("Female")),
-           dropdownButton(
-        selectInput("M_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
-        numericInput("M_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
-        numericInput("M_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
-        numericInput("M_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
-        circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
-          ),
+        dropdownButton(
+          selectInput("M_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          numericInput("M_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("M_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
+          numericInput("M_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
+            ),
       br(),
        h5(strong("Growth")),            
        dropdownButton(
-        selectInput("Linf_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
-        numericInput("Linf_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
-        numericInput("Linf_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
-        numericInput("Linf_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
-        circle = FALSE, right=TRUE, status = "danger", icon = icon("infinity"), width = "300px",label="Linf: Asymptotic size"
+          selectInput("Linf_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          numericInput("Linf_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("Linf_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
+          numericInput("Linf_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("infinity"), width = "300px",label="Linf: Asymptotic size"
           ),
      br(),
       dropdownButton(
-        selectInput("k_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
-        numericInput("k_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
-        numericInput("k_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
-        numericInput("k_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
-        circle = FALSE, right=TRUE, status = "danger", icon = icon("ruler-horizontal"), width = "300px",label="k: VB growth coefficient"
-          ),
+          selectInput("k_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          numericInput("k_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("k_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
+          numericInput("k_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("ruler-horizontal"), width = "300px",label="k: VB growth coefficient"
+            ),
      br(),
       dropdownButton(
-        selectInput("t0_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
-        numericInput("t0_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
-        numericInput("t0_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
-        numericInput("t0_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
-        circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
-          ),
+          selectInput("t0_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          numericInput("t0_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("t0_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
+          numericInput("t0_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
+            ),
      br(),
        dropdownButton(
-        selectInput("CV_lt_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
-        numericInput("CV_lt_f_mean", "Mean", value=0.1,min=0, max=10000, step=0.001),
-        numericInput("CV_lt_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
-        numericInput("CV_lt_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
-        circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
-          ),
+          selectInput("CV_lt_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          numericInput("CV_lt_f_mean", "Mean", value=0.1,min=0, max=10000, step=0.001),
+          numericInput("CV_lt_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
+          numericInput("CV_lt_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
+            ),
 
     h5(strong("Maturity and weight-length relationships")),            
       fluidRow(column(width=6,numericInput("L50_f_est", "Length at 50% maturity", value=NA,min=0, max=10000, step=0.01)),
@@ -241,6 +241,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
                      uiOutput("Male_parms_inputs_t0_est"),
                      uiOutput("Male_parms_inputs_space4"),
                      uiOutput("Male_parms_inputs_CV_est")
+   #                  uiOutput("Male_parms_inputs_space5"),
+   #                  uiOutput("Male_parms_inputs_CV_est")
         ),
       )
     ),
@@ -300,31 +302,44 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
     shinyjs::hidden(wellPanel(id="panel_SSS",
     h4(strong("Life history inputs")),
+    h5(em("If using the uniform prior, low and high range go in the mean and SD input, respectively.")),
     wellPanel(
       h4(em("Female")),
       h5(strong("Natural mortality")),            
-      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("M_prior_sss","Prior type",c("lognormal","truncated normal","uniform","beta"))),
-              column(width=4,style='padding:2px;',align="center",numericInput("M_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001)),    
-              column(width=4,style='padding:2px;',align="center",numericInput("M_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001))),
+        dropdownButton(
+          selectInput("M_prior_sss","Prior type",c("lognormal","normal","uniform","no prior")),
+          numericInput("M_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("M_f_SD_sss", "SD", value=0.2,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
+            ),
       h5(strong("Growth")),            
-      h5(em("Linf")),            
-      fluidRow(column(width=4,style='padding:1px;',align="center",selectInput("Linf_f_prior_sss","Prior type",c("lognormal","truncated normal","uniform","beta"))),
-              column(width=4,style='padding:2px;',align="center",numericInput("Linf_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001)),    
-              column(width=4,style='padding:2px;',align="center",numericInput("Linf_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001))),    
-      h5(em("k"),style='margin-top:-2em;',align='left'),            
-      fluidRow(column(width=4,style='padding:1px;',selectInput("k_f_prior_sss","Prior type",c("lognormal","truncated normal","uniform","beta"))),
-              column(width=4,style='padding:1px;',numericInput("k_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001)),    
-              column(width=4,numericInput("k_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001))),    
-    h5(em("t0")),            
-      fluidRow(column(width=4,style='padding:1px;',selectInput("t0_f_prior_sss","Prior type",c("lognormal","truncated normal","uniform","beta"))),
-              column(width=4,style='padding:1px;',numericInput("t0_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001)),    
-              column(width=4,style='padding:1px;',numericInput("t0_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001))),    
-    
+          dropdownButton(
+          selectInput("Linf_f_prior_sss","Prior type",c("no prior","normal")),
+          numericInput("Linf_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("Linf_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("infinity"), width = "300px",label="Linf: Asymptotic size"
+          ),
+     br(),
+      dropdownButton(
+          selectInput("k_f_prior_sss","Prior type",c("no prior","normal")),
+          numericInput("k_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("k_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("ruler-horizontal"), width = "300px",label="k: VB growth coefficient"
+            ),
+     br(),
+      dropdownButton(
+          selectInput("t0_f_prior_sss","Prior type",c("no prior","normal")),
+          numericInput("t0_f_mean_sss", "Mean", value=0,min=0, max=10000, step=0.001),
+          numericInput("t0_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
+            ),
     h5(em("Length CV")),            
-      fluidRow(column(width=4,style='padding:1px;',selectInput("CV_f_prior_sss","Prior type",c("lognormal","truncated normal","uniform","beta"))),
-              column(width=4,style='padding:1px;',numericInput("CV_f_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.001)),    
-              column(width=4,style='padding:1px;',numericInput("CV_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001))),    
-   
+      dropdownButton(
+          selectInput("CV_lt_f_prior_sss","Prior type",c("no prior")),
+          numericInput("CV_lt_f_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.001),
+          numericInput("CV_lt_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
+            ),
     h5(strong("Maturity and weight-length relationships")),            
       fluidRow(column(width=6,numericInput("L50_f_sss", "Length at 50% maturity", value=NA,min=0, max=10000, step=0.01)),
               column(width=6,numericInput("L95_f_sss","Length at 95% maturity", value=NA,min=0, max=10000, step=0.01))),    
@@ -333,15 +348,22 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       fluidRow(column(width=6,numericInput("WLa_f_sss", "Weight-Length alpha", value=0.00001,min=0, max=10000, step=0.000000001)),
               column(width=6,numericInput("WLb_f_sss","Weight-length beta", value=3,min=0, max=10000, step=0.01))),    
     ),
+    
     fluidRow(column(width=10,checkboxInput("male_parms_SSS","Males specific values?",FALSE))),
     #fluidRow(column(width=7, h3("Males specific values?")),column(width=2,checkboxInput("male_parms_SSS","Males specific values?",FALSE,width="150%"))),
     wellPanel(
-                   uiOutput("Male_parms_inputs_label_SSS"),
-                   uiOutput("Male_parms_inputs1_SSS"),
-                   uiOutput("Male_parms_inputs2_SSS"),
-                   uiOutput("Male_parms_inputs3_SSS"),
-                   uiOutput("Male_parms_inputs4_SSS")
-    ),
+                     uiOutput("Male_parms_inputs_label_SSS"),
+                     uiOutput("Male_parms_inputs_M_SSS"),
+                     uiOutput("Male_parms_inputs_space1_SSS"),
+                     uiOutput("Male_parms_inputs_Growth_label_SSS"),
+                     uiOutput("Male_parms_inputs_Linf_SSS"),
+                     uiOutput("Male_parms_inputs_space2_SSS"),
+                     uiOutput("Male_parms_inputs_k_SSS"),
+                     uiOutput("Male_parms_inputs_space3_SSS"),
+                     uiOutput("Male_parms_inputs_t0_SSS"),
+                     uiOutput("Male_parms_inputs_space4_SSS"),
+                     uiOutput("Male_parms_inputs_CV_SSS")
+     ),
      )
     ),
 
@@ -349,30 +371,36 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_stock_status",
     h4(strong("Relative stock status")),
       #wellPanel(
-         fluidRow(column(width=6,numericInput("status_year", "Initial recruitment (lnR0)", value=NA,min=1000, max=3000, step=1))),
-         fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("Depl_sss","Prior type",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
-              column(width=4,style='padding:2px;',align="center",numericInput("Depl_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001)),    
-              column(width=4,style='padding:2px;',align="center",numericInput("Depl_SD_sss", "SD", value=NA,min=0, max=1000, step=0.001))), 
-      #  ),
+         fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=NA,min=1000, max=3000, step=1))),
+         dropdownButton(
+          selectInput("Depl_sss_prior","Prior type",c("beta","lognormal","truncated normal","uniform","no prior")),
+          numericInput("Depl_mean_sss", "Mean", value=NA,min=0.001, max=1, step=0.001),
+          numericInput("Depl_SD_sss", "SD", value=0.2,min=0, max=1000, step=0.001),
+          circle = FALSE, status = "danger", icon = icon("battery-half"), width = "300px",label="Relative Stock Status"
+       ) 
       )
     ),  
 
-#Stock-recruitment/Productivity
+
+################################
+#Stock-recruitment/Productivity#
+################################
+
     shinyjs::hidden(wellPanel(id="panel_SSS_prod",
     h4(strong("Stock-recruitment parameters")),
-     # wellPanel(
-         fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_sss","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
-              column(width=4,style='padding:2px;',align="center",numericInput("h_mean_sss", "Mean", value=0.7,min=0, max=10000, step=0.001)),    
-              column(width=4,style='padding:2px;',align="center",numericInput("h_SD_sss", "SD", value=0.15,min=0, max=10000, step=0.001))), 
-         fluidRow(column(width=6,numericInput("lnR0_sss", "Initial recruitment (lnR0)", value=9,min=0, max=20, step=0.01))),
-      #  ),
+          dropdownButton(
+          selectInput("h_prior_sss","Steepness",c("symmetric beta","beta","truncated normal","truncated lognormal","uniform","no prior")),
+          numericInput("h_mean_sss", "Mean", value=0.7,min=0.2, max=1, step=0.001),
+          numericInput("h_SD_sss", "SD", value=0.15,min=0, max=10000, step=0.001),
+          circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
+       ) 
       )
     ),  
 
     shinyjs::hidden(wellPanel(id="panel_SS_LO_prod",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
-     fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01))),
+     fluidRow(column(width=6,numericInput("h_LO","Steepness", value=0.7,min=0.2, max=1, step=0.01))),
    #    ),
       )
     ),  
@@ -391,7 +419,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
      # wellPanel(
        dropdownButton(
           selectInput("h_ss_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
-          numericInput("h_mean_ss", "Mean", value=0.7,min=0, max=10000, step=0.001),
+          numericInput("h_mean_ss", "Mean", value=0.7,min=0.2, max=1, step=0.001),
           numericInput("h_SD_ss", "SD", value=0.15,min=0, max=10000, step=0.001),
           numericInput("h_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
@@ -515,6 +543,12 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       )
     ),
    
+   #SSS iterations
+    shinyjs::hidden(wellPanel(id="panel_SSS_reps",
+    fluidRow(column(width=10,numericInput("SSS_reps", "Number of SSS iterations", value=1000,min=1, max=1000000, step=1)))
+            )
+        ),
+
     #wellPanel(
     shinyjs::hidden(awesomeRadio(
       inputId = "OS_choice",

@@ -38,7 +38,7 @@ theme_set(theme_report())
 shinyServer(function(input, output,session) {
   useShinyjs()
 
-
+ 
 theme_report <- function(base_size = 11) { 
  
   half_line <- base_size/2 
@@ -249,6 +249,8 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 
         shinyjs::hide("panel_Mod_dims")
 
+        shinyjs::hide("panel_SSS_reps")
+
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
         
@@ -262,7 +264,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 #SSS panels
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)), {
         shinyjs::show("Data_panel")
-        shinyjs::show("panel_data_wt_lt")
+        shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
         
         shinyjs::show("panel_SSS")
@@ -291,6 +293,8 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::show("panel_Forecasts")
 
         shinyjs::show("panel_Mod_dims")
+
+        shinyjs::show("panel_SSS_reps")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -334,6 +338,8 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("panel_Forecasts")
 
         shinyjs::show("panel_Mod_dims")
+
+        shinyjs::hide("panel_SSS_reps")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -381,6 +387,8 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
       shinyjs::show("OS_choice")
       shinyjs::show("Scenario_panel")
 
+      shinyjs::hide("panel_SSS_reps")
+
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
 
@@ -424,6 +432,8 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
       shinyjs::show("OS_choice")
       shinyjs::show("Scenario_panel")
 
+      shinyjs::hide("panel_SSS_reps")
+
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
 
@@ -466,6 +476,8 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
 
+        shinyjs::hide("panel_SSS_reps")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
@@ -505,6 +517,8 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 
         shinyjs::hide("panel_Mod_dims")
         
+        shinyjs::hide("panel_SSS_reps")
+
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
 
@@ -688,7 +702,14 @@ if(input$male_parms_est){
   br()
   } 
 }) 
+
 output$Male_parms_inputs_space4 <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
+
+output$Male_parms_inputs_space5 <- renderUI({
 if(input$male_parms_est){ 
   br()
   } 
@@ -804,35 +825,100 @@ output$Male_parms_inputs_label_SSS<- renderUI({
 		})
 
 output$Male_parms_inputs1_SSS<- renderUI({
-	if(input$male_parms_SSS){
-    fluidRow(column(width=6,numericInput("M_m_mean_sss", "Natural mortality", 
-    									value=NA,min=0, max=10000, step=0.01)),
-            column(width=6,numericInput("Linf_m_mean_sss", "Asymptotic size (Linf)", 
-            							value=NA,min=0, max=10000, step=0.01)))    
-		}
+  if(input$male_parms_SSS){
+       dropdownButton(
+          selectInput("M_m_prior_sss","Prior type",c("no prior","lognormal","normal","uniform")),
+          numericInput("M_m_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("M_m_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
+            )
+    }
+}) 
+
+output$Male_parms_inputs_space1_SSS <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
+output$Male_parms_inputs_space2_SSS <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
+output$Male_parms_inputs_space3_SSS <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
+output$Male_parms_inputs_space4_SSS <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
+
+output$Male_parms_inputs_space5_SSS <- renderUI({
+if(input$male_parms_est){ 
+  br()
+  } 
+}) 
+
+output$Male_parms_inputs_Growth_label_SSS <- renderUI({
+  if(input$male_parms_est){ 
+    h5(strong("Growth")) 
+    }
+}) 
+
+output$Male_parms_inputs_Linf_SSS <- renderUI({ 
+  if(input$male_parms_est){ 
+        dropdownButton(
+          selectInput("Linf_m_prior_sss","Prior type",c("no prior","normal")),
+          numericInput("Linf_m_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("Linf_m_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("infinity"), width = "300px",label="Linf: Asymptotic size"
+          )
+    } 
+}) 
+
+output$Male_parms_inputs_k_SSS <- renderUI({ 
+  if(input$male_parms_est){ 
+    dropdownButton(
+          selectInput("k_m_prior_sss","Prior type",c("no prior","normal")),
+          numericInput("k_m_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("k_m_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("ruler-horizontal"), width = "300px",label="k: VB growth coefficient"
+            )
+    } 
+}) 
+
+output$Male_parms_inputs_t0_SSS <- renderUI({ 
+  if(input$male_parms_est){ 
+    dropdownButton(
+          selectInput("t0_m_prior_sss","Prior type",c("no prior","normal")),
+          numericInput("t0_m_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("t0_m_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
+            )
+    } 
+}) 
+
+output$Male_parms_inputs_CV_SSS <- renderUI({ 
+  if(input$male_parms_est){ 
+    dropdownButton(
+          selectInput("CV_lt_m_prior_sss","Prior type",c("no prior")),
+          numericInput("CV_lt_m_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.001),
+          numericInput("CV_lt_m_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
+            )
+    } 
+
 	})
 
-output$Male_parms_inputs2_SSS<- renderUI({
-	if(input$male_parms_SSS){
-    fluidRow(column(width=6,numericInput("k_m","Growth coefficient k", 
-    									value=NA,min=0, max=10000, step=0.01)),
-            column(width=6,numericInput("t0_m","Age at length 0 (t0)", 
-            							value=NA,min=0, max=10000, step=0.01)))    
-    	}
-	})
-
-output$Male_parms_inputs3_SSS<- renderUI({
-	if(input$male_parms_SSS){
-    fluidRow(column(width=6,numericInput("CV_lt_m","CV at length", 
-    									value=0.1,min=0, max=10000, step=0.01)))
-    	}
-	})
 
 output$Male_parms_inputs4_SSS<- renderUI({
 	if(input$male_parms_SSS){
-      fluidRow(column(width=6,numericInput("WLa_m", "Weight-Length alpha", 
+      fluidRow(column(width=6,numericInput("WLa_m_sss", "Weight-Length alpha", 
       										value=0.00001,min=0, max=10000, step=0.000000001)),
-              column(width=6,numericInput("WLb_m","Weight-length beta", 
+              column(width=6,numericInput("WLb_m_sss","Weight-length beta", 
               								value=3,min=0, max=10000, step=0.01)))    
     	}
 	})
@@ -944,7 +1030,7 @@ output$RP_selection2<- renderUI({
 output$Forecasts<- renderUI({ 
     if(input$Forecast_choice){ 
         fluidRow(column(width=6, numericInput("forecast_num", "# of forecast years",  
-                                              value=1, min=1, max=1000, step=1)), 
+                                              value=2, min=1, max=1000, step=1)), 
         	       column(width=6, numericInput("forecast_buffer", "Control rule buffer",  
         	                                    value=0.913, min=0, max=1, step=0.001)))    
     	} 
@@ -1052,7 +1138,7 @@ L50<-reactive({
     if(!is.na(input$L50_f)) {L50<-input$L50_f}
     if(!is.na(input$L50_f_fix)) {L50<-input$L50_f_fix}
     if(!is.na(input$L50_f_est)) {L50<-input$L50_f_est}
-    if(!is.na(input$L50_f_sss)) {L50<-input$L50_f_mean_sss}
+    if(!is.na(input$L50_f_sss)) {L50<-input$L50_f_sss}
     L50
   })
 
@@ -1062,7 +1148,7 @@ L95<-reactive({
     if(!is.na(input$L95_f)) {L95<-input$L95_f}
     if(!is.na(input$L95_f_fix)) {L95<-input$L95_f_fix}
     if(!is.na(input$L95_f_est)) {L95<-input$L95_f_est}
-    if(!is.na(input$L95_f_sss)) {L95<-input$L95_f_mean_sss}
+    if(!is.na(input$L95_f_sss)) {L95<-input$L95_f_sss}
     L95
   })
 
@@ -1162,8 +1248,8 @@ output$Ctplot <- renderPlot({
 output$Mplot<-renderPlot({ 
 			mf.in = M_f_in() 
 			mm.in = M_f_in() 
-      if(input$male_parms|input$male_parms_fix)
-#			if(input$male_parms|input$male_parms_SSS|input$male_parms_fix|input$male_vbgf_est)
+#      if(input$male_parms|input$male_parms_fix)
+			if(input$male_parms|input$male_parms_SSS|input$male_parms_fix|input$male_parms_est)
         { 
 			     mm.in = M_m_in() 
 			  }		 
@@ -1225,7 +1311,7 @@ SSS.run<-observeEvent(input$run_SSS,{
              progress$set(value = i)
              Sys.sleep(0.5)
            }
-  	
+
   	#Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
 			{
@@ -1239,10 +1325,10 @@ SSS.run<-observeEvent(input$run_SSS,{
 			}
 	
 	  	#if()
-	  		{
-	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
-				file.rename(paste0(getwd(),"/Scenarios/sssexample_RickPow"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
-			}
+#	  		{
+#	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
+#				file.rename(paste0(getwd(),"/Scenarios/sssexample_RickPow"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
+#			}
 		
 		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.dat")) 
@@ -1254,49 +1340,289 @@ SSS.run<-observeEvent(input$run_SSS,{
 
 	#Catches
     #inCatch<- input$file2
-		Catch.data<-rv.Ct$dat
+		Catch.data<-rv.Ct$data
 		data.file$Nfleets<-ncol(Catch.data)
 		if((data.file$Nfleets-1)>1){
-			for(i in 1:(data.file$Nfleets-1))
+			for(i in 1:(data.file$Nfleets-2))
 			{
 				data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
 				data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
 			}
-			data.file$fleetinfo$fleetname<-c(paste0("Fishery",1:data.file$Nfleets),"Depl")
-			data.file$CPUEinfo[,1]<-1:data.file$Nfleets
+			data.file$fleetinfo$fleetname<-c(paste0("Fishery",1:(data.file$Nfleets-1)),"Depl")
+			data.file$fleetinfo$type[c(2,data.file$Nfleets)]<-c(1,3)
+      data.file$fleetinfo$surveytiming[c(2,data.file$Nfleets)]<-c(-1,0.1)
+      data.file$CPUEinfo[,1]<-1:data.file$Nfleets
+      data.file$CPUEinfo[c(2,data.file$Nfleets),2]<-c(1,34)
+      data.file$CPUE$index<-data.file$Nfleets
 		}
 		year.in<-Catch.data[,1]
 		catch.cols<-colnames(data.file$catch)
 		catch_temp<-list()
-		for(i in 1:data.file$Nfleets)
+		for(i in 1:(data.file$Nfleets-1))
 		{
 			catch_temp[[i]]<-data.frame(
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
-						c(0.0001,Catch.data[,i+1]),
+						c(0,Catch.data[,i+1]),
 						rep(0.01,length(year.in)+1)
 						)
 		}
 		data.file$catch<-list.rbind(catch_temp)
 		colnames(data.file$catch)<-catch.cols
-		
+	
+  #Relative stock status
+  data.file$CPUE$year<-c(input$styr,input$status_year)
+
 	#Length composition data
 		if(input$Linf_f_mean_sss>30){data.file$binwidth<-2}
 		data.file$minimum_size<-floor(input$Linf_f_mean_sss/10)
 		data.file$maximum_size<-ceiling(input$Linf_f_mean_sss+(input$Linf_f_mean_sss*0.1))
 		
 	#Age composition data
-		if (is.null(inFile_age)){
-		data.file$N_agebins<-Nages()
-		data.file$agebin_vector<-1:Nages()		
-		data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
-		colnames(data.file$ageerror)<-paste0("age",1:Nages())		
-			}
+		# if (is.null(inFile_age)){
+		# data.file$N_agebins<-Nages()
+		# data.file$agebin_vector<-1:Nages()		
+		# data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+		# colnames(data.file$ageerror)<-paste0("age",1:Nages())		
+		# 	}
 		
 		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.dat"),overwrite=TRUE)			
 		####################### END DATA FILE #####################################
 
+    ####################### START SSS CTL FILE #####################################
+    #if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))==TRUE)
+    #{
+    fem_vbgf<-VBGF(input$Linf_f_mean_sss,input$k_f_mean_sss,input$t0_f_mean_sss,c(0:Nages()))
+    #c("lognormal","truncated normal","uniform","beta")
+    prior.name<-c("no prior","symmetric beta", "beta","lognormal","gamma","normal")
+    prior.type<-c(0:3,5,6)
+    #Females
+    #M
+    if(input$M_f_prior=="lognormal"){ctl.file$MG_parms[1,3:4]<-c(input$M_f_mean_sss,log(input$M_f_mean_sss))}
+    else {ctl.file$MG_parms[1,3:4]<-c(input$M_f_mean_sss,input$M_f_mean_sss)}
+        
+    #L0    
+    if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(fem_vbgf[1],log(fem_vbgf[1]))}
+    else {ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]}
+    
+    #Linf
+    if(input$Linf_f_prior=="lognormal"){ctl.file$MG_parms[3,3:4]<-c(input$Linf_f_mean_sss,log(input$Linf_f_mean_sss))}     
+    else{ctl.file$MG_parms[3,3:4]<-input$Linf_f_mean_sss}
+    
+    #k
+    if(input$k_f_prior=="lognormal"){ctl.file$MG_parms[4,3:4]<-c(input$k_f_mean_sss,log(input$k_f_mean_sss))}        
+    else {ctl.file$MG_parms[4,3:4]<-input$k_f_mean_sss}
+    
+    #CV young
+    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_mean,log(input$CV_lt_f_mean))}     
+    else{ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_mean}
+    
+    #CV old
+    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_mean,log(input$CV_lt_f_mean))}
+    else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean}
+    
+    #Maturity
+    ctl.file$MG_parms[9,3:4]<-input$L50_f_sss                                     #Lmat50%
+    ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_sss-input$L50_f_sss)  #Maturity slope
+    
+    #Males
+    ctl.file$MG_parms[13,3:4]<-c(input$M_f_mean_sss,log(input$M_f_mean_sss))    #M
+    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]                                      #L0
+    ctl.file$MG_parms[15,3:4]<-input$Linf_f_mean_sss                            #Linf
+    ctl.file$MG_parms[16,3:4]<-input$k_f_mean_sss                               #k
+    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_mean_sss                           #CV
+    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_mean_sss                           #CV
+    
+    if(input$male_parms_SSS)
+      {   
+        male_vbgf_sss<-VBGF(input$Linf_m_mean_sss,input$k_m_mean_sss,input$t0_m_mean_sss,c(0:Nages()))
+
+              # ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
+        # ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]    #L0
+        # ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean   #Linf
+        # ctl.file$MG_parms[16,3:4]<-input$k_m_mean      #k
+        # ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_mean  #CV
+        # ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_mean  #CV
+
+        #M
+        if(input$M_m_prior=="lognormal"){ctl.file$MG_parms[13,2:4]<-c(input$M_m_mean,log(input$M_m_mean))}
+        else {ctl.file$MG_parms[13,2:4]<-c(input$M_f_mean,input$M_f_mean)}
+            
+        #L0    
+        if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[14,2:4]<-c(male_vbgf_sss[1],log(male_vbgf_sss[1]))}
+        else {ctl.file$MG_parms[14,2:4]<-male_vbgf_sss[1]}
+        
+        #Linf
+        if(input$Linf_f_prior=="lognormal"){ctl.file$MG_parms[15,2:4]<-c(input$Linf_m_mean,log(input$Linf_m_mean))}     
+        else{ctl.file$MG_parms[15,2:4]<-input$Linf_m_mean}
+        
+        #k
+        if(input$k_f_prior=="lognormal"){ctl.file$MG_parms[16,2:4]<-c(input$k_m_mean,log(input$k_m_mean))}        
+        else {ctl.file$MG_parms[16,2:4]<-input$k_m_mean}
+        
+        #CV young
+        if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[17,2:4]<-c(input$CV_lt_m_mean,log(input$CV_lt_m_mean))}     
+        else{ctl.file$MG_parms[17,2:4]<-input$CV_lt_m_mean}
+        
+        #CV old
+        if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[18,2:4]<-c(input$CV_lt_m_mean,log(input$CV_lt_m_mean))}
+        else{ctl.file$MG_parms[18,2:4]<-input$CV_lt_m_mean}
+      }     
+
+    #S-R
+    ctl.file$SR_parms[1,3:4]<-input$lnR0  #lnR0
+    
+    if(input$h_ss_prior=="lognormal"){ctl.file$SR_parms[2,3:4]<-c(input$h_mean_ss,log(h_mean_ss))}
+    else{ctl.file$SR_parms[2,3:4]<-input$h_mean_ss}        
+    #}
+    
+    #
+      ctl.file$Q_options[1]<-data.file$Nfleets
+    
+    #Selectivity
+      Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
+      Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
+      Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
+      Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
+      bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
+
+    if(input$Sel_choice=="Logistic")
+    {
+      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
+      ctl.file$size_selex_parms[2,3:4]<- 15
+      ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
+      ctl.file$size_selex_parms[4,3:4]<- 15
+      ctl.file$size_selex_parms[6,3:4]<- 15
+      }
+    if(input$Sel_choice=="Dome-shaped")
+    {     
+      PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
+      PeakDesc_phase<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_phase,","))))
+      LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
+      LtPeakFinal_phase<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_phase,","))))
+      FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
+      FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
+      
+      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
+      ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
+      ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
+      ctl.file$size_selex_parms[4,3:4]<- log(LtPeakFinal[1])
+      ctl.file$size_selex_parms[6,3:4]<- -log((1/(FinalSel[1]+0.000000001)-1))
+    }
+
+    #Add other fleets
+    if((data.file$Nfleets-1)>1){
+      for(i in 1:(data.file$Nfleets-2))
+      {
+        #ctl.file$init_F<-rbind(ctl.file$init_F,ctl.file$init_F[1,])
+        ctl.file$size_selex_types<-rbind(ctl.file$size_selex_types,ctl.file$size_selex_types[1,])
+        ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
+        ctl.file$size_selex_parms<-rbind(ctl.file$size_selex_parms,ctl.file$size_selex_parms[1:6,])
+        
+        if(input$Sel_choice=="Logistic")
+        {
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+          ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
+          ctl.file$size_selex_parms[6*i+2,3:4]<- 15
+          ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
+          ctl.file$size_selex_parms[6*i+4,3:4]<- -15
+          ctl.file$size_selex_parms[6*i+6,3:4]<- 15
+        }
+
+        if(input$Sel_choice=="Dome-shaped")
+        {
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+          ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
+          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width))
+          ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
+          ctl.file$size_selex_parms[6*i+4,3:4]<- log(LtPeakFinal[i+1])
+          ctl.file$size_selex_parms[6*i+6,3:4]<- -log((1/(FinalSel[i+1]+0.000000001)-1))
+        }
+    
+      }
+
+        ctl.file$size_selex_types[,1]<-c(rep(24,data.file$Nfleets-1),0)
+        ctl.file$age_selex_types[,1]<-10
+        
+      #Re-label so r4ss can interpret these new entries
+      #rownames(ctl.file$init_F)<-paste0("InitF_seas_1_flt_",1:data.file$Nfleets,"Fishery",1:data.file$Nfleets)
+      rownames(ctl.file$age_selex_types)<-rownames(ctl.file$size_selex_types)<-c(paste0("Fishery",1:(data.file$Nfleets-1)),"Depl")
+      size_selex_parms_rownames<-list()
+      for(f_i in 1:(data.file$Nfleets-1))
+      {
+        size_selex_parms_rownames[[f_i]]<-c(paste0("SizeSel_P_1_Fishery",f_i,"(",f_i,")"),
+          paste0("SizeSel_P_2_Fishery",f_i,"(",f_i,")"),
+          paste0("SizeSel_P_3_Fishery",f_i,"(",f_i,")"),
+          paste0("SizeSel_P_4_Fishery",f_i,"(",f_i,")"),
+          paste0("SizeSel_P_5_Fishery",f_i,"(",f_i,")"),
+          paste0("SizeSel_P_6_Fishery",f_i,"(",f_i,")"))    
+      }
+      size_selex_parms_rownames<-unlist(size_selex_parms_rownames)
+      rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
+    }
+
+
+    SS_writectl(ctl.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.ctl"),overwrite=TRUE)
+
+#Forecast file modfications
+#Reference points
+forecast.file<-SS_readforecast(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/forecast.ss"))
+
+if(input$RP_choices){
+    forecast.file$SPRtarget<-input$SPR_target
+    forecast.file$Btarget<-input$B_target
+
+    forecast.file$ControlRuleMethod<-input$CR_Ct_F
+    forecast.file$SBforconstantF<-input$slope_hi
+    forecast.file$BfornoF<-input$slope_low  
+  }
+
+if(input$Forecast_choice)
+  {
+    forecast.file$Nforecastyrs<-input$forecast_num
+    forecast.file$Flimitfraction<-input$forecast_buffer
+  }
+
+#Set prior inputs
+SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)  
+
+    sss.prior.name<-c("no prior","beta","symmetric beta","normal","truncated normal","lognormal","truncated lognormal","uniform")
+    sss.prior.type<-c(-1,1,2,0,10,3,30,4)
+    Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss)
+    M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss)
+    h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_f_mean_sss,input$M_f_SD_sss)
+    L1.in<-c(ctl.file$MG_parms[2,3],input$M_f_SD_sss,ctl.file$MG_parms[14,3],input$M_f_SD_sss)
+    Linf.in<-c(input$Linf_f_mean_sss,input$Linf_f_SD_sss,input$Linf_f_mean_sss,input$Linf_f_SD_sss)
+    k.in<-c(input$k_f_mean_sss,input$k_f_SD_sss,input$k_f_mean_sss,input$k_f_SD_sss)
+        
+#Run SSS
+  SSS.out<-SSS(paste0(getwd(),"/Scenarios/",input$Scenario_name),
+      file.name=c("sss_example.dat","sss_example.ctl"),
+      reps=input$SSS_reps,
+      seed.in=19,
+      Dep.in=Dep.in_sss,
+      M.in=M.in_sss,
+      SR_type=3,
+      h.in=h.in_sss,
+      FMSY_M.in=c(-1,0.5,0.1),
+      BMSY_B0.in=c(-1,0.5,0.1),
+      L1.in=L1.in,
+      Linf.in=Linf.in,
+      k.in=k.in,
+      Zfrac.Beta.in=c(-99,0.2,0.6,-99,0.5,2),
+      R_start=c(0,8),
+      doR0.loop=c(1,4.1,12.1,0.5),
+      sum_age=0,
+      ts_yrs=c(input$styr,input$endyr),
+      pop.ltbins=NA,
+      ofl_yrs=c(input$endyr+1,input$endyr+2),
+      sexes=F,
+      BH_FMSY_comp=F,
+      OStype="Windows")
+#save(SSS.out)
 })
 
 
@@ -1795,17 +2121,18 @@ SS.file.update<-observeEvent(input$run_SS,{
 
     if(input$Sel_choice=="Logistic")
 		{
-			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
-			ctl.file$size_selex_parms[3,7]<- Sel50_phase[1]
 			ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
-			ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
-			ctl.file$size_selex_parms[1,7]<- Selpeak_phase[1]
-			ctl.file$size_selex_parms[2,3:4]<- 15
-			ctl.file$size_selex_parms[2,7]<- -1
+      ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
+      ctl.file$size_selex_parms[2,3:4]<- 15
+      ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
 			ctl.file$size_selex_parms[4,3:4]<- 15
-			ctl.file$size_selex_parms[4,7]<- -1
-			ctl.file$size_selex_parms[6,3:4]<- 15
-			ctl.file$size_selex_parms[6,7]<- -1
+      ctl.file$size_selex_parms[6,3:4]<- 15
+      #phases
+      ctl.file$size_selex_parms[1,7]<- Selpeak_phase[1]
+      ctl.file$size_selex_parms[2,7]<- -1
+      ctl.file$size_selex_parms[3,7]<- Sel50_phase[1]
+      ctl.file$size_selex_parms[4,7]<- -1
+      ctl.file$size_selex_parms[6,7]<- -1
 			}
 		if(input$Sel_choice=="Dome-shaped")
 		{     
@@ -1818,15 +2145,16 @@ SS.file.update<-observeEvent(input$run_SS,{
 			
       ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
-			ctl.file$size_selex_parms[1,7]<- Selpeak_phase[1]
 			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
-			ctl.file$size_selex_parms[2,7]<- PeakDesc_phase[1]
 			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
-			ctl.file$size_selex_parms[3,7]<- Sel50_phase[1]
 			ctl.file$size_selex_parms[4,3:4]<- log(LtPeakFinal[1])
-			ctl.file$size_selex_parms[4,7]<- LtPeakFinal_phase[1]
 			ctl.file$size_selex_parms[6,3:4]<- -log((1/(FinalSel[1]+0.000000001)-1))
-			ctl.file$size_selex_parms[6,7]<- FinalSel_phase[1]
+		  #phases
+      ctl.file$size_selex_parms[1,7]<- Selpeak_phase[1]
+      ctl.file$size_selex_parms[2,7]<- PeakDesc_phase[1]
+      ctl.file$size_selex_parms[3,7]<- Sel50_phase[1]
+      ctl.file$size_selex_parms[4,7]<- LtPeakFinal_phase[1]
+      ctl.file$size_selex_parms[6,7]<- FinalSel_phase[1]
 		}
 
 if(input$dirichlet)
