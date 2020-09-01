@@ -539,7 +539,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     #   tags$ul(tags$li(h5(p(em("If using catch data, use the first year of catches"))))),
     # h5(p(em(""))),
       uiOutput("Model_dims1"),
-      uiOutput("Model_dims2"),
+    #  uiOutput("Model_dims2"),
       )
     ),
    

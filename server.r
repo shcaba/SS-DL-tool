@@ -544,7 +544,10 @@ output$Model_dims1 <- renderUI({
               if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))){ 
                 styr.in = min(inFile1[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
               }
-               
+          if (!is.null(inFile2)){
+            styr.in<-min(inFile2[,1])
+            endyr.in<-max(inFile2[,1])
+          }     
             fluidRow(column(width=4, numericInput("styr", "Starting year",  
                                                   value=styr.in, min=1, max=10000, step=1)), 
                     column(width=4, numericInput("endyr","Ending year",  
