@@ -538,21 +538,28 @@ output$Model_dims1 <- renderUI({
         inFile1 = rv.Lt$data 
         inFile2 = rv.Ct$data 
         if (is.null(inFile1) & is.null(inFile2)) return(NULL) 
+        
         if (!is.null(inFile1) & is.null(inFile2)){ 
               styr.in =  min(inFile1[,1]) 
               endyr.in = max(inFile1[,1])
               if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))){ 
                 styr.in = min(inFile1[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
               }
+          }
+
           if (!is.null(inFile2)){
             styr.in<-min(inFile2[,1])
             endyr.in<-max(inFile2[,1])
+          }     
+          if (!is.null(inFile1) &!is.null(inFile2)){
+            styr.in<-min(min(inFile1[,1]),min(inFile2[,1]))
+            endyr.in<-max(max(inFile1[,1]),max(inFile2[,1]))
           }     
             fluidRow(column(width=4, numericInput("styr", "Starting year",  
                                                   value=styr.in, min=1, max=10000, step=1)), 
                     column(width=4, numericInput("endyr","Ending year",  
                                                  value=endyr.in, min=1, max=10000, step=1)))            
-            } 
+             
 
         # if (!is.null(inFile2)){            
         #       fluidRow(column(width=4, numericInput("styr", "Starting year",  
@@ -1672,7 +1679,7 @@ SS.file.update<-observeEvent(input$run_SS,{
 		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
-		
+
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
