@@ -151,7 +151,7 @@
 0.03 # F ballpark value in units of annual_F
 -1999 # F ballpark year (neg value to disable)
 3 # F_Method:  1=Pope; 2=instan. F; 3=hybrid (hybrid is recommended)
-100 # max F or harvest rate, depends on F_Method
+1000 # max F or harvest rate, depends on F_Method
 # no additional F input needed for Fmethod 1
 # if Fmethod=2; read overall start F value; overall phase; N detailed inputs to read
 # if Fmethod=3; read N iterations for tuning for Fmethod 3
@@ -159,7 +159,7 @@
 #
 #_initial_F_parms; count = 0
 #_ LO HI INIT PRIOR PR_SD  PR_type  PHASE
-0 100 0.1 1 999 0 1 
+0 1000 0.1 1 999 0 1 
 #2020 2070
 # F rates by fleet
 # Yr:  1980 1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020
