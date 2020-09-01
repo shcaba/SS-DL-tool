@@ -2299,7 +2299,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE)
 				 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
 				 profilesummary <- SSsummarize(profilemodels)
-				 minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
+	       minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
 				 #Find best fit model
 				 index.minlikes<-c(1:length(minlikes))[minlikes]
 				 file.copy(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
@@ -2319,6 +2319,10 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 ref.like<-min(jitter.likes)
 		    	 #Make plot and save to folder
 		    	 main.dir<-getwd()
+           if(!file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/Jitter Results")))
+          {
+              dir.create(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/Jitter Results"))
+          }
            setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/Jitter Results"))
 		     	 png("jitterplot.png")
 				 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
@@ -2331,7 +2335,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 # like_2_10<-round(100-(likebc+like10+like2),0)
 				 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
 				 dev.off()
-          save(profilesummary)
+          save(profilesummary,file=paste0(getwd(),"/jitter_summary.DMP"))
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(1), new = FALSE,print=TRUE,plotdir=getwd())
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE,print=TRUE,plotdir=getwd())
         
@@ -2393,15 +2397,15 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 					which(rownames(Model.output$derived_quants)==paste0("ForeCatch_",(input$endyr+1)))
 					)
 				Output_relSB_table<-data.frame(Model.output$derived_quants[SB_indices,1:3])
-					# Label=c(paste0("SO",input$endyr,"/SO_0"),
+					# Label=c(paste0("SO",input$endyr+1,"/SO_0"),
 					# 					  "SO_MSY/SO_0",
-					# 					  paste0("SPR",input$endyr),
+					# 					  paste0("SPR",input$endyr+1),
 					# 					  paste0("OFL",(input$endyr+1)),
 					# 					  paste0("ABC",(input$endyr+1))
 					# 					  ))
-				Output_relSB_table[,1]<-c(paste0("SO",input$endyr,"/SO_0"),
+				Output_relSB_table[,1]<-c(paste0("SO",input$endyr+1,"/SO_0"),
 										  "SO_MSY/SO_0",
-										  paste0("1-SPR",input$endyr),
+										  paste0("1-SPR",input$endyr+1),
 										  paste0("OFL",(input$endyr+1)),
 										  paste0("ABC",(input$endyr+1))
 										  )
@@ -2431,7 +2435,8 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
  			})
 		#Time series output
  		output$SSout_table <- renderTable({
- 				Output_table<-Model.output$sprseries[-nrow(Model.output$sprseries),c(1,5,6,7,8,9,11,12,13,25,37)]
+# 				Output_table<-Model.output$sprseries[-nrow(Model.output$sprseries),c(1,5,6,7,8,9,11,12,13,25,37)]
+        Output_table<-Model.output$sprseries[,c(1,5,6,7,8,9,11,12,13,25,37)]
 			})
  		
  		#Paramters
