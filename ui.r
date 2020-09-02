@@ -3,6 +3,8 @@ require(shinyjs)
 require(shinyWidgets)
 require(shinyFiles)
 
+linebreaks <- function(n){HTML(strrep(br(), n))}
+
 shinyUI(fluidPage(
   useShinyjs(),
   titlePanel("Welcome to the Stock Synthesis data-limited tool"),
@@ -480,7 +482,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h5("Enter parameter and phase values for each fleet and survey."), 
     h5("Example using 50% selectivity with two fleets: Inputs could be 35,40 and 2,2 for starting values and phases respectively."),
     h5("The phase input indicates estimated parameters. To fix the parameter, set the phase value to a negative number."),
-    p("If using a mix of logistic and dome-shaped selectivities, select", strong("dome-shaped"),"and fix (i.e., use a negative phase) the provided default values to achieve a logistic shape for any given fleet."),
+    p("If using a mix of logistic and dome-shaped selectivities, select", strong("dome-shaped"),"and fix (i.e., use a negative phase) the provided default values (10000,0.0001,0.9999 for the additonal parameters, respectively) to achieve a logistic shape for any given fleet."),
     br(),
     fluidRow(selectInput("Sel_choice","Length selectivity type",c("Logistic","Dome-shaped"))),
     # fluidRow(column(width=6,numericInput("Sel50", "Length at 50% Selectivity", value=NA,min=0, max=10000, step=0.01)),
@@ -656,8 +658,13 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             h4("Life history"),
             column(6,plotOutput("Mplot")),
             column(6,plotOutput("VBGFplot")),
-                  value=1),       
-          tabPanel("Model output",
+            h6("."),
+            linebreaks(30),
+            h4("Selectivity"),
+            plotOutput("Selplot"),
+            value=1),       
+            
+            tabPanel("Model output",
             h4("Checking model convergence. Check also fit to length composition data"),
             tableOutput("converge.grad"),
             tableOutput("converge.covar"),
@@ -687,6 +694,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             h4("Time series"),
             tableOutput("SSout_table"),
             value=2),
+          
           tabPanel("Jitter exploration",
             plotOutput("Jitterplot"),
             h4("Blue values indicate minimum likelihood values; red indicate values higher than the minimum."),  
@@ -696,13 +704,16 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             plotOutput("Jittercompplot2"),
             h4("Comparison of relative stock status among jittered models. Model 0 is the initial model; numbered models are the sequential jittered models."),
             value=3),
+          
           tabPanel("Likelihood profile",
             
             value=4),
+          
           tabPanel("Sensitivity comparisons",
             # uiOutput("Sensi_comp_plot"),            
             imageOutput("Sensi_comp_plot"),            
             value=5),
+          
           tabPanel("Ensemble models",
             plotOutput("Ensemble_plots"),            
             value=6)

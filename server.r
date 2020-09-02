@@ -115,6 +115,78 @@ rc <- function(n,alpha=1){
   rich.vector <- apply(rgb.m, 1, function(v) rgb(v[1], v[2], v[3], alpha=alpha))
 }
 
+
+doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
+#UPDATED: - input e and f on 0 to 1 scal and transfrom to logit scale
+#         - changed bin width in peak2 calculation
+#         - updated index of sel when j2 < length(x)
+#   - renamed input parameters, cannot have same names as the logitstic function
+#         - function not handling f < -1000 correctly
+#browser()         
+          x<-seq(1,Selpeak+Selpeak,1)
+          bin_width <- x[2] - x[1]
+          
+          a<- Selpeak
+          b<- -log((max(x)-Selpeak-bin_width)/(PeakDesc-Selpeak-bin_width))
+          c<- log(-((Sel50-Selpeak)^2/log(0.5)))
+          d<- log(LtPeakFinal)
+          e<- -15
+          f<- -log((1/(FinalSel+0.000000001)-1))
+          
+      sel <- rep(NA, length(x))
+      startbin <- 1
+      peak <- a
+      upselex <- exp(c)
+      downselex <- exp(d)
+      final <- f
+      if (e < -1000) {
+          j1 <- -1001 - round(e)
+          sel[1:j1] <- 1e-06
+      }
+      if (e >= -1000) {
+          j1 <- startbin - 1
+          if (e > -999) {
+            point1 <- 1/(1 + exp(-e))
+            t1min <- exp(-(x[startbin] - peak)^2/upselex)
+          }
+      }
+      if (f < -1000)
+          j2 <- -1000 - round(f)
+      if (f >= -1000)
+          j2 <- length(x)
+      peak2 <- peak + bin_width + (0.99 * x[j2] - peak - bin_width)/(1 +
+          exp(-b))
+      if (f > -999) {
+          point2 <- 1/(1 + exp(-final))
+          t2min <- exp(-(x[j2] - peak2)^2/downselex)
+      }
+      t1 <- x - peak
+      t2 <- x - peak2
+      join1 <- 1/(1 + exp(-(20/(1 + abs(t1))) * t1))
+      join2 <- 1/(1 + exp(-(20/(1 + abs(t2))) * t2))
+      if (e > -999)
+          asc <- point1 + (1 - point1) * (exp(-t1^2/upselex) -
+            t1min)/(1 - t1min)
+      if (e <= -999)
+          asc <- exp(-t1^2/upselex)
+      if (f > -999)
+          dsc <- 1 + (point2 - 1) * (exp(-t2^2/downselex) -
+            1)/(t2min - 1)
+      if (f <= -999)
+          dsc <- exp(-(t2)^2/downselex)
+      idx.seq <- (j1 + 1):j2
+      sel[idx.seq] <- asc[idx.seq] * (1 - join1[idx.seq]) + join1[idx.seq] * (1 -
+          join2[idx.seq] + dsc[idx.seq] * join2[idx.seq])
+      if (startbin > 1 && e >= -1000) {
+          sel[1:startbin] <- (x[1:startbin]/x[startbin])^2 *
+            sel[startbin]
+      }
+      if (j2 < length(x))
+          sel[(j2 + 1):length(x)] <- sel[j2]
+      return(cbind(x,sel))
+}
+
+
 ########## Clear data files and plots ############
   rv.Lt <- reactiveValues(data = NULL,clear = FALSE)
   rv.Age <- reactiveValues(data = NULL,clear = FALSE)
@@ -946,7 +1018,7 @@ output$Sel_parms2<- renderUI({
  
 output$Sel_parms3 <- renderUI({ 
   		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, textInput("PeakDesc", "Length at 1st declining selectivity",value="1000")), 
+    	fluidRow(column(width=8, textInput("PeakDesc", "Length at 1st declining selectivity",value="10000")), 
             	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value="",))) 
  		} 
 	}) 
@@ -960,7 +1032,7 @@ output$Sel_parms4 <- renderUI({
  
 output$Sel_parms5 <- renderUI({ 
  		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value="0.999")), 
+    	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value="0.99999")), 
             	column(width=4, textInput("FinalSel_phase", "Est. phase",value=""))) 
  		} 
 	}) 
@@ -1306,6 +1378,107 @@ output$VBGFplot<-renderPlot({
   	 vbgf.plot 
   	 } 
 	}) 
+
+#Selectivity
+ # observeEvent(req(input$Sel50,input$Selpeak), {
+ #      shinyjs::show(output$Sel_plots_label<-renderText({"Selectivity"}))
+ #  })
+
+output$Selplot <- renderPlot({ 
+
+    if(input$Sel_choice=="Logistic"&any(any(input$Sel50[1]=="",is.null(input$Sel50)),any(input$Selpeak[1]=="",is.null(input$Selpeak)))) return(NULL) 
+
+    if(input$Sel_choice=="Logistic")
+    {
+      if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))),
+        all(input$Sel50!=""),
+        all(!is.null(input$Sel50)),
+        all(input$Selpeak!=""),
+        all(!is.null(input$Selpeak))))
+      {
+       Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
+       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
+       PeakDesc<-rep(10000,length(Selpeak))
+       LtPeakFinal<-rep(0.0001,length(Selpeak))
+       FinalSel<-rep(0.999,length(Selpeak))
+      
+      # if(input$Sel_choice=="Logistic")
+      #   {
+      #   }
+      # if(input$Sel_choice=="Dome-shaped")
+         # {
+        #   PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
+        #   LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
+        #   FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))      
+        # }
+      
+       Sel.out<-doubleNorm24.sel(Sel50=Sel50[1],Selpeak=Selpeak[1],PeakDesc=PeakDesc[1],LtPeakFinal=LtPeakFinal[1],FinalSel=FinalSel[1])
+       Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet="Fleet 1")
+       if(length(Sel50)>1)
+       {
+        for(ii in 2:length(Sel50))
+        {
+        Sel.out.temp<-doubleNorm24.sel(Sel50=Sel50[ii],Selpeak=Selpeak[ii],PeakDesc=PeakDesc[ii],LtPeakFinal=LtPeakFinal[ii],FinalSel=FinalSel[ii])
+        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=paste0("Fleet ",ii))
+        Sel.out<-rbind(Sel.out,Sel.out.temp)
+        }
+       }
+        selplot.out<-ggplot(Sel.out,aes(Bin,Sel,colour=Fleet)) +  
+          geom_line(lwd=1.5) + 
+          ylab("Length Bins") + 
+          xlab("Selectivity") +  
+          scale_color_viridis_d() 
+      }
+    }
+    
+    if(input$Sel_choice=="Dome-shaped")
+    {
+        if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))),
+        length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))),
+        length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))),
+        length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))),
+        all(input$Sel50!=""),
+        all(!is.null(input$Sel50)),
+        all(input$Selpeak!=""),
+        all(!is.null(input$Selpeak))))
+       {
+       Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
+       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
+       PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
+       LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
+       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))      
+      
+      # if(input$Sel_choice=="Logistic")
+      #   {
+      #     PeakDesc<-rep(10000,length(Selpeak))
+      #     LtPeakFinal<-rep(0.0001,length(Selpeak))
+      #     FinalSel<-rep(0.999,length(Selpeak))
+      #   }
+      # if(input$Sel_choice=="Dome-shaped")
+      #   {
+        # }
+      
+       Sel.out<-doubleNorm24.sel(Sel50=Sel50[1],Selpeak=Selpeak[1],PeakDesc=PeakDesc[1],LtPeakFinal=LtPeakFinal[1],FinalSel=FinalSel[1])
+       Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet="Fleet 1")
+       if(length(Sel50)>1)
+       {
+        for(ii in 2:length(Sel50))
+        {
+        Sel.out.temp<-doubleNorm24.sel(Sel50=Sel50[ii],Selpeak=Selpeak[ii],PeakDesc=PeakDesc[ii],LtPeakFinal=LtPeakFinal[ii],FinalSel=FinalSel[ii])
+        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=paste0("Fleet ",ii))
+        Sel.out<-rbind(Sel.out,Sel.out.temp)
+        }
+       }
+        selplot.out<-ggplot(Sel.out,aes(Bin,Sel,colour=Fleet)) +  
+          geom_line(lwd=1.5) + 
+          ylab("Length Bins") + 
+          xlab("Selectivity") +  
+          scale_color_viridis_d() 
+      }      
+    }
+    if(!is.null(get0("selplot.out"))){return(selplot.out)}
+    else(return(NULL))
+    }) 
 
 #############################################
 ######## PREPARE FILES andD RUN SSS #########
