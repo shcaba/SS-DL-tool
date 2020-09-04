@@ -122,7 +122,6 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
 #         - updated index of sel when j2 < length(x)
 #   - renamed input parameters, cannot have same names as the logitstic function
 #         - function not handling f < -1000 correctly
-#browser()         
           x<-seq(1,Selpeak+Selpeak,1)
           bin_width <- x[2] - x[1]
           
