@@ -4,7 +4,7 @@ SS_LB.ctl
 #lbSSpr_rec.ctl
 0 # 0=use init values in control file; 1=use ss.par
 0 # run display detail (0,1,2)
-2 # detailed age-structured reports in REPORT.SSO (0,1,2) 
+1 # detailed age-structured reports in REPORT.SSO (0,1,2) 
 0 # write detailed checkup.sso file (0,1) 
 0 # write parm values to ParmTrace.sso (0=no,1=good,active; 2=good,all; 3=every_iter,all_parms; 4=every,active)
 0 # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)

@@ -190,7 +190,8 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
   rv.Lt <- reactiveValues(data = NULL,clear = FALSE)
   rv.Age <- reactiveValues(data = NULL,clear = FALSE)
   rv.Ct <- reactiveValues(data = NULL,clear = FALSE)
-  
+  rv.Index <- reactiveValues(data = NULL,clear = FALSE)
+    
 
 ########
 #Reset catches
@@ -2408,7 +2409,7 @@ if(input$dirichlet)
 			size_selex_parms_rownames<-unlist(size_selex_parms_rownames)
 			rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
 		}
-
+#browser()
     #Change data weights
     # Lt_dat_wts<-as.numeric(trimws(unlist(strsplit(input$Lt_datawts,","))))
     # ctl.file$Variance_adjustments[1,]<-Lt_dat_wts
@@ -2416,12 +2417,53 @@ if(input$dirichlet)
 		#Change likelihood component weight of catch
 		if (is.null(rv.Ct$data))
 			{
-				ctl.file$lambdas[1,4]<-0
+				ct.lambdas<-ctl.file$lambdas[1,]
+        init.ct.lambdas<-ctl.file$lambdas[2,]
+        if(data.file$Nfleets>1)
+        {  
+          for(i_lam in 2:data.file$Nfleets)
+            {
+              ct.lambdas_temp<-ct.lambdas[1,]
+              init.ct.lambdas_temp<-init.ct.lambdas[1,]
+              ct.lambdas_temp[1,2]<-init.ct.lambdas_temp[1,2]<-i_lam
+              ct.lambdas<-rbind(ct.lambdas,ct.lambdas_temp)
+              init.ct.lambdas<-rbind(init.ct.lambdas,init.ct.lambdas_temp)
+            }
+        }
+          ct.lambdas[,4]<-0
+          rownames(ct.lambdas)<-paste0("catch_Fishery",c(1:data.file$Nfleets),"_Phz1")
+          init.ct.lambdas[,4]<-1
+          rownames(init.ct.lambdas)<-paste0("init_equ_catch_Fishery",c(1:data.file$Nfleets),"_lambda_for_init_equ_catch_can_only_enable/disable for_all_fleets_Phz1")
+          ctl.file$lambdas<-rbind(ct.lambdas,init.ct.lambdas)
+          ctl.file$N_lambdas<-data.file$Nfleets*2
+
+#        ctl.file$lambdas[1,4]<-0
 			}
+
 		if(!is.null(rv.Ct$data))
 			{
-				ctl.file$lambdas[1,4]<-1
-				ctl.file$lambdas[2,4]<-0
+  				ct.lambdas<-ctl.file$lambdas[1,]
+          init.ct.lambdas<-ctl.file$lambdas[2,]
+        
+        if(data.file$Nfleets>1)
+          {  
+            for(i_lam in 2:data.file$Nfleets)
+              {
+                ct.lambdas_temp<-ct.lambdas[1,]
+                init.ct.lambdas_temp<-init.ct.lambdas[1,]
+                ct.lambdas_temp[1,2]<-init.ct.lambdas_temp[1,2]<-i_lam
+                ct.lambdas<-rbind(ct.lambdas,ct.lambdas_temp)
+                init.ct.lambdas<-rbind(init.ct.lambdas,init.ct.lambdas_temp)
+              }
+           }
+        ct.lambdas[,4]<-1
+        rownames(ct.lambdas)<-paste0("catch_Fishery",c(1:data.file$Nfleets),"_Phz1")
+        init.ct.lambdas[,4]<-0
+        ctl.file$lambdas<-rbind(ct.lambdas,init.ct.lambdas)
+        rownames(init.ct.lambdas)<-paste0("init_equ_catch_Fishery",c(1:data.file$Nfleets),"_lambda_for_init_equ_catch_can_only_enable/disable for_all_fleets_Phz1")
+        ctl.file$N_lambdas<-data.file$Nfleets*2
+        #ctl.file$lambdas[1,4]<-1
+				# ctl.file$lambdas[2,4]<-0
 				ctl.file$init_F[,3]<-0.000001
 				ctl.file$init_F[,7]<--1
 			}
