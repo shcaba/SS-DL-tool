@@ -424,6 +424,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
   })	
 
 
+#SS-CL fixed parameters
 observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
       shinyjs::show("Data_panel")
       shinyjs::show("panel_data_wt_lt")
@@ -468,7 +469,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
       shinyjs::hide("Ensemble_panel")
    })
 
-
+#SS-CL with parameter estimates
 observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
       shinyjs::show("Data_panel")
       shinyjs::show("panel_data_wt_lt")
@@ -513,6 +514,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
       shinyjs::hide("Ensemble_panel")
    })
 
+#Sensitivities
 observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("Data_panel")
         shinyjs::hide("panel_data_wt_lt")
@@ -557,6 +559,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("Ensemble_panel")
    })
 
+#Ensembles
 observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("Data_panel")
         shinyjs::hide("panel_data_wt_lt")
@@ -2118,7 +2121,7 @@ SS.file.update<-observeEvent(input$run_SS,{
     ctl.file$MG_parms[16,3:4]<-input$k_f_fix        #k
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_fix    #CV
     ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_fix    #CV
-    if(input$male_parms)
+    if(input$male_parms_fix)
       {   
         male_vbgf<-VBGF(input$Linf_m_fix,input$k_m_fix,input$t0_m_fix,c(0:Nages()))
         ctl.file$MG_parms[13,3]<-input$M_m_fix        #M
