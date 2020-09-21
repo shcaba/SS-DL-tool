@@ -291,6 +291,7 @@ shinyjs::show("Data_panel")
 #Switch back to data from different tabs
 observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::show("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
         
@@ -336,6 +337,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 #SSS panels
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)), {
         shinyjs::show("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
         
@@ -381,6 +383,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 #SS-LO panels
 observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))), {
         shinyjs::show("Data_panel")
+        shinyjs::show("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
         if(length(unique(rv.Lt$data[,2]))>1){shinyjs::show("panel_ct_wt_LO")}
         if(length(unique(rv.Lt$data[,2]))==1){shinyjs::hide("panel_ct_wt_LO")}
@@ -427,6 +430,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 #SS-CL fixed parameters
 observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
       shinyjs::show("Data_panel")
+      shinyjs::hide("panel_Ct_F_LO")
       shinyjs::show("panel_data_wt_lt")
       shinyjs::hide("panel_ct_wt_LO")
        
@@ -472,6 +476,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
 #SS-CL with parameter estimates
 observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
       shinyjs::show("Data_panel")
+      shinyjs::hide("panel_Ct_F_LO")
       shinyjs::show("panel_data_wt_lt")
       shinyjs::hide("panel_ct_wt_LO")
       
@@ -517,6 +522,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
 #Sensitivities
 observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
         
@@ -562,6 +568,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
 #Ensembles
 observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
         
@@ -617,7 +624,7 @@ output$Model_dims1 <- renderUI({
         if (!is.null(inFile1) & is.null(inFile2)){ 
               styr.in =  min(inFile1[,1]) 
               endyr.in = max(inFile1[,1])
-              if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))){ 
+              if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))& input$Ct_F_LO_select=="Constant Catch"){ 
                 styr.in = min(inFile1[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
               }
           }
@@ -1843,23 +1850,38 @@ SS.file.update<-observeEvent(input$run_SS,{
              progress$set(value = i)
              Sys.sleep(0.5)
            }
+#browser()
   	#Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
 			{
 				unlink(paste0(getwd(),"/Scenarios/",input$Scenario_name),recursive=TRUE)
 #				file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
 			}
-	  	file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
-		file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
+	  	if(input$Ct_F_LO_select=="Estimate F"){
+          file.copy(paste0(getwd(),"/SS_LO_F_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
+          file.rename(paste0(getwd(),"/Scenarios/SS_LO_F_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
+        }
+      else{
+        file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
+		    file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
+        }
 
 		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
+  if(input$Ct_F_LO_select=="Estimate F")
+    {
+      data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
+      ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
+    }
 
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
+
+
+    data.file$Nages<-Nages()
 
 	#Catches
 		#inCatch<- input$file2
@@ -1868,14 +1890,17 @@ SS.file.update<-observeEvent(input$run_SS,{
 		inFile<- rv.Lt$data
 		Lt.comp.data<-rv.Lt$data
 		data.file$Nfleets<-max(Lt.comp.data[,2])
-		if(data.file$Nfleets>1){
+		if(input$Ct_F_LO_select=="Estimate F"){data.file$bycatch_fleet_info[4:5]<-c(input$styr,input$endyr)}
+    if(data.file$Nfleets>1){
 			for(i in 1:(data.file$Nfleets-1))
 			{
-				data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
+				if(input$Ct_F_LO_select=="Estimate F"){data.file$bycatch_fleet_info<-rbind(data.file$bycatch_fleet_info,data.file$bycatch_fleet_info[1,])}
+        data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
 				data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
 				data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
 				data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
 			}
+      data.file$bycatch_fleet_info[,1]<-c(1:data.file$Nfleets)
       data.file$len_info[,5]<-1
       data.file$len_info[,6]<-c(1:data.file$Nfleets)
 			data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)

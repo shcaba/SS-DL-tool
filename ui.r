@@ -63,6 +63,16 @@ shinyjs::hidden(wellPanel(id="Data_panel",
               column(width=4,actionButton("reset_ct", "Catches"))),
 )
 ),
+    shinyjs::hidden(wellPanel(id="panel_Ct_F_LO",
+        h4(strong("Use constant catch or estimate fishing mortality directly?")),
+        h5(em("Estimating fishing rate directly overrides catch and estimates F directly from the length composition fits")),
+        h5(em("This approach also provides a more variable reponse in stock status.")),
+        h5(em("Using constant catch assumes the same catch in all years in order to fit the length composition data")),
+        h5(em("It provides a long-term average response to estimating stock status. F values are are hard to interpret.")),
+        fluidRow(column(width=10,selectInput("Ct_F_LO_select","Prior type",c("Estimate F","Constant Catch")))),
+      )
+    ),
+    
     shinyjs::hidden(wellPanel(id="panel_ct_wt_LO",
         h4(strong("Weight fleet lengths by relative catch")),
         h5(em("The relative catch contribution needs specification with multiple length-only fleets")),
