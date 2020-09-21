@@ -2445,25 +2445,34 @@ if(input$dirichlet)
 		#Change likelihood component weight of catch
 		if (is.null(rv.Ct$data))
 			{
-				ct.lambdas<-ctl.file$lambdas[1,]
-        init.ct.lambdas<-ctl.file$lambdas[2,]
+				lts.lambdas<-ctl.file$lambdas[1,]
+        ct.lambdas<-ctl.file$lambdas[2,]
+        init.ct.lambdas<-ctl.file$lambdas[3,]
         if(data.file$Nfleets>1)
         {  
           for(i_lam in 2:data.file$Nfleets)
             {
+              lts.lambdas_temp<-ctl.file$lambdas[1,]
               ct.lambdas_temp<-ct.lambdas[1,]
               init.ct.lambdas_temp<-init.ct.lambdas[1,]
-              ct.lambdas_temp[1,2]<-init.ct.lambdas_temp[1,2]<-i_lam
+              lts.lambdas_temp[1,2]<-ct.lambdas_temp[1,2]<-init.ct.lambdas_temp[1,2]<-i_lam
+              lts.lambdas<-rbind(lts.lambdas,lts.lambdas_temp)
               ct.lambdas<-rbind(ct.lambdas,ct.lambdas_temp)
               init.ct.lambdas<-rbind(init.ct.lambdas,init.ct.lambdas_temp)
             }
         }
+          if(input$Ct_F_LO_select=="Estimate F")
+            {
+              lt.lam.in<-as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,","))))/sum(as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,",")))))
+              lts.lambdas[,4]<-lt.lam.in
+            }
+          rownames(lts.lambdas)<-paste0("length_Fishery",c(1:data.file$Nfleets),"_sizefreq_method_1_Phz1")
           ct.lambdas[,4]<-0
           rownames(ct.lambdas)<-paste0("catch_Fishery",c(1:data.file$Nfleets),"_Phz1")
           init.ct.lambdas[,4]<-1
           rownames(init.ct.lambdas)<-paste0("init_equ_catch_Fishery",c(1:data.file$Nfleets),"_lambda_for_init_equ_catch_can_only_enable/disable for_all_fleets_Phz1")
-          ctl.file$lambdas<-rbind(ct.lambdas,init.ct.lambdas)
-          ctl.file$N_lambdas<-data.file$Nfleets*2
+          ctl.file$lambdas<-rbind(lts.lambdas,ct.lambdas,init.ct.lambdas)
+          ctl.file$N_lambdas<-nrow(ctl.file$lambdas)
 
 #        ctl.file$lambdas[1,4]<-0
 			}
