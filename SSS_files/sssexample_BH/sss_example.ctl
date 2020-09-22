@@ -136,7 +136,7 @@
 #
 #_Q_parms(if_any);Qunits_are_ln(q)
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name
-           -15            15      -3.00892             0             1             0         -1          0          0          0          0          0          0          0  #  LnQ_base_Depl
+           -15            15      0             0             1             0         -1          0          0          0          0          0          0          0  #  LnQ_base_Depl
 #_no timevary Q parameters
 #
 #_size_selex_types
@@ -187,6 +187,7 @@
 # Like_comp codes:  1=surv; 2=disc; 3=mnwt; 4=length; 5=age; 6=SizeFreq; 7=sizeage; 8=catch; 9=init_equ_catch; 
 # 10=recrdev; 11=parm_prior; 12=parm_dev; 13=CrashPen; 14=Morphcomp; 15=Tag-comp; 16=Tag-negbin; 17=F_ballpark
 #like_comp fleet  phase  value  sizefreq_method
+11  1  1  0  1  #  terminator
 -9999  1  1  1  1  #  terminator
 #
 0 # (0/1) read specs for more stddev reporting 

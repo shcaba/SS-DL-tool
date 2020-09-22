@@ -11,32 +11,13 @@ shinyUI(fluidPage(
       h5(p(strong("This tool uses the Stock Synthesis framework to implement the following types of models:"))),
        tags$ul(tags$li(h5(p(em("Length-based estimation of relative biomass, SPR and F."))))),
        tags$ul(tags$li(h5(p(em("Length + catch-based estimation of biomass, relativ0e biomass, SPR and F and catch limits."))))),
-       tags$ul(tags$li(h5(p(em("COMING SOON: Simple Stock Synthesis (SSS) estimator of sustainable catch."))))),
+       tags$ul(tags$li(h5(p(em("Simple Stock Synthesis (SSS) estimator of sustainable catch."))))),
        tags$ul(tags$li(h5(p(em("COMING SOON: Extended Simple Stock Synthesis (XSSS) estimator of sustainable catch."))))),
        tags$ul(tags$li(h5(p(em("COMING SOON: Abundance and catch-based estimation of biomass, relative biomass, SPR and F and catch limits."))))),
 sidebarLayout(
    sidebarPanel(
 shinyjs::hidden(wellPanel(id="Data_panel",
   h4(strong("Choose data file")),
-  fluidRow(column(width=12,fileInput('file1', 'Length composition',
-                                    accept = c(
-                                      'text/csv',
-                                      'text/comma-separated-values',
-                                      'text/tab-separated-values',
-                                      'text/plain',
-                                      '.csv'
-                                    )
-  ))),
-  fileInput('file3', 'Age composition',
-            accept = c(
-              'text/csv',
-              'text/comma-separated-values',
-              'text/tab-separated-values',
-              'text/plain',
-              '.csv'
-            )
-          ),
-
  fluidRow(column(width=12,fileInput('file2', 'Catch time series',
                            accept = c(
                              'text/csv',
@@ -46,6 +27,27 @@ shinyjs::hidden(wellPanel(id="Data_panel",
                              '.csv'
                            )
   ))),
+ 
+  fluidRow(column(width=12,fileInput('file1', 'Length composition',
+                                    accept = c(
+                                      'text/csv',
+                                      'text/comma-separated-values',
+                                      'text/tab-separated-values',
+                                      'text/plain',
+                                      '.csv'
+                                    )
+  ))),
+ 
+  fluidRow(column(width=12,fileInput('file3', 'Age composition',
+            accept = c(
+              'text/csv',
+              'text/comma-separated-values',
+              'text/tab-separated-values',
+              'text/plain',
+              '.csv'
+            )
+          ))),
+
  
   #Mute for now, pull back in when index methods are ready
   # fileInput('file3', 'Abundance index',
@@ -58,9 +60,9 @@ shinyjs::hidden(wellPanel(id="Data_panel",
   #           )
   #         ),
   h4(strong("Clear data files")),
-     fluidRow(column(width=4,actionButton("reset_lt", "Length")),
-              column(width=4,actionButton("reset_age", "Ages")),
-              column(width=4,actionButton("reset_ct", "Catches"))),
+     fluidRow(column(width=4,actionButton("reset_ct", "Catches")),
+              column(width=4,actionButton("reset_lt", "Length")),
+              column(width=4,actionButton("reset_age", "Ages"))),
 )
 ),
     shinyjs::hidden(wellPanel(id="panel_Ct_F_LO",
@@ -385,7 +387,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       #wellPanel(
          fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=NA,min=1000, max=3000, step=1))),
          dropdownButton(
-          selectInput("Depl_sss_prior","Prior type",c("beta","lognormal","truncated normal","uniform","no prior")),
+          selectInput("Depl_prior_sss","Prior type",c("beta","lognormal","truncated normal","uniform","no prior")),
           numericInput("Depl_mean_sss", "Mean", value=NA,min=0.001, max=1, step=0.001),
           numericInput("Depl_SD_sss", "SD", value=0.2,min=0, max=1000, step=0.001),
           circle = FALSE, status = "danger", icon = icon("battery-half"), width = "300px",label="Relative Stock Status"

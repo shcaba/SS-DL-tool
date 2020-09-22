@@ -1516,7 +1516,6 @@ SSS.run<-observeEvent(input$run_SSS,{
 	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_BH"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
 				file.rename(paste0(getwd(),"/Scenarios/sssexample_BH"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
 			}
-	
 	  	#if()
 #	  		{
 #	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
@@ -1781,16 +1780,26 @@ if(input$Forecast_choice)
 
 #Set prior inputs
 SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)  
-
-    sss.prior.name<-c("no prior","beta","symmetric beta","normal","truncated normal","lognormal","truncated lognormal","uniform")
+#browser()
+    #0 = normal
+    #10 = truncated normal
+    #1 = symmetric beta (rbeta)
+    #2 = beta 
+    #3 = lognormal
+    #30 = truncated lognormal
+    #4 = uniform
+    #99 = used only for the steepness parameter. Indicates h will come from FMSY/M prior
+    
+    sss.prior.name<-c("no prior","symmetric beta","beta","normal","truncated normal","lognormal","truncated lognormal","uniform")
     sss.prior.type<-c(-1,1,2,0,10,3,30,4)
-    Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss)
+    Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$Depl_mean_sss,input$Depl_SD_sss)
     M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss)
-    h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_f_mean_sss,input$M_f_SD_sss)
-    L1.in<-c(ctl.file$MG_parms[2,3],input$M_f_SD_sss,ctl.file$MG_parms[14,3],input$M_f_SD_sss)
-    Linf.in<-c(input$Linf_f_mean_sss,input$Linf_f_SD_sss,input$Linf_f_mean_sss,input$Linf_f_SD_sss)
-    k.in<-c(input$k_f_mean_sss,input$k_f_SD_sss,input$k_f_mean_sss,input$k_f_SD_sss)
+    h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_mean_sss,input$h_SD_sss)
+    #L1.in<-c(ctl.file$MG_parms[2,3],input$M_f_SD_sss,ctl.file$MG_parms[14,3],input$M_f_SD_sss)
+    #Linf.in<-c(input$Linf_f_mean_sss,input$Linf_f_SD_sss,input$Linf_f_mean_sss,input$Linf_f_SD_sss)
+    #k.in<-c(input$k_f_mean_sss,input$k_f_SD_sss,input$k_f_mean_sss,input$k_f_SD_sss)
         
+#browser()
 #Run SSS
   SSS.out<-SSS(paste0(getwd(),"/Scenarios/",input$Scenario_name),
       file.name=c("sss_example.dat","sss_example.ctl"),
@@ -1802,9 +1811,9 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       h.in=h.in_sss,
       FMSY_M.in=c(-1,0.5,0.1),
       BMSY_B0.in=c(-1,0.5,0.1),
-      L1.in=L1.in,
-      Linf.in=Linf.in,
-      k.in=k.in,
+      #L1.in=L1.in,
+      #Linf.in=Linf.in,
+      #k.in=k.in,
       Zfrac.Beta.in=c(-99,0.2,0.6,-99,0.5,2),
       R_start=c(0,8),
       doR0.loop=c(1,4.1,12.1,0.5),
@@ -1850,7 +1859,6 @@ SS.file.update<-observeEvent(input$run_SS,{
              progress$set(value = i)
              Sys.sleep(0.5)
            }
-#browser()
   	#Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
 			{
@@ -2437,7 +2445,6 @@ if(input$dirichlet)
 			size_selex_parms_rownames<-unlist(size_selex_parms_rownames)
 			rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
 		}
-#browser()
     #Change data weights
     # Lt_dat_wts<-as.numeric(trimws(unlist(strsplit(input$Lt_datawts,","))))
     # ctl.file$Variance_adjustments[1,]<-Lt_dat_wts

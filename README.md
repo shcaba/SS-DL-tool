@@ -15,7 +15,7 @@ devtools::install_github("shcaba/SSS", build_vignettes = TRUE)
 install.packages("remotes")
 remotes::install_github("r4ss/r4ss")
 
-It is recommended to restart Rstudio after new installations.
+It is recommended to make sure all additional open windows of R or Rstudio (beside the one being used) are closed prior to updating libraries, and that one restarts Rstudio after all new installations. Many of the errors when running the SS-DL tool arise from keeping libraries updated or installed (especially r4ss).
 
 Running the tool can be accomplished in any of the following ways:
 1) shiny::runApp(ENTER HERE USER PATH TO FOLDER CONTAINING THE SS-DL files)
