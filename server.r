@@ -312,6 +312,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("panel_SS_prod_est")
 
         shinyjs::hide("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
 
         shinyjs::hide("panel_SS_recdevs")
 
@@ -357,7 +358,8 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::hide("panel_SS_prod_fixed")
         shinyjs::hide("panel_SS_prod_est")
 
-        shinyjs::show("panel_selectivity")
+        shinyjs::hide("panel_selectivity")
+        shinyjs::show("panel_selectivity_sss")
 
         shinyjs::hide("panel_SS_recdevs")
 
@@ -404,6 +406,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("panel_SS_prod_est")
 
         shinyjs::show("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
 
         shinyjs::show("panel_SS_recdevs")
 
@@ -451,6 +454,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
       shinyjs::hide("panel_SS_prod_est")
 
       shinyjs::show("panel_selectivity")
+      shinyjs::hide("panel_selectivity_sss")
 
       shinyjs::show("panel_SS_recdevs")
 
@@ -497,6 +501,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
       shinyjs::show("panel_SS_prod_est")
 
       shinyjs::show("panel_selectivity")
+      shinyjs::hide("panel_selectivity_sss")
 
       shinyjs::show("panel_SS_recdevs")
 
@@ -543,6 +548,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("panel_SS_prod_est")
 
         shinyjs::hide("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
 
         shinyjs::hide("panel_SS_recdevs")
 
@@ -589,6 +595,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("panel_SS_prod_est")
 
         shinyjs::hide("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
 
         shinyjs::hide("panel_SS_recdevs")
 
@@ -841,9 +848,9 @@ output$Male_parms_inputs_t0_est <- renderUI({
   if(input$male_parms_est){ 
       dropdownButton(
         selectInput("t0_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
-        numericInput("t0_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
-        numericInput("t0_m_SD", "SD", value=0,min=0, max=10000, step=0.001),
-        numericInput("t0_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+        numericInput("t0_m_mean", "Mean", value=0,min=-100, max=100, step=0.001),
+        numericInput("t0_m_SD", "SD", value=0,min=0, max=100, step=0.001),
+        numericInput("t0_m_phase", "Phase", value=-1,min=-999, max=100, step=0.001),
         circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
           )
   } 
@@ -916,7 +923,7 @@ output$Male_parms_inputs_label_SSS<- renderUI({
    			}		
 		})
 
-output$Male_parms_inputs1_SSS<- renderUI({
+output$Male_parms_inputs_M_SSS<- renderUI({
   if(input$male_parms_SSS){
        dropdownButton(
           selectInput("M_m_prior_sss","Prior type",c("no prior","lognormal","normal","uniform")),
@@ -928,40 +935,40 @@ output$Male_parms_inputs1_SSS<- renderUI({
 }) 
 
 output$Male_parms_inputs_space1_SSS <- renderUI({
-if(input$male_parms_est){ 
+if(input$male_parms_SSS){ 
   br()
   } 
 }) 
 output$Male_parms_inputs_space2_SSS <- renderUI({
-if(input$male_parms_est){ 
+if(input$male_parms_SSS){ 
   br()
   } 
 }) 
 output$Male_parms_inputs_space3_SSS <- renderUI({
-if(input$male_parms_est){ 
+if(input$male_parms_SSS){ 
   br()
   } 
 }) 
 output$Male_parms_inputs_space4_SSS <- renderUI({
-if(input$male_parms_est){ 
+if(input$male_parms_SSS){ 
   br()
   } 
 }) 
 
 output$Male_parms_inputs_space5_SSS <- renderUI({
-if(input$male_parms_est){ 
+if(input$male_parms_SSS){ 
   br()
   } 
 }) 
 
 output$Male_parms_inputs_Growth_label_SSS <- renderUI({
-  if(input$male_parms_est){ 
+  if(input$male_parms_SSS){ 
     h5(strong("Growth")) 
     }
 }) 
 
 output$Male_parms_inputs_Linf_SSS <- renderUI({ 
-  if(input$male_parms_est){ 
+  if(input$male_parms_SSS){ 
         dropdownButton(
           selectInput("Linf_m_prior_sss","Prior type",c("no prior","normal")),
           numericInput("Linf_m_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
@@ -972,7 +979,7 @@ output$Male_parms_inputs_Linf_SSS <- renderUI({
 }) 
 
 output$Male_parms_inputs_k_SSS <- renderUI({ 
-  if(input$male_parms_est){ 
+  if(input$male_parms_SSS){ 
     dropdownButton(
           selectInput("k_m_prior_sss","Prior type",c("no prior","normal")),
           numericInput("k_m_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
@@ -983,18 +990,18 @@ output$Male_parms_inputs_k_SSS <- renderUI({
 }) 
 
 output$Male_parms_inputs_t0_SSS <- renderUI({ 
-  if(input$male_parms_est){ 
+  if(input$male_parms_SSS){ 
     dropdownButton(
           selectInput("t0_m_prior_sss","Prior type",c("no prior","normal")),
-          numericInput("t0_m_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
-          numericInput("t0_m_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          numericInput("t0_m_mean_sss", "Mean", value=0,min=-100, max=100, step=0.001),
+          numericInput("t0_m_SD_sss", "SD", value=0,min=0, max=1000, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
             )
     } 
 }) 
 
 output$Male_parms_inputs_CV_SSS <- renderUI({ 
-  if(input$male_parms_est){ 
+  if(input$male_parms_SSS){ 
     dropdownButton(
           selectInput("CV_lt_m_prior_sss","Prior type",c("no prior")),
           numericInput("CV_lt_m_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.001),
@@ -1047,6 +1054,24 @@ output$Sel_parms5 <- renderUI({
  		} 
 	}) 
 
+output$Sel_parms1_sss <- renderUI({ 
+    fluidRow(column(width=6, textInput("Sel50_sss", "Length at 50% Selectivity",value="")), 
+            column(width=6, textInput("Selpeak_sss", "Length at Peak Selectvity", value="")))     
+  }) 
+ 
+ 
+output$Sel_parms2_sss <- renderUI({ 
+      if(input$Sel_choice_sss=="Dome-shaped"){       
+      fluidRow(column(width=6, textInput("PeakDesc_sss", "Length at 1st declining selectivity",value="10000")), 
+               column(width=6, textInput("LtPeakFinal_sss", "Width of declining selectivity",value="0.0001"))) 
+    } 
+  }) 
+ 
+output$Sel_parms3_sss <- renderUI({ 
+    if(input$Sel_choice_sss=="Dome-shaped"){       
+      fluidRow(column(width=8, textInput("FinalSel_sss", "Selectivity at max bin size",value="0.99999"))) 
+    } 
+  }) 
 			
 #Recruitment parameter inputs
 output$Rec_options1 <- renderUI({ 
@@ -1178,7 +1203,7 @@ Linf_m_in<-reactive({
     if(any(input$male_parms&!is.na(input$Linf_m))) {Linf_m_in<-input$Linf_m}
     if(any(input$male_parms&!is.na(input$Linf_m_fix))) {Linf_m_in<-input$Linf_m_fix}
     if(any(input$male_parms&!is.na(input$Linf_m_mean))) {Linf_m_in<-input$Linf_m_mean}
-    if(any(input$male_parms&!is.na(input$Linf_m_mean_sss))) {Linf_m_in<-input$Linf_m_mean_sss}
+    if(any(input$male_parms_SSS&!is.na(input$Linf_m_mean_sss))) {Linf_m_in<-input$Linf_m_mean_sss}
     Linf_m_in
   })
 
@@ -1200,7 +1225,7 @@ k_vbgf_m_in<-reactive({
     if(any(input$male_parms&!is.na(input$k_m))) {k_vbgf_m_in<-input$k_m}
     if(any(input$male_parms&!is.na(input$k_m_fix))) {k_vbgf_m_in<-input$k_m_fix}
     if(any(input$male_parms&!is.na(input$k_m_mean))) {k_vbgf_m_in<-input$k_m_mean}
-    if(any(input$male_parms&!is.na(input$k_m_mean_sss))) {k_vbgf_m_in<-input$k_m_mean_sss}
+    if(any(input$male_parms_SSS&!is.na(input$k_m_mean_sss))) {k_vbgf_m_in<-input$k_m_mean_sss}
     k_vbgf_m_in
   })
 
@@ -1220,7 +1245,7 @@ t0_vbgf_m_in<-reactive({
     if(any(input$male_parms&!is.na(input$t0_m))) {t0_vbgf_m_in<-input$t0_m}
     if(any(input$male_parms&!is.na(input$t0_m_fix))) {t0_vbgf_m_in<-input$t0_m_fix}
     if(any(input$male_parms&!is.na(input$t0_m_mean))) {t0_vbgf_m_in<-input$t0_m_mean}
-    if(any(input$male_parms&!is.na(input$t0_m_mean_sss))) {t0_vbgf_m_in<-input$t0_m_mean_sss}
+    if(any(input$male_parms_SSS&!is.na(input$t0_m_mean_sss))) {t0_vbgf_m_in<-input$t0_m_mean_sss}
     t0_vbgf_m_in
   })
 
@@ -1490,6 +1515,82 @@ output$Selplot <- renderPlot({
     else(return(NULL))
     }) 
 
+output$Selplot_SSS <- renderPlot({ 
+
+    if(input$Sel_choice_sss=="Logistic"&any(any(input$Sel50_sss[1]=="",is.null(input$Sel50_sss)),any(input$Selpeak_sss[1]=="",is.null(input$Selpeak_sss)))) return(NULL) 
+
+    if(input$Sel_choice_sss=="Logistic")
+    {
+      if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))),
+        all(input$Sel50_sss!=""),
+        all(!is.null(input$Sel50_sss)),
+        all(input$Selpeak_sss!=""),
+        all(!is.null(input$Selpeak_sss))))
+      {
+       Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50_sss,","))))
+       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))
+       PeakDesc<-rep(10000,length(Selpeak))
+       LtPeakFinal<-rep(0.0001,length(Selpeak))
+       FinalSel<-rep(0.999,length(Selpeak))
+            
+       Sel.out<-doubleNorm24.sel(Sel50=Sel50[1],Selpeak=Selpeak[1],PeakDesc=PeakDesc[1],LtPeakFinal=LtPeakFinal[1],FinalSel=FinalSel[1])
+       Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet="Fleet 1")
+       if(length(Sel50)>1)
+       {
+        for(ii in 2:length(Sel50))
+        {
+        Sel.out.temp<-doubleNorm24.sel(Sel50=Sel50[ii],Selpeak=Selpeak[ii],PeakDesc=PeakDesc[ii],LtPeakFinal=LtPeakFinal[ii],FinalSel=FinalSel[ii])
+        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=paste0("Fleet ",ii))
+        Sel.out<-rbind(Sel.out,Sel.out.temp)
+        }
+       }
+        selplot.out<-ggplot(Sel.out,aes(Bin,Sel,colour=Fleet)) +  
+          geom_line(lwd=1.5) + 
+          ylab("Length Bins") + 
+          xlab("Selectivity") +  
+          scale_color_viridis_d() 
+      }
+    }
+    
+    if(input$Sel_choice_sss=="Dome-shaped")
+    {
+        if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))),
+        length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))),
+        length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))),
+        length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))),
+        all(input$Sel50_sss!=""),
+        all(!is.null(input$Sel50_sss)),
+        all(input$Selpeak_sss!=""),
+        all(!is.null(input$Selpeak_sss))))
+       {
+       Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50_sss,","))))
+       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))
+       PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_sss,","))))
+       LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_sss,","))))
+       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel_sss,","))))      
+      
+       Sel.out<-doubleNorm24.sel(Sel50=Sel50[1],Selpeak=Selpeak[1],PeakDesc=PeakDesc[1],LtPeakFinal=LtPeakFinal[1],FinalSel=FinalSel[1])
+       Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet="Fleet 1")
+       if(length(Sel50)>1)
+       {
+        for(ii in 2:length(Sel50))
+        {
+        Sel.out.temp<-doubleNorm24.sel(Sel50=Sel50[ii],Selpeak=Selpeak[ii],PeakDesc=PeakDesc[ii],LtPeakFinal=LtPeakFinal[ii],FinalSel=FinalSel[ii])
+        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=paste0("Fleet ",ii))
+        Sel.out<-rbind(Sel.out,Sel.out.temp)
+        }
+       }
+        selplot.out<-ggplot(Sel.out,aes(Bin,Sel,colour=Fleet)) +  
+          geom_line(lwd=1.5) + 
+          ylab("Length Bins") + 
+          xlab("Selectivity") +  
+          scale_color_viridis_d() 
+      }      
+    }
+    if(!is.null(get0("selplot.out"))){return(selplot.out)}
+    else(return(NULL))
+    }) 
+
 #############################################
 ######## PREPARE FILES andD RUN SSS #########
 #############################################
@@ -1607,12 +1708,12 @@ SSS.run<-observeEvent(input$run_SSS,{
     else {ctl.file$MG_parms[4,3:4]<-input$k_f_mean_sss}
     
     #CV young
-    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_mean,log(input$CV_lt_f_mean))}     
-    else{ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_mean}
+    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_mean_sss,log(input$CV_lt_f_mean_sss))}     
+    else{ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_mean_sss}
     
     #CV old
-    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_mean,log(input$CV_lt_f_mean))}
-    else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean}
+    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_mean_sss,log(input$CV_lt_f_mean_sss))}
+    else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean_sss}
     
     #Maturity
     ctl.file$MG_parms[9,3:4]<-input$L50_f_sss                                     #Lmat50%
@@ -1630,36 +1731,29 @@ SSS.run<-observeEvent(input$run_SSS,{
       {   
         male_vbgf_sss<-VBGF(input$Linf_m_mean_sss,input$k_m_mean_sss,input$t0_m_mean_sss,c(0:Nages()))
 
-              # ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
-        # ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]    #L0
-        # ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean   #Linf
-        # ctl.file$MG_parms[16,3:4]<-input$k_m_mean      #k
-        # ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_mean  #CV
-        # ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_mean  #CV
-
         #M
-        if(input$M_m_prior=="lognormal"){ctl.file$MG_parms[13,2:4]<-c(input$M_m_mean,log(input$M_m_mean))}
-        else {ctl.file$MG_parms[13,2:4]<-c(input$M_f_mean,input$M_f_mean)}
+        if(input$M_m_prior_sss=="lognormal"){ctl.file$MG_parms[13,3:4]<-c(input$M_m_mean_sss,log(input$M_m_mean_sss))}
+        else {ctl.file$MG_parms[13,3:4]<-c(input$M_m_mean_sss,input$M_m_mean_sss)}
             
         #L0    
-        if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[14,2:4]<-c(male_vbgf_sss[1],log(male_vbgf_sss[1]))}
-        else {ctl.file$MG_parms[14,2:4]<-male_vbgf_sss[1]}
+        if(input$t0_f_prior_sss=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_sss[1],log(male_vbgf_sss[1]))}
+        else {ctl.file$MG_parms[14,3:4]<-c(male_vbgf_sss[1],male_vbgf_sss[1])}
         
         #Linf
-        if(input$Linf_f_prior=="lognormal"){ctl.file$MG_parms[15,2:4]<-c(input$Linf_m_mean,log(input$Linf_m_mean))}     
-        else{ctl.file$MG_parms[15,2:4]<-input$Linf_m_mean}
+        if(input$Linf_f_prior_sss=="lognormal"){ctl.file$MG_parms[15,3:4]<-c(input$Linf_m_mean_sss,log(input$Linf_m_mean_sss))}     
+        else{ctl.file$MG_parms[15,3:4]<-c(input$Linf_m_mean_sss,input$Linf_m_mean_sss)}
         
         #k
-        if(input$k_f_prior=="lognormal"){ctl.file$MG_parms[16,2:4]<-c(input$k_m_mean,log(input$k_m_mean))}        
-        else {ctl.file$MG_parms[16,2:4]<-input$k_m_mean}
+        if(input$k_f_prior_sss=="lognormal"){ctl.file$MG_parms[16,3:4]<-c(input$k_m_mean_sss,log(input$k_m_mean_sss))}        
+        else {ctl.file$MG_parms[16,3:4]<-c(input$k_m_mean_sss,input$k_m_mean_sss)}
         
         #CV young
-        if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[17,2:4]<-c(input$CV_lt_m_mean,log(input$CV_lt_m_mean))}     
-        else{ctl.file$MG_parms[17,2:4]<-input$CV_lt_m_mean}
+        if(input$CV_lt_f_prior_sss=="lognormal"){ctl.file$MG_parms[17,3:4]<-c(input$CV_lt_m_mean_sss,log(input$CV_lt_m_mean_sss))}     
+        else{ctl.file$MG_parms[17,3:4]<-c(input$CV_lt_m_mean_sss,input$CV_lt_m_mean_sss)}
         
         #CV old
-        if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[18,2:4]<-c(input$CV_lt_m_mean,log(input$CV_lt_m_mean))}
-        else{ctl.file$MG_parms[18,2:4]<-input$CV_lt_m_mean}
+        if(input$CV_lt_f_prior_sss=="lognormal"){ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_mean_sss,log(input$CV_lt_m_mean_sss))}
+        else{ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_mean_sss,input$CV_lt_m_mean_sss)}
       }     
 
     #S-R
@@ -1671,15 +1765,12 @@ SSS.run<-observeEvent(input$run_SSS,{
     
     #
       ctl.file$Q_options[1]<-data.file$Nfleets
-    
     #Selectivity
-      Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
-      Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
-      Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
-      Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
+      Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50_sss,","))))
+      Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))
       bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
 
-    if(input$Sel_choice=="Logistic")
+    if(input$Sel_choice_sss=="Logistic")
     {
       ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
@@ -1688,14 +1779,11 @@ SSS.run<-observeEvent(input$run_SSS,{
       ctl.file$size_selex_parms[4,3:4]<- 15
       ctl.file$size_selex_parms[6,3:4]<- 15
       }
-    if(input$Sel_choice=="Dome-shaped")
+    if(input$Sel_choice_sss=="Dome-shaped")
     {     
-      PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
-      PeakDesc_phase<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_phase,","))))
-      LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
-      LtPeakFinal_phase<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_phase,","))))
-      FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
-      FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
+      PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_sss,","))))
+      LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_sss,","))))
+      FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel_sss,","))))
       
       ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
@@ -1714,7 +1802,7 @@ SSS.run<-observeEvent(input$run_SSS,{
         ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
         ctl.file$size_selex_parms<-rbind(ctl.file$size_selex_parms,ctl.file$size_selex_parms[1:6,])
         
-        if(input$Sel_choice=="Logistic")
+        if(input$Sel_choice_sss=="Logistic")
         {
           ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
@@ -1724,7 +1812,7 @@ SSS.run<-observeEvent(input$run_SSS,{
           ctl.file$size_selex_parms[6*i+6,3:4]<- 15
         }
 
-        if(input$Sel_choice=="Dome-shaped")
+        if(input$Sel_choice_sss=="Dome-shaped")
         {
           ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
@@ -1780,7 +1868,6 @@ if(input$Forecast_choice)
 
 #Set prior inputs
 SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)  
-#browser()
     #0 = normal
     #10 = truncated normal
     #1 = symmetric beta (rbeta)
@@ -1793,13 +1880,20 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
     sss.prior.name<-c("no prior","symmetric beta","beta","normal","truncated normal","lognormal","truncated lognormal","uniform")
     sss.prior.type<-c(-1,1,2,0,10,3,30,4)
     Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$Depl_mean_sss,input$Depl_SD_sss)
-    M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss)
     h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_mean_sss,input$h_SD_sss)
-    #L1.in<-c(ctl.file$MG_parms[2,3],input$M_f_SD_sss,ctl.file$MG_parms[14,3],input$M_f_SD_sss)
-    #Linf.in<-c(input$Linf_f_mean_sss,input$Linf_f_SD_sss,input$Linf_f_mean_sss,input$Linf_f_SD_sss)
-    #k.in<-c(input$k_f_mean_sss,input$k_f_SD_sss,input$k_f_mean_sss,input$k_f_SD_sss)
+    M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss)
+    #L1_in_sss<-
+    #Linf_in_sss<-
+    #k_in_sss<-
+    
+    if(input$male_parms_SSS)
+    {
+      M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_m_prior_sss],input$M_m_mean_sss,input$M_m_SD_sss)
+      #L1.in<-c(ctl.file$MG_parms[2,3],input$M_f_SD_sss,ctl.file$MG_parms[14,3],input$M_f_SD_sss)
+      #Linf.in<-c(input$Linf_f_mean_sss,input$Linf_f_SD_sss,input$Linf_f_mean_sss,input$Linf_f_SD_sss)
+      #k.in<-c(input$k_f_mean_sss,input$k_f_SD_sss,input$k_f_mean_sss,input$k_f_SD_sss)      
+    }
         
-#browser()
 #Run SSS
   SSS.out<-SSS(paste0(getwd(),"/Scenarios/",input$Scenario_name),
       file.name=c("sss_example.dat","sss_example.ctl"),
@@ -1825,6 +1919,41 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       BH_FMSY_comp=F,
       OStype="Windows")
 #save(SSS.out)
+output$SSS_priors_post<-renderPlot({
+    load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+    sss.M.f<-rbind(data.frame(value=SSS.out$Prior$M_f,type="prior",metric="Female M"),data.frame(value=SSS.out$Post$M_f,type="post",metric="Female M"))
+    sss.M.m<-rbind(data.frame(value=SSS.out$Prior$M_m,type="prior",metric="Male M"),data.frame(value=SSS.out$Post$M_m,type="post",metric="Male M"))
+    sss.h<-rbind(data.frame(value=SSS.out$Prior$h,type="prior",metric="h"),data.frame(value=SSS.out$Post$h,type="post",metric="h"))
+    sss.Dep<-rbind(data.frame(value=SSS.out$Prior$Dep,type="prior",metric="Dep"),data.frame(value=SSS.out$Post$Dep.Obs,type="post",metric="Dep"))
+    sss.vals.out<-rbind(sss.M.f,sss.M.m,sss.h,sss.Dep)
+    
+    ggplot(sss.vals.out,aes(x=value,color=type))+
+      geom_histogram(position="dodge",alpha=0.5,fill="white")+
+      theme(legend.position="bottom")+
+      theme(legend.title=element_blank())+
+      facet_grid(~metric,scales = "free")
+#    Mf.plot<-ggplot(sss.M.f,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
+#    Mm.plot<-ggplot(sss.M.m,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
+#    h.plot<-ggplot(sss.h,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
+#    Dep.plot<-ggplot(sss.Dep,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
+  })  
+
+output$SSS_growth_priors_post<-renderPlot({
+    load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+    sss.L1_f<-rbind(data.frame(value=SSS.out$Prior$L1_f,type="prior",metric="Female L1"),data.frame(value=SSS.out$Post$L1_f,type="post",metric="Female L1"))
+    sss.Linf_f<-rbind(data.frame(value=SSS.out$Prior$Linf_f,type="prior",metric="Female Linf"),data.frame(value=SSS.out$Post$Linf_f,type="post",metric="Female Linf"))
+    sss.k_f<-rbind(data.frame(value=SSS.out$Prior$k_f,type="prior",metric="Female k"),data.frame(value=SSS.out$Post$k_f,type="post",metric="Female k"))
+    sss.L1_m<-rbind(data.frame(value=SSS.out$Prior$L1_m,type="prior",metric="Male L1"),data.frame(value=SSS.out$Post$L1_m,type="post",metric="Male L1"))
+    sss.Linf_m<-rbind(data.frame(value=SSS.out$Prior$Linf_m,type="prior",metric="Male Linf"),data.frame(value=SSS.out$Post$Linf_m,type="post",metric="Male Linf"))
+    sss.k_m<-rbind(data.frame(value=SSS.out$Prior$k_m,type="prior",metric="Male k"),data.frame(value=SSS.out$Post$k_m,type="post",metric="Male k"))
+    sss.vals.growth.out<-rbind(sss.L1_f,sss.Linf_f,sss.k_f,sss.L1_m,sss.Linf_m,sss.k_m)
+    
+    ggplot(sss.vals.growth.out,aes(x=value,color=type))+
+      geom_histogram(position="dodge",alpha=0.5,fill="white")+
+      theme(legend.position="bottom")+
+      theme(legend.title=element_blank())+
+      facet_wrap(~metric,scales = "free") 
+  })  
 })
 
 
@@ -2637,8 +2766,6 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
            
   }
 		
-	
-
 		#Convergence diagnostics
 		output$converge.grad <- renderText({
  				max.grad<-paste0("Maximum gradient: ",Model.output$maximum_gradient_component)

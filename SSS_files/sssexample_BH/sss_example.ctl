@@ -51,7 +51,7 @@
 #
 #_growth_parms
 #_ LO HI INIT PRIOR PR_SD PR_type PHASE env_var&link dev_link dev_minyr dev_maxyr dev_PH Block Block_Fxn
-0.0000001  0.02 0.02 -2.92 0.44  3 -5  0 0 0 0 0 0 0 # NatM_p_1_Fem_GP_1
+0.0000001  5 0.02 -2.92 0.44  3 -5  0 0 0 0 0 0 0 # NatM_p_1_Fem_GP_1
 0.0001  1000  20.7718 20.8  10  0 -3  0 0 0 0 0 0 0 # L_at_Amin_Fem_GP_1
 1  1000  41.6366 41.4  10  0 -3  0 0 0 0 0 0 0 # L_at_Amax_Fem_GP_1
 0.001 0.4 0.165916  0.166 0.05  0 -3  0 0 0 0 0 0 0 # VonBert_K_Fem_GP_1
@@ -63,7 +63,7 @@
 -2  4 -1  -1  99  0 -99 0 0 0 0 0 0 0 # Mat_slope_Fem
 0 6 8.66E-10  1 99  0 -99 0 0 0 0 0 0 0 # Eggs_scalar_Fem
 -3  5 4.9767  5 99  0 -99 0 0 0 0 0 0 0 # Eggs_exp_len_Fem
-0.0000001  0.02 0.02 -2.92 0.44  3 -5  0 0 0 0 0 0 0 # NatM_p_1_Mal_GP_1
+0.0000001  5 0.02 -2.92 0.44  3 -5  0 0 0 0 0 0 0 # NatM_p_1_Mal_GP_1
 0.0001  1000  20.7718 20.8  10  0 -3  0 0 0 0 0 0 0 # L_at_Amin_Mal_GP_1
 0.1  1000  41.6366 41.4  10  0 -3  0 0 0 0 0 0 0 # L_at_Amax_Mal_GP_1
 0.01 0.4 0.165916  0.166 0.05  0 -3  0 0 0 0 0 0 0 # VonBert_K_Mal_GP_1

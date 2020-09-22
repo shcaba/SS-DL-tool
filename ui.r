@@ -108,7 +108,7 @@ shinyjs::hidden(wellPanel(id="Data_panel",
         fluidRow(column(width=6,numericInput("M_f", "Natural mortality", value=NA,min=0, max=10000, step=0.01))),    
         fluidRow(column(width=6,numericInput("Linf_f", "Asymptotic size (Linf)", value=NA,min=0, max=10000, step=0.01)),
                 column(width=6,numericInput("k_f","Growth coefficient k", value=NA,min=0, max=10000, step=0.01))),    
-        fluidRow(column(width=6,numericInput("t0_f","Age at length 0 (t0)", value=NA,min=0, max=10000, step=0.01)),
+        fluidRow(column(width=6,numericInput("t0_f","Age at length 0 (t0)", value=0,min=-100, max=10000, step=0.01)),
                 column(width=6,numericInput("CV_lt_f","CV at length", value=0.1,min=0, max=10000, step=0.01))),    
         fluidRow(column(width=6,numericInput("L50_f", "Length at 50% maturity", value=NA,min=0, max=10000, step=0.01)),
                 column(width=6,numericInput("L95_f","Length at 95% maturity", value=NA,min=0, max=10000, step=0.01))),    
@@ -219,7 +219,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
      br(),
       dropdownButton(
           selectInput("t0_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
-          numericInput("t0_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
+          numericInput("t0_f_mean", "Mean", value=0,min=-100, max=10000, step=0.001),
           numericInput("t0_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
           numericInput("t0_f_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
@@ -343,8 +343,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
      br(),
       dropdownButton(
           selectInput("t0_f_prior_sss","Prior type",c("no prior","normal")),
-          numericInput("t0_f_mean_sss", "Mean", value=0,min=0, max=10000, step=0.001),
-          numericInput("t0_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          numericInput("t0_f_mean_sss", "Mean", value=0,min=-100, max=10000, step=0.001),
+          numericInput("t0_f_SD_sss", "SD", value=0,min=0, max=1000, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
             ),
     h5(em("Length CV")),            
@@ -488,6 +488,21 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
      ),
 
 #Selectivity
+    shinyjs::hidden(wellPanel(id="panel_selectivity_sss",
+  #   wellPanel(
+    h4(strong("Selectivity")),
+    h5("Enter parameter values for each fleet and survey."), 
+    h5("Example using 50% selectivity with two fleets: Inputs could be 35,40 for starting values."),
+    p("If using a mix of logistic and dome-shaped selectivities, select", strong("dome-shaped"),"and use the default values (10000,0.0001,0.9999 for the additonal parameters, respectively) to achieve a logistic shape for any given fleet."),
+    br(),
+    fluidRow(selectInput("Sel_choice_sss","Length selectivity type",c("Logistic","Dome-shaped"))),
+
+       uiOutput("Sel_parms1_sss"),
+       uiOutput("Sel_parms2_sss"),
+       uiOutput("Sel_parms3_sss")
+      )
+   ), 
+
     shinyjs::hidden(wellPanel(id="panel_selectivity",
   #   wellPanel(
     h4(strong("Selectivity")),
@@ -514,7 +529,6 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
   #      ),
       )
    ), 
-
     #Jitter inputs
 #    shinyjs::hidden(wellPanel(id="panel_SS_jitter1",
     shinyjs::hidden(wellPanel(id="panel_SS_jitter",
@@ -661,12 +675,12 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       mainPanel(        
         tabsetPanel(id="tabs",
             tabPanel("Data and Parameters",
+              textOutput("catch_comp_plots_label"),
+              plotOutput("Ctplot"),
               textOutput("lt_comp_plots_label"),
               plotOutput("Ltplot"),
               textOutput("age_comp_plots_label"),
               plotOutput("Ageplot"),
-              textOutput("catch_comp_plots_label"),
-              plotOutput("Ctplot"),
             h4("Life history"),
             column(6,plotOutput("Mplot")),
             column(6,plotOutput("VBGFplot")),
@@ -674,9 +688,20 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             linebreaks(30),
             h4("Selectivity"),
             plotOutput("Selplot"),
+            plotOutput("Selplot_SSS"),
             value=1),       
             
+            tabPanel("SSS Model output",
+            h4("Full model output is contained in the SSS_out.DMP file in the specific model scenario folder."),
+            h5(strong("Prior and Posterior input plots")),
+            plotOutput("SSS_priors_post"),
+            h5(strong("Prior and Posterior growth parameter plots")),
+            plotOutput("SSS_growth_priors_post"),
+            value=11),
+
+
             tabPanel("Model output",
+            h4("Full model output is contained in the Report.sso file. The following reports are meant for quick examination."),
             h4("Checking model convergence. Check also fit to length composition data"),
             tableOutput("converge.grad"),
             tableOutput("converge.covar"),
