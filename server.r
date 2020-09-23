@@ -333,6 +333,8 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
   
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
+
+        hideTab(inputId = "tabs", target = "11")
   })
 
 #SSS panels
@@ -380,7 +382,14 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
-  })
+
+        showTab(inputId = "tabs", target = "11")
+        hideTab(inputId = "tabs", target = "2")
+        hideTab(inputId = "tabs", target = "3")
+        hideTab(inputId = "tabs", target = "4")
+        hideTab(inputId = "tabs", target = "5")
+        hideTab(inputId = "tabs", target = "6")
+})
 
 #SS-LO panels
 observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))), {
@@ -427,101 +436,107 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
+
+        hideTab(inputId = "tabs", target = "11")
   })	
 
 
 #SS-CL fixed parameters
 observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
-      shinyjs::show("Data_panel")
-      shinyjs::hide("panel_Ct_F_LO")
-      shinyjs::show("panel_data_wt_lt")
-      shinyjs::hide("panel_ct_wt_LO")
-       
-      shinyjs::hide("panel_SSS")
-      shinyjs::hide("panel_SSLO_LH")
-      shinyjs::hide("panel_SSLO_fixed")
-      shinyjs::show("panel_SS_LH_fixed_est_tog")
-      shinyjs::show("panel_SS_LH_fixed")
-      shinyjs::show("panel_SS_fixed")
-      shinyjs::hide("panel_SS_LH_est")
-      shinyjs::hide("panel_SS_est")
+        shinyjs::show("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
+        shinyjs::show("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+         
+        shinyjs::hide("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::show("panel_SS_LH_fixed_est_tog")
+        shinyjs::show("panel_SS_LH_fixed")
+        shinyjs::show("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
 
-      shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status") 
 
-      shinyjs::hide("panel_SSS_prod")
-      shinyjs::hide("panel_SS_LO_prod")
-      shinyjs::show("panel_SS_prod_fixed")
-      shinyjs::hide("panel_SS_prod_est")
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::show("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
 
-      shinyjs::show("panel_selectivity")
-      shinyjs::hide("panel_selectivity_sss")
+        shinyjs::show("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
 
-      shinyjs::show("panel_SS_recdevs")
+        shinyjs::show("panel_SS_recdevs")
 
-      shinyjs::show("panel_SS_jitter")        
- 
-      shinyjs::show("panel_RPs")
-      shinyjs::show("panel_Forecasts")
+        shinyjs::show("panel_SS_jitter")        
+   
+        shinyjs::show("panel_RPs")
+        shinyjs::show("panel_Forecasts")
 
-      shinyjs::show("panel_Mod_dims")
+        shinyjs::show("panel_Mod_dims")
 
-      shinyjs::show("OS_choice")
-      shinyjs::show("Scenario_panel")
+        shinyjs::show("OS_choice")
+        shinyjs::show("Scenario_panel")
 
-      shinyjs::hide("panel_SSS_reps")
+        shinyjs::hide("panel_SSS_reps")
 
-      shinyjs::hide("run_SSS")
-      shinyjs::show("run_SS")
+        shinyjs::hide("run_SSS")
+        shinyjs::show("run_SS")
 
-      shinyjs::hide("Sensi_Comparison_panel")
-      shinyjs::hide("Ensemble_panel")
+        shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
+
+        hideTab(inputId = "tabs", target = "11")
    })
 
 #SS-CL with parameter estimates
 observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))), {
-      shinyjs::show("Data_panel")
-      shinyjs::hide("panel_Ct_F_LO")
-      shinyjs::show("panel_data_wt_lt")
-      shinyjs::hide("panel_ct_wt_LO")
-      
-      shinyjs::hide("panel_SSS")
-      shinyjs::hide("panel_SSLO_LH")
-      shinyjs::hide("panel_SSLO_fixed")
-      shinyjs::show("panel_SS_LH_fixed_est_tog")
-      shinyjs::hide("panel_SS_LH_fixed")
-      shinyjs::hide("panel_SS_fixed")
-      shinyjs::show("panel_SS_LH_est")
-      shinyjs::show("panel_SS_est")
+        shinyjs::show("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
+        shinyjs::show("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+        
+        shinyjs::hide("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::show("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::show("panel_SS_LH_est")
+        shinyjs::show("panel_SS_est")
 
-      shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status") 
 
-      shinyjs::hide("panel_SSS_prod")
-      shinyjs::hide("panel_SS_LO_prod")
-      shinyjs::hide("panel_SS_prod_fixed")
-      shinyjs::show("panel_SS_prod_est")
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::show("panel_SS_prod_est")
 
-      shinyjs::show("panel_selectivity")
-      shinyjs::hide("panel_selectivity_sss")
+        shinyjs::show("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
 
-      shinyjs::show("panel_SS_recdevs")
+        shinyjs::show("panel_SS_recdevs")
 
-      shinyjs::show("panel_SS_jitter")        
- 
-      shinyjs::show("panel_RPs")
-      shinyjs::show("panel_Forecasts")
+        shinyjs::show("panel_SS_jitter")        
+   
+        shinyjs::show("panel_RPs")
+        shinyjs::show("panel_Forecasts")
 
-      shinyjs::show("panel_Mod_dims")
-      
-      shinyjs::show("OS_choice")
-      shinyjs::show("Scenario_panel")
+        shinyjs::show("panel_Mod_dims")
+        
+        shinyjs::show("OS_choice")
+        shinyjs::show("Scenario_panel")
 
-      shinyjs::hide("panel_SSS_reps")
+        shinyjs::hide("panel_SSS_reps")
 
-      shinyjs::hide("run_SSS")
-      shinyjs::show("run_SS")
+        shinyjs::hide("run_SSS")
+        shinyjs::show("run_SS")
 
-      shinyjs::hide("Sensi_Comparison_panel")
-      shinyjs::hide("Ensemble_panel")
+        shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
+
+        hideTab(inputId = "tabs", target = "11")
    })
 
 #Sensitivities
@@ -569,6 +584,8 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
 
         shinyjs::show("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
+
+        hideTab(inputId = "tabs", target = "11")
    })
 
 #Ensembles
@@ -616,6 +633,8 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::show("Ensemble_panel")
+
+        hideTab(inputId = "tabs", target = "11")
    })
 
 ########################################
