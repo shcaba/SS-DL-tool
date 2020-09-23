@@ -926,9 +926,9 @@ output$Male_parms_inputs_label_SSS<- renderUI({
 output$Male_parms_inputs_M_SSS<- renderUI({
   if(input$male_parms_SSS){
        dropdownButton(
-          selectInput("M_m_prior_sss","Prior type",c("no prior","lognormal","normal","uniform")),
+          selectInput("M_m_prior_sss","Prior type",c("lognormal","normal","uniform","no prior")),
           numericInput("M_m_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
-          numericInput("M_m_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          numericInput("M_m_SD_sss", "SD", value=0.2,min=0, max=10000, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
             )
     }
@@ -1893,7 +1893,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       #Linf.in<-c(input$Linf_f_mean_sss,input$Linf_f_SD_sss,input$Linf_f_mean_sss,input$Linf_f_SD_sss)
       #k.in<-c(input$k_f_mean_sss,input$k_f_SD_sss,input$k_f_mean_sss,input$k_f_SD_sss)      
     }
-        
+       
 #Run SSS
   SSS.out<-SSS(paste0(getwd(),"/Scenarios/",input$Scenario_name),
       file.name=c("sss_example.dat","sss_example.ctl"),
@@ -1915,7 +1915,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       ts_yrs=c(input$styr,input$endyr),
       pop.ltbins=NA,
       ofl_yrs=c(input$endyr+1,input$endyr+2),
-      sexes=F,
+      sexes=T,
       BH_FMSY_comp=F,
       OStype="Windows")
 #save(SSS.out)
@@ -1928,7 +1928,7 @@ output$SSS_priors_post<-renderPlot({
     sss.vals.out<-rbind(sss.M.f,sss.M.m,sss.h,sss.Dep)
     
     ggplot(sss.vals.out,aes(x=value,color=type))+
-      geom_histogram(position="dodge",alpha=0.5,fill="white")+
+      geom_histogram(position="dodge",alpha=0.5)+
       theme(legend.position="bottom")+
       theme(legend.title=element_blank())+
       facet_grid(~metric,scales = "free")
@@ -1949,7 +1949,7 @@ output$SSS_growth_priors_post<-renderPlot({
     sss.vals.growth.out<-rbind(sss.L1_f,sss.Linf_f,sss.k_f,sss.L1_m,sss.Linf_m,sss.k_m)
     
     ggplot(sss.vals.growth.out,aes(x=value,color=type))+
-      geom_histogram(position="dodge",alpha=0.5,fill="white")+
+      geom_histogram(position="dodge",alpha=0.5)+
       theme(legend.position="bottom")+
       theme(legend.title=element_blank())+
       facet_wrap(~metric,scales = "free") 
