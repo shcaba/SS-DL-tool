@@ -692,11 +692,17 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             value=1),       
             
             tabPanel("SSS Model output",
-            h4("Full model output is contained in the SSS_out.DMP file in the specific model scenario folder."),
+            h4("Full model output is contained in the SSS_out.DMP and SSSoutput.DMP files in the specific model scenario folder."),
+            h5("The SSS_out.DMP contains the prior and posterior values from the model, as well as the catch limits (Overfishing limint (OFL) and Allowable Biological Catch (ABC))."),
+            h5("The SSSoutput.DMP contains a list of the complete report files for each SSS run."),
+            br(),
             h5(strong("Prior and Posterior input plots")),
             plotOutput("SSS_priors_post"),
             h5(strong("Prior and Posterior growth parameter plots")),
             plotOutput("SSS_growth_priors_post"),
+            h5(strong("Catch limit plots")),
+            plotOutput("SSS_OFL_plot"),
+            plotOutput("SSS_ABC_plot"),
             value=11),
 
 

@@ -1933,47 +1933,73 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       sum_age=0,
       ts_yrs=c(input$styr,input$endyr),
       pop.ltbins=NA,
-      ofl_yrs=c(input$endyr+1,input$endyr+2),
+      #ofl_yrs=c(input$endyr+1,input$endyr+2),
       sexes=T,
       BH_FMSY_comp=F,
       OStype="Windows")
 #save(SSS.out)
-output$SSS_priors_post<-renderPlot({
-    load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
-    sss.M.f<-rbind(data.frame(value=SSS.out$Prior$M_f,type="prior",metric="Female M"),data.frame(value=SSS.out$Post$M_f,type="post",metric="Female M"))
-    sss.M.m<-rbind(data.frame(value=SSS.out$Prior$M_m,type="prior",metric="Male M"),data.frame(value=SSS.out$Post$M_m,type="post",metric="Male M"))
-    sss.h<-rbind(data.frame(value=SSS.out$Prior$h,type="prior",metric="h"),data.frame(value=SSS.out$Post$h,type="post",metric="h"))
-    sss.Dep<-rbind(data.frame(value=SSS.out$Prior$Dep,type="prior",metric="Dep"),data.frame(value=SSS.out$Post$Dep.Obs,type="post",metric="Dep"))
-    sss.vals.out<-rbind(sss.M.f,sss.M.m,sss.h,sss.Dep)
-    
-    ggplot(sss.vals.out,aes(x=value,color=type))+
-      geom_histogram(position="dodge",alpha=0.5)+
-      theme(legend.position="bottom")+
-      theme(legend.title=element_blank())+
-      facet_grid(~metric,scales = "free")
-#    Mf.plot<-ggplot(sss.M.f,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
-#    Mm.plot<-ggplot(sss.M.m,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
-#    h.plot<-ggplot(sss.h,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
-#    Dep.plot<-ggplot(sss.Dep,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
-  })  
 
-output$SSS_growth_priors_post<-renderPlot({
-    load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
-    sss.L1_f<-rbind(data.frame(value=SSS.out$Prior$L1_f,type="prior",metric="Female L1"),data.frame(value=SSS.out$Post$L1_f,type="post",metric="Female L1"))
-    sss.Linf_f<-rbind(data.frame(value=SSS.out$Prior$Linf_f,type="prior",metric="Female Linf"),data.frame(value=SSS.out$Post$Linf_f,type="post",metric="Female Linf"))
-    sss.k_f<-rbind(data.frame(value=SSS.out$Prior$k_f,type="prior",metric="Female k"),data.frame(value=SSS.out$Post$k_f,type="post",metric="Female k"))
-    sss.L1_m<-rbind(data.frame(value=SSS.out$Prior$L1_m,type="prior",metric="Male L1"),data.frame(value=SSS.out$Post$L1_m,type="post",metric="Male L1"))
-    sss.Linf_m<-rbind(data.frame(value=SSS.out$Prior$Linf_m,type="prior",metric="Male Linf"),data.frame(value=SSS.out$Post$Linf_m,type="post",metric="Male Linf"))
-    sss.k_m<-rbind(data.frame(value=SSS.out$Prior$k_m,type="prior",metric="Male k"),data.frame(value=SSS.out$Post$k_m,type="post",metric="Male k"))
-    sss.vals.growth.out<-rbind(sss.L1_f,sss.Linf_f,sss.k_f,sss.L1_m,sss.Linf_m,sss.k_m)
-    
-    ggplot(sss.vals.growth.out,aes(x=value,color=type))+
-      geom_histogram(position="dodge",alpha=0.5)+
-      theme(legend.position="bottom")+
-      theme(legend.title=element_blank())+
-      facet_wrap(~metric,scales = "free") 
-  })  
+if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+  {
+  output$SSS_priors_post<-renderPlot({
+      load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+      sss.M.f<-rbind(data.frame(value=SSS.out$Prior$M_f,type="prior",metric="Female M"),data.frame(value=SSS.out$Post$M_f,type="post",metric="Female M"))
+      sss.M.m<-rbind(data.frame(value=SSS.out$Prior$M_m,type="prior",metric="Male M"),data.frame(value=SSS.out$Post$M_m,type="post",metric="Male M"))
+      sss.h<-rbind(data.frame(value=SSS.out$Prior$h,type="prior",metric="h"),data.frame(value=SSS.out$Post$h,type="post",metric="h"))
+      sss.Dep<-rbind(data.frame(value=SSS.out$Prior$Dep,type="prior",metric="Dep"),data.frame(value=SSS.out$Post$Dep.Obs,type="post",metric="Dep"))
+      sss.vals.out<-rbind(sss.M.f,sss.M.m,sss.h,sss.Dep)
+      
+      ggplot(sss.vals.out,aes(x=value,color=type,fill=type))+
+        geom_histogram(position="dodge",alpha=0.5)+
+        theme(legend.position="bottom")+
+        theme(legend.title=element_blank())+
+        facet_grid(~metric,scales = "free")
+  #    Mf.plot<-ggplot(sss.M.f,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
+  #    Mm.plot<-ggplot(sss.M.m,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
+  #    h.plot<-ggplot(sss.h,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
+  #    Dep.plot<-ggplot(sss.Dep,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
+    })  
+
+  output$SSS_growth_priors_post<-renderPlot({
+        load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+      sss.L1_f<-rbind(data.frame(value=SSS.out$Prior$L1_f,type="prior",metric="Female L1"),data.frame(value=SSS.out$Post$L1_f,type="post",metric="Female L1"))
+      sss.Linf_f<-rbind(data.frame(value=SSS.out$Prior$Linf_f,type="prior",metric="Female Linf"),data.frame(value=SSS.out$Post$Linf_f,type="post",metric="Female Linf"))
+      sss.k_f<-rbind(data.frame(value=SSS.out$Prior$k_f,type="prior",metric="Female k"),data.frame(value=SSS.out$Post$k_f,type="post",metric="Female k"))
+      sss.L1_m<-rbind(data.frame(value=SSS.out$Prior$L1_m,type="prior",metric="Male L1"),data.frame(value=SSS.out$Post$L1_m,type="post",metric="Male L1"))
+      sss.Linf_m<-rbind(data.frame(value=SSS.out$Prior$Linf_m,type="prior",metric="Male Linf"),data.frame(value=SSS.out$Post$Linf_m,type="post",metric="Male Linf"))
+      sss.k_m<-rbind(data.frame(value=SSS.out$Prior$k_m,type="prior",metric="Male k"),data.frame(value=SSS.out$Post$k_m,type="post",metric="Male k"))
+      sss.vals.growth.out<-rbind(sss.L1_f,sss.Linf_f,sss.k_f,sss.L1_m,sss.Linf_m,sss.k_m)
+      
+      ggplot(sss.vals.growth.out,aes(x=value,color=type,fill=type))+
+        geom_histogram(position="dodge",alpha=0.5)+
+        theme(legend.position="bottom")+
+        theme(legend.title=element_blank())+
+        facet_wrap(~metric,scales = "free") 
+    })  
+
+  output$SSS_OFL_plot<-renderPlot({
+      load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+      ofl.years<-as.numeric(unique(melt(SSS.out$OFL)$Var2))
+      ggplot(melt(SSS.out$OFL),aes(Var2,value,group=Var2))+
+          geom_boxplot(fill="#236192")+
+          scale_x_continuous(breaks=ofl.years,labels=as.character(ofl.years))+
+          ylab("OFL (mt)")+
+          xlab("Year")
+    })  
+
+  output$SSS_ABC_plot<-renderPlot({
+      load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+      abc.years<-as.numeric(unique(melt(SSS.out$ABC)$Var2))
+      ggplot(melt(SSS.out$ABC),aes(Var2,value,group=Var2))+
+          geom_boxplot(fill="#658D1B")+
+          scale_x_continuous(breaks=abc.years,labels=as.character(abc.years))+
+          ylab("ABC (mt)")+
+          xlab("Year")
+    })  
+  }
+
 })
+
 
 
 #############################################
