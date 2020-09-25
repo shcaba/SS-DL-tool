@@ -1901,18 +1901,18 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
     Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$Depl_mean_sss,input$Depl_SD_sss)
     h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_mean_sss,input$h_SD_sss)
     M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss)
-    #L1_in_sss<-
-    #Linf_in_sss<-
-    #k_in_sss<-
+    Linf.in_sss<-c(sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss,sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss)
+    k.in_sss<-c(sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss,sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss)      
+    t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss)
     
     if(input$male_parms_SSS)
     {
       M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_m_prior_sss],input$M_m_mean_sss,input$M_m_SD_sss)
-      #L1.in<-c(ctl.file$MG_parms[2,3],input$M_f_SD_sss,ctl.file$MG_parms[14,3],input$M_f_SD_sss)
-      #Linf.in<-c(input$Linf_f_mean_sss,input$Linf_f_SD_sss,input$Linf_f_mean_sss,input$Linf_f_SD_sss)
-      #k.in<-c(input$k_f_mean_sss,input$k_f_SD_sss,input$k_f_mean_sss,input$k_f_SD_sss)      
+      Linf.in_sss<-c(sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss,sss.prior.type[sss.prior.name==input$Linf_m_prior_sss],input$Linf_m_mean_sss,input$Linf_f_SD_sss)
+      k.in_sss<-c(sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss,sss.prior.type[sss.prior.name==input$k_m_prior_sss],input$k_m_mean_sss,input$k_m_SD_sss)      
+      t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_m_prior_sss],input$t0_m_mean_sss,input$t0_m_SD_sss)
     }
-       
+
 #Run SSS
   SSS.out<-SSS(paste0(getwd(),"/Scenarios/",input$Scenario_name),
       file.name=c("sss_example.dat","sss_example.ctl"),
@@ -1924,11 +1924,12 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       h.in=h.in_sss,
       FMSY_M.in=c(-1,0.5,0.1),
       BMSY_B0.in=c(-1,0.5,0.1),
-      #L1.in=L1.in,
-      #Linf.in=Linf.in,
-      #k.in=k.in,
+      Linf.k.cor=-0.9,
+      Linf.in=Linf.in_sss,
+      k.in=k.in_sss,
+      t0.in=t0.in_sss,
       Zfrac.Beta.in=c(-99,0.2,0.6,-99,0.5,2),
-      R_start=c(0,8),
+      R_start=c(0,9),
       doR0.loop=c(1,4.1,12.1,0.5),
       sum_age=0,
       ts_yrs=c(input$styr,input$endyr),
@@ -1942,6 +1943,8 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
   {
   output$SSS_priors_post<-renderPlot({
+      if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+      {
       load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       sss.M.f<-rbind(data.frame(value=SSS.out$Prior$M_f,type="prior",metric="Female M"),data.frame(value=SSS.out$Post$M_f,type="post",metric="Female M"))
       sss.M.m<-rbind(data.frame(value=SSS.out$Prior$M_m,type="prior",metric="Male M"),data.frame(value=SSS.out$Post$M_m,type="post",metric="Male M"))
@@ -1958,10 +1961,14 @@ if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenar
   #    Mm.plot<-ggplot(sss.M.m,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
   #    h.plot<-ggplot(sss.h,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
   #    Dep.plot<-ggplot(sss.Dep,aes(x=value,color=type))+geom_histogram(position="dodge",alpha=0.5,fill="white")
+        }
+      else{return(NULL)}
     })  
 
   output$SSS_growth_priors_post<-renderPlot({
-        load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+      if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+      {
+      load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       sss.L1_f<-rbind(data.frame(value=SSS.out$Prior$L1_f,type="prior",metric="Female L1"),data.frame(value=SSS.out$Post$L1_f,type="post",metric="Female L1"))
       sss.Linf_f<-rbind(data.frame(value=SSS.out$Prior$Linf_f,type="prior",metric="Female Linf"),data.frame(value=SSS.out$Post$Linf_f,type="post",metric="Female Linf"))
       sss.k_f<-rbind(data.frame(value=SSS.out$Prior$k_f,type="prior",metric="Female k"),data.frame(value=SSS.out$Post$k_f,type="post",metric="Female k"))
@@ -1975,9 +1982,13 @@ if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenar
         theme(legend.position="bottom")+
         theme(legend.title=element_blank())+
         facet_wrap(~metric,scales = "free") 
+      }
+      else{return(NULL)}
     })  
 
   output$SSS_OFL_plot<-renderPlot({
+      if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+      {
       load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       ofl.years<-as.numeric(unique(melt(SSS.out$OFL)$Var2))
       ggplot(melt(SSS.out$OFL),aes(Var2,value,group=Var2))+
@@ -1985,9 +1996,13 @@ if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenar
           scale_x_continuous(breaks=ofl.years,labels=as.character(ofl.years))+
           ylab("OFL (mt)")+
           xlab("Year")
+      }
+      else{return(NULL)}
     })  
 
   output$SSS_ABC_plot<-renderPlot({
+      if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+      {
       load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       abc.years<-as.numeric(unique(melt(SSS.out$ABC)$Var2))
       ggplot(melt(SSS.out$ABC),aes(Var2,value,group=Var2))+
@@ -1995,6 +2010,8 @@ if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenar
           scale_x_continuous(breaks=abc.years,labels=as.character(abc.years))+
           ylab("ABC (mt)")+
           xlab("Year")
+      }
+      else{return(NULL)}
     })  
   }
 
