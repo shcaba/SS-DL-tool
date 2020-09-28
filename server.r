@@ -331,6 +331,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")        
   
+        shinyjs::hide("Profile_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -380,6 +381,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::show("run_SSS")
         shinyjs::hide("run_SS")        
 
+        shinyjs::hide("Profile_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -434,6 +436,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
+        shinyjs::hide("Profile_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -484,6 +487,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
+        shinyjs::hide("Profile_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -533,6 +537,57 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
+        shinyjs::hide("Profile_panel")
+        shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
+
+        hideTab(inputId = "tabs", target = "11")
+   })
+
+#Profiles
+observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
+        shinyjs::hide("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
+        shinyjs::hide("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+        
+        shinyjs::hide("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::hide("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
+
+        shinyjs::hide("panel_SS_stock_status") 
+
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
+
+        shinyjs::hide("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
+
+        shinyjs::hide("panel_SS_recdevs")
+
+        shinyjs::hide("panel_SS_jitter")        
+   
+        shinyjs::hide("panel_RPs")
+        shinyjs::hide("panel_Forecasts")
+
+        shinyjs::hide("panel_Mod_dims")
+        
+        shinyjs::hide("OS_choice")
+        shinyjs::hide("Scenario_panel")
+
+        shinyjs::hide("panel_SSS_reps")
+
+        shinyjs::hide("run_SSS")
+        shinyjs::hide("run_SS")
+
+        shinyjs::show("Profile_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -582,6 +637,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
+        shinyjs::hide("Profile_panel")
         shinyjs::show("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -631,6 +687,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
+        shinyjs::hide("Profile_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::show("Ensemble_panel")
 
@@ -1609,7 +1666,6 @@ output$Selplot_SSS <- renderPlot({
     if(!is.null(get0("selplot.out"))){return(selplot.out)}
     else(return(NULL))
     }) 
-
 #############################################
 ######## PREPARE FILES andD RUN SSS #########
 #############################################
@@ -2050,6 +2106,7 @@ SS.file.update<-observeEvent(input$run_SS,{
              progress$set(value = i)
              Sys.sleep(0.5)
            }
+
   	#Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
 			{
@@ -2897,15 +2954,30 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 			})
  		
  		#Paramters
- 		
  		output$Parameters_table <- renderTable({
  				Model.output$estimated_non_dev_parameters
 			})
 
 	})
 
+    roots <- getVolumes()()  
+    #Likelihood profiles
+      shinyDirChoose(input, "LikeProf_dir", roots=roots, filetypes=c('', 'txt'))
+      path1 <- reactive({
+        return(parseDirPath(roots, input$Sensi_dir))
+      })
+
+LikeProf_dir_out<-eventReactive(req(input$run_Sensi_comps&!as.numeric(input$tabs)==5),{
+    if(!file.exists(paste0(path1(),"/Likelihood Profile Plots")))
+      {
+        dir.create(paste0(path1(),"/Sensitivity Comparison Plots"))
+      }
+    LikeProf_dir_out<-paste0(path1())
+  })
+
+
+
     #Sensitivity comparisons
-      roots <- getVolumes()()  
       shinyDirChoose(input, "Sensi_dir", roots=roots, filetypes=c('', 'txt'))
       path1 <- reactive({
         return(parseDirPath(roots, input$Sensi_dir))

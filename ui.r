@@ -71,7 +71,7 @@ shinyjs::hidden(wellPanel(id="Data_panel",
         h5(em("This approach also provides a more variable reponse in stock status.")),
         h5(em("Using constant catch assumes the same catch in all years in order to fit the length composition data")),
         h5(em("It provides a long-term average response to estimating stock status. F values are are hard to interpret.")),
-        fluidRow(column(width=10,selectInput("Ct_F_LO_select","Prior type",c("Estimate F","Constant Catch")))),
+        fluidRow(column(width=10,selectInput("Ct_F_LO_select","Approach",c("Choose an option","Estimate F","Constant Catch")))),
       )
     ),
     
@@ -606,7 +606,27 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       icon("play-circle"),
       style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192")),
   
-  
+  shinyjs::hidden(wellPanel(id="Profile_panel",
+    h4(strong("Run likelihood profiles")),
+    h5(em("Likelihood profiles are a powerful way to understand the information content of data and sensitivity of models to parameter uncertainty.")),
+    h5(em("A likelihood profile fixes a chosen parameter to a specified set of values in a reference model. The reference model will maintain estimation of any other parameters estimated in the reference model.")),
+    h5(em("For example, natural mortality (M) could be profiled over the value 0.1 to 0.3 at steps of 0.01. This creates 21 model runs that fix M to different values while keeping all other specifications the same as the reference model.")),
+    h5(em("For each model run, the likelihood value and derived outputs are retained for analysis.")),
+    h5(em("Any likelihood values >1.96 units from the minimum value are identify as models statistically less supported by the data. ")),
+    h5(em("Plots with the profiled parameter values compared to the likelihood values and derived model outputs indicate how much information is contained in the model for the parameter and how sensitive the model is to parameters values resulting non-statistically different models.")),  
+    
+        fluidRow(selectInput("Profile_choice_choice","Parameter to profile",c("Steepness","lnR0","Natural mortality","Linf","k"))),
+        fluidRow(column(width=4,numericInput("Prof_Low_val", "Low value", value=NA,min=0, max=10000, step=0.001)),    
+                column(width=4,numericInput("Prof_Hi_val", "High value", value=NA,min=0, max=10000, step=0.001)),
+                column(width=4,numericInput("Prof_step","Sequence step", value=NA,min=0, max=10000, step=0.001))),    
+
+    fluidRow(column(width=8,textInput("Profile_plot_file", strong("Label plot file"), value="Profile X"))),
+    actionButton("run_Profiles",strong("Run Likelihood Profile"),
+        width="100%",
+        icon("play-circle"),
+        style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192"),  
+
+  )),
 
   shinyjs::hidden(wellPanel(id="Sensi_Comparison_panel",
     h4(strong("Sensitivity comparison plots")),

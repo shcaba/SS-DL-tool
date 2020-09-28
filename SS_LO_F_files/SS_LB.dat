@@ -30,6 +30,7 @@
 #_rows are fleets
 #_fleet_type fishery_timing area catch_units need_catch_mult fleetname
  2 -1 1 1 0 Fishery  # 1
+
 1 1 3 1993 2019 0
 #Bycatch_fleet_input_goes_next
 #a:  fleet index
