@@ -336,11 +336,11 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        hideTab(inputId = "tabs", target = "2")
-        hideTab(inputId = "tabs", target = "3")
-        hideTab(inputId = "tabs", target = "4")
-        hideTab(inputId = "tabs", target = "5")
-        hideTab(inputId = "tabs", target = "6")
+#        hideTab(inputId = "tabs", target = "2")
+#        hideTab(inputId = "tabs", target = "3")
+#        hideTab(inputId = "tabs", target = "4")
+#        hideTab(inputId = "tabs", target = "5")
+#        hideTab(inputId = "tabs", target = "6")
   })
 
 #SSS panels
@@ -390,12 +390,9 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
+        #shinyjs::show("tab_sss")
         showTab(inputId = "tabs", target = "11")
-        hideTab(inputId = "tabs", target = "2")
-        hideTab(inputId = "tabs", target = "3")
-        hideTab(inputId = "tabs", target = "4")
-        hideTab(inputId = "tabs", target = "5")
-        hideTab(inputId = "tabs", target = "6")
+
 })
 
 #SS-LO panels
@@ -446,11 +443,11 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        showTab(inputId = "tabs", target = "2")
-        showTab(inputId = "tabs", target = "3")
-        showTab(inputId = "tabs", target = "4")
-        hideTab(inputId = "tabs", target = "5")
-        showTab(inputId = "tabs", target = "6")
+       # showTab(inputId = "tabs", target = "2")
+       # showTab(inputId = "tabs", target = "3")
+       # showTab(inputId = "tabs", target = "4")
+       # hideTab(inputId = "tabs", target = "5")
+       # showTab(inputId = "tabs", target = "6")
   })	
 
 
@@ -501,12 +498,16 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
-        hideTab(inputId = "tabs", target = "11")
-        showTab(inputId = "tabs", target = "2")
-        showTab(inputId = "tabs", target = "3")
-        showTab(inputId = "tabs", target = "4")
-        showTab(inputId = "tabs", target = "5")
-        showTab(inputId = "tabs", target = "6")
+       #shinyjs::hide(selector = "#navbar li a[data-value=11]")
+       hideTab(inputId = "tabs", target = "11")
+      # show(selector = '#hello li a[data-value="2"]')
+       #show(selector = '#hello li a[data-value="2"]')
+       # showTab(inputId = "tabs", target = "2")
+       # showTab(inputId = "tabs", target = "2")
+       # showTab(inputId = "tabs", target = "3")
+       # showTab(inputId = "tabs", target = "4")
+       # showTab(inputId = "tabs", target = "5")
+       # showTab(inputId = "tabs", target = "6")
    })
 
 #SS-CL with parameter estimates
@@ -557,11 +558,11 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        showTab(inputId = "tabs", target = "2")
-        showTab(inputId = "tabs", target = "3")
-        showTab(inputId = "tabs", target = "4")
-        showTab(inputId = "tabs", target = "5")
-        showTab(inputId = "tabs", target = "6")
+        # showTab(inputId = "tabs", target = "2")
+        # showTab(inputId = "tabs", target = "3")
+        # showTab(inputId = "tabs", target = "4")
+        # showTab(inputId = "tabs", target = "5")
+        # showTab(inputId = "tabs", target = "6")
    })
 
 #Profiles
@@ -612,11 +613,11 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        showTab(inputId = "tabs", target = "2")
-        showTab(inputId = "tabs", target = "3")
-        showTab(inputId = "tabs", target = "4")
-        showTab(inputId = "tabs", target = "5")
-        showTab(inputId = "tabs", target = "6")
+        # showTab(inputId = "tabs", target = "2")
+        # showTab(inputId = "tabs", target = "3")
+        # showTab(inputId = "tabs", target = "4")
+        # showTab(inputId = "tabs", target = "5")
+        # showTab(inputId = "tabs", target = "6")
    })
 
 #Sensitivities
@@ -667,11 +668,11 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        showTab(inputId = "tabs", target = "2")
-        showTab(inputId = "tabs", target = "3")
-        showTab(inputId = "tabs", target = "4")
-        showTab(inputId = "tabs", target = "5")
-        showTab(inputId = "tabs", target = "6")
+        # showTab(inputId = "tabs", target = "2")
+        # showTab(inputId = "tabs", target = "3")
+        # showTab(inputId = "tabs", target = "4")
+        # showTab(inputId = "tabs", target = "5")
+        # showTab(inputId = "tabs", target = "6")
    })
 
 #Ensembles
@@ -722,11 +723,11 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::show("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        showTab(inputId = "tabs", target = "2")
-        showTab(inputId = "tabs", target = "3")
-        showTab(inputId = "tabs", target = "4")
-        showTab(inputId = "tabs", target = "5")
-        showTab(inputId = "tabs", target = "6")
+        # showTab(inputId = "tabs", target = "2")
+        # showTab(inputId = "tabs", target = "3")
+        # showTab(inputId = "tabs", target = "4")
+        # showTab(inputId = "tabs", target = "5")
+        # showTab(inputId = "tabs", target = "6")
    })
 
 ########################################

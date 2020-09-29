@@ -694,7 +694,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
       mainPanel(        
         tabsetPanel(id="tabs",
-            tabPanel("Data and Parameters",
+            
+          tabPanel("Data and Parameters",
               textOutput("catch_comp_plots_label"),
               plotOutput("Ctplot"),
               textOutput("lt_comp_plots_label"),
@@ -711,7 +712,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             plotOutput("Selplot_SSS"),
             value=1),       
             
-            tabPanel("SSS Model output",
+          tabPanel("SSS Model output",
             h4("Full model output is contained in the SSS_out.DMP and SSSoutput.DMP files in the specific model scenario folder."),
             h5("The SSS_out.DMP contains the prior and posterior values from the model, as well as the catch limits (Overfishing limint (OFL) and Allowable Biological Catch (ABC))."),
             h5("The SSSoutput.DMP contains a list of the complete report files for each SSS run."),
@@ -725,8 +726,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             plotOutput("SSS_ABC_plot"),
             value=11),
 
-
-            tabPanel("Model output",
+          
+          tabPanel("SS Model output",
             h4("Full model output is contained in the Report.sso file. The following reports are meant for quick examination."),
             h4("Checking model convergence. Check also fit to length composition data"),
             tableOutput("converge.grad"),
