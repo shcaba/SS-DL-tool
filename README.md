@@ -6,7 +6,7 @@ The tool builds Stock Synthesis files for provided data and life history informa
 
 ## Installing libraries and running the SS-DL tool
 ```R
-install.packages(c("devtools","shiny","shinyjs","r4ss","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","sss","shinyWidgets","shinyFiles"))
+install.packages(c("devtools","shiny","shinyjs","r4ss","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","sss","shinyWidgets","shinyFiles","HandyCode","plyr"))
 
 Make sure the following packages are using the most recent versions:
 library(devtools)
@@ -14,6 +14,7 @@ devtools::install_github("shcaba/SSS", build_vignettes = TRUE)
 
 install.packages("remotes")
 remotes::install_github("r4ss/r4ss")
+remotes::install_github("nwfsc-assess/nwfscDiag")
 
 It is recommended to make sure all additional open windows of R or Rstudio (beside the one being used) are closed prior to updating libraries, and that one restarts Rstudio after all new installations. Many of the errors when running the SS-DL tool arise from keeping libraries updated or installed (especially r4ss).
 
@@ -25,9 +26,9 @@ Running the tool can be accomplished in any of the following ways:
 ```
 
 ## SS-DL tool features the following data-limited applications
-* Length-only models. These are akin to LBSPR (Hordyk et al. 2015) and LIME (Rudd and Thorson ). Both styles of length-only models can be performed in this tool.
+* Length-only models. These are akin to LBSPR (Hordyk et al. 2015) and LIME (Rudd and Thorson 2017). Both styles of length-only models can be performed in this tool (determined by the estimation of recruitment), and include a choice between estimating F (recommended) or constant catch approaches (for stock status only; the estimated F values will not be useful on an absolute scale).
 * Age-only models
-* Catch only methods via the Simple Stock Synthesis approach (Cope 2013) *COMING SOON*
+* Catch only methods via the Simple Stock Synthesis approach (Cope 2013)
 * Extended Simple Stock Syntehsis (XSSS; Cope et al. 2013; Cope et al. 2015; Wetzel and Punt 2013) *COMING SOON*
 * Length + catch models 
 * Catch and index (age-structured production) models *COMING SOON*
@@ -38,9 +39,11 @@ Running the tool can be accomplished in any of the following ways:
 * The tool accepts multi-fleet, sex-specific data, as well as sex-specific life history parameters.
 * It allows for estimation of dome-shaped, as well as logistic, for each fleet, with the ability to fix selectivity parameters instead of estimating them.
 * Recruitment estimation is provided for models with length or age data.
-* A jittering option is provided to allow for model stability evaluation and global  away from starting values.
-* Simple model sensitivity explortaion
 * Output plots are saved in the scenarion folder, as well as tables of model output summaries.
+* A jittering option is provided to allow for model stability evaluation and global  away from starting values.
+* Easy application of likelihood profiles across multiple parameters
+* Sensitivity explortaion is easy to do (just change model specification and re-run) and compare among models (with plots and summaries determined by the user).f
+* Ensemble modelling option to combine model outputs across models using weights determined by the user.
 <br></br>
 
 ## Future features will include:

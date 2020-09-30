@@ -5,7 +5,7 @@ require(shinyFiles)
 
 linebreaks <- function(n){HTML(strrep(br(), n))}
 
-shinyUI(fluidPage(
+shinyUI(fluidPage(theme = "bootstrap.css",
   useShinyjs(),
   titlePanel("Welcome to the Stock Synthesis data-limited tool"),
       h5(p(strong("This tool uses the Stock Synthesis framework to implement the following types of models:"))),
@@ -614,13 +614,30 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h5(em("For each model run, the likelihood value and derived outputs are retained for analysis.")),
     h5(em("Any likelihood values >1.96 units from the minimum value are identify as models statistically less supported by the data. ")),
     h5(em("Plots with the profiled parameter values compared to the likelihood values and derived model outputs indicate how much information is contained in the model for the parameter and how sensitive the model is to parameters values resulting non-statistically different models.")),  
-    
-        fluidRow(selectInput("Profile_choice_choice","Parameter to profile",c("Steepness","lnR0","Natural mortality","Linf","k"))),
-        fluidRow(column(width=4,numericInput("Prof_Low_val", "Low value", value=NA,min=0, max=10000, step=0.001)),    
-                column(width=4,numericInput("Prof_Hi_val", "High value", value=NA,min=0, max=10000, step=0.001)),
-                column(width=4,numericInput("Prof_step","Sequence step", value=NA,min=0, max=10000, step=0.001))),    
+    br(),
+    h5(strong("Choose folder of scenario to run profile")),
+    #shinyFilesButton("LikeProf_dir", "Select scenario", "Choose folder containing model scenarios", multiple = F),
+    shinyDirButton(
+     id="LP_dir",
+     label="Select scenario",
+     title="Choose folder containing model scenarios"
+     ),
+    br(),
+    br(),
+    uiOutput("LikeProf_model_picks"),
+#        fluidRow(selectInput("Profile_choice_choice","Parameter to profile",c("Steepness","lnR0","Natural mortality","Linf","k"))),
+        fluidRow(column(width=4,textInput("Prof_Low_val", "Low value", value="")),    
+                column(width=4,textInput("Prof_Hi_val", "High value", value="")),
+                column(width=4,textInput("Prof_step","Sequence step", value=""))),    
+        
+        br(),
+        # fluidRow(column(width=4,numericInput("Prof_Low_val", "Low value", value=NA,min=0, max=10000, step=0.001)),    
+        #         column(width=4,numericInput("Prof_Hi_val", "High value", value=NA,min=0, max=10000, step=0.001)),
+        #         column(width=4,numericInput("Prof_step","Sequence step", value=NA,min=0, max=10000, step=0.001))),    
 
-    fluidRow(column(width=8,textInput("Profile_plot_file", strong("Label plot file"), value="Profile X"))),
+    #fluidRow(column(width=8,textInput("Profile_plot_file", strong("Label plot file"), value="Profile X"))),
+    #h5(strong("Choose folder of scenario to run profile")),
+    #uiOutput("LikeProf_dir_out"),
     actionButton("run_Profiles",strong("Run Likelihood Profile"),
         width="100%",
         icon("play-circle"),
@@ -770,7 +787,10 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             value=3),
           
           tabPanel("Likelihood profile",
-            
+            h4("Full likelihood profile outputs and plots can be found in the 'Profile' folder of the chosen scenario."),  
+            h5("Each profile folder will labeled with the parameter name appended."),  
+            h5("Results below are from the most recent profile run and meant for a quick exploration."),  
+            #plotOutput("LikeProf_plot")
             value=4),
           
           tabPanel("Sensitivity comparisons",

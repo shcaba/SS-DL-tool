@@ -11,6 +11,9 @@ require(viridis)
 require(sss)
 require(shinyWidgets)
 require(shinyFiles)
+require(HandyCode)
+require(plyr)
+require(nwfscDiag)
 #require(paletteer)
 #require(RColorBrewer)
 #require(ggthemes)
@@ -1148,7 +1151,7 @@ output$Sel_parms2<- renderUI({
 output$Sel_parms3 <- renderUI({ 
   		if(input$Sel_choice=="Dome-shaped"){ 			 
     	fluidRow(column(width=8, textInput("PeakDesc", "Length at 1st declining selectivity",value="10000")), 
-            	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value="",))) 
+            	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value=""))) 
  		} 
 	}) 
  
@@ -2996,36 +2999,25 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 
 	})
 
-    roots <- getVolumes()()  
-    #Likelihood profiles
-      shinyDirChoose(input, "LikeProf_dir", roots=roots, filetypes=c('', 'txt'))
-      path1 <- reactive({
-        return(parseDirPath(roots, input$Sensi_dir))
+###############################################################
+### Likelihood profiles, Sensitivities, and Ensemble models ###
+###############################################################
+
+  roots <- getVolumes()()  
+
+  #Likelihood profiles
+  pathLP <- reactive({
+      shinyDirChoose(input, "LP_dir", roots=roots,session=session, filetypes=c('', 'txt'))
+        return(parseDirPath(roots, input$LP_dir))
       })
 
-LikeProf_dir_out<-eventReactive(req(input$run_Sensi_comps&!as.numeric(input$tabs)==5),{
-    if(!file.exists(paste0(path1(),"/Likelihood Profile Plots")))
-      {
-        dir.create(paste0(path1(),"/Sensitivity Comparison Plots"))
-      }
-    LikeProf_dir_out<-paste0(path1())
-  })
-
-
-
-    #Sensitivity comparisons
-      shinyDirChoose(input, "Sensi_dir", roots=roots, filetypes=c('', 'txt'))
-      path1 <- reactive({
-        return(parseDirPath(roots, input$Sensi_dir))
-      })
-
-  output$Sensi_model_picks<-renderUI({
-      #dirinfo <- parseDirPath(roots, input$Sensi_dir)
+   observeEvent(as.numeric(input$tabs)==4,{      
+  pathLP.dir <-pathLP()
+  output$LikeProf_model_picks<-renderUI({
       pickerInput(
-      inputId = "myPicker",
-      label = "Choose scenarios to compare",
-      #choices = list.files(dirinfo),
-      choices = list.files(path1()),
+      inputId = "myPicker_LP",
+      label = "Choose parameters to profile over",
+      choices = c("Steepness","lnR0","Natural mortality","Linf","k"),
       options = list(
         `actions-box` = TRUE,
         size = 12,
@@ -3034,14 +3026,75 @@ LikeProf_dir_out<-eventReactive(req(input$run_Sensi_comps&!as.numeric(input$tabs
       multiple = TRUE
     )
  })
+})
+
+observeEvent(input$run_Profiles,{
+       SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1")
+       parmnames<-input$myPicker_LP
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality","Linf","k")
+       prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
+       
+       mydir = dirname(pathLP())
+       get = get_settings_profile( parameters =  prof_parms_names,
+              low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
+              high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
+              step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
+              param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))))))
+
+
+       model_settings = get_settings(settings = list(base_name = basename(pathLP()),
+                        run = "profile",
+                        profile_details = get ))
+
+       run_diagnostics(mydir = mydir, model_settings = model_settings)
+
+
+      #  output$Sensi_comp_plot <- renderImage({
+      #  image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
+      #          input$Sensi_comp_file, '.png')),mustWork=FALSE)
+      #  return(list(
+      #   src = image.path,
+      #   contentType = "image/png",
+      #  #  width = 400,
+      #  # height = 300,
+      #  style='height:60vh'))
+      # },deleteFile=FALSE)
+
+  })
+#################
+
+  #Sensitivity comparisons
+      pathSensi <- reactive({
+      shinyDirChoose(input, "Sensi_dir", roots=roots,session=session, filetypes=c('', 'txt'))
+        return(parseDirPath(roots, input$Sensi_dir))
+      })
+
+  observeEvent(as.numeric(input$tabs)==5,{
+
+  output$Sensi_model_picks<-renderUI({
+      #dirinfo <- parseDirPath(roots, input$Sensi_dir)
+      pickerInput(
+      inputId = "myPicker",
+      label = "Choose scenarios to compare",
+      #choices = list.files(dirinfo),
+      choices = list.files(pathSensi()),
+      options = list(
+        `actions-box` = TRUE,
+        size = 12,
+        `selected-text-format` = "count > 3"
+        ),
+      multiple = TRUE
+    )
+ })    
+  })
 
 #SS.comparisons<-observeEvent(as.numeric(input$tabs)==5,{
 Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPicker)&as.numeric(input$tabs)==5),{
-    if(!file.exists(paste0(path1(),"/Sensitivity Comparison Plots")))
+    if(!file.exists(paste0(pathSensi(),"/Sensitivity Comparison Plots")))
       {
-        dir.create(paste0(path1(),"/Sensitivity Comparison Plots"))
+        dir.create(paste0(pathSensi(),"/Sensitivity Comparison Plots"))
       }
-    Sensi_model_dir_out<-paste0(path1(),"/",input$myPicker)
+    Sensi_model_dir_out<-paste0(pathSensi(),"/",input$myPicker)
   })
 
   observeEvent(exists(Sensi_model_dir_out()),{
@@ -3054,14 +3107,14 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        col.vec = rc(n=length(modelnames), alpha = 1)
        shade = adjustcolor(col.vec[1], alpha.f = 0.10)
 
-       pngfun(wd = paste0(path1(),"/Sensitivity Comparison Plots"), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
+       pngfun(wd = paste0(pathSensi(),"/Sensitivity Comparison Plots"), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
        par(mfrow = c(1,3))
        try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, shadecol = shade, new = FALSE))
        try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, shadecol = shade, new = FALSE, legendloc = 'topleft'))
        dev.off()
-       save(modsummary.sensi,file=paste0(path1(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,".DMP"))
+       save(modsummary.sensi,file=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,".DMP"))
        output$Sensi_comp_plot <- renderImage({
-       image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
+       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",
                input$Sensi_comp_file, '.png')),mustWork=FALSE)
        return(list(
         src = image.path,
@@ -3072,14 +3125,8 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
       },deleteFile=FALSE)
 
   })
+#############################
 
-test.in<-reactive({
-  print("A")
-#  print(input$run_Ensemble)
-#  print(as.numeric(input$tabs))
- # print(input$myEnsemble)
-  return(10)
-  })
 # image.path<-eventReactive(exists(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
 #                input$Sensi_comp_file, '.png'))),{
 #   image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
@@ -3097,39 +3144,40 @@ test.in<-reactive({
 #        style='height:60vh'))
 #   print(input$run_Sensi_comps[1])
 # },deleteFile=FALSE)
+####################################
 
-    #Ensemble modelling
-      #roots <- getVolumes()()  
+  #Ensemble modelling
+  pathEnsemble <- reactive({
       shinyDirChoose(input, "Ensemble_dir", roots=roots, filetypes=c('', 'txt'))
-      path2 <- reactive({
-        return(parseDirPath(roots, input$Ensemble_dir))
-      })
+      return(parseDirPath(roots, input$Ensemble_dir))
+    })
 
+ observeEvent(as.numeric(input$tabs)==4,{      
   output$Ensemble_model_picks<-renderUI({
       pickerInput(
       inputId = "myEnsemble",
       label = "Choose scenarios to ensemble",
-      choices = list.files(path2()),
+      choices = list.files(pathEnsemble()),
       options = list(
         `actions-box` = TRUE,
         size = 12,
         `selected-text-format` = "count > 3"
         ),
       multiple = TRUE
-    )
- })
-
+      )
+    })
+  })
 
 #Ensemble_model_dir_out<-eventReactive(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==6),{
 observeEvent(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==6),{
 Ensemble_model_dir_out<-eventReactive(input$run_Ensemble,{
 #print(as.numeric(input$tabs))
 #print(input$run_Ensemble)
-    if(!file.exists(paste0(path2(),"/Ensemble outputs")))
+    if(!file.exists(paste0(pathEnsemble(),"/Ensemble outputs")))
       {
-        dir.create(paste0(path2(),"/Ensemble outputs"))
+        dir.create(paste0(pathEnsemble(),"/Ensemble outputs"))
       }
-    Ensemble_model_dir_out<-paste0(path2(),"/",input$myEnsemble)
+    Ensemble_model_dir_out<-paste0(pathEnsemble(),"/",input$myEnsemble)
   })
 print(Ensemble_model_dir_out())
 exists("Ensemble_model_dir_out()")
