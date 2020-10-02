@@ -3046,6 +3046,17 @@ observeEvent(input$run_Profiles,{
                         run = "profile",
                         profile_details = get ))
 
+      progress <- shiny::Progress$new(session, min=1, max=2)
+           on.exit(progress$close())
+       
+           progress$set(message = 'Profiles running',
+                        detail = '')
+       
+           for (i in 1:2) {
+             progress$set(value = i)
+             Sys.sleep(0.5)
+           }
+
        run_diagnostics(mydir = mydir, model_settings = model_settings)
 
 
@@ -3107,11 +3118,18 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        col.vec = rc(n=length(modelnames), alpha = 1)
        shade = adjustcolor(col.vec[1], alpha.f = 0.10)
 
-       pngfun(wd = paste0(pathSensi(),"/Sensitivity Comparison Plots"), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
+       TRP.in<-input$Sensi_TRP
+       LRP.in<-input$Sensi_LRP
+       if(is.na(TRP.in)){TRP.in<-0}
+       if(is.na(LRP.in)){LRP.in<-0}
+       
+       dir.create(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file))
+       pngfun(wd = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
        par(mfrow = c(1,3))
-       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, shadecol = shade, new = FALSE))
-       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, shadecol = shade, new = FALSE, legendloc = 'topleft'))
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, new = FALSE,btarg=TRP.in,minbthresh=LRP.in,uncertainty=TRUE))
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, new = FALSE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=TRUE))
        dev.off()
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30,col = col.vec, new = FALSE,print=TRUE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=TRUE,plotdir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file)))
        save(modsummary.sensi,file=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,".DMP"))
        output$Sensi_comp_plot <- renderImage({
        image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",
