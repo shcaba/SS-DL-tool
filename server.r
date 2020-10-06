@@ -2773,8 +2773,8 @@ if(input$dirichlet)
 
 		if(!is.null(rv.Ct$data))
 			{
-  				ct.lambdas<-ctl.file$lambdas[1,]
-          init.ct.lambdas<-ctl.file$lambdas[2,]
+  				ct.lambdas<-ctl.file$lambdas[2,]
+          init.ct.lambdas<-ctl.file$lambdas[3,]
         
         if(data.file$Nfleets>1)
           {  
