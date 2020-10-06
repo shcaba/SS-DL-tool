@@ -834,9 +834,9 @@ output$Male_parms_inputs3 <- renderUI({
 
 output$Male_parms_inputs4 <- renderUI({ 
 	if(input$male_parms){ 
-      fluidRow(column(width=6, numericInput("WLa_m_est", "Weight-length alpha",  
+      fluidRow(column(width=6, numericInput("WLa_m", "Weight-length alpha",  
                                             value=0.00001, min=0, max=10000, step=0.000000001)), 
-               column(width=6, numericInput("WLb_m_est", "Weight-length beta",  
+               column(width=6, numericInput("WLb_m", "Weight-length beta",  
                                             value=3, min=0, max=10000, step=0.01)))     
     	} 
 	}) 
@@ -981,7 +981,17 @@ output$Male_parms_inputs_CV_est <- renderUI({
         circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
           )
   } 
-}) 
+})
+
+output$Male_parms_inputs_WL_est <- renderUI({ 
+  if(input$male_parms_est){ 
+      fluidRow(column(width=6, numericInput("WLa_m_est", "Weight-length alpha",  
+                                            value=0.00001, min=0, max=10000, step=0.000000001)), 
+               column(width=6, numericInput("WLb_m_est", "Weight-length beta",  
+                                            value=3, min=0, max=10000, step=0.01)))     
+      } 
+  }) 
+
   #h5(strong("M")),            
   #     fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("M_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal"))),
   #             column(width=3,style='padding:2px;',align="center",numericInput("M_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),    
