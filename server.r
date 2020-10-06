@@ -834,9 +834,9 @@ output$Male_parms_inputs3 <- renderUI({
 
 output$Male_parms_inputs4 <- renderUI({ 
 	if(input$male_parms){ 
-      fluidRow(column(width=6, numericInput("WLa_m", "Weight-Length alpha",  
+      fluidRow(column(width=6, numericInput("WLa_m_est", "Weight-length alpha",  
                                             value=0.00001, min=0, max=10000, step=0.000000001)), 
-               column(width=6, numericInput("WLb_m", "Weight-length beta",  
+               column(width=6, numericInput("WLb_m_est", "Weight-length beta",  
                                             value=3, min=0, max=10000, step=0.01)))     
     	} 
 	}) 
@@ -1829,6 +1829,10 @@ SSS.run<-observeEvent(input$run_SSS,{
     if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_mean_sss,log(input$CV_lt_f_mean_sss))}
     else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean_sss}
     
+    #Weight-length
+    ctl.file$MG_parms[7,3:4]<-input$WLa_f_sss                                    #coefficient
+    ctl.file$MG_parms[8,3:4]<- input$WLb_f_sss                                   #exponent  
+
     #Maturity
     ctl.file$MG_parms[9,3:4]<-input$L50_f_sss                                     #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_sss-input$L50_f_sss)  #Maturity slope
@@ -1840,6 +1844,9 @@ SSS.run<-observeEvent(input$run_SSS,{
     ctl.file$MG_parms[16,3:4]<-input$k_f_mean_sss                               #k
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_mean_sss                           #CV
     ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_mean_sss                           #CV
+    #Weight-length
+    ctl.file$MG_parms[19,3:4]<-input$WLa_f_sss                                    #coefficient
+    ctl.file$MG_parms[20,3:4]<- input$WLb_f_sss                                   #exponent  
     
     if(input$male_parms_SSS)
       {   
@@ -1868,6 +1875,10 @@ SSS.run<-observeEvent(input$run_SSS,{
         #CV old
         if(input$CV_lt_f_prior_sss=="lognormal"){ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_mean_sss,log(input$CV_lt_m_mean_sss))}
         else{ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_mean_sss,input$CV_lt_m_mean_sss)}
+        
+        #Weight-length
+        ctl.file$MG_parms[19,3:4]<-input$WLa_m_sss                                    #coefficient
+        ctl.file$MG_parms[20,3:4]<- input$WLb_m_sss                                   #exponent  
       }     
 
     #S-R
@@ -2431,7 +2442,10 @@ SS.file.update<-observeEvent(input$run_SS,{
     ctl.file$MG_parms[4,3:4]<-input$k_f_fix         #k
     ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_fix     #CV
     ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_fix     #CV
-    #Maturity6
+    #Weight-length
+    ctl.file$MG_parms[7,3:4]<-input$WLa_f_fix       #coefficient
+    ctl.file$MG_parms[8,3:4]<- input$WLb_f_fix      #exponent  
+    #Maturity
     ctl.file$MG_parms[9,3:4]<-input$L50_f_fix                                     #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_fix-input$L50_f_fix)  #Maturity slope
     #Males
@@ -2450,6 +2464,9 @@ SS.file.update<-observeEvent(input$run_SS,{
         ctl.file$MG_parms[16,3:4]<-input$k_m_fix      #k
         ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_fix  #CV
         ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_fix  #CV
+        #Weight-length
+        ctl.file$MG_parms[19,3:4]<-input$WLa_m_fix       #coefficient
+        ctl.file$MG_parms[20,3:4]<-input$WLb_m_fix       #exponent  
       }
       
     #S-R
@@ -2508,6 +2525,10 @@ SS.file.update<-observeEvent(input$run_SS,{
     ctl.file$MG_parms[6,6]<-prior.type[prior.name==input$CV_lt_f_prior]  
     ctl.file$MG_parms[6,7]<-input$CV_lt_f_phase 
 
+    #Weight-length
+    ctl.file$MG_parms[7,3:4]<-input$WLa_f_est       #coefficient
+    ctl.file$MG_parms[8,3:4]<- input$WLb_f_est      #exponent  
+
     #Maturity
     ctl.file$MG_parms[9,3:4]<-input$L50_f_est                                     #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_est-input$L50_f_est)  #Maturity slope
@@ -2519,7 +2540,10 @@ SS.file.update<-observeEvent(input$run_SS,{
     ctl.file$MG_parms[16,3:4]<-input$k_f_mean                           #k
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_mean                       #CV
     ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_mean                       #CV
-    
+    #Weight-length
+    ctl.file$MG_parms[19,3:4]<-input$WLa_f_est       #coefficient
+    ctl.file$MG_parms[20,3:4]<- input$WLb_f_est      #exponent  
+        
     if(input$male_parms_est)
       {   
         male_vbgf_est<-VBGF(input$Linf_m_mean,input$k_m_mean,input$t0_m_mean,c(0:Nages()))
@@ -2572,6 +2596,10 @@ SS.file.update<-observeEvent(input$run_SS,{
         ctl.file$MG_parms[18,5]<-input$CV_lt_m_SD       
         ctl.file$MG_parms[18,6]<-prior.type[prior.name==input$CV_lt_m_prior]  
         ctl.file$MG_parms[18,7]<-input$CV_lt_m_phase 
+
+        #Weight-length
+        ctl.file$MG_parms[19,3:4]<-input$WLa_m_est       #coefficient
+        ctl.file$MG_parms[20,3:4]<- input$WLb_m_est      #exponent  
       }     
 
     #S-R
