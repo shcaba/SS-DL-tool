@@ -14,6 +14,7 @@ require(shinyFiles)
 require(HandyCode)
 require(plyr)
 require(nwfscDiag)
+require(shinybusy)
 #require(paletteer)
 #require(RColorBrewer)
 #require(ggthemes)
@@ -1244,7 +1245,7 @@ output$Jitter_value <- renderUI({
         fluidRow(column(width=6, numericInput("jitter_fraction", "Jitter value",  
                                              value=0.1, min=0, max=10, step=0.001)), 
         	       column(width=6, numericInput("Njitter", "# of jitters",  
-        	                                   value=1, min=1, max=10000, step=1)))    
+        	                                   value=0, min=1, max=10000, step=1)))    
     	} 
 	}) 
 
@@ -1719,16 +1720,18 @@ output$Selplot_SSS <- renderPlot({
 ######## PREPARE FILES andD RUN SSS #########
 #############################################
 SSS.run<-observeEvent(input$run_SSS,{
-		progress <- shiny::Progress$new(session, min=1, max=2)
-           on.exit(progress$close())
+      show_modal_spinner(spin="flower",color="red",text="Create model files")
+
+    # progress <- shiny::Progress$new(session, min=1, max=2)
+    #        on.exit(progress$close())
        
-           progress$set(message = 'Model run in progress',
-                        detail = '')
+    #        progress$set(message = 'Model run in progress',
+    #                     detail = '')
        
-           for (i in 1:2) {
-             progress$set(value = i)
-             Sys.sleep(0.5)
-           }
+    #        for (i in 1:2) {
+    #          progress$set(value = i)
+    #          Sys.sleep(0.5)
+    #        }
 
   	#Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
@@ -2028,6 +2031,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       k.in_sss<-c(sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss,sss.prior.type[sss.prior.name==input$k_m_prior_sss],input$k_m_mean_sss,input$k_m_SD_sss)      
       t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_m_prior_sss],input$t0_m_mean_sss,input$t0_m_SD_sss)
     }
+      show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 
 #Run SSS
   SSS.out<-SSS(paste0(getwd(),"/Scenarios/",input$Scenario_name),
@@ -2055,6 +2059,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       BH_FMSY_comp=F,
       OStype="Windows")
 #save(SSS.out)
+show_modal_spinner(spin="flower",color="red",text="Process model output")
 
 if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
   {
@@ -2130,7 +2135,7 @@ if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenar
       else{return(NULL)}
     })  
   }
-
+    remove_modal_spinner()
 })
 
 
@@ -2156,16 +2161,17 @@ SS.file.update<-observeEvent(input$run_SS,{
 		# 							input$L95_m,
 		# 							))
 		# {
-		progress <- shiny::Progress$new(session, min=1, max=2)
-           on.exit(progress$close())
+show_modal_spinner(spin="flower",color="red",text="Model run in progress")
+		# progress <- shiny::Progress$new(session, min=1, max=2)
+  #          on.exit(progress$close())
        
-           progress$set(message = 'Model run in progress',
-                        detail = '')
+  #          progress$set(message = 'Model run in progress',
+  #                       detail = '')
        
-           for (i in 1:2) {
-             progress$set(value = i)
-             Sys.sleep(0.5)
-           }
+  #          for (i in 1:2) {
+  #            progress$set(value = i)
+  #            Sys.sleep(0.5)
+  #          }
 
   	#Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
@@ -2873,6 +2879,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 
 ########
 	#Run Stock Synthesis and plot output
+    show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
 		Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
 		if(class(Model.output)=="try-error")
@@ -2880,16 +2887,19 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
 			}
 		#Make SS plots	
-		SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
+		show_modal_spinner(spin="flower",color="red",text="Making plots")
+    SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
 		#Make SS tables
-		try(SSexecutivesummary(Model.output))		
+		show_modal_spinner(spin="flower",color="red",text="Making tables")
+    try(SSexecutivesummary(Model.output))		
 			 
 		#Run multiple jitters
 		if(input$jitter_choice)
 		{
-			if(input$Njitter>1)
+			if(input$Njitter>0)
 			{
-				 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE)
+         show_modal_spinner(spin="flower",color="red",text="Run jitters")
+    		 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE)
 				 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
 				 profilesummary <- SSsummarize(profilemodels)
 	       minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
@@ -2900,14 +2910,17 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
              starter.file$jitter_fraction<-0
 			 	 SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
 			 	 #R-run to get new best fit model
-				 RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
+				 show_modal_spinner(spin="flower",color="red",text="Re-run best model post-jitters")
+         RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
          Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
           if(class(Model.output)=="try-error")
           {
             Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
-				 SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
-				 try(SSexecutivesummary(Model.output))		
+				 show_modal_spinner(spin="flower",color="red",text="Making plots")
+         SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
+				 show_modal_spinner(spin="flower",color="red",text="Making tables")
+         try(SSexecutivesummary(Model.output))		
 				 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
 				 ref.like<-min(jitter.likes)
 		    	 #Make plot and save to folder
@@ -2961,7 +2974,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 	setwd(main.dir)
            
   }
-		
+        
 		#Convergence diagnostics
 		output$converge.grad <- renderText({
  				max.grad<-paste0("Maximum gradient: ",Model.output$maximum_gradient_component)
@@ -3035,6 +3048,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
  				Model.output$estimated_non_dev_parameters
 			})
 
+    remove_modal_spinner()
 	})
 
 ###############################################################
@@ -3067,6 +3081,8 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 })
 
 observeEvent(input$run_Profiles,{
+       show_modal_spinner(spin="flower",color="red",text="Profiles running")
+
        SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1")
        parmnames<-input$myPicker_LP
        parmnames_vec<-c("Steepness","lnR0","Natural mortality","Linf","k")
@@ -3082,37 +3098,20 @@ observeEvent(input$run_Profiles,{
 
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
                         run = "profile",
-                        profile_details = get ))
+                        profile_details = get))
 
-      progress <- shiny::Progress$new(session, min=1, max=2)
-           on.exit(progress$close())
-       
-           progress$set(message = 'Profiles running',
-                        detail = '')
-       
-           for (i in 1:2) {
-             progress$set(value = i)
-             Sys.sleep(0.5)
-           }
 
        run_diagnostics(mydir = mydir, model_settings = model_settings)
 
-
-      #  output$Sensi_comp_plot <- renderImage({
-      #  image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
-      #          input$Sensi_comp_file, '.png')),mustWork=FALSE)
-      #  return(list(
-      #   src = image.path,
-      #   contentType = "image/png",
-      #  #  width = 400,
-      #  # height = 300,
-      #  style='height:60vh'))
-      # },deleteFile=FALSE)
+       remove_modal_spinner()
 
   })
 #################
 
-  #Sensitivity comparisons
+###############################
+### Sensitivity comparisons ###
+###############################
+
       pathSensi <- reactive({
       shinyDirChoose(input, "Sensi_dir", roots=roots,session=session, filetypes=c('', 'txt'))
         return(parseDirPath(roots, input$Sensi_dir))
@@ -3147,17 +3146,8 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
   })
 #&exists(Sensi_model_dir_out())
   observeEvent(req(input$run_Sensi_comps),{
-      progress <- shiny::Progress$new(session, min=1, max=2)
-           on.exit(progress$close())
-       
-           progress$set(message = 'Comparisons running',
-                        detail = '')
-       
-           for (i in 1:2) {
-             progress$set(value = i)
-             Sys.sleep(0.5)
-           }
-
+      show_modal_spinner(spin="flower",color="red",text="Comparisons running")
+      
        modelnames<-input$myPicker
        zz<-list()
        Runs<-length(Sensi_model_dir_out())
@@ -3189,7 +3179,7 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        # height = 300,
        style='height:60vh'))
       },deleteFile=FALSE)
-
+    remove_modal_spinner()
   })
 #############################
 
