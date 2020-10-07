@@ -690,6 +690,10 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
   )),
 
 
+######################
+### Ensemble panel ###
+######################
+
   shinyjs::hidden(wellPanel(id="Ensemble_panel",
     h4(strong("Ensemble modelling")),
     h5(em("Ensemble modelling allows the user to combine multiple models into one weighted distribution of outputs.")),
@@ -801,9 +805,12 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           
           tabPanel("Likelihood profile",
             h4("Full likelihood profile outputs and plots can be found in the 'Profile' folder of the chosen scenario."),  
-            h5("Each profile folder will labeled with the parameter name appended."),  
-            h5("Results below are from the most recent profile run and meant for a quick exploration."),  
-            #plotOutput("LikeProf_plot")
+            h5("Each profile folder will be labeled with the parameter name appended."),  
+            h5("Results below are from the one of the profile parameters to show what type of plots are found in the folders."),  
+            plotOutput("LikeProf_plot_modout"),
+            plotOutput("LikeProf_plot_Piner"),
+            plotOutput("LikeProf_plot_SO"),
+            plotOutput("LikeProf_plot_SOt_SO0"),
             value=4),
           
           tabPanel("Sensitivity comparisons",

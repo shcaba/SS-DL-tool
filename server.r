@@ -3101,7 +3101,47 @@ observeEvent(input$run_Profiles,{
                         profile_details = get))
 
 
-       run_diagnostics(mydir = mydir, model_settings = model_settings)
+       try(run_diagnostics(mydir = mydir, model_settings = model_settings))
+
+       output$LikeProf_plot_modout <- renderImage({
+       image.path1<-normalizePath(file.path(paste0(pathLP(),"_profile_",prof_parms_names[1],"/parameter_panel_",prof_parms_names[1],".png")),mustWork=FALSE)
+       return(list(
+        src = image.path1,
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
+
+       output$LikeProf_plot_Piner <- renderImage({
+       image.path2<-normalizePath(file.path(paste0(pathLP(),"_profile_",prof_parms_names[1],"/piner_panel_",prof_parms_names[1],".png")),mustWork=FALSE)
+       return(list(
+        src = image.path2,
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
+
+       output$LikeProf_plot_SO <- renderImage({
+       image.path3<-normalizePath(file.path(paste0(pathLP(),"_profile_",prof_parms_names[1],"/",prof_parms_names[1],"_trajectories_compare1_spawnbio.png")),mustWork=FALSE)
+       return(list(
+        src = image.path3,
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
+
+       output$LikeProf_plot_SOt_SO0 <- renderImage({
+       image.path4<-normalizePath(file.path(paste0(pathLP(),"_profile_",prof_parms_names[1],"/",prof_parms_names[1],"_trajectories_compare3_Bratio.png")),mustWork=FALSE)
+       return(list(
+        src = image.path4,
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
 
        remove_modal_spinner()
 
@@ -3170,6 +3210,7 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        dev.off()
        try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30,col = col.vec, new = FALSE,print=TRUE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=TRUE,plotdir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file)))
        save(modsummary.sensi,file=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file,".DMP"))
+
        output$Sensi_comp_plot <- renderImage({
        image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file, '.png')),mustWork=FALSE)
        return(list(
@@ -3179,6 +3220,7 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        # height = 300,
        style='height:60vh'))
       },deleteFile=FALSE)
+
     remove_modal_spinner()
   })
 #############################
