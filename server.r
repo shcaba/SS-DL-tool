@@ -3145,8 +3145,19 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
       }
     Sensi_model_dir_out<-paste0(pathSensi(),"/",input$myPicker)
   })
+#&exists(Sensi_model_dir_out())
+  observeEvent(req(input$run_Sensi_comps),{
+      progress <- shiny::Progress$new(session, min=1, max=2)
+           on.exit(progress$close())
+       
+           progress$set(message = 'Comparisons running',
+                        detail = '')
+       
+           for (i in 1:2) {
+             progress$set(value = i)
+             Sys.sleep(0.5)
+           }
 
-  observeEvent(exists(Sensi_model_dir_out()),{
        modelnames<-input$myPicker
        zz<-list()
        Runs<-length(Sensi_model_dir_out())
@@ -3168,10 +3179,9 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, new = FALSE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=TRUE))
        dev.off()
        try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30,col = col.vec, new = FALSE,print=TRUE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=TRUE,plotdir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file)))
-       save(modsummary.sensi,file=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,".DMP"))
+       save(modsummary.sensi,file=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file,".DMP"))
        output$Sensi_comp_plot <- renderImage({
-       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",
-               input$Sensi_comp_file, '.png')),mustWork=FALSE)
+       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file, '.png')),mustWork=FALSE)
        return(list(
         src = image.path,
         contentType = "image/png",

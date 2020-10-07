@@ -254,9 +254,9 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
                      uiOutput("Male_parms_inputs_space3"),
                      uiOutput("Male_parms_inputs_t0_est"),
                      uiOutput("Male_parms_inputs_space4"),
-                     uiOutput("Male_parms_inputs_CV_est")
-   #                  uiOutput("Male_parms_inputs_space5"),
-   #                  uiOutput("Male_parms_inputs_CV_est")
+                     uiOutput("Male_parms_inputs_CV_est"),
+                     uiOutput("Male_parms_inputs_space5"),
+                     uiOutput("Male_parms_inputs_WL_est")
         ),
       )
     ),
@@ -606,6 +606,13 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       icon("play-circle"),
       style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192")),
   
+#################### 
+### Other panels ###
+####################
+
+###########################
+### Likelihood profiles ###
+###########################
   shinyjs::hidden(wellPanel(id="Profile_panel",
     h4(strong("Run likelihood profiles")),
     h5(em("Likelihood profiles are a powerful way to understand the information content of data and sensitivity of models to parameter uncertainty.")),
@@ -645,16 +652,18 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
   )),
 
+###############################
+### Sensitivity comparisons ###
+###############################
   shinyjs::hidden(wellPanel(id="Sensi_Comparison_panel",
     h4(strong("Sensitivity comparison plots")),
     h5(em("Comparing models offers insight into how changing data or model specification change model outputs.")),
     h5(em("To make these comparisons, choose first the directory containing models, then the models to compare.")),
-    h5(em("A time series plot of comparisons are made for the follwing model outputs:")),  
+    h5(em("A time series plot of comparisons are shown in the main panel to the right for the follwing model outputs:")),  
     tags$ul(tags$li(h5(p(em("Spawning output"))))),
     tags$ul(tags$li(h5(p(em("Relative spawning output"))))),
     tags$ul(tags$li(h5(p(em("Recruitment"))))),
-    h5(em("Current comparison plot is presented on the right.")), 
-    h5(em("All plots are saved in the chosen directory in a folder labeled")),  
+    h5(em("A complete compliment of comparison plots (along with the plot on the right) are saved in the chosen directory in a folder labeled")),  
     h5(strong(em("Sensitivity Comparison Plots"))),
     br(),
     h5(strong("Choose folder containing model scenarios")),
@@ -667,7 +676,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     br(),
     #h4(strong("Comparison plot label")),
     uiOutput("Sensi_model_picks"),
-    h5(strong("Add reference points. Blank input adds no line.")),
+    h5(strong("Add reference points to spawning output plots. Blank input adds no line.")),
     fluidRow(column(width=5,numericInput("Sensi_TRP", "Target", value=NA,min=0, max=1, step=0.001)),
                 column(width=5,numericInput("Sensi_LRP","Limit", value=NA,min=0, max=1, step=0.001))),    
     fluidRow(column(width=8,textInput("Sensi_comp_file", strong("Label comparison plot file"), value="Comparison 1"))),
