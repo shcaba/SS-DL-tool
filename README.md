@@ -6,7 +6,7 @@ The tool builds Stock Synthesis files for provided data and life history informa
 
 ## Installing libraries and running the SS-DL tool
 ```R
-install.packages(c("devtools","shiny","shinyjs","r4ss","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","sss","shinyWidgets","shinyFiles","HandyCode","plyr","shinybusy"))
+install.packages(c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","sss","shinyWidgets","shinyFiles","HandyCode","plyr","shinybusy"))
 
 Make sure the following packages are using the most recent versions:
 library(devtools)
@@ -14,6 +14,7 @@ devtools::install_github("shcaba/SSS", build_vignettes = TRUE)
 
 install.packages("remotes")
 remotes::install_github("r4ss/r4ss")
+remotes::install_github("chantelwetzel-noaa/HandyCode")
 remotes::install_github("nwfsc-assess/nwfscDiag")
 
 It is recommended to make sure all additional open windows of R or Rstudio (beside the one being used) are closed prior to updating libraries, and that one restarts Rstudio after all new installations. Many of the errors when running the SS-DL tool arise from keeping libraries updated or installed (especially r4ss).
