@@ -1454,19 +1454,38 @@ observeEvent(req(!is.null(rv.Age$data)), {
     	shinyjs::show(output$age_comp_plots_label<-renderText({"Age compositions"}))
   })
 
-output$Ageplot <- renderPlot({ 
-		inFile_age <- rv.Age$data 
-		if (is.null(inFile_age)) return(NULL) 
-		 
-		  rv.Age$data %>%  
-		      pivot_longer(-1, names_to = "year", values_to = "ltnum") %>%  
-		      rename(bin = Bins) %>%  
-		  ggplot(aes(bin, ltnum)) + 
-					geom_col(fill="#1D252D", color="white") + 
-					facet_wrap(~year) + 
-					xlab("Age bin") + 
-					ylab("Frequency")			 
-	}) 
+observeEvent(req(!is.null(rv.Age$data)), {
+  output$Ageplot<-renderPlot({ 
+      inFile_age <- rv.Age$data 
+      if (is.null(inFile_age)) return(NULL)  
+      rv.Age$data %>%  
+        rename_all(tolower) %>%  
+        dplyr::select(-nsamps) %>%  
+        pivot_longer(c(-year, -fleet, -sex)) %>%  
+        mutate(Fleet = factor(fleet), 
+               name = as.numeric(gsub("[^0-9.-]", "", name))) %>%  
+        ggplot(aes(name, value, fill=Fleet)) + 
+        geom_col(position="dodge") + 
+        facet_wrap(~year, scales="free_y") + 
+        xlab("Age bin") + 
+        ylab("Frequency") + 
+        scale_fill_viridis_d() 
+    }) 
+  })
+
+# output$Ageplot <- renderPlot({ 
+# 		inFile_age <- rv.Age$data 
+# 		if (is.null(inFile_age)) return(NULL) 
+# 		 browser()
+# 		  rv.Age$data %>%  
+# 		      pivot_longer(-1, names_to = "year", values_to = "ltnum") %>%  
+# 		      rename(bin = Bins) %>%  
+# 		  ggplot(aes(bin, ltnum)) + 
+# 					geom_col(fill="#1D252D", color="white") + 
+# 					facet_wrap(~year) + 
+# 					xlab("Age bin") + 
+# 					ylab("Frequency")			 
+# 	}) 
  
 
  observeEvent(req(!is.null(rv.Ct$data)), {
@@ -2206,7 +2225,6 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
     data.file$Nages<-Nages()
 
 	#Catches
-		#inCatch<- input$file2
 		if (is.null(rv.Ct$data)) 
 		{
 		inFile<- rv.Lt$data
@@ -2353,57 +2371,135 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		# }
 #		colnames(data.file$lencomp)<-lt.data.names
 	
+  
 	#Age composition data
-		inFile_age<- rv.Age$data
-		if (is.null(inFile_age)){
-		data.file$N_agebins<-Nages()
-		data.file$agebin_vector<-1:Nages()		
-		data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
-		colnames(data.file$ageerror)<-paste0("age",1:Nages())		
-			}
-		if (!is.null(inFile_age)){
-		Age.comp.data<-rv.Age$data
-		age.classes<-nrow(Age.comp.data)
-		data.file$N_agebins<-age.classes
-		data.file$agebin_vector<-Age.comp.data[,1]
-		data.file$ageerror<-data.frame(matrix(c(rep(-1,(age.classes+1)),rep(0.001,(age.classes+1))),2,(age.classes+1),byrow=TRUE))		
-		colnames(data.file$ageerror)<-paste0("age",1:Nages())		
-		age.samp.yrs<-as.numeric(colnames(Age.comp.data)[-1])
-		age.data.names<-c(c("Yr","Seas","FltSvy","Gender","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",Age.comp.data[,1]),paste0("m",Age.comp.data[,1]))
-		if(length(age.samp.yrs)==1){
-			data.file$agecomp<-data.frame(matrix(c(samp.yrs,
-			rep(1,length(age.samp.yrs)),
-			rep(1,length(age.samp.yrs)),
-			rep(1,length(age.samp.yrs)),
-			rep(0,length(age.samp.yrs)),
-			rep(-1,length(age.samp.yrs)),
-			rep(-1,length(age.samp.yrs)),
-			rep(-1,length(age.samp.yrs)),
-			colSums(Age.comp.data[-1]),
-			t(Age.comp.data)[-1,],
-			t(Age.comp.data)[-1,]*0),
-			nrow=length(age.samp.yrs),
-			ncol=9+length(Age.comp.data[,1])*2,
-			byrow=FALSE))[,,drop=FALSE]
-		}
-		else{
-		data.file$agecomp<-data.frame(matrix(cbind(samp.yrs,
-			rep(1,length(age.samp.yrs)),
-			rep(1,length(age.samp.yrs)),
-			rep(1,length(age.samp.yrs)),
-			rep(0,length(age.samp.yrs)),
-			rep(-1,length(age.samp.yrs)),
-			rep(-1,length(age.samp.yrs)),
-			rep(-1,length(age.samp.yrs)),
-			colSums(Age.comp.data[-1]),
-			t(Age.comp.data)[-1,],
-			t(Age.comp.data)[-1,]*0),
-			nrow=length(age.samp.yrs),
-			ncol=9+length(Age.comp.data[,1])*2,
-			byrow=FALSE))[,,drop=FALSE]			
-		}
-		colnames(data.file$agecomp)<-age.data.names
-		}
+    Age.comp.data<-rv.Age$data
+    if (is.null(Age.comp.data)) 
+    {
+      data.file$N_agebins<-Nages()
+      data.file$agebin_vector<-1:Nages()    
+      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+      colnames(data.file$ageerror)<-paste0("age",1:Nages())         
+    }
+
+    if (!is.null(Age.comp.data))
+    {
+      data.file$N_agebins<-ncol(Age.comp.data)-6
+      data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,7:ncol(Age.comp.data)]))
+      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+      colnames(data.file$ageerror)<-paste0("age",1:Nages())         
+      age.data.names<-c(c("Yr","Month","Fleet","Sex","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
+      age.data.females<-age.data.males<-age.data.unknowns<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
+      colnames(Age.comp.data)[1:6]<-c("Year","Fleet","Sex","Lbin_low","Lbin_hi","Nsamps")
+    #female ages
+    if(nrow(subset(Age.comp.data,Sex==1))>0){
+      Age.comp.data_female<-subset(Age.comp.data,Sex==1 & Nsamps>0) 
+      samp.yrs_females<-Age.comp.data_female[,1]
+      age.data.females<-data.frame(cbind(samp.yrs_females,
+        rep(1,length(samp.yrs_females)),
+        Age.comp.data_female[,2],
+        Age.comp.data_female[,3],
+        rep(0,length(samp.yrs_females)),
+        rep(1,length(samp.yrs_females)),
+        Age.comp.data_female[,4],
+        Age.comp.data_female[,5],
+        Age.comp.data_female[,6],
+        Age.comp.data_female[,7:ncol(Age.comp.data_female)],
+        Age.comp.data_female[,7:ncol(Age.comp.data_female)]*0)
+        )
+    }
+    #male ages
+    if(nrow(subset(Age.comp.data,Sex==2))>0){
+      Age.comp.data_male<-subset(Age.comp.data,Sex==2 & Nsamps>0)
+      samp.yrs_males<-Age.comp.data_male[,1]
+      age.data.males<-data.frame(cbind(samp.yrs_males,
+        rep(1,length(samp.yrs_males)),
+        Age.comp.data_male[,2],
+        Age.comp.data_male[,3],
+        rep(0,length(samp.yrs_males)),
+        rep(1,length(samp.yrs_males)),
+        Age.comp.data_male[,4],
+        Age.comp.data_male[,5],
+        Age.comp.data_male[,6],
+        Age.comp.data_male[,7:ncol(Age.comp.data_male)]*0,
+        Age.comp.data_male[,7:ncol(Age.comp.data_male)])
+        )
+      }
+    #unknown sex ages
+    if(nrow(subset(Age.comp.data,Sex==0))>0){
+      Age.comp.data_unknown<-subset(Age.comp.data,Sex==0 & Nsamps>0)
+      samp.yrs_unknown<-Age.comp.data_unknown[,1]
+      age.data.unknowns<-data.frame(cbind(samp.yrs_unknown,
+        rep(1,length(samp.yrs_unknown)),
+        Age.comp.data_unknown[,2],
+        Age.comp.data_unknown[,3],
+        rep(0,length(samp.yrs_unknown)),
+        rep(1,length(samp.yrs_unknown)),
+        Age.comp.data_unknown[,4],
+        Age.comp.data_unknown[,5],
+        Age.comp.data_unknown[,6],
+        Age.comp.data_unknown[,7:ncol(Age.comp.data_unknown)],
+        Age.comp.data_unknown[,7:ncol(Age.comp.data_unknown)]*0)
+        )
+      }
+    colnames(age.data.females)<-colnames(age.data.males)<-colnames(age.data.unknowns)<-age.data.names
+    data.file$agecomp<-na.omit(rbind(age.data.females,age.data.males,age.data.unknowns))
+    }
+  
+
+
+  # 	inFile_age<- rv.Age$data
+		# if (is.null(inFile_age)){
+		# data.file$N_agebins<-Nages()
+		# data.file$agebin_vector<-1:Nages()		
+		# data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+		# colnames(data.file$ageerror)<-paste0("age",1:Nages())		
+		# 	}
+		# if (!is.null(inFile_age)){
+		# Age.comp.data<-rv.Age$data
+		# age.classes<-nrow(Age.comp.data)
+		# data.file$N_agebins<-age.classes
+		# data.file$agebin_vector<-Age.comp.data[,1]
+		# data.file$ageerror<-data.frame(matrix(c(rep(-1,(age.classes+1)),rep(0.001,(age.classes+1))),2,(age.classes+1),byrow=TRUE))		
+		# colnames(data.file$ageerror)<-paste0("age",1:Nages())		
+		# age.samp.yrs<-as.numeric(colnames(Age.comp.data)[-1])
+		# age.data.names<-c(c("Yr","Seas","FltSvy","Gender","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",Age.comp.data[,1]),paste0("m",Age.comp.data[,1]))
+		# if(length(age.samp.yrs)==1){
+		# 	data.file$agecomp<-data.frame(matrix(c(samp.yrs,
+		# 	rep(1,length(age.samp.yrs)),
+		# 	rep(1,length(age.samp.yrs)),
+		# 	rep(1,length(age.samp.yrs)),
+		# 	rep(0,length(age.samp.yrs)),
+		# 	rep(-1,length(age.samp.yrs)),
+		# 	rep(-1,length(age.samp.yrs)),
+		# 	rep(-1,length(age.samp.yrs)),
+		# 	colSums(Age.comp.data[-1]),
+		# 	t(Age.comp.data)[-1,],
+		# 	t(Age.comp.data)[-1,]*0),
+		# 	nrow=length(age.samp.yrs),
+		# 	ncol=9+length(Age.comp.data[,1])*2,
+		# 	byrow=FALSE))[,,drop=FALSE]
+		# }
+		# else{
+		# data.file$agecomp<-data.frame(matrix(cbind(samp.yrs,
+		# 	rep(1,length(age.samp.yrs)),
+		# 	rep(1,length(age.samp.yrs)),
+		# 	rep(1,length(age.samp.yrs)),
+		# 	rep(0,length(age.samp.yrs)),
+		# 	rep(-1,length(age.samp.yrs)),
+		# 	rep(-1,length(age.samp.yrs)),
+		# 	rep(-1,length(age.samp.yrs)),
+		# 	colSums(Age.comp.data[-1]),
+		# 	t(Age.comp.data)[-1,],
+		# 	t(Age.comp.data)[-1,]*0),
+		# 	nrow=length(age.samp.yrs),
+		# 	ncol=9+length(Age.comp.data[,1])*2,
+		# 	byrow=FALSE))[,,drop=FALSE]			
+		# }
+		# colnames(data.file$agecomp)<-age.data.names
+		# }
+
+
 		
 		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
 
@@ -3102,6 +3198,8 @@ observeEvent(input$run_Profiles,{
 
 
        try(run_diagnostics(mydir = mydir, model_settings = model_settings))
+
+       file.remove(paste0(getwd,"/run_diag_warning.txt"))
 
        output$LikeProf_plot_modout <- renderImage({
        image.path1<-normalizePath(file.path(paste0(pathLP(),"_profile_",prof_parms_names[1],"/parameter_panel_",prof_parms_names[1],".png")),mustWork=FALSE)
