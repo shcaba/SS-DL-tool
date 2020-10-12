@@ -48,16 +48,19 @@ Running the tool can be accomplished in any of the following ways:
 <br></br>
 
 ## Future features will include:
-* Likelihood profile implementation
-* Model sensitivity comparisons
 * Bayesian uncertainty estimation
 * Ensemble modelling
 <br></br>
 
 ## General guidance using the SS DL tool
 * Length and age samples need to be representative of the stock being measured. This usually means random samples covering the area of interest. Beware of serial depletion in lengths that may keep the length struture artificially high (i.e., hyperstability). 
+* When entering lengths or ages, the sex codes are as follows: 0=unknown; 1=female; 2=male
+* Age sample treatment (either conditional age-at-length or marginal age compositions) is specified using the "Lbin_low" and "Lbin_hi" inputs. 
+	* Ages conditioned on lengths: those inputs should the the low and high length bin the subsequent ages are assigned. 
+	* Marginal ages: low and high length bins should be noted as -1 and -1. See example age file input.
 * Selectivity starting parameters can be determined from the length compositions. Modes in catch are L95% starting values, and halfway between that value and the length at first capture is a good L50% starting values.
 * Be sure to check the fit to the length compositions.
 * Check for model convergence in the "Model output" tab. Also check to see if the selectivity estimates make sense.
 * If convergence is an issue, try the "Jitter" feature. Once you find a converged model, you can increase the number of jitters you do to make sure that model is the best fit model.
+* Always check to see if the selectivity patterns being applied in the model make sense before looking at model outputs as they can have large influences on those outputs.
 
