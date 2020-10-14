@@ -2809,6 +2809,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 #   ctl.file$dirichlet_parms[dirichlet.index,3:4]<-0
 #   ctl.file$dirichlet_parms[dirichlet.index,7]<-2
 # }
+    
     #Add other fleets
 		if(data.file$Nfleets>1){
 			for(i in 1:(data.file$Nfleets-1))
@@ -2882,7 +2883,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 
     if(input$dirichlet)
     {
-      Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+3))
+      Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+data.file$Nfleets))
       # if(Dirichlet.fleets>1)
       #   {
       #     for(i in 1:length(Dirichlet.fleets)){ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])}
