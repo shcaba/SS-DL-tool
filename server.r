@@ -404,8 +404,10 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("Data_panel")
         shinyjs::show("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
-        if(length(unique(rv.Lt$data[,2]))>1){shinyjs::show("panel_ct_wt_LO")}
-        if(length(unique(rv.Lt$data[,2]))==1){shinyjs::hide("panel_ct_wt_LO")}
+        if(length(unique(rv.Lt$data[,2]))>1|length(unique(rv.Age$data[,2]))>1){shinyjs::show("panel_ct_wt_LO")}
+        if(length(unique(rv.Lt$data[,2]))==1|length(unique(rv.Age$data[,2]))==1){shinyjs::hide("panel_ct_wt_LO")}
+        #if(input$Ct_F_LO_select){shinyjs::show("panel_ct_wt_LO")}
+        #if(input$Ct_F_LO_select==NULL){shinyjs::hide("panel_ct_wt_LO")}
         shinyjs::hide("panel_SSS")
         shinyjs::show("panel_SSLO_LH")
         shinyjs::show("panel_SSLO_fixed")
@@ -742,23 +744,26 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 output$Model_dims1 <- renderUI({ 
         inFile1 = rv.Lt$data 
         inFile2 = rv.Ct$data 
-        if (is.null(inFile1) & is.null(inFile2)) return(NULL) 
-        
-        if (!is.null(inFile1) & is.null(inFile2)){ 
-              styr.in =  min(inFile1[,1]) 
-              endyr.in = max(inFile1[,1])
+        inFile3 = rv.Age$data 
+        #No file inputs
+        if (is.null(inFile1) & is.null(inFile2) & is.null(inFile3)) return(NULL) 
+        #If have lengths and/or ages, but no catches 
+        if (any(!is.null(inFile1), !is.null(inFile3))& is.null(inFile2)){ 
+              styr.in =  min(inFile1[,1],inFile3[,1]) 
+              endyr.in = max(inFile1[,1],inFile3[,1])
               if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))& input$Ct_F_LO_select=="Constant Catch"){ 
-                styr.in = min(inFile1[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
+                styr.in = min(inFile1[,1],inFile3[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
               }
           }
-
+          #If have catches
           if (!is.null(inFile2)){
             styr.in<-min(inFile2[,1])
             endyr.in<-max(inFile2[,1])
-          }     
-          if (!is.null(inFile1) &!is.null(inFile2)){
-            styr.in<-min(min(inFile1[,1]),min(inFile2[,1]))
-            endyr.in<-max(max(inFile1[,1]),max(inFile2[,1]))
+          }
+          #If lengths or ages with catches     
+          if (!is.null(inFile1) &!is.null(inFile2)|!is.null(inFile3) &!is.null(inFile2)){
+            styr.in<-min(inFile1[,1],inFile2[,1],inFile3[,1])
+            endyr.in<-max(inFile1[,1],inFile2[,1],inFile3[,1])
           }     
             fluidRow(column(width=4, numericInput("styr", "Starting year",  
                                                   value=styr.in, min=1, max=10000, step=1)), 
@@ -1476,7 +1481,6 @@ observeEvent(req(!is.null(rv.Age$data)), {
 # output$Ageplot <- renderPlot({ 
 # 		inFile_age <- rv.Age$data 
 # 		if (is.null(inFile_age)) return(NULL) 
-# 		 browser()
 # 		  rv.Age$data %>%  
 # 		      pivot_longer(-1, names_to = "year", values_to = "ltnum") %>%  
 # 		      rename(bin = Bins) %>%  
@@ -2192,13 +2196,13 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #            Sys.sleep(0.5)
   #          }
 
-  	#Copy and move files
+    #Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
 			{
 				unlink(paste0(getwd(),"/Scenarios/",input$Scenario_name),recursive=TRUE)
 #				file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
 			}
-	  	if(input$Ct_F_LO_select=="Estimate F"){
+	  	if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){
           file.copy(paste0(getwd(),"/SS_LO_F_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
           file.rename(paste0(getwd(),"/Scenarios/SS_LO_F_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
         }
@@ -2210,41 +2214,31 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		#Read data and control files
 		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
-  if(input$Ct_F_LO_select=="Estimate F")
-    {
-      data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
-      ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
-    }
+  #if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data))
+  #  {
+  #    data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
+  #    ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
+  #  }
 
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
 
-
-    data.file$Nages<-Nages()
-
 	#Catches
 		if (is.null(rv.Ct$data)) 
 		{
 		inFile<- rv.Lt$data
 		Lt.comp.data<-rv.Lt$data
-		data.file$Nfleets<-max(Lt.comp.data[,2])
+		Age.comp.data<- rv.Age$data
+    data.file$Nfleets<-max(Lt.comp.data[,2],Age.comp.data[,2])
 		if(input$Ct_F_LO_select=="Estimate F"){data.file$bycatch_fleet_info[4:5]<-c(input$styr,input$endyr)}
     if(data.file$Nfleets>1){
 			for(i in 1:(data.file$Nfleets-1))
 			{
 				if(input$Ct_F_LO_select=="Estimate F"){data.file$bycatch_fleet_info<-rbind(data.file$bycatch_fleet_info,data.file$bycatch_fleet_info[1,])}
-        data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
-				data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
-				data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
-				data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
-			}
-      data.file$bycatch_fleet_info[,1]<-c(1:data.file$Nfleets)
-      data.file$len_info[,5]<-1
-      data.file$len_info[,6]<-c(1:data.file$Nfleets)
-			data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)
-			data.file$CPUEinfo[,1]<-1:data.file$Nfleets
+ 			}
+      if(input$Ct_F_LO_select=="Estimate F"){data.file$bycatch_fleet_info[,1]<-c(1:data.file$Nfleets)}
 		}
 		year.in<-input$styr:input$endyr
 		catch.cols<-colnames(data.file$catch)
@@ -2260,7 +2254,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
-						c(catch.level[i],rep(catch.level[i],length(year.in))),
+						c(catch.level[i]+0.000000001,rep(catch.level[i],length(year.in))),
 						c(0.01,rep(1000,length(year.in)))
 						)			
 		}
@@ -2272,19 +2266,6 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		{
 		Catch.data<-rv.Ct$data
 		data.file$Nfleets<-ncol(Catch.data)-1
-		if(data.file$Nfleets>1){
-			for(i in 1:(data.file$Nfleets-1))
-			{
-				data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
-				data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
-				data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
-				data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
-			}
-      data.file$len_info[,5]<-1
-      data.file$len_info[,6]<-c(1:data.file$Nfleets)
-			data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)
-			data.file$CPUEinfo[,1]<-1:data.file$Nfleets
-		}
 		year.in<-Catch.data[,1]
 		catch.cols<-colnames(data.file$catch)
 		catch_temp<-list()
@@ -2303,58 +2284,63 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		}
 
 	#Length composition data
-		inFile<- rv.Lt$data
-		if (is.null(inFile)) return(NULL)
-		Lt.comp.data<-rv.Lt$data
-		data.file$N_lbins<-ncol(Lt.comp.data)-4
-		data.file$lbin_vector<-as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
-		lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",data.file$lbin_vector),paste0("m",data.file$lbin_vector))
-		lt.data.females<-lt.data.males<-lt.data.unknowns<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
-		colnames(Lt.comp.data)[1:4]<-c("Year","Fleet","Sex","Nsamps")
-		#female lengths
-		if(nrow(subset(Lt.comp.data,Sex==1))>0){
-		Lt.comp.data_female<-subset(Lt.comp.data,Sex==1 & Nsamps>0)	
-		samp.yrs<-Lt.comp.data_female[,1]
-		lt.data.females<-data.frame(cbind(samp.yrs,
-				rep(1,length(samp.yrs)),
-				Lt.comp.data_female[,2],
-				Lt.comp.data_female[,3],
-				rep(0,length(samp.yrs)),
-				Lt.comp.data_female[,4],
-				Lt.comp.data_female[,5:ncol(Lt.comp.data_female)],
-				Lt.comp.data_female[,5:ncol(Lt.comp.data_female)]*0)
-				)
-		}
-		#male lengths
-		if(nrow(subset(Lt.comp.data,Sex==2))>0){
-			Lt.comp.data_male<-subset(Lt.comp.data,Sex==2 & Nsamps>0)
-			samp.yrs_males<-Lt.comp.data_male[,1]
-			lt.data.males<-data.frame(cbind(samp.yrs_males,
-				rep(1,length(samp.yrs_males)),
-				Lt.comp.data_male[,2],
-				Lt.comp.data_male[,3],
-				rep(0,length(samp.yrs_males)),
-				Lt.comp.data_male[,4],
-				Lt.comp.data_male[,5:ncol(Lt.comp.data_male)]*0,
-				Lt.comp.data_male[,5:ncol(Lt.comp.data_male)])
-				)
-			}
-		#unknown sex lengths
-		if(nrow(subset(Lt.comp.data,Sex==0))>0){
-			Lt.comp.data_unknown<-subset(Lt.comp.data,Sex==0 & Nsamps>0)
-			samp.yrs_unknown<-Lt.comp.data_unknown[,1]
-			lt.data.unknowns<-data.frame(cbind(samp.yrs_unknown,
-				rep(1,length(samp.yrs_unknown)),
-				Lt.comp.data_unknown[,2],
-				Lt.comp.data_unknown[,3],
-				rep(0,length(samp.yrs_unknown)),
-				Lt.comp.data_unknown[,4],
-				Lt.comp.data_unknown[,5:ncol(Lt.comp.data_unknown)],
-				Lt.comp.data_unknown[,5:ncol(Lt.comp.data_unknown)]*0)
-				)
-			}
-		colnames(lt.data.females)<-colnames(lt.data.males)<-colnames(lt.data.unknowns)<-lt.data.names
-		data.file$lencomp<-na.omit(rbind(lt.data.females,lt.data.males,lt.data.unknowns))
+		#inFile<- rv.Lt$data
+		if (is.null(rv.Lt$data)) {
+      data.file$lencomp<-NULL  
+      }
+      
+		if (!is.null(rv.Lt$data)) {
+    Lt.comp.data<-rv.Lt$data
+    data.file$N_lbins<-ncol(Lt.comp.data)-4
+    data.file$lbin_vector<-as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
+    lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",data.file$lbin_vector),paste0("m",data.file$lbin_vector))
+    lt.data.females<-lt.data.males<-lt.data.unknowns<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
+    colnames(Lt.comp.data)[1:4]<-c("Year","Fleet","Sex","Nsamps")
+    #female lengths
+    if(nrow(subset(Lt.comp.data,Sex==1))>0){
+    Lt.comp.data_female<-subset(Lt.comp.data,Sex==1 & Nsamps>0) 
+    samp.yrs<-Lt.comp.data_female[,1]
+    lt.data.females<-data.frame(cbind(samp.yrs,
+        rep(1,length(samp.yrs)),
+        Lt.comp.data_female[,2],
+        Lt.comp.data_female[,3],
+        rep(0,length(samp.yrs)),
+        Lt.comp.data_female[,4],
+        Lt.comp.data_female[,5:ncol(Lt.comp.data_female)],
+        Lt.comp.data_female[,5:ncol(Lt.comp.data_female)]*0)
+        )
+    }
+    #male lengths
+    if(nrow(subset(Lt.comp.data,Sex==2))>0){
+      Lt.comp.data_male<-subset(Lt.comp.data,Sex==2 & Nsamps>0)
+      samp.yrs_males<-Lt.comp.data_male[,1]
+      lt.data.males<-data.frame(cbind(samp.yrs_males,
+        rep(1,length(samp.yrs_males)),
+        Lt.comp.data_male[,2],
+        Lt.comp.data_male[,3],
+        rep(0,length(samp.yrs_males)),
+        Lt.comp.data_male[,4],
+        Lt.comp.data_male[,5:ncol(Lt.comp.data_male)]*0,
+        Lt.comp.data_male[,5:ncol(Lt.comp.data_male)])
+        )
+      }
+    #unknown sex lengths
+    if(nrow(subset(Lt.comp.data,Sex==0))>0){
+      Lt.comp.data_unknown<-subset(Lt.comp.data,Sex==0 & Nsamps>0)
+      samp.yrs_unknown<-Lt.comp.data_unknown[,1]
+      lt.data.unknowns<-data.frame(cbind(samp.yrs_unknown,
+        rep(1,length(samp.yrs_unknown)),
+        Lt.comp.data_unknown[,2],
+        Lt.comp.data_unknown[,3],
+        rep(0,length(samp.yrs_unknown)),
+        Lt.comp.data_unknown[,4],
+        Lt.comp.data_unknown[,5:ncol(Lt.comp.data_unknown)],
+        Lt.comp.data_unknown[,5:ncol(Lt.comp.data_unknown)]*0)
+        )
+      }
+    colnames(lt.data.females)<-colnames(lt.data.males)<-colnames(lt.data.unknowns)<-lt.data.names
+    data.file$lencomp<-na.omit(rbind(lt.data.females,lt.data.males,lt.data.unknowns))      
+    }
 		#}
 		#else{
 		# data.file$lencomp<-data.frame(matrix(cbind(samp.yrs,
@@ -2370,8 +2356,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		# 	byrow=FALSE))[,,drop=FALSE]			
 		# }
 #		colnames(data.file$lencomp)<-lt.data.names
-	
-  
+	  
 	#Age composition data
     Age.comp.data<-rv.Age$data
     if (is.null(Age.comp.data)) 
@@ -2499,14 +2484,29 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		# colnames(data.file$agecomp)<-age.data.names
 		# }
 
+  if(data.file$Nfleets>1){
+      for(i in 1:(data.file$Nfleets-1))
+      {
+        data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
+        data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
+        data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
+        data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
+      }
+      #Set Dirichelt on
+      data.file$age_info[,5]<-data.file$len_info[,5]<-1
+      #Set up the correct fleet enumeration
+      data.file$len_info[,6]<-1:data.file$Nfleets 
+      data.file$age_info[,6]<-(data.file$Nfleets+1):(2*data.file$Nfleets)
+      data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)
+      data.file$CPUEinfo[,1]<-1:data.file$Nfleets
+    }
+  
 
-		
 		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
 
 		####################### END DATA FILE #####################################
 ##################################################################################
 		####################### START CTL FILE ####################################
-
 		#Read, edit then write new CONTROL file
     #LENGTH or AGE-ONLY
 		if(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))==TRUE)
@@ -2803,11 +2803,12 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
       ctl.file$size_selex_parms[6,7]<- FinalSel_phase[1]
 		}
 
-if(input$dirichlet)
-{
-  ctl.file$dirichlet_parms[,3:4]<-0
-  ctl.file$dirichlet_parms[,7]<-2
-}
+# if(input$dirichlet)
+# {
+#   dirichlet.index<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+3))
+#   ctl.file$dirichlet_parms[dirichlet.index,3:4]<-0
+#   ctl.file$dirichlet_parms[dirichlet.index,7]<-2
+# }
     #Add other fleets
 		if(data.file$Nfleets>1){
 			for(i in 1:(data.file$Nfleets-1))
@@ -2847,15 +2848,21 @@ if(input$dirichlet)
           ctl.file$size_selex_parms[6*i+6,7]<- FinalSel_phase[i+1]          
         }
     
-    #Dirichlet data-weighting
-        ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])
+       #Dirichlet data-weighting
+        ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1:2,])
 			}
 
-if(input$dirichlet)
-{
-  ctl.file$dirichlet_parms[,3:4]<-0
-  ctl.file$dirichlet_parms[,7]<-2
-}
+#Dirichlet data-weighting
+# if(input$dirichlet)
+# {
+#   Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+3))
+#   # if(Dirichlet.fleets>1)
+#   #   {
+#   #     for(i in 1:length(Dirichlet.fleets)){ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])}
+#   #   }
+#     ctl.file$dirichlet_parms[Dirichlet.fleets,3:4]<-0
+#     ctl.file$dirichlet_parms[Dirichlet.fleets,7]<-2
+# }
 			#Re-label so r4ss can interpret these new entries
 			rownames(ctl.file$init_F)<-paste0("InitF_seas_1_flt_",1:data.file$Nfleets,"Fishery",1:data.file$Nfleets)
 			rownames(ctl.file$age_selex_types)<-rownames(ctl.file$size_selex_types)<-paste0("Fishery",1:data.file$Nfleets)
@@ -2872,6 +2879,18 @@ if(input$dirichlet)
 			size_selex_parms_rownames<-unlist(size_selex_parms_rownames)
 			rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
 		}
+
+    if(input$dirichlet)
+    {
+      Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+3))
+      # if(Dirichlet.fleets>1)
+      #   {
+      #     for(i in 1:length(Dirichlet.fleets)){ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])}
+      #   }
+        ctl.file$dirichlet_parms[Dirichlet.fleets,3:4]<-0
+        ctl.file$dirichlet_parms[Dirichlet.fleets,7]<-2
+    }
+
     #Change data weights
     # Lt_dat_wts<-as.numeric(trimws(unlist(strsplit(input$Lt_datawts,","))))
     # ctl.file$Variance_adjustments[1,]<-Lt_dat_wts
@@ -2898,7 +2917,8 @@ if(input$dirichlet)
           if(input$Ct_F_LO_select=="Estimate F")
             {
               lt.lam.in<-as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,","))))/sum(as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,",")))))
-              lts.lambdas[,4]<-lt.lam.in
+              lt.lam<-lt.lam.in/max(lt.lam.in)
+              lts.lambdas[,4]<-lt.lam
             }
           rownames(lts.lambdas)<-paste0("length_Fishery",c(1:data.file$Nfleets),"_sizefreq_method_1_Phz1")
           ct.lambdas[,4]<-0

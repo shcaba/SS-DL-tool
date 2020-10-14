@@ -31,6 +31,7 @@
 #_fleet_type fishery_timing area catch_units need_catch_mult fleetname
  2 -1 1 1 0 Fishery  # 1
 
+#Bycatch input
 1 1 3 1993 2019 0
 #Bycatch_fleet_input_goes_next
 #a:  fleet index
@@ -163,7 +164,7 @@
 #_Comp_Error2:  parm number  for dirichlet
 #_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001
 #_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize
--1 0.001 0 0 0 0 0.001 #_fleet:1_Fishery
+-1 0.001 0 0 1 2 0.001 #_fleet:1_Fishery
 3 #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths
 # sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution
 # partition codes:  (0=combined; 1=discard; 2=retained

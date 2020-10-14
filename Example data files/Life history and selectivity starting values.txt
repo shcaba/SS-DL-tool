@@ -1,0 +1,13 @@
+M=0.123
+Linf = 56
+k =0.19
+t0=0
+Lmat50%=47
+Lmat50%=52
+
+Selectivity inputs
+Sel50%: 20,25
+phases: 1,1
+
+Sel95%: 30,35
+phases:1,1
