@@ -2080,14 +2080,14 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       #ofl_yrs=c(input$endyr+1,input$endyr+2),
       sexes=T,
       BH_FMSY_comp=F,
-      OStype="Windows")
+      OStype=input$OS_choice)
 #save(SSS.out)
 show_modal_spinner(spin="flower",color="red",text="Process model output")
 
-if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
   {
   output$SSS_priors_post<-renderPlot({
-      if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+      if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
       load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       sss.M.f<-rbind(data.frame(value=SSS.out$Prior$M_f,type="prior",metric="Female M"),data.frame(value=SSS.out$Post$M_f,type="post",metric="Female M"))
@@ -2110,7 +2110,7 @@ if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenar
     })  
 
   output$SSS_growth_priors_post<-renderPlot({
-      if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+      if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
       load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       sss.L1_f<-rbind(data.frame(value=SSS.out$Prior$L1_f,type="prior",metric="Female L1"),data.frame(value=SSS.out$Post$L1_f,type="post",metric="Female L1"))
@@ -2131,7 +2131,7 @@ if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenar
     })  
 
   output$SSS_OFL_plot<-renderPlot({
-      if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+      if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
       load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       ofl.years<-as.numeric(unique(melt(SSS.out$OFL)$Var2))
@@ -2145,7 +2145,7 @@ if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenar
     })  
 
   output$SSS_ABC_plot<-renderPlot({
-      if(exists(load("C:/Users/Jason.Cope/Documents/Github/SS-DL-tool/Scenarios/Scenario 1/SSS_out.DMP")))
+      if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
       load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       abc.years<-as.numeric(unique(melt(SSS.out$ABC)$Var2))
