@@ -2397,7 +2397,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #Population length data bins
   data.file$binwidth<-2
   data.file$minimum_size<-4
-  max.bin.in<-2*(round((Linf()+(Linf()*0.2326))/2))+2
+  max.bin.in<-2*(round((Linf()+(Linf()*0.25))/2))+2 #0.2326
   data.file$maximum_size<-max.bin.in
   if(input$advance_ss_click)
     {

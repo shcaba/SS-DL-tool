@@ -110,9 +110,9 @@
 #  -9999 0 0 0 0 0 0 # terminator for mean body size data 
 #
 # set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage
-1 # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector
+2 # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector
 # no additional input for option 1
-# read binwidth, minsize, lastbin size for option 2
+2 9 71 # read binwidth, minsize, lastbin size for option 2
 # read N poplen bins, then vector of bin lower boundaries, for option 3
 1 # use length composition data (0/1)
 #_mintailcomp: upper and lower distribution for females and males separately are accumulated until exceeding this level.

@@ -580,8 +580,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       uiOutput("AdvancedSS2"),
       uiOutput("AdvancedSS3"),
       uiOutput("AdvancedSS4"),
-      h5(p("Define modelled length bins. Must be smaller and larger than the length compositin bins")),
-      h5(p(em("Must be smaller and larger than the length compositin bins. Values overidden to meet this requirement"))),
+      h5(p("Define modelled length bins. Default values are by 2 cm bin ranging from 4 to 25% above the Linf value")),
+      h5(p(em("Inputs must be smaller and larger than the length compositin bins. Input values will be overridden to meet this requirement"))),
       uiOutput("AdvancedSS5")
       
      #  prettyCheckbox(
