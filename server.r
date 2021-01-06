@@ -250,6 +250,23 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
   }, priority = 1000)
 
 
+#Reset index
+  observe({
+    req(input$file4)
+    req(!rv.Index$clear)
+    rv.Index$data <- read.csv(input$file4$datapath,check.names=FALSE)
+  })
+
+  observeEvent(input$file4, {
+    rv.Index$clear <- FALSE
+  }, priority = 1000)
+
+  observeEvent(input$reset_index, {
+    rv.Index$data <- NULL
+    rv.Index$clear <- TRUE
+    reset('file4')
+  }, priority = 1000)
+
 #######
 
    
@@ -327,6 +344,8 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 
         shinyjs::hide("panel_Mod_dims")
 
+        shinyjs::hide("panel_advanced_SS")
+
         shinyjs::hide("panel_SSS_reps")
 
         shinyjs::hide("OS_choice")
@@ -384,6 +403,8 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 
         shinyjs::show("panel_SSS_reps")
 
+        shinyjs::hide("panel_advanced_SS")
+
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
         
@@ -435,6 +456,8 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("panel_Forecasts")
 
         shinyjs::show("panel_Mod_dims")
+
+        shinyjs::hide("panel_advanced_SS")
 
         shinyjs::hide("panel_SSS_reps")
 
@@ -491,6 +514,8 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::show("panel_Forecasts")
 
         shinyjs::show("panel_Mod_dims")
+
+        shinyjs::show("panel_advanced_SS")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -551,6 +576,8 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
 
         shinyjs::show("panel_Mod_dims")
         
+        shinyjs::show("panel_advanced_SS")
+
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
 
@@ -606,6 +633,8 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
 
         shinyjs::hide("panel_Mod_dims")
         
+        shinyjs::hide("panel_advanced_SS")
+
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
 
@@ -661,6 +690,8 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
 
         shinyjs::hide("panel_Mod_dims")
         
+        shinyjs::hide("panel_advanced_SS")
+
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
 
@@ -716,6 +747,8 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 
         shinyjs::hide("panel_Mod_dims")
         
+        shinyjs::hide("panel_advanced_SS")
+
         shinyjs::hide("panel_SSS_reps")
 
         shinyjs::hide("OS_choice")
@@ -1285,6 +1318,49 @@ output$Forecasts<- renderUI({
 	}) 
 
 
+output$AdvancedSS1<- renderUI({ 
+    if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "no_hess", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
+        shape = "round", outline = TRUE, status = "info"))) 
+      } 
+  }) 
+
+output$AdvancedSS2<- renderUI({ 
+    if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "no_plots_tables", label = "Turn off plots and tables",
+        shape = "round", outline = TRUE, status = "info"))) 
+      } 
+  }) 
+
+output$AdvancedSS3<- renderUI({ 
+    if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "GT1", label = "Use only one growth type (default is 5)",
+        shape = "round", outline = TRUE, status = "info"))) 
+      } 
+  }) 
+
+output$AdvancedSS4<- renderUI({ 
+    if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "Sex3", label = "Retain sex ratio in length compositions (Sex option = 3)",
+        shape = "round", outline = TRUE, status = "info"))) 
+      } 
+  }) 
+
+output$AdvancedSS5 <- renderUI({ 
+    if(input$advance_ss_click){       
+      fluidRow(column(width=4, numericInput("lt_bin_size", "bin size",  
+                                              value=2, min=0, max=10000, step=1)), 
+              column(width=4, numericInput("lt_min_bin", "minimum bin",  
+                                              value=4, min=0, max=10000, step=1)), 
+              column(width=4, numericInput("lt_max_bin", "maximum bin",  
+                                              value=2*(round((Linf()+(Linf()*0.2326))/2))+2, min=0, max=10000, step=1))) 
+    } 
+  }) 
+
 
 
 Nages<-reactive({
@@ -1509,6 +1585,21 @@ output$Ctplot <- renderPlot({
 		    xlab("Year") +  
 		    scale_color_viridis_d() 
 		}) 
+
+output$Indexplot <- renderPlot({ 
+    if (is.null(rv.Index$data)) return(NULL)     
+        
+        rv.Index$data$Fleet<-as.factor(rv.Index$data$Fleet)
+        ggplot(rv.Index$data,aes(x=Year,y=Index,group=Fleet, colour=Fleet)) +  
+        geom_line(lwd=1.1) +
+        geom_errorbar(aes(ymin=qlnorm(0.0275,log(Index),CV),ymax=qlnorm(0.975,log(Index),CV),group=Fleet),width=0,size=1)+ 
+        geom_point(aes(colour=Fleet),size=4) +  
+        ylab("Index") + 
+        xlab("Year") +  
+        scale_color_viridis_d() 
+    }) 
+
+
 
 #Plot M by age
 output$Mplot<-renderPlot({ 
@@ -1782,16 +1873,24 @@ SSS.run<-observeEvent(input$run_SSS,{
 		data.file$Nages<-Nages()
 
 	#Catches
-    #inCatch<- input$file2
 		Catch.data<-rv.Ct$data
-		data.file$Nfleets<-ncol(Catch.data)
+		catch.dep.fleets<-ncol(Catch.data)
+    data.file$Nfleets<-catch.dep.fleets
+    if(!is.null(rv.Index))
+      {
+        index.fleets<-max(rv.Index$data$Fleet)
+        if(index.fleets>catch.dep.fleets) {data.file$Nfleets<-index.fleets}
+        if(index.fleets==catch.dep.fleets) {data.file$Nfleets<-index.fleets+1}
+        if(index.fleets<catch.dep.fleets) {data.file$Nfleets<-catch.dep.fleets}
+      }
+    
 		if((data.file$Nfleets-1)>1){
 			for(i in 1:(data.file$Nfleets-2))
 			{
 				data.file$fleetinfo<-rbind(data.file$fleetinfo,data.file$fleetinfo[1,])
 				data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
 			}
-			data.file$fleetinfo$fleetname<-c(paste0("Fishery",1:(data.file$Nfleets-1)),"Depl")
+			data.file$fleetinfo$fleetname<-c(paste0("Fishery",1:(catch.dep.fleets-1)),"Depl")
 			data.file$fleetinfo$type[c(2,data.file$Nfleets)]<-c(1,3)
       data.file$fleetinfo$surveytiming[c(2,data.file$Nfleets)]<-c(-1,0.1)
       data.file$CPUEinfo[,1]<-1:data.file$Nfleets
@@ -2224,14 +2323,15 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
+    data.file$Nfleets<-max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data)
 
 	#Catches
 		if (is.null(rv.Ct$data)) 
 		{
-		inFile<- rv.Lt$data
+		#inFile<- rv.Lt$data
 		Lt.comp.data<-rv.Lt$data
 		Age.comp.data<- rv.Age$data
-    data.file$Nfleets<-max(Lt.comp.data[,2],Age.comp.data[,2])
+    #data.file$Nfleets<-max(Lt.comp.data[,2],Age.comp.data[,2])
 		if(input$Ct_F_LO_select=="Estimate F"){data.file$bycatch_fleet_info[4:5]<-c(input$styr,input$endyr)}
     if(data.file$Nfleets>1){
 			for(i in 1:(data.file$Nfleets-1))
@@ -2265,7 +2365,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		if(!is.null(rv.Ct$data))
 		{
 		Catch.data<-rv.Ct$data
-		data.file$Nfleets<-ncol(Catch.data)-1
+		data.file$Nfleets<-max(ncol(Catch.data)-1,data.file$Nfleets)
 		year.in<-Catch.data[,1]
 		catch.cols<-colnames(data.file$catch)
 		catch_temp<-list()
@@ -2283,6 +2383,29 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		colnames(data.file$catch)<-catch.cols
 		}
 
+  #Index data
+    # if (is.null(rv.Index$data)) {
+    #   data.file$CPUE<-NULL  
+    #   }
+
+    if (!is.null(rv.Index$data)) {
+    Index.data<-rv.Index$data
+    data.file$N_cpue<-unique(rv.Index$data[,2])
+    data.file$CPUE<-data.frame(year=rv.Index$data[,1],seas=1,index=rv.Index$data[,2],obs=rv.Index$data[,3],se_log=rv.Index$data[,4])
+    }
+
+  #Population length data bins
+  data.file$binwidth<-2
+  data.file$minimum_size<-4
+  max.bin.in<-2*(round((Linf()+(Linf()*0.2326))/2))+2
+  data.file$maximum_size<-max.bin.in
+  if(input$advance_ss_click)
+    {
+      data.file$binwidth<-input$lt_bin_size
+      data.file$minimum_size<-input$lt_min_bin
+      data.file$maximum_size<-input$lt_max_bin 
+    }
+
 	#Length composition data
 		#inFile<- rv.Lt$data
 		if (is.null(rv.Lt$data)) {
@@ -2293,6 +2416,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
     Lt.comp.data<-rv.Lt$data
     data.file$N_lbins<-ncol(Lt.comp.data)-4
     data.file$lbin_vector<-as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
+    if(data.file$maximum_size<max(data.file$lbin_vector)){data.file$maximum_size<-(2*round(max(data.file$lbin_vector)/2))+2}
     lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",data.file$lbin_vector),paste0("m",data.file$lbin_vector))
     lt.data.females<-lt.data.males<-lt.data.unknowns<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
     colnames(Lt.comp.data)[1:4]<-c("Year","Fleet","Sex","Nsamps")
@@ -2338,6 +2462,26 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
         Lt.comp.data_unknown[,5:ncol(Lt.comp.data_unknown)]*0)
         )
       }
+
+    #unknown sex lengths
+    if(input$Sex3){
+      samp.yrs_females<-Lt.comp.data_female[,1]
+      samp.yrs_males<-Lt.comp.data_male[,1]
+      samp.yrs_sex3<-samp.yrs_females[match(samp.yrs_males,samp.yrs_females)]
+      Lt.comp.data.year<-
+      Lt.comp.data_female<-subset(Lt.comp.data,Sex==1 & Nsamps>0) 
+      Lt.comp.data_male<-subset(Lt.comp.data,Sex==2 & Nsamps>0)
+      lt.data.sex3<-data.frame(cbind(samp.yrs_sex3,
+        rep(1,length(samp.yrs_sex3)),
+        Lt.comp.data_sex3[,2],
+        Lt.comp.data_sex3[,3],
+        rep(0,length(samp.yrs_sex3)),
+        Lt.comp.data_sex3[,4],
+        Lt.comp.data_sex3[,5:ncol(Lt.comp.data_sex3)],
+        Lt.comp.data_sex3[,5:ncol(Lt.comp.data_sex3)]*0)
+        )
+      }
+
     colnames(lt.data.females)<-colnames(lt.data.males)<-colnames(lt.data.unknowns)<-lt.data.names
     data.file$lencomp<-na.omit(rbind(lt.data.females,lt.data.males,lt.data.unknowns))      
     }
@@ -2356,13 +2500,13 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		# 	byrow=FALSE))[,,drop=FALSE]			
 		# }
 #		colnames(data.file$lencomp)<-lt.data.names
-	  
+	  browser()
 	#Age composition data
     Age.comp.data<-rv.Age$data
     if (is.null(Age.comp.data)) 
     {
       data.file$N_agebins<-Nages()
-      data.file$agebin_vector<-1:Nages()    
+      data.file$agebin_vector<-0:(Nages()-1)    
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       colnames(data.file$ageerror)<-paste0("age",1:Nages())         
     }
@@ -2373,6 +2517,9 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
       data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,7:ncol(Age.comp.data)]))
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       colnames(data.file$ageerror)<-paste0("age",1:Nages())         
+
+      # data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+      # colnames(data.file$ageerror)<-paste0("age",1:Nages())         
       age.data.names<-c(c("Yr","Month","Fleet","Sex","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
       age.data.females<-age.data.males<-age.data.unknowns<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
       colnames(Age.comp.data)[1:6]<-c("Year","Fleet","Sex","Lbin_low","Lbin_hi","Nsamps")
@@ -2426,6 +2573,11 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
         Age.comp.data_unknown[,7:ncol(Age.comp.data_unknown)],
         Age.comp.data_unknown[,7:ncol(Age.comp.data_unknown)]*0)
         )
+      }
+    if(nrow(subset(Age.comp.data,Sex==0))>0){age.data.unknowns<-data.frame(cbind(
+      age.data.unknowns,
+      Age.comp.data[1,7:ncol(Age.comp.data_unknown)],
+        Age.comp.data[1,7:ncol(Age.comp.data_unknown)]*0))
       }
     colnames(age.data.females)<-colnames(age.data.males)<-colnames(age.data.unknowns)<-age.data.names
     data.file$agecomp<-na.omit(rbind(age.data.females,age.data.males,age.data.unknowns))
@@ -2492,12 +2644,20 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
         data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
         data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
       }
+      if(!is.null(rv.Index))
+      {
+        #for()
+        #data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
+
+      }
       #Set Dirichelt on
       data.file$age_info[,5]<-data.file$len_info[,5]<-1
+
       #Set up the correct fleet enumeration
       data.file$len_info[,6]<-1:data.file$Nfleets 
       data.file$age_info[,6]<-(data.file$Nfleets+1):(2*data.file$Nfleets)
-      data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)
+      if(is.null(rv.Ct$data)){data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)}
+      if(!is.null(rv.Ct$data)){data.file$fleetinfo$fleetname<-gsub(" ","",colnames(rv.Ct$data)[-1])}
       data.file$CPUEinfo[,1]<-1:data.file$Nfleets
     }
   
@@ -2508,6 +2668,10 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 ##################################################################################
 		####################### START CTL FILE ####################################
 		#Read, edit then write new CONTROL file
+    
+    #Change to 1 platoon 
+    if(!is.null(input$GT1)){if(input$GT1){ctl.file$N_platoon<-1}}
+
     #LENGTH or AGE-ONLY
 		if(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))==TRUE)
     {
@@ -2997,18 +3161,40 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 ########
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
-		RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
-		Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
-		if(class(Model.output)=="try-error")
-			{
-				Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
-			}
-		#Make SS plots	
-		show_modal_spinner(spin="flower",color="red",text="Making plots")
-    SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
-		#Make SS tables
-		show_modal_spinner(spin="flower",color="red",text="Making tables")
-    try(SSexecutivesummary(Model.output))		
+		if(is.null(input$no_hess)){RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
+    if(!is.null(input$no_hess))
+    {
+      if(input$no_hess){RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
+      if(!input$no_hess){RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
+    }
+
+      Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
+      if(class(Model.output)=="try-error")
+        {
+          Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+        }
+
+      #No plots or figures
+      if(is.null(input$no_plots_tables))
+        {      
+          show_modal_spinner(spin="flower",color="red",text="Making plots")
+          SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
+          #Make SS tables
+          show_modal_spinner(spin="flower",color="red",text="Making tables")
+          try(SSexecutivesummary(Model.output))   
+        }
+
+  	if(!is.null(input$no_plots_tables)){      
+      if(input$no_plots_tables==FALSE)
+      {      
+        #Make SS plots  
+        show_modal_spinner(spin="flower",color="red",text="Making plots")
+        SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
+        #Make SS tables
+        show_modal_spinner(spin="flower",color="red",text="Making tables")
+        try(SSexecutivesummary(Model.output))   
+      }
+    }
 			 
 		#Run multiple jitters
 		if(input$jitter_choice)

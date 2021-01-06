@@ -50,15 +50,16 @@ shinyjs::hidden(wellPanel(id="Data_panel",
 
  
   #Mute for now, pull back in when index methods are ready
-  # fileInput('file3', 'Abundance index',
-  #           accept = c(
-  #             'text/csv',
-  #             'text/comma-separated-values',
-  #             'text/tab-separated-values',
-  #             'text/plain',
-  #             '.csv'
-  #           )
-  #         ),
+  fileInput('file4', 'Abundance index',
+            accept = c(
+              'text/csv',
+              'text/comma-separated-values',
+              'text/tab-separated-values',
+              'text/plain',
+              '.csv'
+            )
+          ),
+ 
   h4(strong("Clear data files")),
      fluidRow(column(width=4,actionButton("reset_ct", "Catches")),
               column(width=4,actionButton("reset_lt", "Length")),
@@ -572,7 +573,33 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       )
     ),
    
-   #SSS iterations
+
+    shinyjs::hidden(wellPanel(id="panel_advanced_SS",
+    fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS options",FALSE))),
+      uiOutput("AdvancedSS1"),
+      uiOutput("AdvancedSS2"),
+      uiOutput("AdvancedSS3"),
+      uiOutput("AdvancedSS4"),
+      h5(p("Define modelled length bins. Must be smaller and larger than the length compositin bins")),
+      h5(p(em("Must be smaller and larger than the length compositin bins. Values overidden to meet this requirement"))),
+      uiOutput("AdvancedSS5")
+      
+     #  prettyCheckbox(
+     #    inputId = "no_hess", label = "Turn off Hessian",
+     #    shape = "round", outline = TRUE, status = "info"),    
+     #  prettyCheckbox(
+     #    inputId = "no_plots_tables", label = "Turn off plots and tables",
+     #    shape = "round", outline = TRUE, status = "info"),    
+     # prettyCheckbox(
+     #    inputId = "GT1", label = "Use only one growth type",
+     #    shape = "round", outline = TRUE, status = "info"),    
+     # prettyCheckbox(
+     #    inputId = "Sex3", label = "Retain sex ratio in length compositions (Sex = 3)",
+     #    shape = "round", outline = TRUE, status = "info"),    
+      )
+     ),
+
+      #SSS iterations
     shinyjs::hidden(wellPanel(id="panel_SSS_reps",
     fluidRow(column(width=10,numericInput("SSS_reps", "Number of SSS iterations", value=1000,min=1, max=1000000, step=1)))
             )
@@ -737,6 +764,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
               plotOutput("Ltplot"),
               textOutput("age_comp_plots_label"),
               plotOutput("Ageplot"),
+              #textOutput("age_comp_plots_label"),
+              plotOutput("Indexplot"),
             h4("Life history"),
             column(6,plotOutput("Mplot")),
             column(6,plotOutput("VBGFplot")),
