@@ -621,6 +621,12 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h5(p(em("Each scenario folder is saved. Changing the scenario name therefore creates a new folder of results."))),
     h5(p(em("Using different scenario names when changing data or parameter values allows easy sensitivity exploration."))),
     h5(p(em(""))),
+    
+    shinyDirButton(
+     id="Modelout_dir",
+     label="Select model folder",
+     title="Choose folder to contain model scenario"
+     ),
       )
       ),
 

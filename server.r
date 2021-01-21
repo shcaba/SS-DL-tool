@@ -1361,6 +1361,7 @@ output$AdvancedSS5 <- renderUI({
     } 
   }) 
 
+#  roots <- getVolumes()()  
 
 
 Nages<-reactive({
@@ -1475,6 +1476,7 @@ L95<-reactive({
     if(!is.na(input$L95_f_sss)) {L95<-input$L95_f_sss}
     L95
   })
+
 
 #############
 ### PLOTS ###
@@ -1829,7 +1831,8 @@ output$Selplot_SSS <- renderPlot({
     }
     if(!is.null(get0("selplot.out"))){return(selplot.out)}
     else(return(NULL))
-    }) 
+    })
+
 #############################################
 ######## PREPARE FILES andD RUN SSS #########
 #############################################
@@ -2295,6 +2298,12 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #            Sys.sleep(0.5)
   #          }
 
+    # if(!identical(pathModelout.dir, character(0)))
+    # {
+    #   file.copy(paste0(getwd(),"/SS_LO_F_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
+      
+    # }
+
     #Copy and move files
 	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
 			{
@@ -2463,24 +2472,24 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
         )
       }
 
-    #unknown sex lengths
-    if(input$Sex3){
-      samp.yrs_females<-Lt.comp.data_female[,1]
-      samp.yrs_males<-Lt.comp.data_male[,1]
-      samp.yrs_sex3<-samp.yrs_females[match(samp.yrs_males,samp.yrs_females)]
-      Lt.comp.data.year<-
-      Lt.comp.data_female<-subset(Lt.comp.data,Sex==1 & Nsamps>0) 
-      Lt.comp.data_male<-subset(Lt.comp.data,Sex==2 & Nsamps>0)
-      lt.data.sex3<-data.frame(cbind(samp.yrs_sex3,
-        rep(1,length(samp.yrs_sex3)),
-        Lt.comp.data_sex3[,2],
-        Lt.comp.data_sex3[,3],
-        rep(0,length(samp.yrs_sex3)),
-        Lt.comp.data_sex3[,4],
-        Lt.comp.data_sex3[,5:ncol(Lt.comp.data_sex3)],
-        Lt.comp.data_sex3[,5:ncol(Lt.comp.data_sex3)]*0)
-        )
-      }
+    #Maintain sample sex ratio
+    # if(input$Sex3){
+    #   samp.yrs_females<-Lt.comp.data_female[,1]
+    #   samp.yrs_males<-Lt.comp.data_male[,1]
+    #   samp.yrs_sex3<-samp.yrs_females[match(samp.yrs_males,samp.yrs_females)]
+    #   Lt.comp.data.year<-
+    #   Lt.comp.data_female<-subset(Lt.comp.data,Sex==1 & Nsamps>0) 
+    #   Lt.comp.data_male<-subset(Lt.comp.data,Sex==2 & Nsamps>0)
+    #   lt.data.sex3<-data.frame(cbind(samp.yrs_sex3,
+    #     rep(1,length(samp.yrs_sex3)),
+    #     Lt.comp.data_sex3[,2],
+    #     Lt.comp.data_sex3[,3],
+    #     rep(0,length(samp.yrs_sex3)),
+    #     Lt.comp.data_sex3[,4],
+    #     Lt.comp.data_sex3[,5:ncol(Lt.comp.data_sex3)],
+    #     Lt.comp.data_sex3[,5:ncol(Lt.comp.data_sex3)]*0)
+    #     )
+    #   }
 
     colnames(lt.data.females)<-colnames(lt.data.males)<-colnames(lt.data.unknowns)<-lt.data.names
     data.file$lencomp<-na.omit(rbind(lt.data.females,lt.data.males,lt.data.unknowns))      
@@ -2500,8 +2509,8 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		# 	byrow=FALSE))[,,drop=FALSE]			
 		# }
 #		colnames(data.file$lencomp)<-lt.data.names
-	  browser()
-	#Age composition data
+	
+  #Age composition data
     Age.comp.data<-rv.Age$data
     if (is.null(Age.comp.data)) 
     {
@@ -3360,6 +3369,19 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 
   roots <- getVolumes()()  
 
+      pathModelout <- reactive({
+      shinyDirChoose(input, "Modelout_dir", roots= roots,session=session, filetypes=c('', 'txt'))
+        return(parseDirPath(roots, input$Modelout_dir))
+      })
+
+   observeEvent(as.numeric(input$tabs)==1,{      
+    pathModelout.dir <-pathModelout()
+    print(pathModelout.dir)
+    if(!identical(pathModelout.dir, character(0))){setwd(pathModelout.dir)}
+    #print(pathModelout.dir)
+    print(getwd())
+    })
+
   #Likelihood profiles
   pathLP <- reactive({
       shinyDirChoose(input, "LP_dir", roots=roots,session=session, filetypes=c('', 'txt'))
@@ -3463,7 +3485,6 @@ observeEvent(input$run_Profiles,{
       })
 
   observeEvent(as.numeric(input$tabs)==5,{
-
   output$Sensi_model_picks<-renderUI({
       #dirinfo <- parseDirPath(roots, input$Sensi_dir)
       pickerInput(
