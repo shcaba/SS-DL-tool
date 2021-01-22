@@ -80,8 +80,9 @@ RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){
   navigate <- paste("cd ", path, sep="") 
 if(OS.in=="Windows") 
   {
-    command <- paste0(navigate," & ", "ss", ss.cmd) 
-    shell(command, invisible=TRUE, translate=TRUE)
+    #command <- paste0(navigate," & ", "ss", ss.cmd) 
+    #shell(command, invisible=TRUE, translate=TRUE)
+    run_SS_models(path,extras=ss.cmd,systemcmd=TRUE)
   } 
 if(OS.in=="Mac")  
   {
