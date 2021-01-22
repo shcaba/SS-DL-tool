@@ -620,7 +620,10 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     fluidRow(column(width=8,textInput("Scenario_name", strong("Choose the name of your scenario"), value="Scenario 1"))),
     h5(p(em("Each scenario folder is saved. Changing the scenario name therefore creates a new folder of results."))),
     h5(p(em("Using different scenario names when changing data or parameter values allows easy sensitivity exploration."))),
-    h5(p(em(""))),
+    h5(p(em(" "))),
+    h5(p(em(" "))),
+    h5(p(em(" "))),
+    h5(p(em("Select a folder to save the results"))),
     
     shinyDirButton(
      id="Modelout_dir",

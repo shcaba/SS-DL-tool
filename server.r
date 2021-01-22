@@ -1851,15 +1851,15 @@ SSS.run<-observeEvent(input$run_SSS,{
     #        }
 
   	#Copy and move files
-	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
+	  	if(file.exists(paste0("Scenarios/",input$Scenario_name)))
 			{
-				unlink(paste0(getwd(),"/Scenarios/",input$Scenario_name),recursive=TRUE)
+				unlink(paste0("Scenarios/",input$Scenario_name),recursive=TRUE)
 #				file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
 			}
 	  	#if(input$)
 	  		{
-	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_BH"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
-				file.rename(paste0(getwd(),"/Scenarios/sssexample_BH"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
+	  			file.copy(paste0("SSS_files/sssexample_BH"),paste0("Scenarios"),recursive=TRUE,overwrite=TRUE)
+				file.rename(paste0("Scenarios/sssexample_BH"), paste0("Scenarios/",input$Scenario_name))
 			}
 	  	#if()
 #	  		{
@@ -1868,8 +1868,8 @@ SSS.run<-observeEvent(input$run_SSS,{
 #			}
 		
 		#Read data and control files
-		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.dat")) 
-		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
+		data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/sss_example.dat")) 
+		ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
@@ -1932,7 +1932,7 @@ SSS.run<-observeEvent(input$run_SSS,{
 		# colnames(data.file$ageerror)<-paste0("age",1:Nages())		
 		# 	}
 		
-		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.dat"),overwrite=TRUE)			
+		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/sss_example.dat"),overwrite=TRUE)			
 		####################### END DATA FILE #####################################
 
     ####################### START SSS CTL FILE #####################################
@@ -2108,11 +2108,11 @@ SSS.run<-observeEvent(input$run_SSS,{
     }
 
 
-    SS_writectl(ctl.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/sss_example.ctl"),overwrite=TRUE)
+    SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),overwrite=TRUE)
 
 #Forecast file modfications
 #Reference points
-forecast.file<-SS_readforecast(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/forecast.ss"))
+forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss"))
 
 if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
@@ -2130,7 +2130,7 @@ if(input$Forecast_choice)
   }
 
 #Set prior inputs
-SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)  
+SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
     #0 = normal
     #10 = truncated normal
     #1 = symmetric beta (rbeta)
@@ -2159,7 +2159,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
       show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 
 #Run SSS
-  SSS.out<-SSS(paste0(getwd(),"/Scenarios/",input$Scenario_name),
+  SSS.out<-SSS(paste0("Scenarios/",input$Scenario_name),
       file.name=c("sss_example.dat","sss_example.ctl"),
       reps=input$SSS_reps,
       seed.in=19,
@@ -2186,12 +2186,12 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 #save(SSS.out)
 show_modal_spinner(spin="flower",color="red",text="Process model output")
 
-if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
+if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
   {
   output$SSS_priors_post<-renderPlot({
-      if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
+      if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
-      load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+      load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       sss.M.f<-rbind(data.frame(value=SSS.out$Prior$M_f,type="prior",metric="Female M"),data.frame(value=SSS.out$Post$M_f,type="post",metric="Female M"))
       sss.M.m<-rbind(data.frame(value=SSS.out$Prior$M_m,type="prior",metric="Male M"),data.frame(value=SSS.out$Post$M_m,type="post",metric="Male M"))
       sss.h<-rbind(data.frame(value=SSS.out$Prior$h,type="prior",metric="h"),data.frame(value=SSS.out$Post$h,type="post",metric="h"))
@@ -2212,9 +2212,9 @@ if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
     })  
 
   output$SSS_growth_priors_post<-renderPlot({
-      if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
+      if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
-      load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+      load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       sss.L1_f<-rbind(data.frame(value=SSS.out$Prior$L1_f,type="prior",metric="Female L1"),data.frame(value=SSS.out$Post$L1_f,type="post",metric="Female L1"))
       sss.Linf_f<-rbind(data.frame(value=SSS.out$Prior$Linf_f,type="prior",metric="Female Linf"),data.frame(value=SSS.out$Post$Linf_f,type="post",metric="Female Linf"))
       sss.k_f<-rbind(data.frame(value=SSS.out$Prior$k_f,type="prior",metric="Female k"),data.frame(value=SSS.out$Post$k_f,type="post",metric="Female k"))
@@ -2233,9 +2233,9 @@ if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
     })  
 
   output$SSS_OFL_plot<-renderPlot({
-      if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
+      if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
-      load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+      load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       ofl.years<-as.numeric(unique(melt(SSS.out$OFL)$Var2))
       ggplot(melt(SSS.out$OFL),aes(Var2,value,group=Var2))+
           geom_boxplot(fill="#236192")+
@@ -2247,9 +2247,9 @@ if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
     })  
 
   output$SSS_ABC_plot<-renderPlot({
-      if(exists(load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
+      if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
-      load(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
+      load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
       abc.years<-as.numeric(unique(melt(SSS.out$ABC)$Var2))
       ggplot(melt(SSS.out$ABC),aes(Var2,value,group=Var2))+
           geom_boxplot(fill="#658D1B")+
@@ -2298,30 +2298,26 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #            Sys.sleep(0.5)
   #          }
 
-    # if(!identical(pathModelout.dir, character(0)))
-    # {
-    #   file.copy(paste0(getwd(),"/SS_LO_F_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
-      
-    # }
-
     #Copy and move files
-	  	if(file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name)))
+	  	if(file.exists(paste0("Scenarios/",input$Scenario_name)))
 			{
-				unlink(paste0(getwd(),"/Scenarios/",input$Scenario_name),recursive=TRUE)
+				unlink(paste0("Scenarios/",input$Scenario_name),recursive=TRUE)   #Deletes previous run
 #				file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
 			}
 	  	if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){
-          file.copy(paste0(getwd(),"/SS_LO_F_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
-          file.rename(paste0(getwd(),"/Scenarios/SS_LO_F_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
+          file.copy(paste0("SS_LO_F_files"),paste0("Scenarios"),recursive=TRUE,overwrite=TRUE)
+          file.rename(paste0("Scenarios/SS_LO_F_files"), paste0("Scenarios/",input$Scenario_name))
         }
       else{
-        file.copy(paste0(getwd(),"/SS_LB_files"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
-		    file.rename(paste0(getwd(),"/Scenarios/SS_LB_files"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
+        file.copy(paste0("SS_LB_files"),paste0("Scenarios"),recursive=TRUE,overwrite=TRUE)
+		    file.rename(paste0("Scenarios/SS_LB_files"), paste0("Scenarios/",input$Scenario_name))
         }
 
 		#Read data and control files
-		data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
-		ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
+    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
+    ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
+		# data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
+		# ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
   #if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data))
   #  {
   #    data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
@@ -2671,7 +2667,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
     }
   
 
-		SS_writedat(data.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
+		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
 
 		####################### END DATA FILE #####################################
 ##################################################################################
@@ -3133,22 +3129,22 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 				ctl.file$init_F[,7]<--1
 			}
 
-		SS_writectl(ctl.file,paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
+		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
 		####################### END CTL FILE ####################################
 	#Jitter 
-				starter.file<-SS_readstarter(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/starter.ss"))
+				starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
 				starter.file$jitter_fraction<-0
 		
 		if(input$jitter_choice)
 			{
 				starter.file$jitter_fraction<-input$jitter_fraction
 			}
- 				SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
+ 				SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
 
 #Forecast file modfications
 #Reference points
-forecast.file<-SS_readforecast(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/forecast.ss"))
+forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss"))
 
 if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
@@ -3165,22 +3161,22 @@ if(input$Forecast_choice)
     forecast.file$Flimitfraction<-input$forecast_buffer
   }
 
-SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)  
+SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
 
 ########
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
-		if(is.null(input$no_hess)){RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
+		if(is.null(input$no_hess)){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
     if(!is.null(input$no_hess))
     {
-      if(input$no_hess){RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
-      if(!input$no_hess){RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
+      if(input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
+      if(!input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
     }
 
-      Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
+      Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
       if(class(Model.output)=="try-error")
         {
-          Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+          Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
         }
 
       #No plots or figures
@@ -3211,23 +3207,23 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 			if(input$Njitter>0)
 			{
          show_modal_spinner(spin="flower",color="red",text="Run jitters")
-    		 jits<-SS_RunJitter(paste0(getwd(),"/Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE)
-				 profilemodels <- SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
+    		 jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE)
+				 profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
 				 profilesummary <- SSsummarize(profilemodels)
 	       minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
 				 #Find best fit model
 				 index.minlikes<-c(1:length(minlikes))[minlikes]
-				 file.copy(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(getwd(),"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
+				 file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0("Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
 		         starter.file$init_values_src<-1
              starter.file$jitter_fraction<-0
-			 	 SS_writestarter(starter.file,paste0(getwd(),"/Scenarios/",input$Scenario_name),overwrite=TRUE)
+			 	 SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 			 	 #R-run to get new best fit model
 				 show_modal_spinner(spin="flower",color="red",text="Re-run best model post-jitters")
-         RUN.SS(paste0(getwd(),"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
-         Model.output<-try(SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
+         RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
+         Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
           if(class(Model.output)=="try-error")
           {
-            Model.output<-SS_output(paste0(getwd(),"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+            Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
 				 show_modal_spinner(spin="flower",color="red",text="Making plots")
          SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
@@ -3237,11 +3233,11 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 ref.like<-min(jitter.likes)
 		    	 #Make plot and save to folder
 		    	 main.dir<-getwd()
-           if(!file.exists(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/Jitter Results")))
+           if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/Jitter Results")))
           {
-              dir.create(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/Jitter Results"))
+              dir.create(paste0("Scenarios/",input$Scenario_name,"/Jitter Results"))
           }
-           setwd(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/Jitter Results"))
+           setwd(paste0("Scenarios/",input$Scenario_name,"/Jitter Results"))
 		     	 png("jitterplot.png")
 				 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
 				 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
@@ -3253,7 +3249,7 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
 				 # like_2_10<-round(100-(likebc+like10+like2),0)
 				 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
 				 dev.off()
-          save(profilesummary,file=paste0(getwd(),"/jitter_summary.DMP"))
+          save(profilesummary,file=paste0("jitter_summary.DMP"))
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(1), new = FALSE,print=TRUE,plotdir=getwd())
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE,print=TRUE,plotdir=getwd())
         
@@ -3359,9 +3355,9 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
  		output$Parameters_table <- renderTable({
  				Model.output$estimated_non_dev_parameters
 			})
-
+ 	
     remove_modal_spinner()
-	})
+ })
 
 ###############################################################
 ### Likelihood profiles, Sensitivities, and Ensemble models ###
@@ -3374,12 +3370,13 @@ SS_writeforecast(forecast.file,paste0(getwd(),"/Scenarios/",input$Scenario_name)
         return(parseDirPath(roots, input$Modelout_dir))
       })
 
-   observeEvent(as.numeric(input$tabs)==1,{      
+   observeEvent(as.numeric(input$tabs)==2,{      
     pathModelout.dir <-pathModelout()
-    print(pathModelout.dir)
-    if(!identical(pathModelout.dir, character(0))){setwd(pathModelout.dir)}
-    #print(pathModelout.dir)
-    print(getwd())
+    if(!identical(pathModelout.dir, character(0)))
+    {
+      dir.create(paste0(pathModelout.dir,"/Scenarios"))
+      file.copy(paste0("Scenarios/",input$Scenario_name), paste0(pathModelout.dir,"/Scenarios/"),recursive=TRUE,overwrite=TRUE)
+    }
     })
 
   #Likelihood profiles
