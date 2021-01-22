@@ -82,7 +82,7 @@ if(OS.in=="Windows")
   {
     #command <- paste0(navigate," & ", "ss", ss.cmd) 
     #shell(command, invisible=TRUE, translate=TRUE)
-    run_SS_models(path,extras=ss.cmd,systemcmd=TRUE)
+    run_SS_models(path,model="ss.exe",extras=ss.cmd,systemcmd=TRUE)
   } 
 if(OS.in=="Mac")  
   {
