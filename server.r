@@ -3175,7 +3175,6 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
 ########
 	#Run Stock Synthesis and plot output
-    browser()      
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		if(is.null(input$no_hess)){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
     if(!is.null(input$no_hess))
