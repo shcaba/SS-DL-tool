@@ -2402,7 +2402,9 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 
   #Population length data bins
   data.file$binwidth<-2
-  data.file$minimum_size<-4
+  if(!is.null(rv.Lt$data)){data.file$binwidth<-as.numeric(colnames(rv.Lt$data)[6])-as.numeric(colnames(rv.Lt$data)[5])}
+  data.file$minimum_size<-2
+  if(!is.null(rv.Lt$data)){data.file$minimum_size<-as.numeric(colnames(rv.Lt$data)[5])}
   max.bin.in<-2*(round((Linf()+(Linf()*0.25))/2))+2 #0.2326
   data.file$maximum_size<-max.bin.in
   if(input$advance_ss_click)
@@ -2421,7 +2423,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		if (!is.null(rv.Lt$data)) {
     Lt.comp.data<-rv.Lt$data
     data.file$N_lbins<-ncol(Lt.comp.data)-4
-    data.file$lbin_vector<-as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
+    data.file$lbin_vector<-as.numeric(colnames(rv.Lt$data)[5:ncol(rv.Lt$data)]) #as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
     if(data.file$maximum_size<max(data.file$lbin_vector)){data.file$maximum_size<-(2*round(max(data.file$lbin_vector)/2))+2}
     lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",data.file$lbin_vector),paste0("m",data.file$lbin_vector))
     lt.data.females<-lt.data.males<-lt.data.unknowns<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
@@ -2506,7 +2508,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		# 	byrow=FALSE))[,,drop=FALSE]			
 		# }
 #		colnames(data.file$lencomp)<-lt.data.names
-	
+
   #Age composition data
     Age.comp.data<-rv.Age$data
     if (is.null(Age.comp.data)) 
@@ -3087,9 +3089,16 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
         }
           if(input$Ct_F_LO_select=="Estimate F")
             {
-              lt.lam.in<-as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,","))))/sum(as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,",")))))
-              lt.lam<-lt.lam.in/max(lt.lam.in)
-              lts.lambdas[,4]<-lt.lam
+              if(data.file$Nfleets>1)
+              {                
+                lt.lam.in<-input$Wt_fleet_Ct/sum(as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,",")))))
+                lt.lam<-lt.lam.in/max(lt.lam.in)
+                lts.lambdas[,4]<-lt.lam
+              }
+              if(data.file$Nfleets==1)
+              {                
+                lts.lambdas[,4]<-1
+              }
             }
           rownames(lts.lambdas)<-paste0("length_Fishery",c(1:data.file$Nfleets),"_sizefreq_method_1_Phz1")
           ct.lambdas[,4]<-0
@@ -3166,6 +3175,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
 ########
 	#Run Stock Synthesis and plot output
+    browser()      
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		if(is.null(input$no_hess)){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
     if(!is.null(input$no_hess))
