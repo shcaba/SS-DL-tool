@@ -2361,7 +2361,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
 						c(catch.level[i]+0.000000001,rep(catch.level[i],length(year.in))),
-						c(0.01,rep(1000,length(year.in)))
+						c(0.01,rep(100,length(year.in)))
 						)			
 		}
 		data.file$catch<-list.rbind(catch_temp)
@@ -2381,8 +2381,8 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
-						c(0.0001,Catch.data[,i+1]),
-						rep(0.01,length(year.in)+1)
+						c(0.0000001,Catch.data[,i+1]),
+						rep(0.000001,length(year.in)+1)
 						)
 		}
 		data.file$catch<-list.rbind(catch_temp)
@@ -3177,12 +3177,13 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		if(is.null(input$no_hess)){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
+    if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data.ss_new"))){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
     if(!is.null(input$no_hess))
     {
       if(input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
       if(!input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
     }
-
+browser()
       Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
       if(class(Model.output)=="try-error")
         {
@@ -3193,7 +3194,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(is.null(input$no_plots_tables))
         {      
           show_modal_spinner(spin="flower",color="red",text="Making plots")
-          SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
+          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
           #Make SS tables
           show_modal_spinner(spin="flower",color="red",text="Making tables")
           try(SSexecutivesummary(Model.output))   
