@@ -3176,14 +3176,16 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 ########
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
-		if(is.null(input$no_hess)){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
-    if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data.ss_new"))){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
+		if(is.null(input$no_hess)){
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
+      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data.ss_new"))){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
+    }
     if(!is.null(input$no_hess))
     {
       if(input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
       if(!input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
     }
-browser()
+
       Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
       if(class(Model.output)=="try-error")
         {
