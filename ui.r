@@ -580,9 +580,11 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       uiOutput("AdvancedSS2"),
       uiOutput("AdvancedSS3"),
       uiOutput("AdvancedSS4"),
+      uiOutput("AdvancedSS5"),
+      uiOutput("AdvancedSS5in"),
       h5(p("Define modelled length bins. Default values are by 2 cm bin ranging from 4 to 25% above the Linf value")),
       h5(p(em("Inputs must be smaller and larger than the length compositin bins. Input values will be overridden to meet this requirement"))),
-      uiOutput("AdvancedSS5")
+      uiOutput("AdvancedSS6")
       
      #  prettyCheckbox(
      #    inputId = "no_hess", label = "Turn off Hessian",
@@ -691,6 +693,42 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
   )),
 
 ###############################
+######## Retrospectives #######
+###############################
+  shinyjs::hidden(wellPanel(id="Retro_panel",
+    h4(strong("Retrospective comparisons and plots")),
+    h5(em("Retrospecitive modelling means sequentially removing one year of data up to a specified number of years (e.g., -10 years).")),
+    h5(em("To make these comparisons, choose first the directory containing models, then the models to compare.")),
+    h5(em("A time series plot of comparisons are shown in the main panel to the right for the follwing model outputs:")),  
+    tags$ul(tags$li(h5(p(em("Spawning output"))))),
+    tags$ul(tags$li(h5(p(em("Relative spawning output"))))),
+    tags$ul(tags$li(h5(p(em("Recruitment"))))),
+    h5(em("A complete compliment of comparison plots (along with the plot on the right) are saved in the chosen folder labeled 'retro'")),  
+    #h5(strong(em("Retrospective Comparison Plots"))),
+    br(),
+    h5(strong("Choose folder containing model for retrospective analysis")),
+    shinyDirButton(
+      id="Retro_dir",
+      label="Select folder",
+      title="Choose folder containing model scenarios"
+      ),
+    br(),
+    br(),
+    #h4(strong("Comparison plot label")),
+    h5(strong("Define what years to perform retrospective analysis. Input as a negative integer (e.g., -1 mean remove one year of data)")),
+    fluidRow(column(width=5,numericInput("first_retro_year_in", "1st retrospective year", value=-1,min=-500, max=0, step=1)),
+                column(width=5,numericInput("final_retro_year_in","Final retrospective year", value=-10,min=-500, max=0, step=1))),    
+    #fluidRow(column(width=8,textInput("Sensi_comp_file", strong("Label comparison plot file"), value="Comparison 1"))),
+    #br(),
+    #br(),
+    actionButton("run_Retro_comps",strong("Run Retrospective Comparisons"),
+        width="100%",
+        icon("play-circle"),
+        style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192"),  
+  )),
+
+
+###############################
 ### Sensitivity comparisons ###
 ###############################
   shinyjs::hidden(wellPanel(id="Sensi_Comparison_panel",
@@ -702,7 +740,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     tags$ul(tags$li(h5(p(em("Relative spawning output"))))),
     tags$ul(tags$li(h5(p(em("Recruitment"))))),
     h5(em("A complete compliment of comparison plots (along with the plot on the right) are saved in the chosen directory in a folder labeled")),  
-    h5(strong(em("Sensitivity Comparison Plots"))),
+    #h5(strong(em("Sensitivity Comparison Plots"))),
     br(),
     h5(strong("Choose folder containing model scenarios")),
     shinyDirButton(
@@ -764,7 +802,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 ###########################################
 
       mainPanel(        
-        tabsetPanel(id="tabs",
+       tabsetPanel(id="tabs",
+#         navbarPage(id="tabs",
             
           tabPanel("Data and Parameters",
               textOutput("catch_comp_plots_label"),
@@ -855,14 +894,20 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             plotOutput("LikeProf_plot_SOt_SO0"),
             value=4),
           
-          tabPanel("Sensitivity comparisons",
+          tabPanel("Retrospectives",
+            # uiOutput("Sensi_comp_plot"),            
+            imageOutput("Retro_comp_plot"),            
+            
+            value=5),
+
+          tabPanel("Sensitivities",
             # uiOutput("Sensi_comp_plot"),            
             imageOutput("Sensi_comp_plot"),            
-            value=5),
+            value=6),
           
           tabPanel("Ensemble models",
             plotOutput("Ensemble_plots"),            
-            value=6)
+            value=7)
           ) 
    )
    )

@@ -301,6 +301,7 @@ onclick("est_LHparms",id="panel_SS_est")
 
 observe({
 shinyjs::show("Data_panel")
+hideTab(inputId = "tabs", target = "11")
 #shinyjs::hide("OS_choice")
 #shinyjs::hide("run_SS")
 #shinyjs::hide("run_SSS")
@@ -356,6 +357,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("run_SS")        
   
         shinyjs::hide("Profile_panel")
+        shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -413,6 +415,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::hide("run_SS")        
 
         shinyjs::hide("Profile_panel")
+        shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -458,7 +461,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 
         shinyjs::show("panel_Mod_dims")
 
-        shinyjs::hide("panel_advanced_SS")
+        shinyjs::show("panel_advanced_SS")
 
         shinyjs::hide("panel_SSS_reps")
 
@@ -469,6 +472,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("run_SS")
 
         shinyjs::hide("Profile_panel")
+        shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -527,6 +531,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::show("run_SS")
 
         shinyjs::hide("Profile_panel")
+        shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -588,6 +593,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
         shinyjs::show("run_SS")
 
         shinyjs::hide("Profile_panel")
+        shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -645,6 +651,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("run_SS")
 
         shinyjs::show("Profile_panel")
+        shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -656,7 +663,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         # showTab(inputId = "tabs", target = "6")
    })
 
-#Sensitivities
+#Retrospecitves
 observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("Data_panel")
         shinyjs::hide("panel_Ct_F_LO")
@@ -702,6 +709,65 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("run_SS")
 
         shinyjs::hide("Profile_panel")
+        shinyjs::show("Retro_panel")
+        shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
+
+        hideTab(inputId = "tabs", target = "11")
+        # showTab(inputId = "tabs", target = "2")
+        # showTab(inputId = "tabs", target = "3")
+        # showTab(inputId = "tabs", target = "4")
+        # showTab(inputId = "tabs", target = "5")
+        # showTab(inputId = "tabs", target = "6")
+   })
+
+#Sensitivities
+observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
+        shinyjs::hide("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
+        shinyjs::hide("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+        
+        shinyjs::hide("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::hide("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
+
+        shinyjs::hide("panel_SS_stock_status") 
+
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
+
+        shinyjs::hide("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
+
+        shinyjs::hide("panel_SS_recdevs")
+
+        shinyjs::hide("panel_SS_jitter")        
+   
+        shinyjs::hide("panel_RPs")
+        shinyjs::hide("panel_Forecasts")
+
+        shinyjs::hide("panel_Mod_dims")
+        
+        shinyjs::hide("panel_advanced_SS")
+
+        shinyjs::hide("OS_choice")
+        shinyjs::hide("Scenario_panel")
+
+        shinyjs::hide("panel_SSS_reps")
+
+        shinyjs::hide("run_SSS")
+        shinyjs::hide("run_SS")
+
+        shinyjs::hide("Profile_panel")
+        shinyjs::hide("Retro_panel")
         shinyjs::show("Sensi_Comparison_panel")
         shinyjs::hide("Ensemble_panel")
 
@@ -714,7 +780,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
    })
 
 #Ensembles
-observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
+observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
         shinyjs::hide("Data_panel")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
@@ -759,6 +825,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("run_SS")
 
         shinyjs::hide("Profile_panel")
+        shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
         shinyjs::show("Ensemble_panel")
 
@@ -769,6 +836,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         # showTab(inputId = "tabs", target = "5")
         # showTab(inputId = "tabs", target = "6")
    })
+
 
 ########################################
 
@@ -1351,7 +1419,26 @@ output$AdvancedSS4<- renderUI({
       } 
   }) 
 
-output$AdvancedSS5 <- renderUI({ 
+output$AdvancedSS5<- renderUI({ 
+    if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "Retro_choice", label = "Do retrospective runs? Input minus from current year",
+        shape = "round", outline = TRUE, status = "info"))) 
+      } 
+  }) 
+
+output$AdvancedSS5in <- renderUI({ 
+    if(input$advance_ss_click){       
+    if(input$Retro_choice){       
+      fluidRow(column(width=6, numericInput("first_retro_year", "1st retro year",  
+                                              value=-1, min=-1, max=-500, step=-1)), 
+              column(width=6, numericInput("final_retro_year", "Last retro year",  
+                                              value=-10, min=-1, max=-500, step=-1)))
+    } 
+  }
+  }) 
+
+output$AdvancedSS6 <- renderUI({ 
     if(input$advance_ss_click){       
       fluidRow(column(width=4, numericInput("lt_bin_size", "bin size",  
                                               value=2, min=0, max=10000, step=1)), 
@@ -3091,7 +3178,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
             {
               if(data.file$Nfleets>1)
               {                
-                lt.lam.in<-input$Wt_fleet_Ct/sum(as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,",")))))
+                lt.lam.in<-as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,","))))/sum(as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,",")))))
                 lt.lam<-lt.lam.in/max(lt.lam.in)
                 lts.lambdas[,4]<-lt.lam
               }
@@ -3186,7 +3273,11 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(!input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
     }
 
+
+      if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")))
+      {
       Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
+
       if(class(Model.output)=="try-error")
         {
           Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
@@ -3202,7 +3293,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
           try(SSexecutivesummary(Model.output))   
         }
 
-  	if(!is.null(input$no_plots_tables)){      
+    if(!is.null(input$no_plots_tables)){      
       if(input$no_plots_tables==FALSE)
       {      
         #Make SS plots  
@@ -3213,90 +3304,108 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
         try(SSexecutivesummary(Model.output))   
       }
     }
-			 
-		#Run multiple jitters
-		if(input$jitter_choice)
-		{
-			if(input$Njitter>0)
-			{
+    
+  #Run multiple jitters
+    if(input$jitter_choice)
+    {
+      if(input$Njitter>0)
+      {
          show_modal_spinner(spin="flower",color="red",text="Run jitters")
-    		 jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE)
-				 profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
-				 profilesummary <- SSsummarize(profilemodels)
-	       minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
-				 #Find best fit model
-				 index.minlikes<-c(1:length(minlikes))[minlikes]
-				 file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0("Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
-		         starter.file$init_values_src<-1
+         jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE)
+         profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
+         profilesummary <- SSsummarize(profilemodels)
+         minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
+         #Find best fit model
+         index.minlikes<-c(1:length(minlikes))[minlikes]
+         file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0("Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
+             starter.file$init_values_src<-1
              starter.file$jitter_fraction<-0
-			 	 SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
-			 	 #R-run to get new best fit model
-				 show_modal_spinner(spin="flower",color="red",text="Re-run best model post-jitters")
+         SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
+         #R-run to get new best fit model
+         show_modal_spinner(spin="flower",color="red",text="Re-run best model post-jitters")
          RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
          Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
           if(class(Model.output)=="try-error")
           {
             Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
-				 show_modal_spinner(spin="flower",color="red",text="Making plots")
+         show_modal_spinner(spin="flower",color="red",text="Making plots")
          SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
-				 show_modal_spinner(spin="flower",color="red",text="Making tables")
-         try(SSexecutivesummary(Model.output))		
-				 jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
-				 ref.like<-min(jitter.likes)
-		    	 #Make plot and save to folder
-		    	 main.dir<-getwd()
+         show_modal_spinner(spin="flower",color="red",text="Making tables")
+         try(SSexecutivesummary(Model.output))    
+         jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
+         ref.like<-min(jitter.likes)
+           #Make plot and save to folder
+           main.dir<-getwd()
            if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/Jitter Results")))
           {
               dir.create(paste0("Scenarios/",input$Scenario_name,"/Jitter Results"))
           }
            setwd(paste0("Scenarios/",input$Scenario_name,"/Jitter Results"))
-		     	 png("jitterplot.png")
-				 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
-				 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
-				 abline(h=ref.like)
-				 # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
-				 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
-				 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
-				 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
-				 # like_2_10<-round(100-(likebc+like10+like2),0)
-				 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
-				 dev.off()
+           png("jitterplot.png")
+         jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+         points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
+         abline(h=ref.like)
+         # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
+         # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
+         # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
+         # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
+         # like_2_10<-round(100-(likebc+like10+like2),0)
+         # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")
+         dev.off()
           save(profilesummary,file=paste0("jitter_summary.DMP"))
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(1), new = FALSE,print=TRUE,plotdir=getwd())
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE,print=TRUE,plotdir=getwd())
         
-				output$Jitterplot<-renderPlot({
-				#	if(input$Njitter==1){return(NULL)}
-				#	if(input$Njitter>1)
-				# {
-				 #jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
-				 #ref.like<-min(jitter.likes)
-		    	 jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
-				 points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
-				 abline(h=ref.like)
-				# likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
-				 # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
-				 # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
-				 # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
-				 # like_2_10<-round(100-(likebc+like10+like2),0)
-				 # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")	
-				# }
-				})
-			#Spawning output comp
-			output$Jittercompplot1<-renderPlot({
-				SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(1), new = FALSE)
-				})
-			#Relative stock status comp
-			output$Jittercompplot2<-renderPlot({
-				SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE)
-				})
-		}		
-	setwd(main.dir)
-           
+        output$Jitterplot<-renderPlot({
+        # if(input$Njitter==1){return(NULL)}
+        # if(input$Njitter>1)
+        # {
+         #jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
+         #ref.like<-min(jitter.likes)
+           jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+         points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
+         abline(h=ref.like)
+        # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
+         # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
+         # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
+         # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
+         # like_2_10<-round(100-(likebc+like10+like2),0)
+         # legend("topright",c(paste("  ",likelessbc,"% < BC",sep=""),paste(likebc,"% = BC",sep=""),paste(like2,"% < BC+2",sep=""),paste(like_2_10,"% > BC+2 & < BC+10",sep=""),paste(like10,"% > BC+10",sep="")),bty="n")  
+        # }
+        })
+      #Spawning output comp
+      output$Jittercompplot1<-renderPlot({
+        SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(1), new = FALSE)
+        })
+      #Relative stock status comp
+      output$Jittercompplot2<-renderPlot({
+        SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE)
+        })
+    }   
+    setwd(main.dir)
   }
-        
-		#Convergence diagnostics
+ 
+     #Add retro runs   
+     if(input$Retro_choice){           
+     mydir<-paste0(getwd(),"/Scenarios/")
+     model_settings = get_settings(settings = list(base_name = input$Scenario_name,
+                        run = "retro",
+                        retro_yrs = input$first_retro_year:input$final_retro_year))
+
+    tryCatch({
+        run_diagnostics(mydir = mydir, model_settings = model_settings)
+    },
+    warning = function(warn){
+        showNotification(paste0(warn), type = 'warning')
+    },
+    error = function(err){
+        showNotification(paste0(err), type = 'err')
+    })
+  } 
+	 
+	
+  	#Convergence diagnostics
 		output$converge.grad <- renderText({
  				max.grad<-paste0("Maximum gradient: ",Model.output$maximum_gradient_component)
  					
@@ -3368,9 +3477,11 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
  		output$Parameters_table <- renderTable({
  				Model.output$estimated_non_dev_parameters
 			})
- 	
+
+} 	
     remove_modal_spinner()
  })
+
 
 ###############################################################
 ### Likelihood profiles, Sensitivities, and Ensemble models ###
@@ -3398,7 +3509,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
         return(parseDirPath(roots, input$LP_dir))
       })
 
-   observeEvent(as.numeric(input$tabs)==4,{      
+  observeEvent(as.numeric(input$tabs)==4,{      
   pathLP.dir <-pathLP()
   output$LikeProf_model_picks<-renderUI({
       pickerInput(
@@ -3486,15 +3597,62 @@ observeEvent(input$run_Profiles,{
 #################
 
 ###############################
+####### Retrospectives ########
+###############################
+
+  pathRetro <- reactive({
+      shinyDirChoose(input,"Retro_dir", roots=roots,session=session, filetypes=c('', 'txt'))
+        return(parseDirPath(roots, input$Retro_dir))
+      })
+
+
+  observeEvent(req(input$run_Retro_comps&as.numeric(input$tabs)==5),{
+      show_modal_spinner(spin="flower",color="red",text="Running retrospectives")
+  
+   if(input$Retro_choice){           
+#     print(pathRetro())
+     mydir<-pathRetro()
+     model_settings = get_settings(settings = list(base_name = "test",
+                        run = "retro",
+                        retro_yrs = input$first_retro_year_in:input$final_retro_year_in))
+
+    tryCatch({
+        run_diagnostics(mydir = mydir, model_settings = model_settings)
+    },
+    warning = function(warn){
+        showNotification(paste0(warn), type = 'warning')
+    },
+    error = function(err){
+        showNotification(paste0(err), type = 'err')
+    })
+  } 
+
+
+       output$Retro_comp_plot <- renderImage({
+       image.path<-normalizePath(file.path(paste0(pathRetro(),"_retro/compare1_spawnbio.png")),mustWork=FALSE)
+       return(list(
+        src = image.path,
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
+
+    remove_modal_spinner()
+  })
+
+##############################
+
+###############################
 ### Sensitivity comparisons ###
 ###############################
 
-      pathSensi <- reactive({
-      shinyDirChoose(input, "Sensi_dir", roots=roots,session=session, filetypes=c('', 'txt'))
-        return(parseDirPath(roots, input$Sensi_dir))
-      })
+  pathSensi <- reactive({
+  shinyDirChoose(input, "Sensi_dir", roots=roots,session=session, filetypes=c('', 'txt'))
+     return(parseDirPath(roots, input$Sensi_dir))
+   })
 
-  observeEvent(as.numeric(input$tabs)==5,{
+  observeEvent(as.numeric(input$tabs)==6,{
   output$Sensi_model_picks<-renderUI({
       #dirinfo <- parseDirPath(roots, input$Sensi_dir)
       pickerInput(
@@ -3513,7 +3671,7 @@ observeEvent(input$run_Profiles,{
   })
 
 #SS.comparisons<-observeEvent(as.numeric(input$tabs)==5,{
-Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPicker)&as.numeric(input$tabs)==5),{
+Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPicker)&as.numeric(input$tabs)==6),{
     if(!file.exists(paste0(pathSensi(),"/Sensitivity Comparison Plots")))
       {
         dir.create(paste0(pathSensi(),"/Sensitivity Comparison Plots"))
@@ -3561,6 +3719,8 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
   })
 #############################
 
+#############################
+
 # image.path<-eventReactive(exists(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
 #                input$Sensi_comp_file, '.png'))),{
 #   image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
@@ -3585,8 +3745,8 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
       shinyDirChoose(input, "Ensemble_dir", roots=roots, filetypes=c('', 'txt'))
       return(parseDirPath(roots, input$Ensemble_dir))
     })
-
- observeEvent(as.numeric(input$tabs)==4,{      
+#Used to have as.numeric(input$tabs)==4
+ observeEvent(as.numeric(input$tabs)==7,{      
   output$Ensemble_model_picks<-renderUI({
       pickerInput(
       inputId = "myEnsemble",
@@ -3603,7 +3763,7 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
   })
 
 #Ensemble_model_dir_out<-eventReactive(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==6),{
-observeEvent(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==6),{
+observeEvent(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==7),{
 Ensemble_model_dir_out<-eventReactive(input$run_Ensemble,{
 #print(as.numeric(input$tabs))
 #print(input$run_Ensemble)
