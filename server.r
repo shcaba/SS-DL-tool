@@ -2374,6 +2374,12 @@ SS.file.update<-observeEvent(input$run_SS,{
 		# 							input$L95_m,
 		# 							))
 		# {
+
+  #observeEvent(input$run_SS, {
+    updateTabsetPanel(session, "tabs",
+      selected = '1')
+   # })
+
 show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 		# progress <- shiny::Progress$new(session, min=1, max=2)
   #          on.exit(progress$close())
@@ -3228,11 +3234,11 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
 		####################### END CTL FILE ####################################
-	#Jitter 
+	#Jitter selection 
 				starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
 				starter.file$jitter_fraction<-0
 		
-		if(input$jitter_choice)
+    if(input$jitter_choice)
 			{
 				starter.file$jitter_fraction<-input$jitter_fraction
 			}
@@ -3259,7 +3265,6 @@ if(input$Forecast_choice)
   }
 
 SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
-
 ########
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
@@ -3272,7 +3277,6 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
       if(!input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
     }
-
 
       if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")))
       {
@@ -3393,18 +3397,18 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
                         run = "retro",
                         retro_yrs = input$first_retro_year:input$final_retro_year))
 
-    tryCatch({
+    # tryCatch({
         run_diagnostics(mydir = mydir, model_settings = model_settings)
-    },
-    warning = function(warn){
-        showNotification(paste0(warn), type = 'warning')
-    },
-    error = function(err){
-        showNotification(paste0(err), type = 'err')
-    })
+    # },
+    # warning = function(warn){
+    #     showNotification(paste0(warn), type = 'warning')
+    # },
+    # error = function(err){
+    #     showNotification(paste0(err), type = 'err')
+    # })
   } 
 	 
-	
+	 
   	#Convergence diagnostics
 		output$converge.grad <- renderText({
  				max.grad<-paste0("Maximum gradient: ",Model.output$maximum_gradient_component)
@@ -3480,6 +3484,12 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
 } 	
     remove_modal_spinner()
+    
+    observeEvent(exists("Model.output"), {
+    updateTabsetPanel(session, "tabs",
+      selected = '2')
+    })
+
  })
 
 
@@ -3489,17 +3499,21 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
   roots <- getVolumes()()  
 
-      pathModelout <- reactive({
-      shinyDirChoose(input, "Modelout_dir", roots= roots,session=session, filetypes=c('', 'txt'))
+
+  #
+    pathModelout <- reactive({
+        shinyDirChoose(input, "Modelout_dir", roots= roots,session=session, filetypes=c('', 'txt'))
         return(parseDirPath(roots, input$Modelout_dir))
       })
 
-   observeEvent(as.numeric(input$tabs)==2,{      
-    pathModelout.dir <-pathModelout()
+    observeEvent(as.numeric(input$tabs)==2,{      
+    #observeEvent(exists("Model.output"),{      
+      pathModelout.dir <-pathModelout()
     if(!identical(pathModelout.dir, character(0)))
     {
-      dir.create(paste0(pathModelout.dir,"/Scenarios"))
-      file.copy(paste0("Scenarios/",input$Scenario_name), paste0(pathModelout.dir,"/Scenarios/"),recursive=TRUE,overwrite=TRUE)
+      #dir.create(paste0(pathModelout.dir,"/Scenarios"))
+      file.copy(paste0("Scenarios/",input$Scenario_name), pathModelout.dir,recursive=TRUE,overwrite=TRUE)
+      if(input$Retro_choice){file.copy(paste0("Scenarios/",input$Scenario_name,"_retro"), pathModelout.dir,recursive=TRUE,overwrite=TRUE)}
     }
     })
 
