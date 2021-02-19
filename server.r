@@ -1403,6 +1403,14 @@ output$AdvancedSS2<- renderUI({
       } 
   }) 
 
+output$AdvancedSSpar<- renderUI({ 
+    if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_par", label = "Use par file (i.e., parameter file from previous run)?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      } 
+  }) 
+
 output$AdvancedSS3<- renderUI({ 
     if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
@@ -1954,8 +1962,8 @@ SSS.run<-observeEvent(input$run_SSS,{
 #	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
 #				file.rename(paste0(getwd(),"/Scenarios/sssexample_RickPow"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
 #			}
-		
-		#Read data and control files
+
+  	#Read data and control files
 		data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/sss_example.dat")) 
 		ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
 		#Read, edit then write new DATA file
@@ -2392,7 +2400,9 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #            Sys.sleep(0.5)
   #          }
 
-    #Copy and move files
+if(!input$use_par)
+  {
+      #Copy and move files
 	  	if(file.exists(paste0("Scenarios/",input$Scenario_name)))
 			{
 				unlink(paste0("Scenarios/",input$Scenario_name),recursive=TRUE)   #Deletes previous run
@@ -2406,7 +2416,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
         file.copy(paste0("SS_LB_files"),paste0("Scenarios"),recursive=TRUE,overwrite=TRUE)
 		    file.rename(paste0("Scenarios/SS_LB_files"), paste0("Scenarios/",input$Scenario_name))
         }
-
+  }
 		#Read data and control files
     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
@@ -2417,6 +2427,8 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #    data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
   #    ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
   #  }
+if(!input$use_par)
+  {
 
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
@@ -3233,9 +3245,20 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
 			}
 
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
+}
 		####################### END CTL FILE ####################################
+      starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
+#Use par file
+    if(input$use_par)
+    {
+      starter.file$init_values_src<-1
+    }
+    if(!input$use_par)
+    {
+      starter.file$init_values_src<-0
+    }
+
 	#Jitter selection 
-				starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
 				starter.file$jitter_fraction<-0
 		
     if(input$jitter_choice)
