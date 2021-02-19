@@ -575,7 +575,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
    
 
     shinyjs::hidden(wellPanel(id="panel_advanced_SS",
-    fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS options",FALSE))),
+    h4(strong("Advanced SS options")),
+    #fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS options",FALSE))),
       uiOutput("AdvancedSS1"),
       uiOutput("AdvancedSS2"),
       uiOutput("AdvancedSSpar"),

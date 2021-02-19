@@ -82,7 +82,7 @@ if(OS.in=="Windows")
   {
     #command <- paste0(navigate," & ", "ss", ss.cmd) 
     #shell(command, invisible=TRUE, translate=TRUE)
-    run_SS_models(path,model="ss.exe",extras=ss.cmd,systemcmd=TRUE)
+    run_SS_models(path,model="ss.exe",extras=ss.cmd,systemcmd=TRUE,skipfinished=FALSE)
   } 
 if(OS.in=="Mac")  
   {
@@ -1388,73 +1388,73 @@ output$Forecasts<- renderUI({
 
 
 output$AdvancedSS1<- renderUI({ 
-    if(input$advance_ss_click){ 
+    # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_hess", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
         shape = "round", outline = TRUE, status = "info"))) 
-      } 
+      # } 
   }) 
 
 output$AdvancedSS2<- renderUI({ 
-    if(input$advance_ss_click){ 
+    # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_plots_tables", label = "Turn off plots and tables",
         shape = "round", outline = TRUE, status = "info"))) 
-      } 
+      # } 
   }) 
 
 output$AdvancedSSpar<- renderUI({ 
-    if(input$advance_ss_click){ 
+    # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "use_par", label = "Use par file (i.e., parameter file from previous run)?",
         shape = "round", outline = TRUE, status = "info"))) 
-      } 
+      # } 
   }) 
 
 output$AdvancedSS3<- renderUI({ 
-    if(input$advance_ss_click){ 
+    # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "GT1", label = "Use only one growth type (default is 5)",
         shape = "round", outline = TRUE, status = "info"))) 
-      } 
+      # } 
   }) 
 
 output$AdvancedSS4<- renderUI({ 
-    if(input$advance_ss_click){ 
+    # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "Sex3", label = "Retain sex ratio in length compositions (Sex option = 3)",
         shape = "round", outline = TRUE, status = "info"))) 
-      } 
+      # } 
   }) 
 
 output$AdvancedSS5<- renderUI({ 
-    if(input$advance_ss_click){ 
+    # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "Retro_choice", label = "Do retrospective runs? Input minus from current year",
         shape = "round", outline = TRUE, status = "info"))) 
-      } 
+      # } 
   }) 
 
 output$AdvancedSS5in <- renderUI({ 
-    if(input$advance_ss_click){       
+    # if(input$advance_ss_click){       
     if(input$Retro_choice){       
       fluidRow(column(width=6, numericInput("first_retro_year", "1st retro year",  
                                               value=-1, min=-1, max=-500, step=-1)), 
               column(width=6, numericInput("final_retro_year", "Last retro year",  
                                               value=-10, min=-1, max=-500, step=-1)))
     } 
-  }
+  # }
   }) 
 
 output$AdvancedSS6 <- renderUI({ 
-    if(input$advance_ss_click){       
+    # if(input$advance_ss_click){       
       fluidRow(column(width=4, numericInput("lt_bin_size", "bin size",  
                                               value=2, min=0, max=10000, step=1)), 
               column(width=4, numericInput("lt_min_bin", "minimum bin",  
                                               value=4, min=0, max=10000, step=1)), 
               column(width=4, numericInput("lt_max_bin", "maximum bin",  
                                               value=2*(round((Linf()+(Linf()*0.2326))/2))+2, min=0, max=10000, step=1))) 
-    } 
+    # } 
   }) 
 
 #  roots <- getVolumes()()  
@@ -2512,12 +2512,12 @@ if(!input$use_par)
   if(!is.null(rv.Lt$data)){data.file$minimum_size<-as.numeric(colnames(rv.Lt$data)[5])}
   max.bin.in<-2*(round((Linf()+(Linf()*0.25))/2))+2 #0.2326
   data.file$maximum_size<-max.bin.in
-  if(input$advance_ss_click)
-    {
+  # if(input$advance_ss_click)
+  #   {
       data.file$binwidth<-input$lt_bin_size
       data.file$minimum_size<-input$lt_min_bin
       data.file$maximum_size<-input$lt_max_bin 
-    }
+    # }
 
 	#Length composition data
 		#inFile<- rv.Lt$data
@@ -3248,12 +3248,13 @@ if(!input$use_par)
 }
 		####################### END CTL FILE ####################################
       starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
+
 #Use par file
     if(input$use_par)
     {
       starter.file$init_values_src<-1
     }
-    if(!input$use_par)
+    if(!input$use_par|is.null(input$use_par))
     {
       starter.file$init_values_src<-0
     }
