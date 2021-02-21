@@ -2992,7 +2992,7 @@ if(!input$use_par)
       }     
 
     #S-R
-    ctl.file$SR_parms[1,3:4]<-input$lnR0  #lnR0
+    ctl.file$SR_parms[1,3:4]<-input$lnR0_est  #lnR0
     
     if(input$h_ss_prior=="lognormal"){ctl.file$SR_parms[2,3:4]<-c(input$h_mean_ss,log(h_mean_ss))}
     else{ctl.file$SR_parms[2,3:4]<-input$h_mean_ss}    
@@ -3165,7 +3165,7 @@ if(!input$use_par)
       #   {
       #     for(i in 1:length(Dirichlet.fleets)){ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])}
       #   }
-        ctl.file$dirichlet_parms[Dirichlet.fleets,3:4]<-0
+        ctl.file$dirichlet_parms[Dirichlet.fleets,3:4]<-0.5
         ctl.file$dirichlet_parms[Dirichlet.fleets,7]<-2
     }
 
@@ -3240,7 +3240,7 @@ if(!input$use_par)
         ctl.file$N_lambdas<-data.file$Nfleets*2
         #ctl.file$lambdas[1,4]<-1
 				# ctl.file$lambdas[2,4]<-0
-				ctl.file$init_F[,3]<-0.000001
+				ctl.file$init_F[,3]<-0.00000000000000000001
 				ctl.file$init_F[,7]<--1
 			}
 
