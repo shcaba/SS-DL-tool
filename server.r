@@ -2044,8 +2044,11 @@ SSS.run<-observeEvent(input$run_SSS,{
     else {ctl.file$MG_parms[1,3:4]<-c(input$M_f_mean_sss,input$M_f_mean_sss)}
         
     #L0    
-    if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(fem_vbgf[1],log(fem_vbgf[1]))}
-    else {ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]}
+    ctl.file$Growth_Age_for_L1<-input$t0_f_mean_sss
+    #if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(fem_vbgf[1],log(fem_vbgf[1]))}
+    #else {ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]}
+    if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(0,log(0.0000001))}
+    else {ctl.file$MG_parms[2,3:4]<-0}
     
     #Linf
     if(input$Linf_f_prior=="lognormal"){ctl.file$MG_parms[3,3:4]<-c(input$Linf_f_mean_sss,log(input$Linf_f_mean_sss))}     
@@ -2073,7 +2076,8 @@ SSS.run<-observeEvent(input$run_SSS,{
     
     #Males
     ctl.file$MG_parms[13,3:4]<-c(input$M_f_mean_sss,log(input$M_f_mean_sss))    #M
-    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]                                      #L0
+    #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]                                      #L0
+    ctl.file$MG_parms[14,3:4]<-0                                                #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f_mean_sss                            #Linf
     ctl.file$MG_parms[16,3:4]<-input$k_f_mean_sss                               #k
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_mean_sss                           #CV
@@ -2084,7 +2088,7 @@ SSS.run<-observeEvent(input$run_SSS,{
     
     if(input$male_parms_SSS)
       {   
-        male_vbgf_sss<-VBGF(input$Linf_m_mean_sss,input$k_m_mean_sss,input$t0_m_mean_sss,c(0:Nages()))
+        male_vbgf_sss<-VBGF(input$Linf_m_mean_sss,input$k_m_mean_sss,input$t0_m_mean_sss,c(input$t0_f_mean_sss:Nages()))
 
         #M
         if(input$M_m_prior_sss=="lognormal"){ctl.file$MG_parms[13,3:4]<-c(input$M_m_mean_sss,log(input$M_m_mean_sss))}
@@ -2093,6 +2097,8 @@ SSS.run<-observeEvent(input$run_SSS,{
         #L0    
         if(input$t0_f_prior_sss=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_sss[1],log(male_vbgf_sss[1]))}
         else {ctl.file$MG_parms[14,3:4]<-c(male_vbgf_sss[1],male_vbgf_sss[1])}
+        # if(input$t0_f_prior_sss=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(0,log(0.0000001))}
+        #else {ctl.file$MG_parms[14,3:4]<-c(0,0)}
         
         #Linf
         if(input$Linf_f_prior_sss=="lognormal"){ctl.file$MG_parms[15,3:4]<-c(input$Linf_m_mean_sss,log(input$Linf_m_mean_sss))}     
@@ -2784,31 +2790,34 @@ if(!input$use_par)
     
     #Change to 1 platoon 
     if(!is.null(input$GT1)){if(input$GT1){ctl.file$N_platoon<-1}}
-
+    
     #LENGTH or AGE-ONLY
 		if(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f,input$k_f,input$t0_f,c(0:Nages()))
     #Females
-    ctl.file$MG_parms[1,3]<-input$M_f     #M
-    ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]   #L0
+    ctl.file$MG_parms[1,3]<-input$M_f         #M
+    #ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]   #L0
+    ctl.file$Growth_Age_for_L1<-input$t0_f
+    ctl.file$MG_parms[2,3:4]<-0               #L0
     ctl.file$MG_parms[3,3:4]<-input$Linf_f    #Linf
-    ctl.file$MG_parms[4,3:4]<-input$k_f     #k
+    ctl.file$MG_parms[4,3:4]<-input$k_f       #k
     ctl.file$MG_parms[5,3:4]<-input$CV_lt_f   #CV
     ctl.file$MG_parms[6,3:4]<-input$CV_lt_f   #CV
     #Maturity6
     ctl.file$MG_parms[9,3:4]<-input$L50_f                 #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f-input$L50_f)  #Maturity slope
     #Males
-    ctl.file$MG_parms[13,3]<-input$M_f      #M
-    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]    #L0
+    ctl.file$MG_parms[13,3]<-input$M_f        #M
+    #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]    #L0
+    ctl.file$MG_parms[14,3:4]<-0              #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f   #Linf
-    ctl.file$MG_parms[16,3:4]<-input$k_f    #k
+    ctl.file$MG_parms[16,3:4]<-input$k_f      #k
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f  #CV
     ctl.file$MG_parms[18,3:4]<-input$CV_lt_f  #CV
     if(input$male_parms)
       {   
-        male_vbgf<-VBGF(input$Linf_m,input$k_m,input$t0_m,c(0:Nages()))
+        male_vbgf<-VBGF(input$Linf_m,input$k_m,input$t0_m,c(input$t0_f:Nages()))
         ctl.file$MG_parms[13,3]<-input$M_m      #M
         ctl.file$MG_parms[14,3:4]<-male_vbgf[1]   #L0
         ctl.file$MG_parms[15,3:4]<-input$Linf_m   #Linf
@@ -2826,7 +2835,9 @@ if(!input$use_par)
     fem_vbgf<-VBGF(input$Linf_f_fix,input$k_f_fix,input$t0_f_fix,c(0:Nages()))
     #Females
     ctl.file$MG_parms[1,3]<-input$M_f_fix           #M
-    ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]           #L0
+    #ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]           #L0
+    ctl.file$Growth_Age_for_L1<-input$t0_f_fix
+    ctl.file$MG_parms[2,3:4]<-0                     #L0
     ctl.file$MG_parms[3,3:4]<-input$Linf_f_fix      #Linf
     ctl.file$MG_parms[4,3:4]<-input$k_f_fix         #k
     ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_fix     #CV
@@ -2839,14 +2850,15 @@ if(!input$use_par)
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_fix-input$L50_f_fix)  #Maturity slope
     #Males
     ctl.file$MG_parms[13,3]<-input$M_f_fix          #M
-    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]          #L0
+    #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]          #L0
+    ctl.file$MG_parms[14,3:4]<-0                    #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f_fix     #Linf
     ctl.file$MG_parms[16,3:4]<-input$k_f_fix        #k
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_fix    #CV
     ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_fix    #CV
     if(input$male_parms_fix)
       {   
-        male_vbgf<-VBGF(input$Linf_m_fix,input$k_m_fix,input$t0_m_fix,c(0:Nages()))
+        male_vbgf<-VBGF(input$Linf_m_fix,input$k_m_fix,input$t0_m_fix,c(input$t0_f_fix:Nages()))
         ctl.file$MG_parms[13,3]<-input$M_m_fix        #M
         ctl.file$MG_parms[14,3:4]<-male_vbgf[1]       #L0
         ctl.file$MG_parms[15,3:4]<-input$Linf_m_fix   #Linf
@@ -2876,11 +2888,15 @@ if(!input$use_par)
     else {ctl.file$MG_parms[1,3:4]<-c(input$M_f_mean,input$M_f_mean)}
     ctl.file$MG_parms[1,5]<-input$M_f_SD                            
     ctl.file$MG_parms[1,6]<-prior.type[prior.name==input$M_f_prior] 
-    ctl.file$MG_parms[1,7]<-input$M_f_phase                         
+    ctl.file$MG_parms[1,7]<-input$M_f_phase                        
         
     #L0    
-    if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(fem_vbgf[1],log(fem_vbgf[1]))}
-    else {ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]}
+    ctl.file$Growth_Age_for_L1<-input$t0_f_mean
+
+    # if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(fem_vbgf[1],log(fem_vbgf[1]))}
+    # else {ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]}
+    if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(0,log(0.0000001))}
+    else {ctl.file$MG_parms[2,3:4]<-0}
     ctl.file$MG_parms[2,5]<-input$t0_f_SD             
     ctl.file$MG_parms[2,6]<-prior.type[prior.name==input$t0_f_prior]
     ctl.file$MG_parms[2,7]<-input$t0_f_phase
@@ -2924,7 +2940,8 @@ if(!input$use_par)
     
     #Males
     ctl.file$MG_parms[13,3:4]<-c(input$M_f_mean,log(input$M_f_mean))    #M
-    ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]                              #L0
+    #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]                              #L0
+    ctl.file$MG_parms[14,3:4]<-0                                        #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f_mean                        #Linf
     ctl.file$MG_parms[16,3:4]<-input$k_f_mean                           #k
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_mean                       #CV
@@ -2935,7 +2952,7 @@ if(!input$use_par)
         
     if(input$male_parms_est)
       {   
-        male_vbgf_est<-VBGF(input$Linf_m_mean,input$k_m_mean,input$t0_m_mean,c(0:Nages()))
+        male_vbgf_est<-VBGF(input$Linf_m_mean,input$k_m_mean,input$t0_m_mean,c(input$t0_f_mean:Nages()))
 
               # ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
         # ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]    #L0
@@ -2946,13 +2963,15 @@ if(!input$use_par)
 
         #M
         if(input$M_m_prior=="lognormal"){ctl.file$MG_parms[13,3:4]<-c(input$M_m_mean,log(input$M_m_mean))}
-        else {ctl.file$MG_parms[13,3:4]<-c(input$M_f_mean,input$M_f_mean)}
+        else {ctl.file$MG_parms[13,3:4]<-c(input$M_m_mean,input$M_m_mean)}
         ctl.file$MG_parms[13,5]<-input$M_m_SD                            
         ctl.file$MG_parms[13,6]<-prior.type[prior.name==input$M_m_prior] 
         ctl.file$MG_parms[13,7]<-input$M_m_phase                         
             
         #L0    
-        if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_est[1],log(male_vbgf_est[1]))}
+        #if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_est[1],log(male_vbgf_est[1]+0.000000001))}
+        #else {ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]}
+        if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_est[1],log(male_vbgf_est[1]+0.000000001))}
         else {ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]}
         ctl.file$MG_parms[14,5]<-input$t0_m_SD             
         ctl.file$MG_parms[14,6]<-prior.type[prior.name==input$t0_m_prior]
