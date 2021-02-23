@@ -3149,17 +3149,7 @@ if(!input$use_par)
         ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1:2,])
 			}
 
-#Dirichlet data-weighting
-# if(input$dirichlet)
-# {
-#   Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+3))
-#   # if(Dirichlet.fleets>1)
-#   #   {
-#   #     for(i in 1:length(Dirichlet.fleets)){ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])}
-#   #   }
-#     ctl.file$dirichlet_parms[Dirichlet.fleets,3:4]<-0
-#     ctl.file$dirichlet_parms[Dirichlet.fleets,7]<-2
-# }
+
 			#Re-label so r4ss can interpret these new entries
 			rownames(ctl.file$init_F)<-paste0("InitF_seas_1_flt_",1:data.file$Nfleets,"Fishery",1:data.file$Nfleets)
 			rownames(ctl.file$age_selex_types)<-rownames(ctl.file$size_selex_types)<-paste0("Fishery",1:data.file$Nfleets)
@@ -3177,15 +3167,15 @@ if(!input$use_par)
 			rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
 		}
 
-    if(input$dirichlet)
+    if(input$Data_wt=="Dirichlet")
     {
-      Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+data.file$Nfleets))
+        Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+data.file$Nfleets))
       # if(Dirichlet.fleets>1)
       #   {
       #     for(i in 1:length(Dirichlet.fleets)){ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])}
       #   }
         ctl.file$dirichlet_parms[Dirichlet.fleets,3:4]<-0.5
-        ctl.file$dirichlet_parms[Dirichlet.fleets,7]<-2
+        ctl.file$dirichlet_parms[Dirichlet.fleets,7]<-2        
     }
 
     #Change data weights
@@ -3311,15 +3301,31 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 ########
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
-		if(is.null(input$no_hess)){
+		if(input$Data_wt=="Dirichlet"){DataWT_opt<-"DM"}
+    if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
+    if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
+    
+    if(is.null(input$no_hess)){
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
-      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data.ss_new"))){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
+
+      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data.ss_new")))
+        {
+          RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)
+        }
     }
+
     if(!is.null(input$no_hess))
     {
-      if(input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)}
-      if(!input$no_hess){RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)}
+      if(input$no_hess)
+      {
+        RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)
+      }
+      if(!input$no_hess)
+      {
+        RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
+      }
     }
+
 
       if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")))
       {
@@ -3330,6 +3336,20 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
           Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
         }
 
+           if(input$Data_wt!="None")
+            {
+              if(Model.output$inputs$covar==TRUE)
+                {
+                  SS_tune_comps(dir=paste0("Scenarios/",input$Scenario_name),Model.output,option=DataWT_opt,niters_tuning=2)
+                  Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
+                }
+              if(Model.output$inputs$covar==FALSE)
+                {
+                  SS_tune_comps(dir=paste0("Scenarios/",input$Scenario_name),Model.output,option=DataWT_opt,niters_tuning=2,extras = " -nohess")
+                  Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+                }
+             }
+   
       #No plots or figures
       if(is.null(input$no_plots_tables))
         {      
@@ -3526,6 +3546,15 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 			})
 
 } 	
+
+      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")))
+      {
+       sendSweetAlert(
+        session = session,
+        title = "Model Warning",
+        text = "Hessian did not invert. Re-run model using a different specification (e.g., starting values).",
+        type = "warning")
+     }
     remove_modal_spinner()
     
     observeEvent(exists("Model.output"), {

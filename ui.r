@@ -90,13 +90,42 @@ shinyjs::hidden(wellPanel(id="Data_panel",
         h5(em("Data weighting balances information content of biological data with model structure")),
         h5(em("Data weighting balances across factors (e.g, fleets, sex, etc.)")),
         h5(em("The default value is equally weighting among factors based on input effective sample size inputs")),
-        fluidRow(column(width=10,prettyCheckbox("dirichlet","Use Dirichlet weighting?",
-          value=FALSE, 
-          shape="curve",
-          icon = icon("check"),
-          animation="smooth"),
-          bigger=TRUE),
-          fill=TRUE),
+        # fluidRow(column(width=10,prettyCheckbox(
+        #   inputId = "dirichlet",
+        #   label = "Use Dirichlet weighting?",
+        #   value=FALSE, 
+        #   shape="curve",
+        #   icon = icon("check"),
+        #   animation="smooth"),
+        #   bigger=TRUE),
+        #   fill=TRUE),
+        awesomeRadio(
+          inputId = "Data_wt",
+          label = "Choose data-weighting option", 
+          choices = c("None","Dirichlet", "Francis", "McAllister-Ianelli"),
+          selected = "None",
+          status = "warning"
+          )
+
+        # fluidRow(column(width=6, prettyCheckbox(
+        #   inputId = "dirichlet", 
+        #   label = "Use Dirichlet weighting?",
+        #   shape = "round", 
+        #   outline = TRUE, 
+        #   status = "info"))), 
+        # fluidRow(column(width=6, prettyCheckbox(
+        #   inputId = "Francis_wt", 
+        #   label = "Use Francis weighting?",
+        #   shape = "round", 
+        #   outline = TRUE, 
+        #   status = "info"))), 
+        # fluidRow(column(width=6, prettyCheckbox(
+        #   inputId = "MI_wt", 
+        #   label = "Use McAllister and Ianelli?",
+        #   shape = "round", 
+        #   outline = TRUE, 
+        #   status = "info"))), 
+ 
         # h5(em("After the first run, you can check the Francis or harmonic mean methods for suggested weightings")),
         # fluidRow(column(width=6,textInput("Lt_datawts", "Lengths weights by fleet", value=""))),    
       )
@@ -576,7 +605,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
    
 
     shinyjs::hidden(wellPanel(id="panel_advanced_SS",
-    h4(strong("Advanced SS options")),
+    h4(strong("Additional SS options")),
     #fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS options",FALSE))),
       uiOutput("AdvancedSS1"),
       uiOutput("AdvancedSS2"),
