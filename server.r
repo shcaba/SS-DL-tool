@@ -1410,6 +1410,14 @@ output$AdvancedSSpar<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_phase0<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_phase0", label = "Turn off estimation of all parameters (phase = 0)?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
 output$AdvancedSS3<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
@@ -1465,7 +1473,12 @@ Nages<-reactive({
     if(!is.na(input$M_f)) {Nages<-ceiling(5.4/input$M_f)}
     if(!is.na(input$M_f_fix)) {Nages<-ceiling(5.4/input$M_f_fix)}
     if(!is.na(input$M_f_mean)) {Nages<-ceiling(5.4/input$M_f_mean)}
-    if(!is.na(input$M_f_mean_sss)) {Nages<-ceiling(5.4/input$M_f_mean_sss)}
+    if(!is.na(input$M_f_mean_sss)) {Nages<-ceiling(5.4/input$M_f_mean_sss)} 
+    if(!is.null(rv.Age$data))
+    {
+      Nages_in<-max(as.numeric(colnames(rv.Age$data[,7:ncol(rv.Age$data)])))
+      if(Nages_in>Nages){Nages<-Nages_in}
+    }
     Nages
   })
 
@@ -3265,6 +3278,16 @@ if(!input$use_par)
     if(!input$use_par|is.null(input$use_par))
     {
       starter.file$init_values_src<-0
+    }
+
+#Phase 0
+    if(input$use_phase0)
+    {
+      starter.file$last_estimation_phase<-0
+    }
+    if(!input$use_par|is.null(input$use_par))
+    {
+      starter.file$last_estimation_phase<-6
     }
 
 	#Jitter selection 
