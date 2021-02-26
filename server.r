@@ -2422,7 +2422,6 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #            progress$set(value = i)
   #            Sys.sleep(0.5)
   #          }
-
 if(!input$use_par)
   {
       #Copy and move files
@@ -2450,6 +2449,7 @@ if(!input$use_par)
   #    data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
   #    ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
   #  }
+
 if(!input$use_par)
   {
 
@@ -2638,13 +2638,14 @@ if(!input$use_par)
 #		colnames(data.file$lencomp)<-lt.data.names
 
   #Age composition data
+#browser()
     Age.comp.data<-rv.Age$data
     if (is.null(Age.comp.data)) 
     {
       data.file$N_agebins<-Nages()
       data.file$agebin_vector<-0:(Nages()-1)    
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
-      colnames(data.file$ageerror)<-paste0("age",1:Nages())         
+      colnames(data.file$ageerror)<-paste0("age",0:Nages())         
     }
 
     if (!is.null(Age.comp.data))
@@ -2652,7 +2653,7 @@ if(!input$use_par)
       data.file$N_agebins<-ncol(Age.comp.data)-6
       data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,7:ncol(Age.comp.data)]))
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
-      colnames(data.file$ageerror)<-paste0("age",1:Nages())         
+      colnames(data.file$ageerror)<-paste0("age",0:Nages())         
 
       # data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       # colnames(data.file$ageerror)<-paste0("age",1:Nages())         
@@ -2710,11 +2711,11 @@ if(!input$use_par)
         Age.comp.data_unknown[,7:ncol(Age.comp.data_unknown)]*0)
         )
       }
-    if(nrow(subset(Age.comp.data,Sex==0))>0){age.data.unknowns<-data.frame(cbind(
-      age.data.unknowns,
-      Age.comp.data[1,7:ncol(Age.comp.data_unknown)],
-        Age.comp.data[1,7:ncol(Age.comp.data_unknown)]*0))
-      }
+    #if(nrow(subset(Age.comp.data,Sex==0))>0){age.data.unknowns<-data.frame(cbind(
+    #  age.data.unknowns,
+    #  Age.comp.data[1,7:ncol(Age.comp.data_unknown)],
+    #    Age.comp.data[1,7:ncol(Age.comp.data_unknown)]*0))
+    #  }
     colnames(age.data.females)<-colnames(age.data.males)<-colnames(age.data.unknowns)<-age.data.names
     data.file$agecomp<-na.omit(rbind(age.data.females,age.data.males,age.data.unknowns))
     }
