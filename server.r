@@ -1469,7 +1469,7 @@ output$AdvancedSS6 <- renderUI({
 
 Nages<-reactive({
     Nages<-NA
-    if(all(c(is.null(input$M_f),is.null(input$M_f_fix),is.null(input$M_f_mean),is.null(input$M_f_mean_sss)))) return(NULL)
+    if(all(c(is.null(input$M_f),is.null(input$M_f_fix),is.null(input$M_f_mean),is.null(input$M_f_mean_sss),is.null(rv.Age$data)))) return(NULL)
     if(!is.na(input$M_f)) {Nages<-ceiling(5.4/input$M_f)}
     if(!is.na(input$M_f_fix)) {Nages<-ceiling(5.4/input$M_f_fix)}
     if(!is.na(input$M_f_mean)) {Nages<-ceiling(5.4/input$M_f_mean)}
@@ -1477,7 +1477,8 @@ Nages<-reactive({
     if(!is.null(rv.Age$data))
     {
       Nages_in<-max(as.numeric(colnames(rv.Age$data[,7:ncol(rv.Age$data)])))
-      if(Nages_in>Nages){Nages<-Nages_in}
+      if(!is.na(Nages)&Nages_in>Nages){Nages<-Nages_in}
+      if(is.na(Nages)){Nages<-Nages_in}
     }
     Nages
   })
@@ -1599,17 +1600,18 @@ observeEvent(req(!is.null(rv.Lt$data)), {
 # length compositions 
 observeEvent(req(!is.null(rv.Lt$data)), {
 	output$Ltplot<-renderPlot({ 
-		  inFile <- rv.Lt$data 
-		  if (is.null(inFile)) return(NULL) 
+		  #inFile <- rv.Lt$data 
+		  if (is.null(rv.Lt$data)) return(NULL) 
 		  rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
-		    mutate(Fleet = factor(fleet), 
+		    mutate(Fleet = factor(fleet),
 		           name = as.numeric(gsub("[^0-9.-]", "", name))) %>%  
 		    ggplot(aes(name, value, fill=Fleet)) + 
 		    geom_col(position="dodge") + 
-		    facet_wrap(~year, scales="free_y") + 
+		    facet_grid(sex~year, scales="free_y") + 
+#        facet_wrap(sex~year, scales="free_y",ncol=5) + 
 		    xlab("Length bin") + 
 		    ylab("Frequency") + 
 		    scale_fill_viridis_d() 
@@ -1647,17 +1649,20 @@ observeEvent(req(!is.null(rv.Age$data)), {
 
 observeEvent(req(!is.null(rv.Age$data)), {
   output$Ageplot<-renderPlot({ 
-      inFile_age <- rv.Age$data 
-      if (is.null(inFile_age)) return(NULL)  
+      #inFile_age <- rv.Age$data 
+      if (is.null(rv.Age$data)) return(NULL)  
       rv.Age$data %>%  
         rename_all(tolower) %>%  
-        dplyr::select(-nsamps) %>%  
-        pivot_longer(c(-year, -fleet, -sex)) %>%  
+        dplyr::select(-nsamps,-lbin_hi) %>%  
+        pivot_longer(c(-year, -fleet, -sex, -lbin_low)) %>%  
         mutate(Fleet = factor(fleet), 
                name = as.numeric(gsub("[^0-9.-]", "", name))) %>%  
         ggplot(aes(name, value, fill=Fleet)) + 
         geom_col(position="dodge") + 
-        facet_wrap(~year, scales="free_y") + 
+        #facet_wrap(sex~year, scales="free_y",ncol=5) + 
+        facet_grid(sex~year, scales="free_y") +
+        #scale_y_continuous(limits=c(0,max(colSums(rv.Age$data[-1,7:ncol(rv.Age$data)]))))+ 
+        #scale_y_continuous(limits=c(0,20))+ 
         xlab("Age bin") + 
         ylab("Frequency") + 
         scale_fill_viridis_d() 
