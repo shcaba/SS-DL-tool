@@ -3767,11 +3767,30 @@ observeEvent(input$run_Profiles,{
    })
 
   observeEvent(as.numeric(input$tabs)==6,{
+  output$Sensi_model_Ref<-renderUI({
+      #dirinfo <- parseDirPath(roots, input$Sensi_dir)
+      pickerInput(
+      inputId = "myPicker_Ref",
+      label = "Choose reference model",
+      #choices = list.files(dirinfo),
+      choices = list.files(pathSensi()),
+      options = list(
+        `actions-box` = TRUE,
+        size = 12,
+        `selected-text-format` = "count > 3"
+        ),
+      multiple = FALSE
+    )
+ })    
+  })
+
+ observeEvent(!is.null(input$myPicker_Ref),{
+#   observeEvent(as.numeric(input$tabs)==6,{
   output$Sensi_model_picks<-renderUI({
       #dirinfo <- parseDirPath(roots, input$Sensi_dir)
       pickerInput(
       inputId = "myPicker",
-      label = "Choose scenarios to compare",
+      label = "Choose scenarios to compare to reference model",
       #choices = list.files(dirinfo),
       choices = list.files(pathSensi()),
       options = list(
@@ -3784,19 +3803,24 @@ observeEvent(input$run_Profiles,{
  })    
   })
 
+
 #SS.comparisons<-observeEvent(as.numeric(input$tabs)==5,{
 Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPicker)&as.numeric(input$tabs)==6),{
     if(!file.exists(paste0(pathSensi(),"/Sensitivity Comparison Plots")))
       {
         dir.create(paste0(pathSensi(),"/Sensitivity Comparison Plots"))
       }
-    Sensi_model_dir_out<-paste0(pathSensi(),"/",input$myPicker)
+    Sensi_model_dir_out_Ref<-paste0(pathSensi(),"/",input$myPicker_Ref)
+    Sensi_model_dir_sensi<-paste0(pathSensi(),"/",input$myPicker)
+    Sensi_model_dir<-c(Sensi_model_dir_out_Ref,Sensi_model_dir_sensi)
+    Sensi_model_dir
   })
+
 #&exists(Sensi_model_dir_out())
   observeEvent(req(input$run_Sensi_comps),{
       show_modal_spinner(spin="flower",color="red",text="Comparisons running")
       
-       modelnames<-input$myPicker
+       modelnames<-c(input$myPicker_Ref,input$myPicker)
        zz<-list()
        Runs<-length(Sensi_model_dir_out())
        for(i in 1:Runs) {zz[[i]]<-SS_output(paste0(Sensi_model_dir_out()[i]))}
