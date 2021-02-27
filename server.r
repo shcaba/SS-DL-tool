@@ -14,9 +14,17 @@ require(HandyCode)
 require(plyr)
 require(nwfscDiag)
 require(shinybusy)
+
+require(flextable)
+require(officer)
+require(gridExtra)
+require(ggpubr)
+
+
 #require(paletteer)
 #require(RColorBrewer)
 #require(ggthemes)
+source('Functions.r',local = FALSE)
 
 theme_report <- function(base_size = 11) {
 
@@ -2638,7 +2646,6 @@ if(!input$use_par)
 #		colnames(data.file$lencomp)<-lt.data.names
 
   #Age composition data
-#browser()
     Age.comp.data<-rv.Age$data
     if (is.null(Age.comp.data)) 
     {
@@ -3845,6 +3852,49 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
 
        output$Sensi_comp_plot <- renderImage({
        image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file, '.png')),mustWork=FALSE)
+       return(list(
+        src = image.path,
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
+
+#Relative error sensitivity plots
+SensiRE_breaks_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_breaks,","))))
+SensiRE_xcenter_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_xcenter,","))))
+SensiRE_ycenter_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_ycenter,","))))
+SensiRE_headers_in<-trimws(unlist(strsplit(input$SensiRE_headers,",")))
+SS_Sensi_plot(Dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
+              model.summaries=modsummary.sensi,
+              current.year=2019,
+              mod.names=modelnames, #List the names of the sensitivity runs
+              likelihood.out=c(0,0,0),
+              Sensi.RE.out="Sensi_RE_out.DMP", #Saved file of relative errors
+              CI=0.95, #Confidence interval box based on the reference model
+              TRP.in=input$Sensi_TRP, #Target relative abundance value
+              LRP.in=input$Sensi_LRP, #Limit relative abundance value
+              sensi_xlab="Sensitivity scenarios", #X-axis label
+              ylims.in=c(-1,1,-1,1,-1,1,-1,1,-1,1,-1,1), #Y-axis label
+              plot.figs=c(1,1,1,1,1,1), #Which plots to make/save? 
+              sensi.type.breaks=SensiRE_breaks_in, #vertical breaks that can separate out types of sensitivities
+              anno.x=SensiRE_xcenter_in, # Vertical positioning of the sensitivity types labels
+              anno.y=SensiRE_ycenter_in, # Horizontal positioning of the sensitivity types labels
+              anno.lab=SensiRE_headers_in #Sensitivity types labels
+)
+
+       output$SensiRE_comp_plot <- renderImage({
+       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_REplot_SB_Dep_F_MSY.png")),mustWork=FALSE)
+       return(list(
+        src = image.path,
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
+
+       output$SensiRElog_comp_plot <- renderImage({
+       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_logREplot_SB_Dep_F_MSY.png")),mustWork=FALSE)
        return(list(
         src = image.path,
         contentType = "image/png",
