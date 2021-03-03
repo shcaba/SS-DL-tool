@@ -3338,7 +3338,7 @@ if(!input$use_par)
 #Use datanew file
     if(input$use_datanew)
     {
-      starter.file$$datfile<-"data.ss_new"
+      starter.file$datfile<-"data.ss_new"
     }
 
 #Use controlnew file
