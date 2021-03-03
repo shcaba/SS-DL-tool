@@ -1426,10 +1426,19 @@ output$AdvancedSS_phase0<- renderUI({
       # } 
   }) 
 
-output$AdvancedSS_customfile<- renderUI({ 
+output$AdvancedSS_datanew<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "use_customfile", label = "Start from files in user defined folder?",
+        inputId = "use_datanew", label = "Use the data.ss_new file?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+
+output$AdvancedSS_controlnew<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_controlnew", label = "Use the control.ss_new file?",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -2466,6 +2475,18 @@ if(!input$use_par)
 		#Read data and control files
     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
+
+
+if(!input$use_datanew)
+  {
+    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")) 
+  }
+
+if(!input$use_controlnew)
+  {
+    ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/control.ss_new"),use_datlist = TRUE, datlist=data.file) 
+  }
+
 		# data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		# ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
   #if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data))
@@ -2476,6 +2497,8 @@ if(!input$use_par)
 
 if(!input$use_par)
   {
+    if(!input$use_datanew)
+    {
 
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
@@ -2823,12 +2846,13 @@ if(!input$use_par)
   
 
 		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
-
+  }
 		####################### END DATA FILE #####################################
 ##################################################################################
 		####################### START CTL FILE ####################################
 		#Read, edit then write new CONTROL file
-    
+    if(!input$use_controlnew)
+    {
     #Change to 1 platoon 
     if(!is.null(input$GT1)){if(input$GT1){ctl.file$N_platoon<-1}}
     
@@ -3295,6 +3319,7 @@ if(!input$use_par)
 			}
 
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
+  }
 }
 		####################### END CTL FILE ####################################
       starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
@@ -3308,6 +3333,20 @@ if(!input$use_par)
     {
       starter.file$init_values_src<-0
     }
+
+
+#Use datanew file
+    if(input$use_datanew)
+    {
+      starter.file$$datfile<-"data.ss_new"
+    }
+
+#Use controlnew file
+    if(input$use_controlnew)
+    {
+      starter.file$ctlfile<-"control.ss_new"
+    }
+
 
 #Phase 0
     if(input$use_phase0)
@@ -3886,7 +3925,7 @@ SS_Sensi_plot(Dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sens
               current.year=2019,
               mod.names=modelnames, #List the names of the sensitivity runs
               likelihood.out=c(0,0,0),
-              Sensi.RE.out="Sensi_RE_out.DMP", #Saved file of relative errors
+              Sensi.RE.out=paste0(pathSensi(),"/Sensitivity Comparison Plots/Sensi_RE_out.DMP"), #Saved file of relative errors
               CI=0.95, #Confidence interval box based on the reference model
               TRP.in=input$Sensi_TRP, #Target relative abundance value
               LRP.in=input$Sensi_LRP, #Limit relative abundance value
