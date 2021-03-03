@@ -2471,18 +2471,17 @@ if(!input$use_par)
 
 #   }
 
-
 		#Read data and control files
     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
 
 
-if(!input$use_datanew)
+if(input$use_datanew)
   {
     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")) 
   }
 
-if(!input$use_controlnew)
+if(input$use_controlnew)
   {
     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/control.ss_new"),use_datlist = TRUE, datlist=data.file) 
   }
@@ -3341,10 +3340,20 @@ if(!input$use_par)
       starter.file$datfile<-"data.ss_new"
     }
 
+    if(!input$use_datanew|is.null(input$use_datanew))
+    {
+      starter.file$datfile<-"SS_LB.dat"
+    }
+
 #Use controlnew file
     if(input$use_controlnew)
     {
       starter.file$ctlfile<-"control.ss_new"
+    }
+
+    if(!input$use_controlnew|is.null(input$use_controlnew))
+    {
+      starter.file$ctlfile<-"SS_LB.ctl"
     }
 
 
