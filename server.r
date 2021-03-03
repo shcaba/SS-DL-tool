@@ -1426,6 +1426,14 @@ output$AdvancedSS_phase0<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_customfile<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_customfile", label = "Start from files in user defined folder?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
 output$AdvancedSS3<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
@@ -2447,6 +2455,14 @@ if(!input$use_par)
 		    file.rename(paste0("Scenarios/SS_LB_files"), paste0("Scenarios/",input$Scenario_name))
         }
   }
+
+
+# if(!input$use_customfile)
+#   {
+
+#   }
+
+
 		#Read data and control files
     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 

@@ -41,7 +41,6 @@ SS_Sensi_plot<-function(
 {
   #num.likes<-sum(likelihood.out)*2+2
   num.likes<-dim(subset(model.summaries$likelihoods_by_fleet,model==1))[1] #determine how many likelihoods components
-
   if(missing(mod.names)){mod.names<-paste("model ",1:model.summaries$n)}
     if(likelihood.out[1]==1)
       {
@@ -88,7 +87,7 @@ SS_Sensi_plot<-function(
             (model.summaries$quants[model.summaries$quants$Label==paste0("SSB_",current.year),1:(dim(model.summaries$quants)[2]-2)])/2,
             model.summaries$quants[model.summaries$quants$Label==paste0("Bratio_",current.year),1:(dim(model.summaries$quants)[2]-2)],
             model.summaries$quants[model.summaries$quants$Label=="Dead_Catch_SPR",1:(dim(model.summaries$quants)[2]-2)]/2,
-            model.summaries$quants[model.summaries$quants$Label=="Fstd_SPR",1:(dim(model.summaries$quants)[2]-2)]
+            model.summaries$quants[model.summaries$quants$Label=="annF_SPR",1:(dim(model.summaries$quants)[2]-2)]
             )
       #Extract SDs for use in the ggplots
       dev.quants.SD<-c(
@@ -96,7 +95,7 @@ SS_Sensi_plot<-function(
             (model.summaries$quantsSD[model.summaries$quantsSD$Label==paste0("SSB_",current.year),1])/2,
             model.summaries$quantsSD[model.summaries$quantsSD$Label==paste0("Bratio_",current.year),1],
             model.summaries$quantsSD[model.summaries$quantsSD$Label=="Dead_Catch_SPR",1]/2,
-            model.summaries$quantsSD[model.summaries$quantsSD$Label=="Fstd_SPR",1]
+            model.summaries$quantsSD[model.summaries$quantsSD$Label=="annF_SPR",1]
             )
     }
   if(any(model.summaries$nsexes==2))
@@ -106,7 +105,7 @@ SS_Sensi_plot<-function(
             model.summaries$quants[model.summaries$quants$Label==paste0("SSB_",current.year),1:(dim(model.summaries$quants)[2]-2)],
             model.summaries$quants[model.summaries$quants$Label==paste0("Bratio_",current.year),1:(dim(model.summaries$quants)[2]-2)],
             model.summaries$quants[model.summaries$quants$Label=="Dead_Catch_SPR",1:(dim(model.summaries$quants)[2]-2)],
-            model.summaries$quants[model.summaries$quants$Label=="Fstd_SPR",1:(dim(model.summaries$quants)[2]-2)]
+            model.summaries$quants[model.summaries$quants$Label=="annF_SPR",1:(dim(model.summaries$quants)[2]-2)]
             )
       #Extract SDs for use in the ggplots
       dev.quants.SD<-c(
@@ -114,7 +113,7 @@ SS_Sensi_plot<-function(
             (model.summaries$quantsSD[model.summaries$quantsSD$Label==paste0("SSB_",current.year),1]),
             model.summaries$quantsSD[model.summaries$quantsSD$Label==paste0("Bratio_",current.year),1],
             model.summaries$quantsSD[model.summaries$quantsSD$Label=="Dead_Catch_SPR",1],
-            model.summaries$quantsSD[model.summaries$quantsSD$Label=="Fstd_SPR",1]
+            model.summaries$quantsSD[model.summaries$quantsSD$Label=="annF_SPR",1]
             )
     }
   dev.quants.labs<-data.frame(c("SB0",paste0("SSB_",current.year),paste0("Bratio_",current.year),"MSY_SPR","F_SPR"),dev.quants,"Derived quantities")
