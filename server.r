@@ -369,7 +369,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        hideTab(inputId = "tabs", target = "2")
+        showTab(inputId = "tabs", target = "2")
 #        hideTab(inputId = "tabs", target = "3")
 #        hideTab(inputId = "tabs", target = "4")
 #        hideTab(inputId = "tabs", target = "5")
