@@ -369,7 +369,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-#        hideTab(inputId = "tabs", target = "2")
+        hideTab(inputId = "tabs", target = "2")
 #        hideTab(inputId = "tabs", target = "3")
 #        hideTab(inputId = "tabs", target = "4")
 #        hideTab(inputId = "tabs", target = "5")
@@ -428,6 +428,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 
         #shinyjs::show("tab_sss")
         showTab(inputId = "tabs", target = "11")
+        hideTab(inputId = "tabs", target = "2")
 
 })
 
@@ -484,7 +485,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-       # showTab(inputId = "tabs", target = "2")
+        showTab(inputId = "tabs", target = "2")
        # showTab(inputId = "tabs", target = "3")
        # showTab(inputId = "tabs", target = "4")
        # hideTab(inputId = "tabs", target = "5")
@@ -544,9 +545,9 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
 
        #shinyjs::hide(selector = "#navbar li a[data-value=11]")
        hideTab(inputId = "tabs", target = "11")
+       showTab(inputId = "tabs", target = "2")
       # show(selector = '#hello li a[data-value="2"]')
        #show(selector = '#hello li a[data-value="2"]')
-       # showTab(inputId = "tabs", target = "2")
        # showTab(inputId = "tabs", target = "2")
        # showTab(inputId = "tabs", target = "3")
        # showTab(inputId = "tabs", target = "4")
@@ -605,7 +606,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        # showTab(inputId = "tabs", target = "2")
+        showTab(inputId = "tabs", target = "2")
         # showTab(inputId = "tabs", target = "3")
         # showTab(inputId = "tabs", target = "4")
         # showTab(inputId = "tabs", target = "5")
@@ -663,7 +664,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        # showTab(inputId = "tabs", target = "2")
+        showTab(inputId = "tabs", target = "2")
         # showTab(inputId = "tabs", target = "3")
         # showTab(inputId = "tabs", target = "4")
         # showTab(inputId = "tabs", target = "5")
@@ -721,7 +722,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        # showTab(inputId = "tabs", target = "2")
+        showTab(inputId = "tabs", target = "2")
         # showTab(inputId = "tabs", target = "3")
         # showTab(inputId = "tabs", target = "4")
         # showTab(inputId = "tabs", target = "5")
@@ -779,7 +780,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        # showTab(inputId = "tabs", target = "2")
+        showTab(inputId = "tabs", target = "2")
         # showTab(inputId = "tabs", target = "3")
         # showTab(inputId = "tabs", target = "4")
         # showTab(inputId = "tabs", target = "5")
@@ -837,7 +838,7 @@ observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
         shinyjs::show("Ensemble_panel")
 
         hideTab(inputId = "tabs", target = "11")
-        # showTab(inputId = "tabs", target = "2")
+        showTab(inputId = "tabs", target = "2")
         # showTab(inputId = "tabs", target = "3")
         # showTab(inputId = "tabs", target = "4")
         # showTab(inputId = "tabs", target = "5")
@@ -2087,6 +2088,7 @@ SSS.run<-observeEvent(input$run_SSS,{
         
     #L0    
     ctl.file$Growth_Age_for_L1<-input$t0_f_mean_sss
+    ctl.file$Growth_Age_for_L1<-0
     #if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(fem_vbgf[1],log(fem_vbgf[1]))}
     #else {ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]}
     if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(0,log(0.0000001))}
@@ -2164,7 +2166,7 @@ SSS.run<-observeEvent(input$run_SSS,{
       }     
 
     #S-R
-    ctl.file$SR_parms[1,3:4]<-input$lnR0  #lnR0
+    #ctl.file$SR_parms[1,3:4]<-input$lnR0  #lnR0
     
     if(input$h_ss_prior=="lognormal"){ctl.file$SR_parms[2,3:4]<-c(input$h_mean_ss,log(h_mean_ss))}
     else{ctl.file$SR_parms[2,3:4]<-input$h_mean_ss}        
@@ -2318,8 +2320,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       k.in=k.in_sss,
       t0.in=t0.in_sss,
       Zfrac.Beta.in=c(-99,0.2,0.6,-99,0.5,2),
-      R_start=c(0,9),
-      doR0.loop=c(1,4.1,12.1,0.5),
+      R_start=c(0,input$lnR0_sss),
+      doR0.loop=c(1,round(input$lnR0_sss*0.5),round(input$lnR0_sss*1.3),0.5),
       sum_age=0,
       ts_yrs=c(input$styr,input$endyr),
       pop.ltbins=NA,

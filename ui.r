@@ -433,12 +433,14 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
     shinyjs::hidden(wellPanel(id="panel_SSS_prod",
     h4(strong("Stock-recruitment parameters")),
+          br(),
+          fluidRow(column(width=6,numericInput("lnR0_sss", "Initial recruitment (lnR0)", value=7,min=0.01, max=20, step=0.01))),
           dropdownButton(
           selectInput("h_prior_sss","Steepness",c("symmetric beta","beta","truncated normal","truncated lognormal","uniform","no prior")),
           numericInput("h_mean_sss", "Mean", value=0.7,min=0.2, max=1, step=0.001),
           numericInput("h_SD_sss", "SD", value=0.15,min=0, max=10000, step=0.001),
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
-       ) 
+       ),   
       )
     ),  
 
@@ -454,7 +456,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
      fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
-      column(width=6,numericInput("lnR0", "Initial recruitment (lnR0)", value=9,min=0, max=20, step=0.01))),
+      column(width=6,numericInput("lnR0", "Initial recruitment (lnR0)", value=7,min=0.01, max=20, step=0.01))),
    #    ),
       )
     ),  
