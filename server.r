@@ -1460,23 +1460,35 @@ output$AdvancedSS4<- renderUI({
       # } 
   }) 
 
-output$AdvancedSS5<- renderUI({ 
-    # if(input$advance_ss_click){ 
+output$AdvancedSS_Ctunits<- renderUI({ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "Ct_units_choice", label = "Input catches in numbers (biomass is the default)?",
+        shape = "round", outline = TRUE, status = "info"))) 
+  }) 
+
+output$AdvancedSS_Ctunitsfleets <- renderUI({ 
+    if(!is.null(input$Ct_units_choice)){       
+      if(input$Ct_units_choice){
+      fluidRow(column(width=8, textInput("fleet_ct_units", "Enter fleet number designation (e.g., 1,2) that report catch in numbers", value="")))        
+      }
+    } 
+  }) 
+
+output$AdvancedSS_retro_choice<- renderUI({ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "Retro_choice", label = "Do retrospective runs? Input minus from current year",
         shape = "round", outline = TRUE, status = "info"))) 
-      # } 
   }) 
 
-output$AdvancedSS5in <- renderUI({ 
-    # if(input$advance_ss_click){       
+output$AdvancedSS_retro_years <- renderUI({ 
+    if(!is.null(input$Retro_choice)){       
     if(input$Retro_choice){       
       fluidRow(column(width=6, numericInput("first_retro_year", "1st retro year",  
                                               value=-1, min=-1, max=-500, step=-1)), 
               column(width=6, numericInput("final_retro_year", "Last retro year",  
                                               value=-10, min=-1, max=-500, step=-1)))
+      }
     } 
-  # }
   }) 
 
 output$AdvancedSS6 <- renderUI({ 
