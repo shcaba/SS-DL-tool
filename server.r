@@ -1461,15 +1461,15 @@ output$AdvancedSS4<- renderUI({
   }) 
 
 output$AdvancedSS_Ctunits<- renderUI({ 
-        fluidRow(column(width=6, prettyCheckbox(
-        inputId = "Ct_units_choice", label = "Input catches in numbers (biomass is the default)?",
+        fluidRow(column(width=12, prettyCheckbox(
+        inputId = "Ct_units_choice", label = "Specify catch units (1=biomass; 2=numbers) for each fleet. Default is biomass?",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
 output$AdvancedSS_Ctunitsfleets <- renderUI({ 
     if(!is.null(input$Ct_units_choice)){       
       if(input$Ct_units_choice){
-      fluidRow(column(width=8, textInput("fleet_ct_units", "Enter fleet number designation (e.g., 1,2) that report catch in numbers", value="")))        
+      fluidRow(column(width=12, textInput("fleet_ct_units", "Enter catch units for each fleet (1=biomass; 2=numbers)", value="")))        
       }
     } 
   }) 
@@ -1503,6 +1503,13 @@ output$AdvancedSS6 <- renderUI({
   }) 
 
 #  roots <- getVolumes()()  
+
+FleetNs<-reactive({
+    fleetnum<-rep(1,max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data))
+    FleetNs<-paste(as.character(fleetnum), collapse=",")
+    print(FleetNs)
+    FleetNs
+  })
 
 
 Nages<-reactive({
@@ -2519,6 +2526,7 @@ if(!input$use_par)
 		data.file$Nages<-Nages()
     data.file$Nfleets<-max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data)
 
+
 	#Catches
 		if (is.null(rv.Ct$data)) 
 		{
@@ -2857,6 +2865,12 @@ if(!input$use_par)
       data.file$CPUEinfo[,1]<-1:data.file$Nfleets
     }
   
+    if(input$Ct_units_choice)
+    {
+      ct.units<-as.numeric(trimws(unlist(strsplit(input$fleet_ct_units,","))))
+      #data.file$fleetinfo[ct.units,4]<-2 #use this when just specifying which are fleets are numbers
+      data.file$fleetinfo[,4]<-ct.units
+    }
 
 		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
   }
