@@ -1494,7 +1494,7 @@ output$AdvancedSS_retro_years <- renderUI({
 output$AdvancedSS_Ltbin <- renderUI({ 
     # if(input$advance_ss_click){       
       fluidRow(column(width=4, numericInput("lt_bin_size", "bin size",  
-                                              value=2, min=0, max=10000, step=1)), 
+                                              value=as.numeric(colnames(rv.Lt$data)[6])-as.numeric(colnames(rv.Lt$data)[5]), min=0, max=10000, step=1)), 
               column(width=4, numericInput("lt_min_bin", "minimum bin",  
                                               value=4, min=0, max=10000, step=1)), 
               column(width=4, numericInput("lt_max_bin", "maximum bin",  
