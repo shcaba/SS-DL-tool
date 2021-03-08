@@ -1395,7 +1395,7 @@ output$Forecasts<- renderUI({
 	}) 
 
 
-output$AdvancedSS1<- renderUI({ 
+output$AdvancedSS_nohess<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_hess", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
@@ -1403,7 +1403,7 @@ output$AdvancedSS1<- renderUI({
       # } 
   }) 
 
-output$AdvancedSS2<- renderUI({ 
+output$AdvancedSS_noplots<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_plots_tables", label = "Turn off plots and tables",
@@ -1411,7 +1411,7 @@ output$AdvancedSS2<- renderUI({
       # } 
   }) 
 
-output$AdvancedSSpar<- renderUI({ 
+output$AdvancedSS_par<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "use_par", label = "Use par file (i.e., parameter file from previous run)?",
@@ -1444,7 +1444,7 @@ output$AdvancedSS_controlnew<- renderUI({
       # } 
   }) 
 
-output$AdvancedSS3<- renderUI({ 
+output$AdvancedSS_GT1<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "GT1", label = "Use only one growth type (default is 5)",
@@ -1452,7 +1452,7 @@ output$AdvancedSS3<- renderUI({
       # } 
   }) 
 
-output$AdvancedSS4<- renderUI({ 
+output$AdvancedSS_Sex3<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "Sex3", label = "Retain sex ratio in length compositions (Sex option = 3)",
@@ -1491,7 +1491,7 @@ output$AdvancedSS_retro_years <- renderUI({
     } 
   }) 
 
-output$AdvancedSS6 <- renderUI({ 
+output$AdvancedSS_Ltbin <- renderUI({ 
     # if(input$advance_ss_click){       
       fluidRow(column(width=4, numericInput("lt_bin_size", "bin size",  
                                               value=2, min=0, max=10000, step=1)), 
@@ -2622,7 +2622,7 @@ if(!input$use_par)
     data.file$lbin_vector<-as.numeric(colnames(rv.Lt$data)[5:ncol(rv.Lt$data)]) #as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
     if(data.file$maximum_size<max(data.file$lbin_vector)){data.file$maximum_size<-(2*round(max(data.file$lbin_vector)/2))+2}
     lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",data.file$lbin_vector),paste0("m",data.file$lbin_vector))
-    lt.data.females<-lt.data.males<-lt.data.unknowns<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
+    lt.data.females<-lt.data.males<-lt.data.unknowns<-lt.data.sex3<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
     colnames(Lt.comp.data)[1:4]<-c("Year","Fleet","Sex","Nsamps")
     #female lengths
     if(nrow(subset(Lt.comp.data,Sex==1))>0){
@@ -2668,26 +2668,32 @@ if(!input$use_par)
       }
 
     #Maintain sample sex ratio
-    # if(input$Sex3){
-    #   samp.yrs_females<-Lt.comp.data_female[,1]
-    #   samp.yrs_males<-Lt.comp.data_male[,1]
-    #   samp.yrs_sex3<-samp.yrs_females[match(samp.yrs_males,samp.yrs_females)]
-    #   Lt.comp.data.year<-
-    #   Lt.comp.data_female<-subset(Lt.comp.data,Sex==1 & Nsamps>0) 
-    #   Lt.comp.data_male<-subset(Lt.comp.data,Sex==2 & Nsamps>0)
-    #   lt.data.sex3<-data.frame(cbind(samp.yrs_sex3,
-    #     rep(1,length(samp.yrs_sex3)),
-    #     Lt.comp.data_sex3[,2],
-    #     Lt.comp.data_sex3[,3],
-    #     rep(0,length(samp.yrs_sex3)),
-    #     Lt.comp.data_sex3[,4],
-    #     Lt.comp.data_sex3[,5:ncol(Lt.comp.data_sex3)],
-    #     Lt.comp.data_sex3[,5:ncol(Lt.comp.data_sex3)]*0)
-    #     )
-    #   }
+     if(input$Sex3){
+      yrsfleet_females<-paste0(Lt.comp.data_female[,1],Lt.comp.data_female[,2])
+      yrsfleet_males<-paste0(Lt.comp.data_male[,1],Lt.comp.data_male[,2])
+      #Match years
+      #samp.yrs_sex3<-samp.yrs_females[match(samp.yrs_males,samp.yrs_females)]
+      sex3_match_female<-yrsfleet_females%in%yrsfleet_males
+      sex3_match_male<-yrsfleet_males%in%yrsfleet_females
+      #Subset years
+      Lt.comp.data_female_sex3<-Lt.comp.data_female[sex3_match_female,]
+      Lt.comp.data_male_sex3<-Lt.comp.data_male[sex3_match_male,]
+      lt.data.sex3<-data.frame(cbind(Lt.comp.data_female_sex3[,1],
+        rep(1,nrow(Lt.comp.data_female_sex3)),
+        Lt.comp.data_female_sex3[,2],
+        rep(3,nrow(Lt.comp.data_female_sex3)),
+        rep(0,nrow(Lt.comp.data_female_sex3)),
+        Lt.comp.data_female_sex3[,4]+Lt.comp.data_male_sex3[,4],
+        Lt.comp.data_female_sex3[,5:ncol(Lt.comp.data_female_sex3)],
+        Lt.comp.data_male_sex3[,5:ncol(Lt.comp.data_male_sex3)])
+        )
+      lt.data.females<-lt.data.females[!sex3_match_female,]
+      lt.data.males<-lt.data.males[!sex3_match_male,]
+       }
 
-    colnames(lt.data.females)<-colnames(lt.data.males)<-colnames(lt.data.unknowns)<-lt.data.names
-    data.file$lencomp<-na.omit(rbind(lt.data.females,lt.data.males,lt.data.unknowns))      
+    colnames(lt.data.females)<-colnames(lt.data.males)<-colnames(lt.data.unknowns)<-colnames(lt.data.sex3)<-lt.data.names
+    
+    data.file$lencomp<-na.omit(rbind(lt.data.unknowns,lt.data.females,lt.data.males,lt.data.sex3))      
     }
 		#}
 		#else{
