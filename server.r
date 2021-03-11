@@ -203,6 +203,7 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
   rv.Age <- reactiveValues(data = NULL,clear = FALSE)
   rv.Ct <- reactiveValues(data = NULL,clear = FALSE)
   rv.Index <- reactiveValues(data = NULL,clear = FALSE)
+  rv.AgeErr <- reactiveValues(data = NULL,clear = FALSE)
     
 
 ########
@@ -256,6 +257,30 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
     rv.Age$clear <- TRUE
     reset('file3')
   }, priority = 1000)
+
+#Reset ageing error
+  observe({
+    req(input$file33)
+    req(!rv.AgeErr$clear)
+    rv.AgeErr$data <- read.csv(input$file33$datapath,check.names=FALSE)
+  })
+
+  observeEvent(input$file33, {
+    rv.AgeErr$clear <- FALSE
+     if(!input$Ageing_error_choice){
+    rv.AgeErr$data <- NULL
+    rv.AgeErr$clear <- TRUE
+    reset('file33')}
+  }, priority = 1000)
+
+# #  if(!is.null(input$Ageing_error_choice)){       
+#   observeEvent(input$file33, {
+#     if(!input$Ageing_error_choice){
+#     rv.AgeErr$data <- NULL
+#     rv.AgeErr$clear <- TRUE
+#     reset('file33') #}
+#   }, priority = 1000)
+ # }
 
 
 #Reset index
@@ -1460,6 +1485,29 @@ output$AdvancedSS_Sex3<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_ageerror<- renderUI({ 
+        fluidRow(column(width=12, prettyCheckbox(
+        inputId = "Ageing_error_choice", label = "Add custom ageing error matrices?",
+        shape = "round", outline = TRUE, status = "info"))) 
+  }) 
+
+output$AdvancedSS_ageerror_in <- renderUI({ 
+    if(!is.null(input$Ageing_error_choice)){       
+      if(input$Ageing_error_choice){
+      #h4(strong("Choose data file")),
+      fluidRow(column(width=12,fileInput('file33', 'Ageing error file',
+                           accept = c(
+                             'text/csv',
+                             'text/comma-separated-values',
+                             'text/tab-separated-values',
+                             'text/plain',
+                             '.csv'
+                           )
+       )))        
+      }
+    } 
+  }) 
+
 output$AdvancedSS_Ctunits<- renderUI({ 
         fluidRow(column(width=12, prettyCheckbox(
         inputId = "Ct_units_choice", label = "Specify catch units (1=biomass; 2=numbers) for each fleet. Default is biomass?",
@@ -2024,7 +2072,7 @@ SSS.run<-observeEvent(input$run_SSS,{
 #	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
 #				file.rename(paste0(getwd(),"/Scenarios/sssexample_RickPow"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
 #			}
-
+browser()
   	#Read data and control files
 		data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/sss_example.dat")) 
 		ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
@@ -2726,6 +2774,13 @@ if(!input$use_par)
       data.file$N_agebins<-ncol(Age.comp.data)-6
       data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,7:ncol(Age.comp.data)]))
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+      browser()
+      if(!is.null(input$Ageing_error_choice)){       
+      if(input$Ageing_error_choice)
+        {
+          data.file$ageerror<-rv.AgeErr
+        }
+      }
       colnames(data.file$ageerror)<-paste0("age",0:Nages())         
 
       # data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
@@ -3747,7 +3802,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
 observeEvent(input$run_Profiles,{
        show_modal_spinner(spin="flower",color="red",text="Profiles running")
-
+#browser()
        SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1")
        parmnames<-input$myPicker_LP
        parmnames_vec<-c("Steepness","lnR0","Natural mortality","Linf","k")
@@ -3768,7 +3823,7 @@ observeEvent(input$run_Profiles,{
 
        try(run_diagnostics(mydir = mydir, model_settings = model_settings))
 
-       file.remove(paste0(getwd,"/run_diag_warning.txt"))
+       file.remove(paste0(getwd(),"/run_diag_warning.txt"))
 
        output$LikeProf_plot_modout <- renderImage({
        image.path1<-normalizePath(file.path(paste0(pathLP(),"_profile_",prof_parms_names[1],"/parameter_panel_",prof_parms_names[1],".png")),mustWork=FALSE)
