@@ -2515,7 +2515,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #            progress$set(value = i)
   #            Sys.sleep(0.5)
   #          }
-browser()
+
 if(!any(input$use_par,input$use_datanew,input$use_controlnew))
   {
       #Copy and move files
