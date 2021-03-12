@@ -1843,9 +1843,9 @@ output$VBGFplot<-renderPlot({
 			}		 
    if(any(is.na(c(f_Linf, f_k, f_t0)))=="FALSE"){ 
 		vbgf_female = data.frame(Age = 0:Nages(),  
-		                         Length = VBGF(f_Linf, f_k, f_t0, 0:Nages()), Sex="Female") 
+		                         Length = VBGF(f_Linf, f_k, f_t0, f_t0:Nages()), Sex="Female") 
     vbgf_male = data.frame(Age = 0:Nages(),  
-                           Length=VBGF(m_Linf, m_k, f_t0, 0:Nages()), Sex="Male") 
+                           Length=VBGF(m_Linf, m_k, m_t0, m_t0:Nages()), Sex="Male") 
       	rbind(vbgf_female,vbgf_male) %>%  
       	  ggplot(aes(Age, Length, color=Sex)) + 
       				geom_line(aes(linetype=Sex), lwd=2) -> vbgf.plot  
@@ -2072,7 +2072,6 @@ SSS.run<-observeEvent(input$run_SSS,{
 #	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
 #				file.rename(paste0(getwd(),"/Scenarios/sssexample_RickPow"), paste0(getwd(),"/Scenarios/",input$Scenario_name))
 #			}
-browser()
   	#Read data and control files
 		data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/sss_example.dat")) 
 		ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
@@ -2516,7 +2515,8 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #            progress$set(value = i)
   #            Sys.sleep(0.5)
   #          }
-if(!input$use_par)
+browser()
+if(!any(input$use_par,input$use_datanew,input$use_controlnew))
   {
       #Copy and move files
 	  	if(file.exists(paste0("Scenarios/",input$Scenario_name)))
@@ -3802,7 +3802,6 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
 observeEvent(input$run_Profiles,{
        show_modal_spinner(spin="flower",color="red",text="Profiles running")
-#browser()
        SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1")
        parmnames<-input$myPicker_LP
        parmnames_vec<-c("Steepness","lnR0","Natural mortality","Linf","k")
