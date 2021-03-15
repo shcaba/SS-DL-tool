@@ -2193,8 +2193,10 @@ SSS.run<-observeEvent(input$run_SSS,{
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_mean_sss                           #CV
     ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_mean_sss                           #CV
     #Weight-length
-    ctl.file$MG_parms[19,3:4]<-input$WLa_f_sss                                    #coefficient
-    ctl.file$MG_parms[20,3:4]<- input$WLb_f_sss                                   #exponent  
+    ctl.file$MG_parms[19,3:4]<-input$WLa_f_sss                                  #coefficient
+    ctl.file$MG_parms[20,3:4]<- input$WLb_f_sss                                 #exponent  
+    ctl.file$MG_parms[11,3:4]<-input$Fec_a_f_sss                                #coefficient
+    ctl.file$MG_parms[12,3:4]<- input$Fec_b_f_sss                               #exponent  
     
     if(input$male_parms_SSS)
       {   
@@ -2957,12 +2959,14 @@ if(!input$use_par)
     ctl.file$MG_parms[4,3:4]<-input$k_f       #k
     ctl.file$MG_parms[5,3:4]<-input$CV_lt_f   #CV
     ctl.file$MG_parms[6,3:4]<-input$CV_lt_f   #CV
-    #Maturity6
-    ctl.file$MG_parms[9,3:4]<-input$L50_f                 #Lmat50%
+    #Maturity
+    ctl.file$MG_parms[9,3:4]<-input$L50_f                                 #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f-input$L50_f)  #Maturity slope
+    ctl.file$MG_parms[11,3:4]<-input$Fec_a_f        #coefficient
+    ctl.file$MG_parms[12,3:4]<- input$Fec_b_        #exponent  
     #Males
     ctl.file$MG_parms[13,3]<-input$M_f        #M
-    #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]    #L0
+    #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]   #L0
     ctl.file$MG_parms[14,3:4]<-0              #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f   #Linf
     ctl.file$MG_parms[16,3:4]<-input$k_f      #k
@@ -3001,6 +3005,8 @@ if(!input$use_par)
     #Maturity
     ctl.file$MG_parms[9,3:4]<-input$L50_f_fix                                     #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_fix-input$L50_f_fix)  #Maturity slope
+    ctl.file$MG_parms[11,3:4]<-input$Fec_a_f_fix       #coefficient
+    ctl.file$MG_parms[12,3:4]<- input$Fec_b_f_fix      #exponent  
     #Males
     ctl.file$MG_parms[13,3]<-input$M_f_fix          #M
     #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]          #L0
@@ -3090,7 +3096,9 @@ if(!input$use_par)
     #Maturity
     ctl.file$MG_parms[9,3:4]<-input$L50_f_est                                     #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_est-input$L50_f_est)  #Maturity slope
-    
+    ctl.file$MG_parms[11,3:4]<-input$Fec_a_f_est       #coefficient
+    ctl.file$MG_parms[12,3:4]<- input$Fec_b_f_est      #exponent  
+        
     #Males
     ctl.file$MG_parms[13,3:4]<-c(input$M_f_mean,log(input$M_f_mean))    #M
     #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]                              #L0

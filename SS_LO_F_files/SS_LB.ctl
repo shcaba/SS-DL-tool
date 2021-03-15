@@ -74,12 +74,12 @@
  0.03 5 0.1 0.1 0.5 0 -4 0 0 0 0 0 0 0 # CV_old_Fem_GP_1
 # Sex: 1  BioPattern: 1  WtLen
  0 3 0.00001 1.003e-005 99 0 -99 0 0 0 0 0 0 0 # Wtlen_1_Fem_GP_1
- 2 4 3.1026 3.1026 99 0 -99 0 0 0 0 0 0 0 # Wtlen_2_Fem_GP_1
+ 2 4 3 3 99 0 -99 0 0 0 0 0 0 0 # Wtlen_2_Fem_GP_1
 # Sex: 1  BioPattern: 1  Maturity&Fecundity
  0.0001 1000 36.3 19.7 99 0 -99 0 0 0 0 0 0 0 # Mat50%_Fem_GP_1
  -2 4 -0.5 -1 99 0 -99 0 0 0 0 0 0 0 # Mat_slope_Fem_GP_1
- 0 3 1 1 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_scalar_Fem_GP_1
- 0 3 1 1 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_exp_len_Fem_GP_1
+ 0 3 0.00001 0.00001 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_scalar_Fem_GP_1
+ 0 3 3 3 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_exp_len_Fem_GP_1
 # Sex: 2  BioPattern: 1  NatMort
  0.001 2 0.18 -2.92 0.22 3 -1 0 0 0 0 0 0 0 # NatM_p_1_Mal_GP_1
 # Sex: 2  BioPattern: 1  Growth
