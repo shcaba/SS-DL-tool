@@ -1,0 +1,7 @@
+Ageing Error
+
+You can also explore ageing error, with either the default ageing error being no bias and high precision, or adding custom ageing error for mean age and standard deviation at age.
+Please see the "Ageing error.csv" examples on how to prepare that input file. You must provide entries from age 0 to max age.
+
+User's can assign any ageing error matrix to each age entry. See the "Ageing_error" column for where to assign the available ageing error matrix. See also the SS user manual for more information.
+ 

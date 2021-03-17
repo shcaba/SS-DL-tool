@@ -1,10 +1,13 @@
 In this case, the conditional age at length are based on a research collection, hence fleet 3.
 The major input difference can be seen in the Lbin_low and Lbin_hi inputs, which now represent the length bin (e.g., the 10 cm bin would be 10 and 10) rather than the input -1.
- 
-This particular fleet is predicted to have no removals and was a survey of all ages and sizes.
-Selectivity still needs to be specified even with no removals, so it is recommended all sizes are assummed to selective, setting them fixed (negative phase number) rather than estimated (positive phase number).
-The suggested example selectivity inputs for all three fleets are:
+
+Fleet 3 is assumed to have no removals and was a survey of all ages and sizes, thus its selectivity does not matter in regard to catches.
+Selectivity still needs to be specified even with no removals. One recommendation is to set selectivity at all sizes and setting them fixed (negative phase number) rather than estimated (positive phase number). 
+User's have the latitude to treat this selectivity in any manner they chose.
+
+For this example, here are suggested selectivity:
 Sel 50% : 20, 25, 1
 phases 1,1,-1
 Sel 95%: 30,35,2
 phases: 1,1, -1
+

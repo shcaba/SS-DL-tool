@@ -1521,7 +1521,7 @@ output$AdvancedSS_ageerror_in <- renderUI({
 
 output$AdvancedSS_Ctunits<- renderUI({ 
         fluidRow(column(width=12, prettyCheckbox(
-        inputId = "Ct_units_choice", label = "Specify catch units (1=biomass; 2=numbers) for each fleet. Default is biomass?",
+        inputId = "Ct_units_choice", label = "Specify catch units (1=biomass; 2=numbers) for each fleet? Default is biomass.",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
@@ -1552,12 +1552,14 @@ output$AdvancedSS_retro_years <- renderUI({
 
 output$AdvancedSS_Ltbin <- renderUI({ 
     # if(input$advance_ss_click){       
+      if(!is.null(rv.Lt$data)){bin.step<-as.numeric(colnames(rv.Lt$data)[6])-as.numeric(colnames(rv.Lt$data)[5])}
+      if(is.null(rv.Lt$data)){bin.step<-2}
       fluidRow(column(width=4, numericInput("lt_bin_size", "bin size",  
-                                              value=as.numeric(colnames(rv.Lt$data)[6])-as.numeric(colnames(rv.Lt$data)[5]), min=0, max=10000, step=1)), 
+                                              value=bin.step, min=0, max=10000, step=1)), 
               column(width=4, numericInput("lt_min_bin", "minimum bin",  
-                                              value=4, min=0, max=10000, step=1)), 
+                                              value=4, min=0, max=10000, step=0.01)), 
               column(width=4, numericInput("lt_max_bin", "maximum bin",  
-                                              value=2*(round((Linf()+(Linf()*0.2326))/2))+2, min=0, max=10000, step=1))) 
+                                              value=2*(round((Linf()+(Linf()*0.2326))/2))+2, min=0, max=10000, step=0.01))) 
     # } 
   }) 
 
@@ -1588,7 +1590,7 @@ Nages<-reactive({
     if(!is.na(input$M_f_mean_sss)) {Nages<-ceiling(5.4/input$M_f_mean_sss)} 
     if(!is.null(rv.Age$data))
     {
-      Nages_in<-max(as.numeric(colnames(rv.Age$data[,7:ncol(rv.Age$data)])))
+      Nages_in<-max(as.numeric(colnames(rv.Age$data[,8:ncol(rv.Age$data)])))
       if(!is.na(Nages)&Nages_in>Nages){Nages<-Nages_in}
       if(is.na(Nages)){Nages<-Nages_in}
     }
@@ -1831,8 +1833,8 @@ output$Indexplot <- renderPlot({
 
 #Plot M by age
 output$Mplot<-renderPlot({ 
-			mf.in = M_f_in() 
-			mm.in = M_f_in() 
+			mf.in = M_f_in()+0.000000000000001 
+			mm.in = M_f_in()+0.000000000000001
 #      if(input$male_parms|input$male_parms_fix)
 			if(input$male_parms|input$male_parms_SSS|input$male_parms_fix|input$male_parms_est)
         { 
@@ -2593,7 +2595,6 @@ if(!input$use_par)
   {
     if(!input$use_datanew)
     {
-
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
@@ -2797,23 +2798,25 @@ if(!input$use_par)
 
     if (!is.null(Age.comp.data))
     {
-      data.file$N_agebins<-ncol(Age.comp.data)-6
-      data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,7:ncol(Age.comp.data)]))
+      data.file$N_agebins<-ncol(Age.comp.data)-7
+      data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,8:ncol(Age.comp.data)]))
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       
       if(!is.null(input$Ageing_error_choice)){       
       if(input$Ageing_error_choice)
         {
-          data.file$ageerror<-rv.AgeErr
+          data.file$ageerror<-data.frame(t(rv.AgeErr$data[,-1]))
+          data.file$N_ageerror_definitions<-ncol(rv.AgeErr$data[,-1])/2
         }
       }
+      #Label object for r4ss
       colnames(data.file$ageerror)<-paste0("age",0:Nages())         
-
+      rownames(data.file$ageerror)<-c(1:nrow(data.file$ageerror))
       # data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       # colnames(data.file$ageerror)<-paste0("age",1:Nages())         
       age.data.names<-c(c("Yr","Month","Fleet","Sex","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
       age.data.females<-age.data.males<-age.data.unknowns<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
-      colnames(Age.comp.data)[1:6]<-c("Year","Fleet","Sex","Lbin_low","Lbin_hi","Nsamps")
+      colnames(Age.comp.data)[1:7]<-c("Year","Fleet","Sex","AgeErr","Lbin_low","Lbin_hi","Nsamps")
     #female ages
     if(nrow(subset(Age.comp.data,Sex==1))>0){
       Age.comp.data_female<-subset(Age.comp.data,Sex==1 & Nsamps>0) 
@@ -2823,12 +2826,12 @@ if(!input$use_par)
         Age.comp.data_female[,2],
         Age.comp.data_female[,3],
         rep(0,length(samp.yrs_females)),
-        rep(1,length(samp.yrs_females)),
         Age.comp.data_female[,4],
         Age.comp.data_female[,5],
         Age.comp.data_female[,6],
-        Age.comp.data_female[,7:ncol(Age.comp.data_female)],
-        Age.comp.data_female[,7:ncol(Age.comp.data_female)]*0)
+        Age.comp.data_female[,7],
+        Age.comp.data_female[,8:ncol(Age.comp.data_female)],
+        Age.comp.data_female[,8:ncol(Age.comp.data_female)]*0)
         )
     }
     #male ages
@@ -2840,12 +2843,12 @@ if(!input$use_par)
         Age.comp.data_male[,2],
         Age.comp.data_male[,3],
         rep(0,length(samp.yrs_males)),
-        rep(1,length(samp.yrs_males)),
         Age.comp.data_male[,4],
         Age.comp.data_male[,5],
         Age.comp.data_male[,6],
-        Age.comp.data_male[,7:ncol(Age.comp.data_male)]*0,
-        Age.comp.data_male[,7:ncol(Age.comp.data_male)])
+        Age.comp.data_male[,7],
+        Age.comp.data_male[,8:ncol(Age.comp.data_male)]*0,
+        Age.comp.data_male[,8:ncol(Age.comp.data_male)])
         )
       }
     #unknown sex ages
@@ -2857,12 +2860,12 @@ if(!input$use_par)
         Age.comp.data_unknown[,2],
         Age.comp.data_unknown[,3],
         rep(0,length(samp.yrs_unknown)),
-        rep(1,length(samp.yrs_unknown)),
         Age.comp.data_unknown[,4],
         Age.comp.data_unknown[,5],
         Age.comp.data_unknown[,6],
-        Age.comp.data_unknown[,7:ncol(Age.comp.data_unknown)],
-        Age.comp.data_unknown[,7:ncol(Age.comp.data_unknown)]*0)
+        Age.comp.data_unknown[,7],
+        Age.comp.data_unknown[,8:ncol(Age.comp.data_unknown)],
+        Age.comp.data_unknown[,8:ncol(Age.comp.data_unknown)]*0)
         )
       }
     #if(nrow(subset(Age.comp.data,Sex==0))>0){age.data.unknowns<-data.frame(cbind(
