@@ -1488,6 +1488,14 @@ output$AdvancedSS_Sex3<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_Indexvar<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "Indexvar", label = "Estimate additional variance on each abundance index?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
 output$AdvancedSS_ageerror<- renderUI({ 
         fluidRow(column(width=12, prettyCheckbox(
         inputId = "Ageing_error_choice", label = "Add custom ageing error matrices?",
@@ -3353,37 +3361,45 @@ if(!input$use_par)
 		}
 
     #Remove surveys from initial F lines and add q and xtra variance lines
-    
+    #browser()
     if(!is.null(rv.Index$data))
       {
         ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
-        #q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,0,0,1)))
-        q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,1,0,1)))
+        q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,0,0,1)))
+        if(input$Indexvar){q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,1,0,1)))}
         qnames<-c("LO","HI","INIT","PRIOR","PR_SD","PR_type","PHASE","env_var&link","dev_link","dev_minyr","dev_maxyr","dev_PH","Block","Block_Fxn")
-        #q.lines<-data.frame(t(c(-15,15,1,0,1,0,-1,rep(0,7))))
-        
-        q.lines<-data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0)))
+        q.lines<-data.frame(t(c(-15,15,1,0,1,0,-1,rep(0,7))))
+        if(input$Indexvar){q.lines<-data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0)))}
         if(length(unique(rv.Index$data[,2]))>1)
         {
           for(q in 2:length(unique(rv.Index$data[,2])))
           {
-            # q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,2])[q],1,0,0,0,1))
-     #       q.lines<-rbind(q.lines,c(-15,15,1,0,1,0,-1,rep(0,7)))            
-            q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,2])[q],1,0,1,0,1))
-            q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0))))            
+            if(!input$Indexvar)
+            {
+              q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,2])[q],1,0,0,0,1))
+              q.lines<-rbind(q.lines,c(-15,15,1,0,1,0,-1,rep(0,7)))                          
+            }
+      
+            if(input$Indexvar)
+            {
+              q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,2])[q],1,0,1,0,1))
+              q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0))))          
+            }  
           }
         }
         names(q.setup.lines)<-q.setup.names
         rownames(q.setup.lines)<-unique(rv.Index$data[,5])
         ctl.file$Q_options<-q.setup.lines
         names(q.lines)<-qnames
-        #rownames(q.lines)<-paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
+        if(!input$Indexvar){rownames(q.lines)<-paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")}
         #rnames.temp<-c(paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")"),paste0("Q_extraSD_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")"))
         #rnames.temp[1:length(rnames.temp)%%2 != 0]
-        qnames.temp1<-paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
-        qnames.temp2<-paste0("Q_extraSD_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
-        qnames.temp<-as.vector(rbind(qnames.temp1,qnames.temp2))
+        if(input$Indexvar)
+        {
+          qnames.temp1<-paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
+          qnames.temp2<-paste0("Q_extraSD_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
+          qnames.temp<-as.vector(rbind(qnames.temp1,qnames.temp2))
         # if(length(rnames.temp1)>1)
         # {
         #   for(xx in 2:length(rnames.temp1))
@@ -3391,11 +3407,10 @@ if(!input$use_par)
         #     rnames.temp<-c(rnames.temp1[x],rnames.temp2[x])
         #   }          
         # }
-
-        rownames(q.lines)<-qnames.temp
+          rownames(q.lines)<-qnames.temp
+          
+      }
         ctl.file$Q_parms<-q.lines
-
-
       }
 
 
