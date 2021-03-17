@@ -402,7 +402,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
   })
 
 #SSS panels
-observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)), {
+observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)), {
         shinyjs::show("Data_panel")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
@@ -2100,7 +2100,7 @@ SSS.run<-observeEvent(input$run_SSS,{
 		Catch.data<-rv.Ct$data
 		catch.dep.fleets<-ncol(Catch.data)
     data.file$Nfleets<-catch.dep.fleets
-    if(!is.null(rv.Index))
+    if(!is.null(rv.Index$data))
       {
         index.fleets<-max(rv.Index$data$Fleet)
         if(index.fleets>catch.dep.fleets) {data.file$Nfleets<-index.fleets}
@@ -2591,7 +2591,7 @@ if(!input$use_par)
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
     catch.fleets<-max(ncol(rv.Ct$data)-1)
-    data.file$Nfleets<-max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,2])
+    data.file$Nfleets<-max(catch.fleets,rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,2])
     
 	#Catches
 		if (is.null(rv.Ct$data)) 
@@ -2792,7 +2792,7 @@ if(!input$use_par)
       data.file$N_agebins<-ncol(Age.comp.data)-6
       data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,7:ncol(Age.comp.data)]))
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
-      browser()
+      
       if(!is.null(input$Ageing_error_choice)){       
       if(input$Ageing_error_choice)
         {
@@ -2930,7 +2930,7 @@ if(!input$use_par)
      
       #Set Dirichelt on
       data.file$age_info[,5]<-data.file$len_info[,5]<-1
-
+#browser()
       #Set up the correct fleet enumeration
       data.file$len_info[,6]<-1:data.file$Nfleets 
       data.file$age_info[,6]<-(data.file$Nfleets+1):(2*data.file$Nfleets)
@@ -2938,16 +2938,17 @@ if(!input$use_par)
       if(!is.null(rv.Ct$data))
         {
           fishery.names<-gsub(" ","",colnames(rv.Ct$data)[-1])
-          if(data.file$Nfleets>catch.fleets)
+          if(!is.null(rv.Index$data)&data.file$Nfleets>catch.fleets)
             {
               Surveyonly<-subset(rv.Index$data,Fleet>catch.fleets)
               survey.names<-unique(Surveyonly[,5])
               survey.fleets<-unique(Surveyonly[,2])       
             }
-          data.file$fleetinfo$fleetname<-c(fishery.names,survey.names)
+          if(!is.null(rv.Index$data)){data.file$fleetinfo$fleetname<-c(fishery.names,survey.names)}
+          if(is.null(rv.Index$data)){data.file$fleetinfo$fleetname<-fishery.names}
         }
        data.file$CPUEinfo[,1]<-1:data.file$Nfleets
-       if(!is.null(rv.Index)){data.file$fleetinfo[survey.fleets,1]<-3}
+       if(!is.null(rv.Index$data)){data.file$fleetinfo[survey.fleets,1]<-3}
      }
   
 #Catch units     
@@ -3352,7 +3353,8 @@ if(!input$use_par)
 		}
 
     #Remove surveys from initial F lines and add q and xtra variance lines
-    if(!is.null(rv.Index))
+    
+    if(!is.null(rv.Index$data))
       {
         ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
@@ -3360,7 +3362,7 @@ if(!input$use_par)
         q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,1,0,1)))
         qnames<-c("LO","HI","INIT","PRIOR","PR_SD","PR_type","PHASE","env_var&link","dev_link","dev_minyr","dev_maxyr","dev_PH","Block","Block_Fxn")
         #q.lines<-data.frame(t(c(-15,15,1,0,1,0,-1,rep(0,7))))
-        #browser()
+        
         q.lines<-data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0)))
         if(length(unique(rv.Index$data[,2]))>1)
         {

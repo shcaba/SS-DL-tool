@@ -61,9 +61,10 @@ shinyjs::hidden(wellPanel(id="Data_panel",
           ),
  
   h4(strong("Clear data files")),
-     fluidRow(column(width=4,actionButton("reset_ct", "Catches")),
-              column(width=4,actionButton("reset_lt", "Length")),
-              column(width=4,actionButton("reset_age", "Ages"))),
+     fluidRow(column(width=3,actionButton("reset_ct", "Catches")),
+              column(width=3,actionButton("reset_lt", "Length")),
+              column(width=3,actionButton("reset_age", "Ages")),
+              column(width=3,actionButton("reset_index", "Index"))),
 )
 ),
     shinyjs::hidden(wellPanel(id="panel_Ct_F_LO",
