@@ -873,7 +873,10 @@ observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
 
 ########################################
 
-	
+#############################
+######### UI INPUTS #########
+#############################
+
 # User activated pop-up parameter values ---------------
 #Model dimensions
 output$Model_dims1 <- renderUI({ 
@@ -1552,10 +1555,18 @@ output$AdvancedSS_Ltbin <- renderUI({
 
 #  roots <- getVolumes()()  
 
+###############################################
+###############################################
+
+###############################################
+################# PARAMETERS ##################
+###############################################
+
 FleetNs<-reactive({
-    fleetnum<-rep(1,max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data))
+    if(all(c(is.null(rv.Ct$data[,2],rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,2])))) return(NULL)
+    fleetnum<-rep(1,max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,2]))
     FleetNs<-paste(as.character(fleetnum), collapse=",")
-    print(FleetNs)
+    #print(FleetNs)
     FleetNs
   })
 
@@ -1797,8 +1808,9 @@ output$Ctplot <- renderPlot({
 output$Indexplot <- renderPlot({ 
     if (is.null(rv.Index$data)) return(NULL)     
         
-        rv.Index$data$Fleet<-as.factor(rv.Index$data$Fleet)
-        ggplot(rv.Index$data,aes(x=Year,y=Index,group=Fleet, colour=Fleet)) +  
+        plot.Index<-rv.Index$data
+        plot.Index[,2]<-as.factor(plot.Index[,2])
+        ggplot(plot.Index,aes(x=Year,y=Index,group=Fleet, colour=Fleet)) +  
         geom_line(lwd=1.1) +
         geom_errorbar(aes(ymin=qlnorm(0.0275,log(Index),CV),ymax=qlnorm(0.975,log(Index),CV),group=Fleet),width=0,size=1)+ 
         geom_point(aes(colour=Fleet),size=4) +  
@@ -2038,6 +2050,10 @@ output$Selplot_SSS <- renderPlot({
     if(!is.null(get0("selplot.out"))){return(selplot.out)}
     else(return(NULL))
     })
+
+#############################################
+#############################################
+
 
 #############################################
 ######## PREPARE FILES andD RUN SSS #########
@@ -2574,9 +2590,9 @@ if(!input$use_par)
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
-    data.file$Nfleets<-max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data)
-
-
+    catch.fleets<-max(ncol(rv.Ct$data)-1)
+    data.file$Nfleets<-max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,2])
+    
 	#Catches
 		if (is.null(rv.Ct$data)) 
 		{
@@ -2595,18 +2611,18 @@ if(!input$use_par)
 		year.in<-input$styr:input$endyr
 		catch.cols<-colnames(data.file$catch)
 		catch_temp<-list()
-		if(data.file$Nfleets==1){catch.level<-1000}
-    if(data.file$Nfleets>1){
+		if(catch.fleets==1){catch.level<-1000}
+    if(catch.fleets>1){
         catch.level<-as.numeric(trimws(unlist(strsplit(input$Wt_fleet_Ct,","))))
         catch.level<-catch.level/sum(catch.level)*1000
       }
-    for(i in 1:data.file$Nfleets)
+    for(i in 1:catch.fleets)
 		{
 		catch_temp[[i]]<-data.frame(
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
-						c(catch.level[i]+0.000000001,rep(catch.level[i],length(year.in))),
+						c(0.0000000000000000000001,rep(catch.level[i],length(year.in))),
 						c(0.01,rep(100,length(year.in)))
 						)			
 		}
@@ -2617,17 +2633,17 @@ if(!input$use_par)
 		if(!is.null(rv.Ct$data))
 		{
 		Catch.data<-rv.Ct$data
-		data.file$Nfleets<-max(ncol(Catch.data)-1,data.file$Nfleets)
+		#data.file$Nfleets<-max(ncol(Catch.data)-1,data.file$Nfleets)
 		year.in<-Catch.data[,1]
 		catch.cols<-colnames(data.file$catch)
 		catch_temp<-list()
-		for(i in 1:data.file$Nfleets)
+		for(i in 1:catch.fleets)
 		{
 			catch_temp[[i]]<-data.frame(
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
-						c(0.0000001,Catch.data[,i+1]),
+						c(0.00000000000000000001,Catch.data[,i+1]),
 						rep(0.000001,length(year.in)+1)
 						)
 		}
@@ -2911,12 +2927,7 @@ if(!input$use_par)
         data.file$len_info<-rbind(data.file$len_info,data.file$len_info[1,])
         data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
       }
-      if(!is.null(rv.Index))
-      {
-        #for()
-        #data.file$CPUEinfo<-rbind(data.file$CPUEinfo,data.file$CPUEinfo[1,])
-
-      }
+     
       #Set Dirichelt on
       data.file$age_info[,5]<-data.file$len_info[,5]<-1
 
@@ -2924,10 +2935,22 @@ if(!input$use_par)
       data.file$len_info[,6]<-1:data.file$Nfleets 
       data.file$age_info[,6]<-(data.file$Nfleets+1):(2*data.file$Nfleets)
       if(is.null(rv.Ct$data)){data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)}
-      if(!is.null(rv.Ct$data)){data.file$fleetinfo$fleetname<-gsub(" ","",colnames(rv.Ct$data)[-1])}
-      data.file$CPUEinfo[,1]<-1:data.file$Nfleets
-    }
+      if(!is.null(rv.Ct$data))
+        {
+          fishery.names<-gsub(" ","",colnames(rv.Ct$data)[-1])
+          if(data.file$Nfleets>catch.fleets)
+            {
+              Surveyonly<-subset(rv.Index$data,Fleet>catch.fleets)
+              survey.names<-unique(Surveyonly[,5])
+              survey.fleets<-unique(Surveyonly[,2])       
+            }
+          data.file$fleetinfo$fleetname<-c(fishery.names,survey.names)
+        }
+       data.file$CPUEinfo[,1]<-1:data.file$Nfleets
+       if(!is.null(rv.Index)){data.file$fleetinfo[survey.fleets,1]<-3}
+     }
   
+#Catch units     
     if(input$Ct_units_choice)
     {
       ct.units<-as.numeric(trimws(unlist(strsplit(input$fleet_ct_units,","))))
@@ -2962,8 +2985,8 @@ if(!input$use_par)
     #Maturity
     ctl.file$MG_parms[9,3:4]<-input$L50_f                                 #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f-input$L50_f)  #Maturity slope
-    ctl.file$MG_parms[11,3:4]<-input$Fec_a_f        #coefficient
-    ctl.file$MG_parms[12,3:4]<- input$Fec_b_        #exponent  
+    #ctl.file$MG_parms[11,3:4]<-input$Fec_a_f        #coefficient
+    #ctl.file$MG_parms[12,3:4]<- input$Fec_b_f        #exponent  
     #Males
     ctl.file$MG_parms[13,3]<-input$M_f        #M
     #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]   #L0
@@ -3327,6 +3350,52 @@ if(!input$use_par)
 			size_selex_parms_rownames<-unlist(size_selex_parms_rownames)
 			rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
 		}
+
+    #Remove surveys from initial F lines and add q and xtra variance lines
+    if(!is.null(rv.Index))
+      {
+        ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
+        q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
+        #q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,0,0,1)))
+        q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,1,0,1)))
+        qnames<-c("LO","HI","INIT","PRIOR","PR_SD","PR_type","PHASE","env_var&link","dev_link","dev_minyr","dev_maxyr","dev_PH","Block","Block_Fxn")
+        #q.lines<-data.frame(t(c(-15,15,1,0,1,0,-1,rep(0,7))))
+        #browser()
+        q.lines<-data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0)))
+        if(length(unique(rv.Index$data[,2]))>1)
+        {
+          for(q in 2:length(unique(rv.Index$data[,2])))
+          {
+            # q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,2])[q],1,0,0,0,1))
+     #       q.lines<-rbind(q.lines,c(-15,15,1,0,1,0,-1,rep(0,7)))            
+            q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,2])[q],1,0,1,0,1))
+            q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0))))            
+          }
+        }
+        names(q.setup.lines)<-q.setup.names
+        rownames(q.setup.lines)<-unique(rv.Index$data[,5])
+        ctl.file$Q_options<-q.setup.lines
+        names(q.lines)<-qnames
+        #rownames(q.lines)<-paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
+        #rnames.temp<-c(paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")"),paste0("Q_extraSD_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")"))
+        #rnames.temp[1:length(rnames.temp)%%2 != 0]
+        qnames.temp1<-paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
+        qnames.temp2<-paste0("Q_extraSD_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
+        qnames.temp<-as.vector(rbind(qnames.temp1,qnames.temp2))
+        # if(length(rnames.temp1)>1)
+        # {
+        #   for(xx in 2:length(rnames.temp1))
+        #   {
+        #     rnames.temp<-c(rnames.temp1[x],rnames.temp2[x])
+        #   }          
+        # }
+
+        rownames(q.lines)<-qnames.temp
+        ctl.file$Q_parms<-q.lines
+
+
+      }
+
 
     if(input$Data_wt=="Dirichlet")
     {
@@ -3814,7 +3883,6 @@ observeEvent(input$run_Profiles,{
        parmnames<-input$myPicker_LP
        parmnames_vec<-c("Steepness","lnR0","Natural mortality","Linf","k")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
-       
        mydir = dirname(pathLP())
        get = get_settings_profile( parameters =  prof_parms_names,
               low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
