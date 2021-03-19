@@ -2955,14 +2955,14 @@ if(!input$use_par)
           if(!is.null(rv.Index$data)&data.file$Nfleets>catch.fleets)
             {
               Surveyonly<-subset(rv.Index$data,Fleet>catch.fleets)
-              survey.names<-unique(Surveyonly[,5])
-              survey.fleets<-unique(Surveyonly[,2])       
+              fleet.survey.names<-unique(fishery.names,Surveyonly[,5])
+              survey.fleets<-unique(Surveyonly[,2])      
+              data.file$fleetinfo$fleetname<-fleet.survey.names 
             }
-          if(!is.null(rv.Index$data)){data.file$fleetinfo$fleetname<-c(fishery.names,survey.names)}
-          if(is.null(rv.Index$data)){data.file$fleetinfo$fleetname<-fishery.names}
+          if(is.null(rv.Index$data)|all(!is.null(rv.Index$data)&data.file$Nfleets==catch.fleets)){data.file$fleetinfo$fleetname<-fishery.names}
         }
        data.file$CPUEinfo[,1]<-1:data.file$Nfleets
-       if(!is.null(rv.Index$data)){data.file$fleetinfo[survey.fleets,1]<-3}
+       if(!is.null(rv.Index$data)& max(rv.Index$data[,2])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
      }
   
 #Catch units     
@@ -3373,7 +3373,7 @@ if(!input$use_par)
     #browser()
     if(!is.null(rv.Index$data))
       {
-        ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
+        if(data.file$Nfleets>catch.fleets){ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]}
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
         q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,0,0,1)))
         if(input$Indexvar){q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,1,0,1)))}

@@ -1,0 +1,1 @@
+If an index is fishery-dependent and reflects one of the fleets from the catch file, it should be labeled the same as the header for that fleet in the catch file.
