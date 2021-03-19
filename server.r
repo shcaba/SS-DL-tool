@@ -1838,7 +1838,7 @@ output$Mplot<-renderPlot({
 #      if(input$male_parms|input$male_parms_fix)
 			if(input$male_parms|input$male_parms_SSS|input$male_parms_fix|input$male_parms_est)
         { 
-			     mm.in = M_m_in() 
+			     mm.in = M_m_in()+0.000000000000001
 			  }		 
       if(any(is.na(c(mf.in, mm.in)))|any(is.null(c(mf.in, mm.in)))) return(NULL) 
       Female_M = data.frame(Ages = 0:Nages(), PopN = exp(-mf.in * 0:Nages()), Sex="Female") 
@@ -2275,11 +2275,12 @@ SSS.run<-observeEvent(input$run_SSS,{
 
     if(input$Sel_choice_sss=="Logistic")
     {
-      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
       ctl.file$size_selex_parms[2,3:4]<- 15
       ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
-      ctl.file$size_selex_parms[4,3:4]<- 15
+      ctl.file$size_selex_parms[4,3:4]<- -15
       ctl.file$size_selex_parms[6,3:4]<- 15
       }
     if(input$Sel_choice_sss=="Dome-shaped")
@@ -2288,7 +2289,8 @@ SSS.run<-observeEvent(input$run_SSS,{
       LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_sss,","))))
       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel_sss,","))))
       
-      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
       ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
       ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
@@ -2307,7 +2309,8 @@ SSS.run<-observeEvent(input$run_SSS,{
         
         if(input$Sel_choice_sss=="Logistic")
         {
-          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+          #ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
           ctl.file$size_selex_parms[6*i+2,3:4]<- 15
           ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
@@ -3259,11 +3262,12 @@ if(!input$use_par)
 
     if(input$Sel_choice=="Logistic")
 		{
-			ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+			#ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
       ctl.file$size_selex_parms[2,3:4]<- 15
       ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
-			ctl.file$size_selex_parms[4,3:4]<- 15
+			ctl.file$size_selex_parms[4,3:4]<- -15
       ctl.file$size_selex_parms[6,3:4]<- 15
       #phases
       ctl.file$size_selex_parms[1,7]<- Selpeak_phase[1]
@@ -3281,7 +3285,8 @@ if(!input$use_par)
       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
       FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
 			
-      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
 			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
 			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
@@ -3315,7 +3320,8 @@ if(!input$use_par)
         {
           ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
           ctl.file$size_selex_parms[6*i+3,7]<- Sel50_phase[i+1]
-          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+          #ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
           ctl.file$size_selex_parms[6*i+2,3:4]<- 15
