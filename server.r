@@ -1573,8 +1573,8 @@ output$AdvancedSS_Ltbin <- renderUI({
 ###############################################
 
 FleetNs<-reactive({
-    if(all(c(is.null(rv.Ct$data[,2],rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,2])))) return(NULL)
-    fleetnum<-rep(1,max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,2]))
+    if(all(c(is.null(rv.Ct$data[,2],rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,3])))) return(NULL)
+    fleetnum<-rep(1,max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,3]))
     FleetNs<-paste(as.character(fleetnum), collapse=",")
     #print(FleetNs)
     FleetNs
@@ -1632,8 +1632,8 @@ Linf_m_in<-reactive({
     Linf_m_in<-NA
     if(all(c(is.null(input$Linf_m),is.null(input$Linf_m_fix),is.null(input$Linf_m_mean),is.null(input$Linf_m_mean_sss)))) return(NULL)
     if(any(input$male_parms&!is.na(input$Linf_m))) {Linf_m_in<-input$Linf_m}
-    if(any(input$male_parms&!is.na(input$Linf_m_fix))) {Linf_m_in<-input$Linf_m_fix}
-    if(any(input$male_parms&!is.na(input$Linf_m_mean))) {Linf_m_in<-input$Linf_m_mean}
+    if(any(input$male_parms_fix&!is.na(input$Linf_m_fix))) {Linf_m_in<-input$Linf_m_fix}
+    if(any(input$male_parms_est&!is.na(input$Linf_m_mean))) {Linf_m_in<-input$Linf_m_mean}
     if(any(input$male_parms_SSS&!is.na(input$Linf_m_mean_sss))) {Linf_m_in<-input$Linf_m_mean_sss}
     Linf_m_in
   })
@@ -1654,8 +1654,8 @@ k_vbgf_m_in<-reactive({
     k_vbgf_m_in<-NA
     if(all(c(is.null(input$k_m),is.null(input$k_m_fix),is.null(input$k_m_mean),is.null(input$k_m_mean_sss)))) return(NULL)
     if(any(input$male_parms&!is.na(input$k_m))) {k_vbgf_m_in<-input$k_m}
-    if(any(input$male_parms&!is.na(input$k_m_fix))) {k_vbgf_m_in<-input$k_m_fix}
-    if(any(input$male_parms&!is.na(input$k_m_mean))) {k_vbgf_m_in<-input$k_m_mean}
+    if(any(input$male_parms_fix&!is.na(input$k_m_fix))) {k_vbgf_m_in<-input$k_m_fix}
+    if(any(input$male_parms_est&!is.na(input$k_m_mean))) {k_vbgf_m_in<-input$k_m_mean}
     if(any(input$male_parms_SSS&!is.na(input$k_m_mean_sss))) {k_vbgf_m_in<-input$k_m_mean_sss}
     k_vbgf_m_in
   })
@@ -1674,8 +1674,8 @@ t0_vbgf_m_in<-reactive({
     t0_vbgf_m_in<-NA
     if(all(c(is.null(input$t0_m),is.null(input$t0_m_fix),is.null(input$t0_m_mean),is.null(input$t0_m_mean_sss)))) return(NULL)
     if(any(input$male_parms&!is.na(input$t0_m))) {t0_vbgf_m_in<-input$t0_m}
-    if(any(input$male_parms&!is.na(input$t0_m_fix))) {t0_vbgf_m_in<-input$t0_m_fix}
-    if(any(input$male_parms&!is.na(input$t0_m_mean))) {t0_vbgf_m_in<-input$t0_m_mean}
+    if(any(input$male_parms_fix&!is.na(input$t0_m_fix))) {t0_vbgf_m_in<-input$t0_m_fix}
+    if(any(input$male_parms_est&!is.na(input$t0_m_mean))) {t0_vbgf_m_in<-input$t0_m_mean}
     if(any(input$male_parms_SSS&!is.na(input$t0_m_mean_sss))) {t0_vbgf_m_in<-input$t0_m_mean_sss}
     t0_vbgf_m_in
   })
@@ -1819,7 +1819,7 @@ output$Indexplot <- renderPlot({
     if (is.null(rv.Index$data)) return(NULL)     
         
         plot.Index<-rv.Index$data
-        plot.Index[,2]<-as.factor(plot.Index[,2])
+        plot.Index[,3]<-as.factor(plot.Index[,3])
         ggplot(plot.Index,aes(x=Year,y=Index,group=Fleet, colour=Fleet)) +  
         geom_line(lwd=1.1) +
         geom_errorbar(aes(ymin=qlnorm(0.0275,log(Index),CV),ymax=qlnorm(0.975,log(Index),CV),group=Fleet),width=0,size=1)+ 
@@ -1857,9 +1857,10 @@ output$VBGFplot<-renderPlot({
 	  f_L50 = L50() 
 	  f_L95 = L95() 
 	  maxage = Nages() 
-	if(any(input$male_parms,input$male_parms_SSS,input$male_parms_fix,input$male_parms_est))
+	
+  if(any(input$male_parms,input$male_parms_SSS,input$male_parms_fix,input$male_parms_est))
       { 
-				  m_Linf = Linf_m_in() 
+          m_Linf = Linf_m_in() 
 			   	m_k = k_vbgf_m_in() 
 			   	m_t0 = t0_vbgf_m_in() 
 			}		 
@@ -1867,7 +1868,7 @@ output$VBGFplot<-renderPlot({
 		vbgf_female = data.frame(Age = 0:Nages(),  
 		                         Length = VBGF(f_Linf, f_k, f_t0, f_t0:Nages()), Sex="Female") 
     vbgf_male = data.frame(Age = 0:Nages(),  
-                           Length=VBGF(m_Linf, m_k, m_t0, m_t0:Nages()), Sex="Male") 
+                           Length=VBGF(m_Linf, m_k, m_t0, f_t0:Nages()), Sex="Male") 
       	rbind(vbgf_female,vbgf_male) %>%  
       	  ggplot(aes(Age, Length, color=Sex)) + 
       				geom_line(aes(linetype=Sex), lwd=2) -> vbgf.plot  
@@ -2603,7 +2604,7 @@ if(!input$use_par)
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
     catch.fleets<-max(ncol(rv.Ct$data)-1)
-    data.file$Nfleets<-max(catch.fleets,rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,2])
+    data.file$Nfleets<-max(catch.fleets,rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,3])
     
 	#Catches
 		if (is.null(rv.Ct$data)) 
@@ -2656,22 +2657,22 @@ if(!input$use_par)
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
 						c(0.00000000000000000001,Catch.data[,i+1]),
-						rep(0.000001,length(year.in)+1)
+						rep(0.01,length(year.in)+1)
 						)
 		}
 		data.file$catch<-list.rbind(catch_temp)
 		colnames(data.file$catch)<-catch.cols
 		}
 
-  #Index data
+#Index data
     # if (is.null(rv.Index$data)) {
     #   data.file$CPUE<-NULL  
     #   }
 
     if (!is.null(rv.Index$data)) {
     Index.data<-rv.Index$data
-    data.file$N_cpue<-unique(rv.Index$data[,2])
-    data.file$CPUE<-data.frame(year=rv.Index$data[,1],seas=1,index=rv.Index$data[,2],obs=rv.Index$data[,3],se_log=rv.Index$data[,4])
+    data.file$N_cpue<-unique(rv.Index$data[,3])
+    data.file$CPUE<-data.frame(year=rv.Index$data[,1],seas=rv.Index$data[,2],index=rv.Index$data[,3],obs=rv.Index$data[,4],se_log=rv.Index$data[,5])
     }
 
   #Population length data bins
@@ -2944,7 +2945,7 @@ if(!input$use_par)
      
       #Set Dirichelt on
       data.file$age_info[,5]<-data.file$len_info[,5]<-1
-#browser()
+
       #Set up the correct fleet enumeration
       data.file$len_info[,6]<-1:data.file$Nfleets 
       data.file$age_info[,6]<-(data.file$Nfleets+1):(2*data.file$Nfleets)
@@ -2955,14 +2956,14 @@ if(!input$use_par)
           if(!is.null(rv.Index$data)&data.file$Nfleets>catch.fleets)
             {
               Surveyonly<-subset(rv.Index$data,Fleet>catch.fleets)
-              fleet.survey.names<-unique(fishery.names,Surveyonly[,5])
-              survey.fleets<-unique(Surveyonly[,2])      
+              fleet.survey.names<-unique(c(fishery.names,unique(Surveyonly[,6])))
+              survey.fleets<-unique(Surveyonly[,3])      
               data.file$fleetinfo$fleetname<-fleet.survey.names 
             }
           if(is.null(rv.Index$data)|all(!is.null(rv.Index$data)&data.file$Nfleets==catch.fleets)){data.file$fleetinfo$fleetname<-fishery.names}
         }
        data.file$CPUEinfo[,1]<-1:data.file$Nfleets
-       if(!is.null(rv.Index$data)& max(rv.Index$data[,2])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
+       if(!is.null(rv.Index$data)& max(rv.Index$data[,3])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
      }
   
 #Catch units     
@@ -3370,44 +3371,44 @@ if(!input$use_par)
 		}
 
     #Remove surveys from initial F lines and add q and xtra variance lines
-    #browser()
+    
     if(!is.null(rv.Index$data))
       {
         if(data.file$Nfleets>catch.fleets){ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]}
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
-        q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,0,0,1)))
-        if(input$Indexvar){q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,2])[1],1,0,1,0,1)))}
+        q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,0,0,1)))
+        if(input$Indexvar){q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,1,0,1)))}
         qnames<-c("LO","HI","INIT","PRIOR","PR_SD","PR_type","PHASE","env_var&link","dev_link","dev_minyr","dev_maxyr","dev_PH","Block","Block_Fxn")
         q.lines<-data.frame(t(c(-15,15,1,0,1,0,-1,rep(0,7))))
         if(input$Indexvar){q.lines<-data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0)))}
-        if(length(unique(rv.Index$data[,2]))>1)
+        if(length(unique(rv.Index$data[,3]))>1)
         {
-          for(q in 2:length(unique(rv.Index$data[,2])))
+          for(q in 2:length(unique(rv.Index$data[,3])))
           {
             if(!input$Indexvar)
             {
-              q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,2])[q],1,0,0,0,1))
+              q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,3])[q],1,0,0,0,1))
               q.lines<-rbind(q.lines,c(-15,15,1,0,1,0,-1,rep(0,7)))                          
             }
       
             if(input$Indexvar)
             {
-              q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,2])[q],1,0,1,0,1))
+              q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,3])[q],1,0,1,0,1))
               q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0))))          
             }  
           }
         }
         names(q.setup.lines)<-q.setup.names
-        rownames(q.setup.lines)<-unique(rv.Index$data[,5])
+        rownames(q.setup.lines)<-unique(rv.Index$data[,6])
         ctl.file$Q_options<-q.setup.lines
         names(q.lines)<-qnames
-        if(!input$Indexvar){rownames(q.lines)<-paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")}
+        if(!input$Indexvar){rownames(q.lines)<-paste0("LnQ_base_",unique(rv.Index$data[,6]),"(",unique(rv.Index$data[,3]),")")}
         #rnames.temp<-c(paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")"),paste0("Q_extraSD_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")"))
         #rnames.temp[1:length(rnames.temp)%%2 != 0]
         if(input$Indexvar)
         {
-          qnames.temp1<-paste0("LnQ_base_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
-          qnames.temp2<-paste0("Q_extraSD_",unique(rv.Index$data[,5]),"(",unique(rv.Index$data[,2]),")")
+          qnames.temp1<-paste0("LnQ_base_",unique(rv.Index$data[,6]),"(",unique(rv.Index$data[,3]),")")
+          qnames.temp2<-paste0("Q_extraSD_",unique(rv.Index$data[,6]),"(",unique(rv.Index$data[,3]),")")
           qnames.temp<-as.vector(rbind(qnames.temp1,qnames.temp2))
         # if(length(rnames.temp1)>1)
         # {
