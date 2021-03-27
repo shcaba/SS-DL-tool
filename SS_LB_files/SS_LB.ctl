@@ -67,8 +67,8 @@
 # Sex: 1  BioPattern: 1  NatMort
  0.001 2 0.18 -2.92 0.22 3 -1 0 0 0 0 0 0 0 # NatM_p_1_Fem_GP_1
 # Sex: 1  BioPattern: 1  Growth
- -100 100 0 20.8 10 0 -3 0 0 0 0 0 0 0 # L_at_Amin_Fem_GP_1
- 1 1000 55 41.4 10 0 -2 0 0 0 0 0 0 0 # L_at_Amax_Fem_GP_1
+ -50 100 0 20.8 10 0 -3 0 0 0 0 0 0 0 # L_at_Amin_Fem_GP_1
+ 1 500 55 41.4 10 0 -2 0 0 0 0 0 0 0 # L_at_Amax_Fem_GP_1
  0.001 2 0.17 0.166 0.05 0 -3 0 0 0 0 0 0 0 # VonBert_K_Fem_GP_1
  0.03 5 0.1 0.1 0.5 0 -4 0 0 0 0 0 0 0 # CV_young_Fem_GP_1
  0.03 5 0.1 0.1 0.5 0 -4 0 0 0 0 0 0 0 # CV_old_Fem_GP_1
@@ -83,8 +83,8 @@
 # Sex: 2  BioPattern: 1  NatMort
  0.001 2 0.18 -2.92 0.22 3 -1 0 0 0 0 0 0 0 # NatM_p_1_Mal_GP_1
 # Sex: 2  BioPattern: 1  Growth
- -100 100 0 20.8 10 0 -3 0 0 0 0 0 0 0 # L_at_Amin_Mal_GP_1
- 1 1000 55 38.9 10 0 -2 0 0 0 0 0 0 0 # L_at_Amax_Mal_GP_1
+ -50 100 0 20.8 10 0 -3 0 0 0 0 0 0 0 # L_at_Amin_Mal_GP_1
+ 1 500 55 38.9 10 0 -2 0 0 0 0 0 0 0 # L_at_Amax_Mal_GP_1
  0.001 2 0.17 0.197 0.05 0 -3 0 0 0 0 0 0 0 # VonBert_K_Mal_GP_1
  0.03 5 0.1 1.31 0.5 0 -4 0 0 0 0 0 0 0 # CV_young_Mal_GP_1
  0.03 5 0.1 2.28 0.5 0 -4 0 0 0 0 0 0 0 # CV_old_Mal_GP_1
