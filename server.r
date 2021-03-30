@@ -2603,7 +2603,8 @@ if(!input$use_par)
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
-    catch.fleets<-max(ncol(rv.Ct$data)-1)
+    if(!is.null(rv.Ct$data)){catch.fleets<-max(ncol(rv.Ct$data)-1)}
+    if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets<-max(rv.Lt$data[,2])}
     data.file$Nfleets<-max(catch.fleets,rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,3])
     
 	#Catches
