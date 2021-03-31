@@ -32,8 +32,8 @@ Running the tool can be accomplished in any of the following ways:
 * Catch only methods via the Simple Stock Synthesis approach (Cope 2013)
 * Extended Simple Stock Syntehsis (XSSS; Cope et al. 2013; Cope et al. 2015; Wetzel and Punt 2013) *COMING SOON*
 * Length + catch models 
-* Catch and index (age-structured production) models *COMING SOON*
-* Fully integrated stock assessments *COMING SOON*
+* Catch and index (age-structured production) models
+* Fully integrated stock assessments
 <br></br>
 
 ## Some notable features of the tool

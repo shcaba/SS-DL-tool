@@ -13,7 +13,7 @@ shinyUI(fluidPage(theme = "bootstrap.css",
        tags$ul(tags$li(h5(p(em("Length-based estimation of relative biomass, SPR and F."))))),
        tags$ul(tags$li(h5(p(em("Length + catch-based estimation of biomass, relativ0e biomass, SPR and F and catch limits."))))),
        tags$ul(tags$li(h5(p(em("COMING SOON: Extended Simple Stock Synthesis (XSSS) estimator of sustainable catch."))))),
-       tags$ul(tags$li(h5(p(em("COMING SOON: Abundance and catch-based estimation of biomass, relative biomass, SPR and F and catch limits."))))),
+       tags$ul(tags$li(h5(p(em("Abundance and catch-based estimation of biomass, relative biomass, SPR and F and catch limits."))))),
 sidebarLayout(
    sidebarPanel(
 shinyjs::hidden(wellPanel(id="Data_panel",
