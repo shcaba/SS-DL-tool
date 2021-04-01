@@ -221,7 +221,7 @@
 #
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name
 # 1   Fishery LenSelex
-            10            91       30.7974            36            99             0          1          0          0          0          0          0          0          0  #  Size_DblN_peak_Fishery(1)
+            10            91       30.7974            36            1             1          1          0          0          0          0          0          0          0  #  Size_DblN_peak_Fishery(1)
            -15            15            15            15            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_top_logit_Fishery(1)
             -4            12       5.15329             3            99             0          1          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_Fishery(1)
            -10             6            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
@@ -263,7 +263,7 @@
 #like_comp fleet  phase  value  sizefreq_method
  4 1 1 1 1
  8 1 1 0 1
- 9 1 1 1 1
+ 9 1 1 0 1
 -9999  1  1  1  1  #  terminator
 #
 # lambdas (for info only; columns are phases)

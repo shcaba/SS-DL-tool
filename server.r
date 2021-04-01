@@ -1865,14 +1865,15 @@ output$VBGFplot<-renderPlot({
 			   	m_t0 = t0_vbgf_m_in() 
 			}		 
    if(any(is.na(c(f_Linf, f_k, f_t0)))=="FALSE"){ 
-		vbgf_female = data.frame(Age = 0:Nages(),  
-		                         Length = VBGF(f_Linf, f_k, f_t0, f_t0:Nages()), Sex="Female") 
-    vbgf_male = data.frame(Age = 0:Nages(),  
-                           Length=VBGF(m_Linf, m_k, m_t0, f_t0:Nages()), Sex="Male") 
+		
+    vbgf_female = data.frame(Age = c(f_t0:Nages()),  
+		                         Length = VBGF(f_Linf, f_k, f_t0, c(f_t0:Nages())), Sex="Female") 
+    vbgf_male = data.frame(Age = f_t0:Nages(),  
+                           Length=VBGF(m_Linf, m_k, m_t0, c(f_t0:Nages())), Sex="Male") 
       	rbind(vbgf_female,vbgf_male) %>%  
       	  ggplot(aes(Age, Length, color=Sex)) + 
       				geom_line(aes(linetype=Sex), lwd=2) -> vbgf.plot  
-      	 
+      
       if(any(is.na(c(f_L50, f_L95)))=="FALSE"){ 
         age.mat = data.frame(Age = VBGF.age(f_Linf, f_k, f_t0, c(f_L50, f_L95)), 
                              Length = c(f_L50, f_L95), Sex="Female") 
@@ -2636,8 +2637,8 @@ if(!input$use_par)
 						c(-999,year.in),
 						rep(1,length(year.in)+1),
 						rep(i,length(year.in)+1),
-						c(0.0000000000000000000001,rep(catch.level[i],length(year.in))),
-						c(0.01,rep(100,length(year.in)))
+						c(catch.level[i],rep(catch.level[i],length(year.in))),
+						c(0.01,rep(1000,length(year.in)))
 						)			
 		}
 		data.file$catch<-list.rbind(catch_temp)
@@ -2962,9 +2963,9 @@ if(!input$use_par)
               data.file$fleetinfo$fleetname<-fleet.survey.names 
             }
           if(is.null(rv.Index$data)|all(!is.null(rv.Index$data)&data.file$Nfleets==catch.fleets)){data.file$fleetinfo$fleetname<-fishery.names}
+          if(!is.null(rv.Index$data)& max(rv.Index$data[,3])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
         }
        data.file$CPUEinfo[,1]<-1:data.file$Nfleets
-       if(!is.null(rv.Index$data)& max(rv.Index$data[,3])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
      }
   
 #Catch units     
@@ -3797,9 +3798,9 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 					# 					  paste0("OFL",(input$endyr+1)),
 					# 					  paste0("ABC",(input$endyr+1))
 					# 					  ))
-				Output_relSB_table[,1]<-c(paste0("SO",input$endyr+1,"/SO_0"),
+				Output_relSB_table[,1]<-c(paste0("SO",input$endyr,"/SO_0"),
 										  "SO_MSY/SO_0",
-										  paste0("1-SPR",input$endyr+1),
+										  paste0("1-SPR",input$endyr),
 										  paste0("OFL",(input$endyr+1)),
 										  paste0("ABC",(input$endyr+1))
 										  )
@@ -4205,7 +4206,6 @@ SS_Sensi_plot(Dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sens
       )
     })
   })
-
 #Ensemble_model_dir_out<-eventReactive(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==6),{
 observeEvent(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==7),{
 Ensemble_model_dir_out<-eventReactive(input$run_Ensemble,{
@@ -4217,8 +4217,9 @@ Ensemble_model_dir_out<-eventReactive(input$run_Ensemble,{
       }
     Ensemble_model_dir_out<-paste0(pathEnsemble(),"/",input$myEnsemble)
   })
-print(Ensemble_model_dir_out())
-exists("Ensemble_model_dir_out()")
+# print(Ensemble_model_dir_out())
+# exists("Ensemble_model_dir_out()")
+Ensemble_model_dir_out
 })
 
 #exists(Ensemble_model_dir_out())
@@ -4279,15 +4280,15 @@ exists("Ensemble_model_dir_out()")
                                   SIMPLIFY=FALSE))
        names(Ensemble.outputs)<-c("SOinitial","SOcurrent","RelativeSO_curr","SPR_curr")
        save(Ensemble.outputs,file=paste0(path2(),"/Ensemble outputs/",input$Ensemble_file,".DMP"))
+       output$Ensemble_plots <- renderPlot({ 
+       hist(Ensemble.outputs()[[1]][,1])})
        return(Ensemble.outputs)
     })
   })
 
-observeEvent(req(input$run_Ensemble&exists("Ensemble.outputs()")),{
-output$Ensemble_plots <- renderPlot({ 
-      hist(Ensemble.outputs()[[1]][,1])
-    })
-  })
+#observeEvent(req(input$run_Ensemble&exists("Ensemble.outputs()")),{
+ #   
+ # })
        #Create figures of weighted values
 
 
