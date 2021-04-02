@@ -3576,6 +3576,7 @@ if(!input$use_par)
     if(input$jitter_choice)
 			{
 				starter.file$jitter_fraction<-input$jitter_fraction
+        starter.file$init_values_src<-0
 			}
  				SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
@@ -3680,7 +3681,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(input$Njitter>0)
       {
          show_modal_spinner(spin="flower",color="red",text="Run jitters")
-         jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE)
+         jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE,init_values_src=1)
          profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
          profilesummary <- SSsummarize(profilemodels)
          minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
@@ -3903,7 +3904,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       pickerInput(
       inputId = "myPicker_LP",
       label = "Choose parameters to profile over",
-      choices = c("Steepness","lnR0","Natural mortality","Linf","k"),
+      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female","Natural mortality male","Linf male","k male"),
       options = list(
         `actions-box` = TRUE,
         size = 12,
@@ -3916,9 +3917,9 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
 observeEvent(input$run_Profiles,{
        show_modal_spinner(spin="flower",color="red",text="Profiles running")
-       SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1")
+       SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1")
        parmnames<-input$myPicker_LP
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality","Linf","k")
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female","Natural mortality male","Linf male","k male")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        mydir = dirname(pathLP())
        get = get_settings_profile( parameters =  prof_parms_names,
