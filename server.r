@@ -889,9 +889,9 @@ output$Model_dims1 <- renderUI({
         if (any(!is.null(inFile1), !is.null(inFile3))& is.null(inFile2)){ 
               styr.in =  min(inFile1[,1],inFile3[,1]) 
               endyr.in = max(inFile1[,1],inFile3[,1])
-              if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))& input$Ct_F_LO_select=="Constant Catch"){ 
-                styr.in = min(inFile1[,1],inFile3[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
-              }
+  #            if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))& input$Ct_F_LO_select=="Constant Catch"){ 
+  #              styr.in = min(inFile1[,1],inFile3[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95)) 
+  #            }
           }
           #If have catches
           if (!is.null(inFile2)){
@@ -3262,11 +3262,13 @@ if(!input$use_par)
       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
       Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
       bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
+      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
 
     if(input$Sel_choice=="Logistic")
 		{
 			#ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
-      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+      #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+      ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin,Selpeak[1]+minmaxbin)
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
       ctl.file$size_selex_parms[2,3:4]<- 15
       ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
@@ -3287,9 +3289,11 @@ if(!input$use_par)
       LtPeakFinal_phase<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_phase,","))))
       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
       FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
+      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
 			
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
-      ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+      #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+      ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin,Selpeak[1]+minmaxbin)
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
 			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
 			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
@@ -3318,13 +3322,15 @@ if(!input$use_par)
 				ctl.file$size_selex_types<-rbind(ctl.file$size_selex_types,ctl.file$size_selex_types[1,])
 				ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
 				ctl.file$size_selex_parms<-rbind(ctl.file$size_selex_parms,ctl.file$size_selex_parms[1:6,])
-        
+        minmaxbin<-min(Selpeak[i+1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[i+1])
+
         if(input$Sel_choice=="Logistic")
         {
           ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
           ctl.file$size_selex_parms[6*i+3,7]<- Sel50_phase[i+1]
           #ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
-          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+          # ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(Selpeak[i+1]-minmaxbin,Selpeak[1]+minmaxbin)
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
           ctl.file$size_selex_parms[6*i+2,3:4]<- 15
@@ -3337,7 +3343,8 @@ if(!input$use_par)
 
         if(input$Sel_choice=="Dome-shaped")
         {
-          ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+          # ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(Selpeak[i+1]-minmaxbin,Selpeak[1]+minmaxbin)
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
           ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width))
@@ -3476,7 +3483,7 @@ if(!input$use_par)
           rownames(lts.lambdas)<-paste0("length_Fishery",c(1:data.file$Nfleets),"_sizefreq_method_1_Phz1")
           ct.lambdas[,4]<-0
           rownames(ct.lambdas)<-paste0("catch_Fishery",c(1:data.file$Nfleets),"_Phz1")
-          init.ct.lambdas[,4]<-1
+          init.ct.lambdas[,4]<-0
           rownames(init.ct.lambdas)<-paste0("init_equ_catch_Fishery",c(1:data.file$Nfleets),"_lambda_for_init_equ_catch_can_only_enable/disable for_all_fleets_Phz1")
           ctl.file$lambdas<-rbind(lts.lambdas,ct.lambdas,init.ct.lambdas)
           ctl.file$N_lambdas<-nrow(ctl.file$lambdas)
