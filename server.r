@@ -3023,6 +3023,7 @@ if(!input$use_par)
         ctl.file$MG_parms[17,3:4]<-input$CV_lt_m  #CV
         ctl.file$MG_parms[18,3:4]<-input$CV_lt_m  #CV
       }
+        ctl.file$SR_parms[1,7]=-1  #lnR0
         ctl.file$SR_parms[2,3:4]<-input$h_LO     #steepnes
 
     }
@@ -3071,6 +3072,7 @@ if(!input$use_par)
       }
       
     #S-R
+    input$Ct_F_LO_select=="Constant Catch"
     ctl.file$SR_parms[1,3:4]<-input$lnR0  #lnR0
     ctl.file$SR_parms[2,3:4]<-input$h     #steepnes
     }
@@ -3214,7 +3216,6 @@ if(!input$use_par)
 
     #S-R
     ctl.file$SR_parms[1,3:4]<-input$lnR0_est  #lnR0
-    
     if(input$h_ss_prior=="lognormal"){ctl.file$SR_parms[2,3:4]<-c(input$h_mean_ss,log(h_mean_ss))}
     else{ctl.file$SR_parms[2,3:4]<-input$h_mean_ss}    
     ctl.file$SR_parms[2,5]<-input$h_SD_ss       
