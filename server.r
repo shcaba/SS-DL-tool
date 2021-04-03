@@ -3359,7 +3359,7 @@ if(!input$use_par)
         }
     
        #Dirichlet data-weighting
-        ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1:2,])
+#        ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1:2,])
 			}
 
 
@@ -3434,16 +3434,16 @@ if(!input$use_par)
       }
 
 
-    if(input$Data_wt=="Dirichlet")
-    {
-        Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+data.file$Nfleets))
-      # if(Dirichlet.fleets>1)
-      #   {
-      #     for(i in 1:length(Dirichlet.fleets)){ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])}
-      #   }
-        ctl.file$dirichlet_parms[Dirichlet.fleets,3:4]<-0.5
-        ctl.file$dirichlet_parms[Dirichlet.fleets,7]<-2        
-    }
+    # if(input$Data_wt=="Dirichlet")
+    # {
+    #     Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+data.file$Nfleets))
+    #   # if(Dirichlet.fleets>1)
+    #   #   {
+    #   #     for(i in 1:length(Dirichlet.fleets)){ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1,])}
+    #   #   }
+    #     ctl.file$dirichlet_parms[Dirichlet.fleets,3:4]<-0.5
+    #     ctl.file$dirichlet_parms[Dirichlet.fleets,7]<-2        
+    # }
 
     #Change data weights
     # Lt_dat_wts<-as.numeric(trimws(unlist(strsplit(input$Lt_datawts,","))))
