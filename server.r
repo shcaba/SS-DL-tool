@@ -2945,12 +2945,12 @@ if(!input$use_par)
         data.file$age_info<-rbind(data.file$age_info,data.file$age_info[1,])
       }
      
-      #Set Dirichelt on
-      data.file$age_info[,5]<-data.file$len_info[,5]<-1
+      #Set Dirichlet on
+#      data.file$age_info[,5]<-data.file$len_info[,5]<-1
 
       #Set up the correct fleet enumeration
-      data.file$len_info[,6]<-1:data.file$Nfleets 
-      data.file$age_info[,6]<-(data.file$Nfleets+1):(2*data.file$Nfleets)
+#      data.file$len_info[,6]<-1:data.file$Nfleets #Used for Dirichlet set-up
+#      data.file$age_info[,6]<-(data.file$Nfleets+1):(2*data.file$Nfleets) #Used for Dirichlet set-up
       if(is.null(rv.Ct$data)){data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)}
       if(!is.null(rv.Ct$data))
         {
