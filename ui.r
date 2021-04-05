@@ -955,9 +955,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             value=4),
           
           tabPanel("Retrospectives",
-            # uiOutput("Sensi_comp_plot"),            
-            imageOutput("Retro_comp_plot"),            
-            
+            imageOutput("Retro_comp_plotSB"),            
+            imageOutput("Retro_comp_plotBratio"),                      
             value=5),
 
           tabPanel("Sensitivities",

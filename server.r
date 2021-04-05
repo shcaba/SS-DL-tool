@@ -3986,37 +3986,45 @@ observeEvent(input$run_Profiles,{
 ###############################
 ####### Retrospectives ########
 ###############################
-
-  pathRetro <- reactive({
       shinyDirChoose(input,"Retro_dir", roots=roots,session=session, filetypes=c('', 'txt'))
+  pathRetro <- reactive({
         return(parseDirPath(roots, input$Retro_dir))
       })
 
 
-  observeEvent(req(input$run_Retro_comps&as.numeric(input$tabs)==5),{
-      show_modal_spinner(spin="flower",color="red",text="Running retrospectives")
-  
-   if(input$Retro_choice){           
-#     print(pathRetro())
-     mydir<-pathRetro()
-     model_settings = get_settings(settings = list(base_name = "test",
+  observeEvent(input$run_Retro_comps,{
+      
+   #if(input$run_Retro_comps){           
+     show_modal_spinner(spin="flower",color="red",text="Running retrospectives")
+     mydir_in<-dirname(pathRetro())
+     scenario_in<-basename(pathRetro())
+     model_settings = get_settings(settings = list(base_name = scenario_in,
                         run = "retro",
                         retro_yrs = input$first_retro_year_in:input$final_retro_year_in))
+     run_diagnostics(mydir = mydir_in, model_settings = model_settings)
+    # tryCatch({
+    #     run_diagnostics(mydir = mydir_in, model_settings = model_settings)
+    # },
+    # warning = function(warn){
+    #     showNotification(paste0(warn), type = 'warning')
+    # },
+    # error = function(err){
+    #     showNotification(paste0(err), type = 'err')
+    # })
+  #} 
 
-    tryCatch({
-        run_diagnostics(mydir = mydir, model_settings = model_settings)
-    },
-    warning = function(warn){
-        showNotification(paste0(warn), type = 'warning')
-    },
-    error = function(err){
-        showNotification(paste0(err), type = 'err')
-    })
-  } 
+      output$Retro_comp_plotSB <- renderImage({
+       image.path<-normalizePath(file.path(paste0(pathRetro(),"_retro/compare2_spawnbio_uncertainty.png")),mustWork=FALSE)
+       return(list(
+        src = image.path,
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
 
-
-       output$Retro_comp_plot <- renderImage({
-       image.path<-normalizePath(file.path(paste0(pathRetro(),"_retro/compare1_spawnbio.png")),mustWork=FALSE)
+      output$Retro_comp_plotBratio <- renderImage({
+       image.path<-normalizePath(file.path(paste0(pathRetro(),"_retro/compare4_Bratio_uncertainty.png")),mustWork=FALSE)
        return(list(
         src = image.path,
         contentType = "image/png",
