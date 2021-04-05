@@ -344,7 +344,7 @@ hideTab(inputId = "tabs", target = "11")
 #This input allows other tabs to have different side panels.
 
 #Switch back to data from different tabs
-observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
+observeEvent(req(((as.numeric(input$tabs)*99)/99)<4&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
@@ -400,6 +400,62 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 #        hideTab(inputId = "tabs", target = "5")
 #        hideTab(inputId = "tabs", target = "6")
   })
+
+#User chosen model
+observeEvent(req(!is.null(input$user_model)&input$user_model), {
+        shinyjs::show("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
+        shinyjs::show("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+        
+        shinyjs::hide("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::hide("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
+
+        shinyjs::hide("panel_SS_stock_status") 
+
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
+
+        shinyjs::hide("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
+
+        shinyjs::hide("panel_SS_recdevs")
+
+        shinyjs::show("panel_SS_jitter")        
+
+        shinyjs::show("panel_RPs")
+        shinyjs::show("panel_Forecasts")
+
+        shinyjs::hide("panel_Mod_dims")
+
+        shinyjs::hide("panel_SSS_reps")
+
+        shinyjs::show("panel_advanced_SS")
+
+        shinyjs::show("OS_choice")
+        shinyjs::show("Scenario_panel")
+        
+        shinyjs::hide("run_SSS")
+        shinyjs::show("run_SS")        
+
+        shinyjs::hide("Profile_panel")
+        shinyjs::hide("Retro_panel")
+        shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
+
+        #shinyjs::show("tab_sss")
+        showTab(inputId = "tabs", target = "11")
+        hideTab(inputId = "tabs", target = "2")
+
+})
 
 #SSS panels
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)), {
@@ -3573,11 +3629,11 @@ if(!input$use_par)
 	#Jitter selection 
 				starter.file$jitter_fraction<-0
 		
-    if(input$jitter_choice)
-			{
-				starter.file$jitter_fraction<-input$jitter_fraction
-        starter.file$init_values_src<-0
-			}
+   #  if(input$jitter_choice)
+			# {
+			# 	starter.file$jitter_fraction<-input$jitter_fraction
+   #      starter.file$init_values_src<-0
+			# }
  				SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
 
@@ -3681,7 +3737,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(input$Njitter>0)
       {
          show_modal_spinner(spin="flower",color="red",text="Run jitters")
-         jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,printlikes = TRUE,init_values_src=1)
+         jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,jitter_fraction=input$jitter_fraction,printlikes = TRUE,init_values_src=0)
          profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
          profilesummary <- SSsummarize(profilemodels)
          minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
