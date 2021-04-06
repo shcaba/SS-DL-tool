@@ -344,7 +344,7 @@ hideTab(inputId = "tabs", target = "11")
 #This input allows other tabs to have different side panels.
 
 #Switch back to data from different tabs
-observeEvent(req(((as.numeric(input$tabs)*99)/99)<4&any(is.null(input$user_model),!input$user_model)), {
+observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::show("Data_panel")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
