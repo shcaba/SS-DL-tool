@@ -656,6 +656,20 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       )
      ),
 
+    shinyjs::hidden(wellPanel(id="panel_advanced_user_SS",
+    h4(strong("Additional SS options")),
+    #fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS options",FALSE))),
+      uiOutput("AdvancedSS_nohess_user"),
+      uiOutput("AdvancedSS_noplots_user"),
+      uiOutput("AdvancedSS_par_user"),
+      uiOutput("AdvancedSS_datanew_user"),
+      uiOutput("AdvancedSS_controlnew_user"),
+      uiOutput("AdvancedSS_phase0_user"),
+      uiOutput("AdvancedSS_retro_choice_user"),
+      uiOutput("AdvancedSS_retro_years_user")
+      )
+     ),
+
       #SSS iterations
     shinyjs::hidden(wellPanel(id="panel_SSS_reps",
     fluidRow(column(width=10,numericInput("SSS_reps", "Number of SSS iterations", value=1000,min=1, max=1000000, step=1)))

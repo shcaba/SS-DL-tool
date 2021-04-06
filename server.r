@@ -379,6 +379,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("panel_Mod_dims")
 
         shinyjs::hide("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
 
         shinyjs::hide("panel_SSS_reps")
 
@@ -438,7 +439,8 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
 
         shinyjs::hide("panel_SSS_reps")
 
-        shinyjs::show("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_SS")
+        shinyjs::show("panel_advanced_user_SS")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -495,6 +497,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::show("panel_SSS_reps")
 
         shinyjs::hide("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -551,6 +554,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("panel_Mod_dims")
 
         shinyjs::show("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
 
         shinyjs::hide("panel_SSS_reps")
 
@@ -610,6 +614,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::show("panel_Mod_dims")
 
         shinyjs::show("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -672,6 +677,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
         shinyjs::show("panel_Mod_dims")
         
         shinyjs::show("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -730,6 +736,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("panel_Mod_dims")
         
         shinyjs::hide("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
 
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
@@ -788,6 +795,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("panel_Mod_dims")
         
         shinyjs::hide("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
 
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
@@ -846,6 +854,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("panel_Mod_dims")
         
         shinyjs::hide("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
 
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
@@ -904,6 +913,7 @@ observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
         shinyjs::hide("panel_Mod_dims")
         
         shinyjs::hide("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
 
         shinyjs::hide("panel_SSS_reps")
 
@@ -1487,7 +1497,23 @@ output$AdvancedSS_nohess<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_nohess_user<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "no_hess", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
 output$AdvancedSS_noplots<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "no_plots_tables", label = "Turn off plots and tables",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_noplots_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_plots_tables", label = "Turn off plots and tables",
@@ -1503,7 +1529,23 @@ output$AdvancedSS_par<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_par_user<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_par", label = "Use par file (i.e., parameter file from previous run)?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
 output$AdvancedSS_phase0<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_phase0", label = "Turn off estimation of all parameters (phase = 0)?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_phase0_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "use_phase0", label = "Turn off estimation of all parameters (phase = 0)?",
@@ -1519,8 +1561,23 @@ output$AdvancedSS_datanew<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_datanew_user<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_datanew", label = "Use the data.ss_new file?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
 
 output$AdvancedSS_controlnew<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_controlnew", label = "Use the control.ss_new file?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_controlnew_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "use_controlnew", label = "Use the control.ss_new file?",
@@ -1596,6 +1653,23 @@ output$AdvancedSS_retro_choice<- renderUI({
   }) 
 
 output$AdvancedSS_retro_years <- renderUI({ 
+    if(!is.null(input$Retro_choice)){       
+    if(input$Retro_choice){       
+      fluidRow(column(width=6, numericInput("first_retro_year", "1st retro year",  
+                                              value=-1, min=-1, max=-500, step=-1)), 
+              column(width=6, numericInput("final_retro_year", "Last retro year",  
+                                              value=-10, min=-1, max=-500, step=-1)))
+      }
+    } 
+  }) 
+
+output$AdvancedSS_retro_choice_user <- renderUI({ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "Retro_choice", label = "Do retrospective runs? Input minus from current year",
+        shape = "round", outline = TRUE, status = "info"))) 
+  }) 
+
+output$AdvancedSS_retro_years_user <- renderUI({ 
     if(!is.null(input$Retro_choice)){       
     if(input$Retro_choice){       
       fluidRow(column(width=6, numericInput("first_retro_year", "1st retro year",  
@@ -2605,7 +2679,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #            Sys.sleep(0.5)
   #          }
 
-if(!any(input$use_par,input$use_datanew,input$use_controlnew))
+if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
   {
       #Copy and move files
 	  	if(file.exists(paste0("Scenarios/",input$Scenario_name)))
@@ -2630,8 +2704,11 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew))
 #   }
 
 		#Read data and control files
-    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
-    ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
+    if(!input$user_model)
+    {
+      data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
+      ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
+    }
 
 
 if(input$use_datanew)
@@ -2654,7 +2731,7 @@ if(input$use_controlnew)
 
 if(!input$use_par)
   {
-    if(!input$use_datanew)
+    if(all(!input$use_datanew,!input$user_model))
     {
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
@@ -3038,7 +3115,7 @@ if(!input$use_par)
 ##################################################################################
 		####################### START CTL FILE ####################################
 		#Read, edit then write new CONTROL file
-    if(!input$use_controlnew)
+    if(all(!input$use_controlnew,!input$user_model))
     {
     #Change to 1 platoon 
     if(!is.null(input$GT1)){if(input$GT1){ctl.file$N_platoon<-1}}
@@ -3708,7 +3785,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
                   Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
                 }
              }
-   
+      data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data.ss_new"))    
       #No plots or figures
       if(is.null(input$no_plots_tables))
         {      
