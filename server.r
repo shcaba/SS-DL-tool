@@ -2355,6 +2355,20 @@ SSS.run<-observeEvent(input$run_SSS,{
     ctl.file$MG_parms[20,3:4]<- input$WLb_f_sss                                 #exponent  
     ctl.file$MG_parms[11,3:4]<-input$Fec_a_f_sss                                #coefficient
     ctl.file$MG_parms[12,3:4]<- input$Fec_b_f_sss                               #exponent  
+
+    if(input$male_offset_sss)
+    {
+      ctl.file$parameter_offset_approach<-2                         #Change to offset approach
+      ctl.file$MG_parms[13,3:4]<-0                                  #M
+      ctl.file$MG_parms[14,3:4]<-0                                  #L0
+      ctl.file$MG_parms[15,3:4]<-0                                  #Linf
+      ctl.file$MG_parms[16,3:4]<-0                                  #k
+      ctl.file$MG_parms[17,3:4]<-0                                  #CV
+      ctl.file$MG_parms[18,3:4]<-0                                  #CV
+      #Weight-length
+      ctl.file$MG_parms[19,3:4]<-0                                  #coefficient
+      ctl.file$MG_parms[20,3:4]<-0                                  #exponent  
+    }
     
     if(input$male_parms_SSS)
       {   
@@ -3146,15 +3160,34 @@ if(!input$use_par)
     ctl.file$MG_parms[16,3:4]<-input$k_f      #k
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f  #CV
     ctl.file$MG_parms[18,3:4]<-input$CV_lt_f  #CV
+    #ctl.file$MG_parms[19,3:4]<-input$WLa_f       #coefficient
+    #ctl.file$MG_parms[20,3:4]<-input$WLb_f      #exponent  
+
+    if(input$male_offset)
+    {
+      ctl.file$parameter_offset_approach<-2                         #Change to offset approach
+      ctl.file$MG_parms[13,3:4]<-0                                  #M
+      ctl.file$MG_parms[14,3:4]<-0                                  #L0
+      ctl.file$MG_parms[15,3:4]<-0                                  #Linf
+      ctl.file$MG_parms[16,3:4]<-0                                  #k
+      ctl.file$MG_parms[17,3:4]<-0                                  #CV
+      ctl.file$MG_parms[18,3:4]<-0                                  #CV
+      #Weight-length
+      ctl.file$MG_parms[19,3:4]<-0                                  #coefficient
+      ctl.file$MG_parms[20,3:4]<-0                                  #exponent  
+    }
+
     if(input$male_parms)
       {   
         male_vbgf<-VBGF(input$Linf_m,input$k_m,input$t0_m,c(input$t0_f:Nages()))
-        ctl.file$MG_parms[13,3]<-input$M_m      #M
-        ctl.file$MG_parms[14,3:4]<-male_vbgf[1]   #L0
-        ctl.file$MG_parms[15,3:4]<-input$Linf_m   #Linf
-        ctl.file$MG_parms[16,3:4]<-input$k_m    #k
-        ctl.file$MG_parms[17,3:4]<-input$CV_lt_m  #CV
-        ctl.file$MG_parms[18,3:4]<-input$CV_lt_m  #CV
+        ctl.file$MG_parms[13,3]<-input$M_m           #M
+        ctl.file$MG_parms[14,3:4]<-male_vbgf[1]      #L0
+        ctl.file$MG_parms[15,3:4]<-input$Linf_m      #Linf
+        ctl.file$MG_parms[16,3:4]<-input$k_m         #k
+        ctl.file$MG_parms[17,3:4]<-input$CV_lt_m     #CV
+        ctl.file$MG_parms[18,3:4]<-input$CV_lt_m     #CV
+#        ctl.file$MG_parms[19,3:4]<-input$WLa_m       #coefficient
+#        ctl.file$MG_parms[20,3:4]<-input$WLb_m       #exponent  
       }
         if(input$Ct_F_LO_select=="Estimate F"){ctl.file$SR_parms[1,7]=-1}  #lnR0
         if(input$Ct_F_LO_select=="Constant Catch"){ctl.file$SR_parms[1,7]=1}  #lnR0
@@ -3183,6 +3216,7 @@ if(!input$use_par)
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f_fix-input$L50_f_fix)  #Maturity slope
     ctl.file$MG_parms[11,3:4]<-input$Fec_a_f_fix       #coefficient
     ctl.file$MG_parms[12,3:4]<- input$Fec_b_f_fix      #exponent  
+
     #Males
     ctl.file$MG_parms[13,3]<-input$M_f_fix          #M
     #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]          #L0
@@ -3191,6 +3225,24 @@ if(!input$use_par)
     ctl.file$MG_parms[16,3:4]<-input$k_f_fix        #k
     ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_fix    #CV
     ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_fix    #CV
+    ctl.file$MG_parms[19,3:4]<-input$WLa_f_fix       #coefficient
+    ctl.file$MG_parms[20,3:4]<- input$WLb_f_fix      #exponent  
+
+    if(input$male_offset_fix)
+    {
+      ctl.file$parameter_offset_approach<-2                         #Change to offset approach
+      ctl.file$MG_parms[13,3:4]<-0                                  #M
+      ctl.file$MG_parms[14,3:4]<-0                                  #L0
+      ctl.file$MG_parms[15,3:4]<-0                                  #Linf
+      ctl.file$MG_parms[16,3:4]<-0                                  #k
+      ctl.file$MG_parms[17,3:4]<-0                                  #CV
+      ctl.file$MG_parms[18,3:4]<-0                                  #CV
+      #Weight-length
+      ctl.file$MG_parms[19,3:4]<-0                                  #coefficient
+      ctl.file$MG_parms[20,3:4]<-0                                  #exponent  
+    }
+
+
     if(input$male_parms_fix)
       {   
         male_vbgf<-VBGF(input$Linf_m_fix,input$k_m_fix,input$t0_m_fix,c(input$t0_f_fix:Nages()))
@@ -3287,6 +3339,20 @@ if(!input$use_par)
     ctl.file$MG_parms[19,3:4]<-input$WLa_f_est       #coefficient
     ctl.file$MG_parms[20,3:4]<- input$WLb_f_est      #exponent  
         
+ if(input$male_offset_est)
+    {
+      ctl.file$parameter_offset_approach<-2                         #Change to offset approach
+      ctl.file$MG_parms[13,3:4]<-0                                  #M
+      ctl.file$MG_parms[14,3:4]<-0                                  #L0
+      ctl.file$MG_parms[15,3:4]<-0                                  #Linf
+      ctl.file$MG_parms[16,3:4]<-0                                  #k
+      ctl.file$MG_parms[17,3:4]<-0                                  #CV
+      ctl.file$MG_parms[18,3:4]<-0                                  #CV
+      #Weight-length
+      ctl.file$MG_parms[19,3:4]<-0                                  #coefficient
+      ctl.file$MG_parms[20,3:4]<-0                                  #exponent  
+    }
+
     if(input$male_parms_est)
       {   
         male_vbgf_est<-VBGF(input$Linf_m_mean,input$k_m_mean,input$t0_m_mean,c(input$t0_f_mean:Nages()))

@@ -90,7 +90,7 @@
  0.03 5 0.1 2.28 0.5 0 -4 0 0 0 0 0 0 0 # CV_old_Mal_GP_1
 # Sex: 2  BioPattern: 1  WtLen
  0 3 1.003e-005 1.003e-005 99 0 -99 0 0 0 0 0 0 0 # Wtlen_1_Mal_GP_1
- 2 4 3.1039 3.1039 99 0 -99 0 0 0 0 0 0 0 # Wtlen_2_Mal_GP_1
+ 2 4 3 3 99 0 -99 0 0 0 0 0 0 0 # Wtlen_2_Mal_GP_1
 # Hermaphroditism
 #  Recruitment Distribution  
 #  Cohort growth dev base

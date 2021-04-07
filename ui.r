@@ -157,7 +157,8 @@ shinyjs::hidden(wellPanel(id="Data_panel",
         #         column(width=6,numericInput("WLb_f","Weight-length beta", value=3,min=0, max=10000, step=0.01))),    
        ),
 
-         fluidRow(column(width=10,checkboxInput("male_parms","Males specific values?",FALSE))),
+         fluidRow(column(width=6,checkboxInput("male_parms","Males specific values?",FALSE)),
+                  column(width=6,checkboxInput("male_offset","Males offset from females (log(m/f)?",FALSE))),
          # fluidRow(column(width=10,prettyCheckbox("male_parms","Males specific values?",
          #  value=FALSE, 
          #  shape="curve",
@@ -171,8 +172,8 @@ shinyjs::hidden(wellPanel(id="Data_panel",
                      uiOutput("Male_parms_inputs_label"),
                      uiOutput("Male_parms_inputs1"),
                      uiOutput("Male_parms_inputs2"),
-                     uiOutput("Male_parms_inputs3"),
-                     uiOutput("Male_parms_inputs4")
+                     uiOutput("Male_parms_inputs3")
+   #                  uiOutput("Male_parms_inputs4")
       ),
     )
     ),
@@ -217,7 +218,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             
        ),
 
-        fluidRow(column(width=10,checkboxInput("male_parms_fix","Males specific values?",FALSE))),
+        fluidRow(column(width=10,checkboxInput("male_parms_fix","Males specific values?",FALSE)),
+                 column(width=10,checkboxInput("male_offset_fix","Males offset from females (log(m/f)?",FALSE))),
     #fluidRow(column(width=7, h3("Males specific values?")),column(width=2,checkboxInput("male_parms","Males specific values?",FALSE,width="150%"))),
         wellPanel(
                      uiOutput("Male_parms_inputs_label_fix"),
@@ -284,7 +286,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       fluidRow(column(width=6,numericInput("WLa_f_est", "Weight (kg)-Length (cm): a in W=aL^b", value=0.00001,min=0, max=10000, step=0.000000001)),
               column(width=6,numericInput("WLb_f_est","Weight (kg)-Length (cm) beta: b in W=aL^b", value=3,min=0, max=10000, step=0.01))),    
     ),
-      fluidRow(column(width=10,checkboxInput("male_parms_est","Males specific values?",FALSE))),
+      fluidRow(column(width=6,checkboxInput("male_parms_est","Males specific values?",FALSE)),
+               column(width=6,checkboxInput("male_offset_est","Males offset from females (log(m/f))?",FALSE))),
     #fluidRow(column(width=7, h3("Males specific values?")),column(width=2,checkboxInput("male_parms","Males specific values?",FALSE,width="150%"))),
       wellPanel(
                      uiOutput("Male_parms_inputs_label_est"),
@@ -407,7 +410,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
               column(width=6,numericInput("WLb_f_sss","Weight (kg)-Length (cm): b in W=aL^b", value=3,min=0, max=10000, step=0.01))),    
     ),
     
-    fluidRow(column(width=10,checkboxInput("male_parms_SSS","Males specific values?",FALSE))),
+    fluidRow(column(width=10,checkboxInput("male_parms_SSS","Males specific values?",FALSE)),
+      column(width=10,checkboxInput("male_offset_SSS","Males offset to females (log(m/f)?",FALSE))),
     #fluidRow(column(width=7, h3("Males specific values?")),column(width=2,checkboxInput("male_parms_SSS","Males specific values?",FALSE,width="150%"))),
     wellPanel(
                      uiOutput("Male_parms_inputs_label_SSS"),
