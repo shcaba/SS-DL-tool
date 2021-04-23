@@ -1634,7 +1634,7 @@ output$AdvancedSS_ageerror_in <- renderUI({
 
 output$AdvancedSS_Ctunits<- renderUI({ 
         fluidRow(column(width=12, prettyCheckbox(
-        inputId = "Ct_units_choice", label = "Specify catch units (1=biomass; 2=numbers) for each fleet? Default is biomass.",
+        inputId = "Ct_units_choice", label = "Specify catch units (1=biomass (default); 2=numbers) for each fleet?",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
@@ -1690,6 +1690,24 @@ output$AdvancedSS_Ltbin <- renderUI({
                                               value=4, min=0, max=10000, step=0.01)), 
               column(width=4, numericInput("lt_max_bin", "maximum bin",  
                                               value=2*(round((Linf()+(Linf()*0.2326))/2))+2, min=0, max=10000, step=0.01))) 
+    # } 
+  }) 
+
+
+output$Profile_multi_values <- renderUI({ 
+    #if(!is.null(input$multi_profile)){       
+    #  if(input$multi_profile){
+      #h4(strong("Choose data file")),
+      fluidRow(column(width=12,fileInput('file_multi_profile', 'Profile input values',
+                           accept = c(
+                             'text/csv',
+                             'text/comma-separated-values',
+                             'text/tab-separated-values',
+                             'text/plain',
+                             '.csv'
+                           )
+       )))        
+    #   }
     # } 
   }) 
 
@@ -3988,7 +4006,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
  		output$converge.dec <- renderText({
  				if(Model.output$maximum_gradient_component<0.1 & Model.output$inputs$covar==TRUE)
  					{converge.dec<-"Model appears converged. Please check outputs for nonsense."}
- 				else{converge.dec<-"Model may not have converged. Please use the Jitter option or change starting values before re-running model."}
+ 				else{converge.dec<-"Model may not have converged or inputs are missing. Please use the Jitter option or check/change starting values before re-running model."}
 			})
  		
  		#Relative biomass
@@ -4091,7 +4109,10 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     }
     })
 
-  #Likelihood profiles
+  ###########################  
+  ### Likelihood profiles ###
+  ###########################
+
   pathLP <- reactive({
       shinyDirChoose(input, "LP_dir", roots=roots,session=session, filetypes=c('', 'txt'))
         return(parseDirPath(roots, input$LP_dir))
@@ -4135,7 +4156,7 @@ observeEvent(input$run_Profiles,{
 
        try(run_diagnostics(mydir = mydir, model_settings = model_settings))
 
-       file.remove(paste0(getwd(),"/run_diag_warning.txt"))
+       file.remove(paste0(mydir,"/run_diag_warning.txt"))
 
        output$LikeProf_plot_modout <- renderImage({
        image.path1<-normalizePath(file.path(paste0(pathLP(),"_profile_",prof_parms_names[1],"/parameter_panel_",prof_parms_names[1],".png")),mustWork=FALSE)
@@ -4178,8 +4199,161 @@ observeEvent(input$run_Profiles,{
       },deleteFile=FALSE)
 
        remove_modal_spinner()
+})
 
+observeEvent(input$run_MultiProfiles,{
+       show_modal_spinner(spin="flower",color="red",text="Multi-profiles running")
+       refdir<-pathLP()
+       mydir <- dirname(refdir)
+       #Read in reference model
+       ref.model<-SS_output(refdir)
+       #Read in parameter files
+       par.df <- read.csv(input$file_multi_profile$datapath,check.names=FALSE)
+       SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1")
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female","Natural mortality male","Linf male","k male")
+       parmnames<-colnames(par.df)
+       prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
+       modelnames<-paste0(parmnames[1]," ",par.df[,1],";",parmnames[2]," ",par.df[,2])
+       #Make new folder
+        #para = rownames(model_settings$profile_details)[aa]
+        profile_dir <- paste0(refdir,"_profile_", paste(prof_parms_names,collapse="_"))
+        dir.create(profile_dir, showWarnings = FALSE)
+        if (length(list.files(profile_dir)) !=0) 
+          {
+            remove <- list.files(profile_dir)
+            file.remove(file.path(profile_dir, remove))
+          }
+        all_files <- list.files(refdir)
+        file.copy(from = file.path(refdir,all_files), to = profile_dir, overwrite = TRUE)
+ 
+       #Set-up the starter file control file
+       starter.file<-SS_readstarter(paste0(profile_dir,"/starter.ss"))
+       starter.file$ctlfile<-"control_modified.ss"
+       starter.file$init_values_src<-0
+       starter.file$prior_like<-1
+       SS_writestarter(starter.file,profile_dir,overwrite=TRUE)
+#       low_in <-  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
+#       high_in <- as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
+#       step_size_in <- as.numeric(trimws(unlist(strsplit(input$Prof_step,","))))
+#       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
+#       colnames(par.df)<-prof_parms_names
+      
+      profile <- SS_profile(
+        dir = profile_dir, # directory
+        masterctlfile = "control.ss_new",
+        newctlfile = "control_modified.ss",
+        string = prof_parms_names,
+        profilevec = par.df,
+        extras = "-nohess"
+      )
+
+    # get model output
+    profilemodels <- SSgetoutput(dirvec=profile_dir,keyvec=1:nrow(par.df), getcovar=FALSE)
+    n <- length(profilemodels)
+    profilesummary <- SSsummarize(profilemodels)
+    
+    try(SSplotComparisons(profilesummary, legendlabels = modelnames, ylimAdj = 1.30, new = FALSE,plot=FALSE,print=TRUE, legendloc = 'topleft',uncertainty=TRUE,plotdir=profile_dir))
+    save(profilesummary,file=paste0(profile_dir,"/multiprofile.DMP"))
+    # add total likelihood (row 1) to table created above
+    par.df$like <- as.numeric(profilesummary$likelihoods[1, 1:n])
+    par.df$likediff <- as.numeric(profilesummary$likelihoods[1, 1:n]-ref.model$likelihoods_used[1,1])
+    par.df$Bratio <- as.numeric(profilesummary$Bratio[grep((profilesummary$endyrs[1]-1),profilesummary$Bratio$Label), 1:n])
+    par.df$SB0 <- as.numeric(profilesummary$SpawnBio[1, 1:n])
+    par.df$SBcurrent <- as.numeric(profilesummary$SpawnBio[grep((profilesummary$endyrs[1]-1),profilesummary$SpawnBio$Label), 1:n])
+    SBcurrmax<-max(par.df$SBcurrent)
+    colnames(par.df)<-c(parmnames,c("Likelihood","Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)))
+    save(par.df,file=paste0(profile_dir,"/multiprofilelikelihoods.DMP"))
+    write.csv(par.df,file=paste0(profile_dir,"/multiprofilelikelihoods.csv"))
+    
+    #This reactive object is needed to get the plots to work
+    plot.dat<-reactive({
+      plot.dat<-melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)))
+      plot.dat
+      })
+
+    blank_data<- data.frame(variable = c("Likelihood_difference", "Likelihood_difference", paste0("SB",profilesummary$endyrs[1]-1,"/SB0"), paste0("SB",profilesummary$endyrs[1]-1,"/SB0"), "SB0", "SB0",paste0("SB",profilesummary$endyrs[1]-1),paste0("SB",profilesummary$endyrs[1]-1)), x =min(par.df[,1]),y = c(min(par.df$Likelihood_difference),max(par.df$Likelihood_difference), 0, 1, 0, ceiling(max(par.df$SB0)),0,ceiling(SBcurrmax)))
+    blank_data$variable<-factor(blank_data$variable,c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)))
+    refmodel.dat<-data.frame(variable = c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)), x =ref.model$parameters[grep(prof_parms_names[1],ref.model$parameters$Label),3],y = c(0,ref.model$current_depletion,ref.model$SBzero,ref.model$derived_quants[grep((profilesummary$endyrs[1]-1),profilesummary$SpawnBio$Label),2]))
+      #multiprofplotfun<-function(plot.dat)
+      #{
+      output$LikeProf_multiplot <- renderPlot({
+      multiplot<-ggplot(plot.dat(),aes(plot.dat()[,1],value))+
+      geom_line(lwd=1.25)+
+      facet_wrap(~variable,scales="free_y")+
+      geom_blank(data = blank_data, aes(x = x, y = y,z="variable"))+
+      ylab("Difference in -log likelihood")+
+      scale_x_continuous(name = paste(parmnames[1],"and",parmnames[2]), 
+            breaks =par.df[,1], 
+            labels = paste0(par.df[,1],"\n",par.df[,2]))+
+      geom_hline(data = data.frame(yint=c(-1.96,0,1.96,0.4,0.25),variable=c("Likelihood_difference","Likelihood_difference","Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),paste0("SB",profilesummary$endyrs[1]-1,"/SB0"))), 
+            aes(yintercept = yint), linetype = c("solid","dotted","solid","dotted","solid"),color=c("red","black","red","darkgreen","red"),lwd=1)+
+      geom_point(data=refmodel.dat,aes(x=x,y=y),color="blue",size=4)+
+      theme_bw()
+      ggsave(paste0(profile_dir,"/","multilikelihood_profile.png"),width=10,height=10,units="in")
+      multiplot      
+      })
+    #}
+      
+    
+    # output$LikeProf_multiplot <- renderPlot({
+    #   plotPNG(func=multiprofplotfun(plot.dat()),paste0(profile_dir,"/",paste(parmnames,collapse="_"),"_multilikelihood_profile.png"))
+    #   })
+
+#   plot.dat2<-reactive({
+#       plot.dat2<-melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)))
+#       plot.dat2
+#       })
+    
+#     png(file = paste0(profile_dir,"/","multilikelihood_profile.png"),width = 10, height = 10, units = "in", res = 300, pointsize = pt)
+# #    multiplot
+#      ggplot(plot.dat2(),aes(plot.dat2()[,1],value))+
+#       geom_line(lwd=1.25)+
+#       facet_wrap(~variable,scales="free_y")+
+#       #geom_blank(data = blank_data, aes(x = x, y = y,z="variable"))+
+#       ylab("Difference in -log likelihood")+
+#       #scale_x_continuous(name = paste(parmnames[1],"and",parmnames[2]), 
+#       #      breaks =par.df[,1], 
+#       #      labels = paste0(par.df[,1],"\n",par.df[,2]))+
+#       geom_hline(data = data.frame(yint=c(-1.96,0,1.96,0.4,0.25),variable=c("Likelihood_difference","Likelihood_difference","Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),paste0("SB",profilesummary$endyrs[1]-1,"/SB0"))), 
+#             aes(yintercept = yint), linetype = c("solid","dotted","solid","dotted","solid"),color=c("red","black","red","darkgreen","red"),lwd=1)+
+#       #geom_point(data=refmodel.dat,aes(x=x,y=y),color="blue",size=3)+
+#       theme_bw()      # multiprofplot
+    #dev.off()
+    # png(file = paste0(profile_dir,"/",paste(parmnames,collapse="_"),"_multilikelihood_profile.png"),width = 10, height = 10, units = "in", res = 300, pointsize = pt)
+    
+    # output$LikeProf_multiplot <- renderImage({
+    #    image.path<-normalizePath(file.path(paste0(profile_dir,paste0("\\",paste(parmnames,collapse="_"),"_multilikelihood_profile.png"))),mustWork=FALSE)
+    #    return(list(
+    #     src = image.path,
+    #     contentType = "image/png",
+    #    #  width = 400,
+    #    # height = 300,
+    #    style='height:60vh'))
+    #   },deleteFile=FALSE)
+
+  
+    # reshape data frame into a matrix for use with contour
+    
+    # pngfun(wd = mydir, file = paste0("contour_profile.png"), h = 7,w = 12)
+    # contour(x = as.numeric(rownames(like_matrix)),
+    #         y = as.numeric(colnames(like_matrix)),
+    #         z = like_matrix)
+    # dev.off()
+           
+    
+    # make contour plot
+
+      #  output$LikeProf_multi_contour <- renderPlot({
+      #   like_matrix <- reshape2::acast(par.df, colnames(par.df)[1]~colnames()[2], value.var="like")
+      #   pngfun(wd = mydir, file = paste0("contour_profile.png"), h = 7,w = 12)
+      #   contour(x = as.numeric(rownames(like_matrix)),
+      #       y = as.numeric(colnames(like_matrix)),
+      #       z = like_matrix)
+      #       dev.off()  
+      # })
+      remove_modal_spinner()
   })
+
 #################
 
 ###############################
@@ -4338,17 +4512,18 @@ SensiRE_breaks_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_breaks,",")))
 SensiRE_xcenter_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_xcenter,","))))
 SensiRE_ycenter_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_ycenter,","))))
 SensiRE_headers_in<-trimws(unlist(strsplit(input$SensiRE_headers,",")))
-SS_Sensi_plot(Dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
+yminmax_sensi<-rep(c(input$SensiRE_ymin,input$SensiRE_ymax),5)
+r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
               model.summaries=modsummary.sensi,
               current.year=2019,
               mod.names=modelnames, #List the names of the sensitivity runs
               likelihood.out=c(0,0,0),
-              Sensi.RE.out=paste0(pathSensi(),"/Sensitivity Comparison Plots/Sensi_RE_out.DMP"), #Saved file of relative errors
+              Sensi.RE.out="Sensi_RE_out.DMP", #Saved file of relative errors
               CI=0.95, #Confidence interval box based on the reference model
               TRP.in=input$Sensi_TRP, #Target relative abundance value
               LRP.in=input$Sensi_LRP, #Limit relative abundance value
               sensi_xlab="Sensitivity scenarios", #X-axis label
-              ylims.in=c(-1,1,-1,1,-1,1,-1,1,-1,1,-1,1), #Y-axis label
+              ylims.in=yminmax_sensi, #Y-axis label
               plot.figs=c(1,1,1,1,1,1), #Which plots to make/save? 
               sensi.type.breaks=SensiRE_breaks_in, #vertical breaks that can separate out types of sensitivities
               anno.x=SensiRE_xcenter_in, # Vertical positioning of the sensitivity types labels
