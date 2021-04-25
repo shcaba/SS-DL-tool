@@ -2734,7 +2734,6 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 #   {
 
 #   }
-
 		#Read data and control files
     if(!input$user_model)
     {
@@ -2750,6 +2749,7 @@ if(input$use_datanew)
 
 if(input$use_controlnew)
   {
+    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")) 
     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/control.ss_new"),use_datlist = TRUE, datlist=data.file) 
   }
 
@@ -3821,7 +3821,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 ########
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
-		if(input$Data_wt=="Dirichlet"){DataWT_opt<-"DM"}
+		if(input$Data_wt=="None"){DataWT_opt<-"none"}
+    if(input$Data_wt=="Dirichlet"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
     
@@ -3847,7 +3848,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     }
 
 
-      if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")))
+    if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")))
       {
       Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
 
@@ -3856,19 +3857,20 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
           Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
         }
 
-           if(input$Data_wt!="None")
-            {
-              if(Model.output$inputs$covar==TRUE)
-                {
-                  SS_tune_comps(dir=paste0("Scenarios/",input$Scenario_name),Model.output,option=DataWT_opt,niters_tuning=2)
-                  Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
-                }
-              if(Model.output$inputs$covar==FALSE)
-                {
-                  SS_tune_comps(dir=paste0("Scenarios/",input$Scenario_name),Model.output,option=DataWT_opt,niters_tuning=2,extras = " -nohess")
-                  Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
-                }
+      if(input$Data_wt!="None")
+         {
+           if(Model.output$inputs$covar==TRUE)
+             {
+               SS_tune_comps(dir=paste0("Scenarios/",input$Scenario_name),Model.output,option=DataWT_opt,niters_tuning=2)
+               Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
              }
+           if(Model.output$inputs$covar==FALSE)
+              {
+               SS_tune_comps(dir=paste0("Scenarios/",input$Scenario_name),Model.output,option=DataWT_opt,niters_tuning=2,extras = " -nohess")
+               Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+             }
+         }
+      
       data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data.ss_new"))    
       #No plots or figures
       if(is.null(input$no_plots_tables))
