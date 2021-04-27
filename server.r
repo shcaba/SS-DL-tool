@@ -4232,7 +4232,7 @@ observeEvent(input$run_MultiProfiles,{
        starter.file<-SS_readstarter(paste0(profile_dir,"/starter.ss"))
        starter.file$ctlfile<-"control_modified.ss"
        starter.file$init_values_src<-0
-       starter.file$prior_like<-1
+       #starter.file$prior_like<-0
        SS_writestarter(starter.file,profile_dir,overwrite=TRUE)
 #       low_in <-  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
 #       high_in <- as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
@@ -4246,7 +4246,8 @@ observeEvent(input$run_MultiProfiles,{
         newctlfile = "control_modified.ss",
         string = prof_parms_names,
         profilevec = par.df,
-        extras = "-nohess"
+        extras = "-nohess",
+        prior_check=FALSE
       )
 
     # get model output
