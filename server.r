@@ -521,8 +521,8 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("Data_panel")
         shinyjs::show("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
-        if(length(unique(rv.Lt$data[,2]))>1|length(unique(rv.Age$data[,2]))>1){shinyjs::show("panel_ct_wt_LO")}
-        if(length(unique(rv.Lt$data[,2]))==1|length(unique(rv.Age$data[,2]))==1){shinyjs::hide("panel_ct_wt_LO")}
+        if(length(unique(rv.Lt$data[,3]))>1|length(unique(rv.Age$data[,3]))>1){shinyjs::show("panel_ct_wt_LO")}
+        if(length(unique(rv.Lt$data[,3]))==1|length(unique(rv.Age$data[,3]))==1){shinyjs::hide("panel_ct_wt_LO")}
         #if(input$Ct_F_LO_select){shinyjs::show("panel_ct_wt_LO")}
         #if(input$Ct_F_LO_select==NULL){shinyjs::hide("panel_ct_wt_LO")}
         shinyjs::hide("panel_SSS")
@@ -1682,7 +1682,7 @@ output$AdvancedSS_retro_years_user <- renderUI({
 
 output$AdvancedSS_Ltbin <- renderUI({ 
     # if(input$advance_ss_click){       
-      if(!is.null(rv.Lt$data)){bin.step<-as.numeric(colnames(rv.Lt$data)[6])-as.numeric(colnames(rv.Lt$data)[5])}
+      if(!is.null(rv.Lt$data)){bin.step<-as.numeric(colnames(rv.Lt$data)[7])-as.numeric(colnames(rv.Lt$data)[6])}
       if(is.null(rv.Lt$data)){bin.step<-2}
       fluidRow(column(width=4, numericInput("lt_bin_size", "bin size",  
                                               value=bin.step, min=0, max=10000, step=1)), 
@@ -1721,8 +1721,8 @@ output$Profile_multi_values <- renderUI({
 ###############################################
 
 FleetNs<-reactive({
-    if(all(c(is.null(rv.Ct$data[,2],rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,3])))) return(NULL)
-    fleetnum<-rep(1,max(rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,3]))
+    if(all(c(is.null(rv.Ct$data[,2],rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3])))) return(NULL)
+    fleetnum<-rep(1,max(rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3]))
     FleetNs<-paste(as.character(fleetnum), collapse=",")
     #print(FleetNs)
     FleetNs
@@ -1738,7 +1738,7 @@ Nages<-reactive({
     if(!is.na(input$M_f_mean_sss)) {Nages<-ceiling(5.4/input$M_f_mean_sss)} 
     if(!is.null(rv.Age$data))
     {
-      Nages_in<-max(as.numeric(colnames(rv.Age$data[,8:ncol(rv.Age$data)])))
+      Nages_in<-max(as.numeric(colnames(rv.Age$data[,9:ncol(rv.Age$data)])))
       if(!is.na(Nages)&Nages_in>Nages){Nages<-Nages_in}
       if(is.na(Nages)){Nages<-Nages_in}
     }
@@ -2770,8 +2770,8 @@ if(!input$use_par)
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
     if(!is.null(rv.Ct$data)){catch.fleets<-max(ncol(rv.Ct$data)-1)}
-    if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets<-max(rv.Lt$data[,2])}
-    data.file$Nfleets<-max(catch.fleets,rv.Lt$data[,2],rv.Age$data[,2],rv.Index$data[,3])
+    if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets<-max(rv.Lt$data[,3])}
+    data.file$Nfleets<-max(catch.fleets,rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3])
     
 	#Catches
 		if (is.null(rv.Ct$data)) 
@@ -2844,9 +2844,9 @@ if(!input$use_par)
 
   #Population length data bins
   data.file$binwidth<-2
-  if(!is.null(rv.Lt$data)){data.file$binwidth<-as.numeric(colnames(rv.Lt$data)[6])-as.numeric(colnames(rv.Lt$data)[5])}
+  if(!is.null(rv.Lt$data)){data.file$binwidth<-as.numeric(colnames(rv.Lt$data)[7])-as.numeric(colnames(rv.Lt$data)[6])}
   data.file$minimum_size<-2
-  if(!is.null(rv.Lt$data)){data.file$minimum_size<-as.numeric(colnames(rv.Lt$data)[5])}
+  if(!is.null(rv.Lt$data)){data.file$minimum_size<-as.numeric(colnames(rv.Lt$data)[6])}
   max.bin.in<-2*(round((Linf()+(Linf()*0.25))/2))+2 #0.2326
   data.file$maximum_size<-max.bin.in
   # if(input$advance_ss_click)
@@ -2864,24 +2864,24 @@ if(!input$use_par)
       
 		if (!is.null(rv.Lt$data)) {
     Lt.comp.data<-rv.Lt$data
-    data.file$N_lbins<-ncol(Lt.comp.data)-4
-    data.file$lbin_vector<-as.numeric(colnames(rv.Lt$data)[5:ncol(rv.Lt$data)]) #as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
+    data.file$N_lbins<-ncol(Lt.comp.data)-5
+    data.file$lbin_vector<-as.numeric(colnames(rv.Lt$data)[6:ncol(rv.Lt$data)]) #as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
     if(data.file$maximum_size<max(data.file$lbin_vector)){data.file$maximum_size<-(2*round(max(data.file$lbin_vector)/2))+2}
     lt.data.names<-c(colnames(data.file$lencomp[,1:6]),paste0("f",data.file$lbin_vector),paste0("m",data.file$lbin_vector))
     lt.data.females<-lt.data.males<-lt.data.unknowns<-lt.data.sex3<-data.frame(matrix(rep(NA,length(lt.data.names)),nrow=1))
-    colnames(Lt.comp.data)[1:4]<-c("Year","Fleet","Sex","Nsamps")
+    colnames(Lt.comp.data)[1:5]<-c("Year","Month","Fleet","Sex","Nsamps")
     #female lengths
     if(nrow(subset(Lt.comp.data,Sex==1))>0){
     Lt.comp.data_female<-subset(Lt.comp.data,Sex==1 & Nsamps>0) 
     samp.yrs<-Lt.comp.data_female[,1]
     lt.data.females<-data.frame(cbind(samp.yrs,
-        rep(1,length(samp.yrs)),
         Lt.comp.data_female[,2],
         Lt.comp.data_female[,3],
-        rep(0,length(samp.yrs)),
         Lt.comp.data_female[,4],
-        Lt.comp.data_female[,5:ncol(Lt.comp.data_female)],
-        Lt.comp.data_female[,5:ncol(Lt.comp.data_female)]*0)
+        rep(0,length(samp.yrs)),
+        Lt.comp.data_female[,5],
+        Lt.comp.data_female[,6:ncol(Lt.comp.data_female)],
+        Lt.comp.data_female[,6:ncol(Lt.comp.data_female)]*0)
         )
     }
     #male lengths
@@ -2889,13 +2889,13 @@ if(!input$use_par)
       Lt.comp.data_male<-subset(Lt.comp.data,Sex==2 & Nsamps>0)
       samp.yrs_males<-Lt.comp.data_male[,1]
       lt.data.males<-data.frame(cbind(samp.yrs_males,
-        rep(1,length(samp.yrs_males)),
         Lt.comp.data_male[,2],
         Lt.comp.data_male[,3],
-        rep(0,length(samp.yrs_males)),
         Lt.comp.data_male[,4],
-        Lt.comp.data_male[,5:ncol(Lt.comp.data_male)]*0,
-        Lt.comp.data_male[,5:ncol(Lt.comp.data_male)])
+        rep(0,length(samp.yrs_males)),
+        Lt.comp.data_male[,5],
+        Lt.comp.data_male[,6:ncol(Lt.comp.data_male)]*0,
+        Lt.comp.data_male[,6:ncol(Lt.comp.data_male)])
         )
       }
     #unknown sex lengths
@@ -2903,20 +2903,20 @@ if(!input$use_par)
       Lt.comp.data_unknown<-subset(Lt.comp.data,Sex==0 & Nsamps>0)
       samp.yrs_unknown<-Lt.comp.data_unknown[,1]
       lt.data.unknowns<-data.frame(cbind(samp.yrs_unknown,
-        rep(1,length(samp.yrs_unknown)),
         Lt.comp.data_unknown[,2],
         Lt.comp.data_unknown[,3],
-        rep(0,length(samp.yrs_unknown)),
         Lt.comp.data_unknown[,4],
-        Lt.comp.data_unknown[,5:ncol(Lt.comp.data_unknown)],
-        Lt.comp.data_unknown[,5:ncol(Lt.comp.data_unknown)]*0)
+        rep(0,length(samp.yrs_unknown)),
+        Lt.comp.data_unknown[,5],
+        Lt.comp.data_unknown[,6:ncol(Lt.comp.data_unknown)],
+        Lt.comp.data_unknown[,6:ncol(Lt.comp.data_unknown)]*0)
         )
       }
 
     #Maintain sample sex ratio
      if(input$Sex3){
-      yrsfleet_females<-paste0(Lt.comp.data_female[,1],Lt.comp.data_female[,2])
-      yrsfleet_males<-paste0(Lt.comp.data_male[,1],Lt.comp.data_male[,2])
+      yrsfleet_females<-paste0(Lt.comp.data_female[,1],Lt.comp.data_female[,3])
+      yrsfleet_males<-paste0(Lt.comp.data_male[,1],Lt.comp.data_male[,3])
       #Match years
       #samp.yrs_sex3<-samp.yrs_females[match(samp.yrs_males,samp.yrs_females)]
       sex3_match_female<-yrsfleet_females%in%yrsfleet_males
@@ -2925,13 +2925,13 @@ if(!input$use_par)
       Lt.comp.data_female_sex3<-Lt.comp.data_female[sex3_match_female,]
       Lt.comp.data_male_sex3<-Lt.comp.data_male[sex3_match_male,]
       lt.data.sex3<-data.frame(cbind(Lt.comp.data_female_sex3[,1],
-        rep(1,nrow(Lt.comp.data_female_sex3)),
         Lt.comp.data_female_sex3[,2],
+        Lt.comp.data_female_sex3[,3],
         rep(3,nrow(Lt.comp.data_female_sex3)),
         rep(0,nrow(Lt.comp.data_female_sex3)),
-        Lt.comp.data_female_sex3[,4]+Lt.comp.data_male_sex3[,4],
-        Lt.comp.data_female_sex3[,5:ncol(Lt.comp.data_female_sex3)],
-        Lt.comp.data_male_sex3[,5:ncol(Lt.comp.data_male_sex3)])
+        Lt.comp.data_female_sex3[,5]+Lt.comp.data_male_sex3[,4],
+        Lt.comp.data_female_sex3[,6:ncol(Lt.comp.data_female_sex3)],
+        Lt.comp.data_male_sex3[,6:ncol(Lt.comp.data_male_sex3)])
         )
       lt.data.females<-lt.data.females[!sex3_match_female,]
       lt.data.males<-lt.data.males[!sex3_match_male,]
@@ -2969,8 +2969,8 @@ if(!input$use_par)
 
     if (!is.null(Age.comp.data))
     {
-      data.file$N_agebins<-ncol(Age.comp.data)-7
-      data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,8:ncol(Age.comp.data)]))
+      data.file$N_agebins<-ncol(Age.comp.data)-8
+      data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,9:ncol(Age.comp.data)]))
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       
       if(!is.null(input$Ageing_error_choice)){       
@@ -2987,22 +2987,22 @@ if(!input$use_par)
       # colnames(data.file$ageerror)<-paste0("age",1:Nages())         
       age.data.names<-c(c("Yr","Month","Fleet","Sex","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
       age.data.females<-age.data.males<-age.data.unknowns<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
-      colnames(Age.comp.data)[1:7]<-c("Year","Fleet","Sex","AgeErr","Lbin_low","Lbin_hi","Nsamps")
+      colnames(Age.comp.data)[1:8]<-c("Year","Month","Fleet","Sex","AgeErr","Lbin_low","Lbin_hi","Nsamps")
     #female ages
     if(nrow(subset(Age.comp.data,Sex==1))>0){
       Age.comp.data_female<-subset(Age.comp.data,Sex==1 & Nsamps>0) 
       samp.yrs_females<-Age.comp.data_female[,1]
       age.data.females<-data.frame(cbind(samp.yrs_females,
-        rep(1,length(samp.yrs_females)),
         Age.comp.data_female[,2],
         Age.comp.data_female[,3],
-        rep(0,length(samp.yrs_females)),
         Age.comp.data_female[,4],
+        rep(0,length(samp.yrs_females)),
         Age.comp.data_female[,5],
         Age.comp.data_female[,6],
         Age.comp.data_female[,7],
-        Age.comp.data_female[,8:ncol(Age.comp.data_female)],
-        Age.comp.data_female[,8:ncol(Age.comp.data_female)]*0)
+        Age.comp.data_female[,8],
+        Age.comp.data_female[,9:ncol(Age.comp.data_female)],
+        Age.comp.data_female[,9:ncol(Age.comp.data_female)]*0)
         )
     }
     #male ages
@@ -3010,16 +3010,16 @@ if(!input$use_par)
       Age.comp.data_male<-subset(Age.comp.data,Sex==2 & Nsamps>0)
       samp.yrs_males<-Age.comp.data_male[,1]
       age.data.males<-data.frame(cbind(samp.yrs_males,
-        rep(1,length(samp.yrs_males)),
         Age.comp.data_male[,2],
         Age.comp.data_male[,3],
-        rep(0,length(samp.yrs_males)),
         Age.comp.data_male[,4],
+        rep(0,length(samp.yrs_males)),
         Age.comp.data_male[,5],
         Age.comp.data_male[,6],
         Age.comp.data_male[,7],
-        Age.comp.data_male[,8:ncol(Age.comp.data_male)]*0,
-        Age.comp.data_male[,8:ncol(Age.comp.data_male)])
+        Age.comp.data_male[,8],
+        Age.comp.data_male[,9:ncol(Age.comp.data_male)]*0,
+        Age.comp.data_male[,9:ncol(Age.comp.data_male)])
         )
       }
     #unknown sex ages
@@ -3027,16 +3027,16 @@ if(!input$use_par)
       Age.comp.data_unknown<-subset(Age.comp.data,Sex==0 & Nsamps>0)
       samp.yrs_unknown<-Age.comp.data_unknown[,1]
       age.data.unknowns<-data.frame(cbind(samp.yrs_unknown,
-        rep(1,length(samp.yrs_unknown)),
         Age.comp.data_unknown[,2],
         Age.comp.data_unknown[,3],
-        rep(0,length(samp.yrs_unknown)),
         Age.comp.data_unknown[,4],
+        rep(0,length(samp.yrs_unknown)),
         Age.comp.data_unknown[,5],
         Age.comp.data_unknown[,6],
         Age.comp.data_unknown[,7],
-        Age.comp.data_unknown[,8:ncol(Age.comp.data_unknown)],
-        Age.comp.data_unknown[,8:ncol(Age.comp.data_unknown)]*0)
+        Age.comp.data_unknown[,8],
+        Age.comp.data_unknown[,9:ncol(Age.comp.data_unknown)],
+        Age.comp.data_unknown[,9:ncol(Age.comp.data_unknown)]*0)
         )
       }
     #if(nrow(subset(Age.comp.data,Sex==0))>0){age.data.unknowns<-data.frame(cbind(
