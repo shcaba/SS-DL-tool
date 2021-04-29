@@ -3133,6 +3133,11 @@ if(!input$use_par)
        data.file$CPUEinfo[,1]<-1:data.file$Nfleets
      }
   
+  if(any(fleet.survey.names=="RSS"))
+  {
+    data.file$CPUEinfo[grep("RSS",fleet.survey.names),2]<-34
+  }
+
 #Catch units     
     if(input$Ct_units_choice)
     {
@@ -3621,7 +3626,10 @@ if(!input$use_par)
             if(input$Indexvar)
             {
               q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,3])[q],1,0,1,0,1))
-              q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0))))          
+              #if(unique(rv.Index$data[,6])[q]!="RSS"){q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,3])[q],1,0,1,0,1))}
+              #if(unique(rv.Index$data[,6])[q]=="RSS"){q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,3])[q],1,0,0,0,1))}
+              if(unique(rv.Index$data[,6])[q]!="RSS"){q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0))))}          
+              if(unique(rv.Index$data[,6])[q]=="RSS"){q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,-3,0,0,0,0,0,0,0))))}          
             }  
           }
         }
@@ -3650,6 +3658,13 @@ if(!input$use_par)
         ctl.file$Q_parms<-q.lines
       }
 
+ if(any(fleet.survey.names=="RSS"))
+  {
+    RSS.index<-grep("RSS",fleet.survey.names) 
+    #ctl.file$Q_parms<-ctl.file$Q_parms
+    ctl.file$size_selex_types[RSS.index,1]<-0 #Rename RSS selectivity types
+    ctl.file$size_selex_parms<-ctl.file$size_selex_parms[-c((RSS.index*6-5):(RSS.index*6)),] #Remove selectivity related to RSS
+  }
 
     # if(input$Data_wt=="Dirichlet")
     # {
