@@ -3777,7 +3777,7 @@ if(!input$use_par)
 
     if(!input$use_datanew|is.null(input$use_datanew))
     {
-      starter.file$datfile<-"SS_LB.dat"
+      if(!input$user_model|is.null(input$use_controlnew)){starter.file$datfile<-"SS_LB.dat"}
     }
 
 #Use controlnew file
@@ -3788,7 +3788,7 @@ if(!input$use_par)
 
     if(!input$use_controlnew|is.null(input$use_controlnew))
     {
-      starter.file$ctlfile<-"SS_LB.ctl"
+      if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"SS_LB.ctl"}
     }
 
 
