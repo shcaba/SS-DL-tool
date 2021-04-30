@@ -389,6 +389,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           circle = FALSE, right=TRUE, status = "danger", icon = icon("ruler-horizontal"), width = "300px",label="k: VB growth coefficient"
             ),
      br(),
+     fluidRow(column(width=6,numericInput("Linf_k_cor_sss", "Correlation between Linf and k", value=-0.9,min=-1, max=1, step=0.001))),
+     br(),
       dropdownButton(
           selectInput("t0_f_prior_sss","Prior type",c("no prior","normal")),
           numericInput("t0_f_mean_sss", "Mean", value=NA,min=-100, max=10000, step=0.001),
@@ -678,7 +680,9 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
       #SSS iterations
     shinyjs::hidden(wellPanel(id="panel_SSS_reps",
-    fluidRow(column(width=10,numericInput("SSS_reps", "Number of SSS iterations", value=1000,min=1, max=1000000, step=1)))
+    h4(strong("SSS run specifications")),
+    fluidRow(column(width=10,numericInput("SSS_reps", "Number of SSS iterations", value=1000,min=1, max=1000000, step=1))),
+    fluidRow(column(width=10,numericInput("SSS_seed", "Seed number for draws", value=19,min=1, max=1000000, step=1)))
             )
         ),
 
