@@ -6,7 +6,7 @@ The tool builds Stock Synthesis files for provided data and life history informa
 
 ## Installing libraries and running the SS-DL tool
 ```R
-install.packages(c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy"))
+install.packages(c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy","truncnorm","ggpubr","flextable","officer","gridExtra",""))
 
 Make sure the following packages are using the most recent versions:
 library(devtools)
@@ -30,7 +30,7 @@ Running the tool can be accomplished in any of the following ways:
 * Length-only models. These are akin to LBSPR (Hordyk et al. 2015) and LIME (Rudd and Thorson 2017). Both styles of length-only models can be performed in this tool (determined by the estimation of recruitment), and include a choice between estimating F (recommended) or constant catch approaches (for stock status only; the estimated F values will not be useful on an absolute scale).
 * Age-only models
 * Catch only methods via the Simple Stock Synthesis approach (Cope 2013)
-* Extended Simple Stock Syntehsis (XSSS; Cope et al. 2013; Cope et al. 2015; Wetzel and Punt 2013) *COMING SOON*
+* Extended Simple Stock Syntehsis (XSSS; Cope et al. 2013; Cope et al. 2015; Wetzel and Punt 2013). MLE version is ready, AIS version is *COMING SOON*
 * Length + catch models 
 * Catch and index (age-structured production) models
 * Fully integrated stock assessments

@@ -14,7 +14,7 @@ require(HandyCode)
 require(plyr)
 require(nwfscDiag)
 require(shinybusy)
-
+require(truncnorm)
 require(flextable)
 require(officer)
 require(gridExtra)
@@ -2093,6 +2093,31 @@ output$VBGFplot<-renderPlot({
  # observeEvent(req(input$Sel50,input$Selpeak), {
  #      shinyjs::show(output$Sel_plots_label<-renderText({"Selectivity"}))
  #  })
+
+#h4("Selectivity")
+output$Dep_plot_title<-renderUI({
+if(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)){
+   h4("Relative Stock Status Prior")
+ }
+ })
+
+output$Dep_plot_it<-renderUI({
+if(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)){
+output$Depletion_plot <- renderPlot({ 
+      if(!is.na(input$status_year)&!is.na(input$Depl_mean_sss))
+        {     
+          if(input$Depl_prior_sss=="beta"){dep.hist.sss<-data.frame(draws=rbeta.ab(100000,input$Depl_mean_sss,input$Depl_SD_sss,0,1))}
+          if(input$Depl_prior_sss=="lognormal"){dep.hist.sss<-data.frame(draws=rlnorm(100000,log(input$Depl_mean_sss),input$Depl_SD_sss))}
+          if(input$Depl_prior_sss=="truncated normal"){dep.hist.sss<-data.frame(draws=rtruncnorm(100000,0,1,input$Depl_mean_sss,input$Depl_SD_sss))}
+          if(input$Depl_prior_sss=="uniform"){dep.hist.sss<-data.frame(draws=runif(100000,input$Depl_mean_sss,input$Depl_SD_sss))}
+          if(input$Depl_prior_sss=="no prior"){NULL}
+          Depletion_plot<-gghistogram(dep.hist.sss, x = "draws", fill = "purple")
+          Depletion_plot    
+        }
+      })    
+   plotOutput("Depletion_plot")
+    }
+  })
 
 output$Selplot <- renderPlot({ 
 
