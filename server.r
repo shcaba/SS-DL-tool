@@ -2310,7 +2310,7 @@ SSS.run<-observeEvent(input$run_SSS,{
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
-browser()
+
 	#Catches
 		Catch.data<-rv.Ct$data
 		catch.dep.fleets<-ncol(Catch.data)
@@ -2429,7 +2429,7 @@ browser()
     ctl.file$MG_parms[11,3:4]<-input$Fec_a_f_sss                                #coefficient
     ctl.file$MG_parms[12,3:4]<- input$Fec_b_f_sss                               #exponent  
 
-    if(input$male_offset_sss)
+    if(input$male_offset_SSS)
     {
       ctl.file$parameter_offset_approach<-2                         #Change to offset approach
       ctl.file$MG_parms[13,3:4]<-0                                  #M
