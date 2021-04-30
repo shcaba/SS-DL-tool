@@ -2310,7 +2310,7 @@ SSS.run<-observeEvent(input$run_SSS,{
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
-
+browser()
 	#Catches
 		Catch.data<-rv.Ct$data
 		catch.dep.fleets<-ncol(Catch.data)
@@ -3188,9 +3188,12 @@ if(!input$use_par)
        data.file$CPUEinfo[,1]<-1:data.file$Nfleets
      }
   
-  if(any(fleet.survey.names=="RSS"))
+  if(!is.null(rv.Index$data)&data.file$Nfleets>catch.fleets)
   {
-    data.file$CPUEinfo[grep("RSS",fleet.survey.names),2]<-34
+    if(fleet.survey.names=="RSS")
+    {
+      data.file$CPUEinfo[grep("RSS",fleet.survey.names),2]<-34
+    }
   }
 
 #Catch units     
@@ -3711,15 +3714,18 @@ if(!input$use_par)
           
       }
         ctl.file$Q_parms<-q.lines
-      }
-
- if(any(fleet.survey.names=="RSS"))
+  if(data.file$Nfleets>catch.fleets)
   {
-    RSS.index<-grep("RSS",fleet.survey.names) 
-    #ctl.file$Q_parms<-ctl.file$Q_parms
-    ctl.file$size_selex_types[RSS.index,1]<-0 #Rename RSS selectivity types
-    ctl.file$size_selex_parms<-ctl.file$size_selex_parms[-c((RSS.index*6-5):(RSS.index*6)),] #Remove selectivity related to RSS
+    if(fleet.survey.names=="RSS")
+      {
+        RSS.index<-grep("RSS",fleet.survey.names) 
+        #ctl.file$Q_parms<-ctl.file$Q_parms
+        ctl.file$size_selex_types[RSS.index,1]<-0 #Rename RSS selectivity types
+        ctl.file$size_selex_parms<-ctl.file$size_selex_parms[-c((RSS.index*6-5):(RSS.index*6)),] #Remove selectivity related to RSS
+      }
+    }
   }
+
 
     # if(input$Data_wt=="Dirichlet")
     # {
