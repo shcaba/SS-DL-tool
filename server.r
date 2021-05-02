@@ -1908,16 +1908,42 @@ L95<-reactive({
 ### PLOTS ###
 #############
 
-observeEvent(req(!is.null(rv.Lt$data)), {
-    	shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions"}))
+ observeEvent(req(!is.null(rv.Ct$data)), {
+      shinyjs::show(output$catch_plots_label<-renderText({"Removal history"}))
+  })
+
+  observeEvent(req(!is.null(rv.Ct$data)), {
+  output$Ctplot_it<-renderUI({
+  if(!is.null(rv.Ct$data))
+  {
+    output$Ctplot <- renderPlot({ 
+    if (is.null(rv.Ct$data)) return(NULL) 
+    rv.Ct$data %>%  
+        pivot_longer(-1, names_to = "Fleet", values_to = "catch") %>%  
+        ggplot(aes_string(names(.)[1], "catch", color = "Fleet")) +  
+        geom_point() +  
+        geom_line(lwd=1.5) + 
+        ylab("Removals") + 
+        xlab("Year") +  
+        scale_color_viridis_d() 
+      })
+    plotOutput("Ctplot")
+  }
+    })
   })
 
 
 #Plot length compoistions
 # length compositions 
 observeEvent(req(!is.null(rv.Lt$data)), {
+      shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions"}))
+  })
+
+observeEvent(req(!is.null(rv.Lt$data)), {
+output$Ltplot_it<-renderUI({
+if(!is.null(rv.Lt$data))
+{
 	output$Ltplot<-renderPlot({ 
-		  #inFile <- rv.Lt$data 
 		  if (is.null(rv.Lt$data)) return(NULL) 
 		  rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
@@ -1933,6 +1959,9 @@ observeEvent(req(!is.null(rv.Lt$data)), {
 		    ylab("Frequency") + 
 		    scale_fill_viridis_d() 
 		}) 
+      plotOutput("Ltplot")
+    }
+  })
 	})
 
 # observeEvent(req(!is.null(input$file1)), {
@@ -1964,8 +1993,11 @@ observeEvent(req(!is.null(rv.Age$data)), {
     	shinyjs::show(output$age_comp_plots_label<-renderText({"Age compositions"}))
   })
 
-observeEvent(req(!is.null(rv.Age$data)), {
-  output$Ageplot<-renderPlot({ 
+  observeEvent(req(!is.null(rv.Age$data)), {
+  output$Ageplot_it<-renderUI({
+  if(!is.null(rv.Age$data))
+  {
+    output$Ageplot<-renderPlot({ 
       #inFile_age <- rv.Age$data 
       if (is.null(rv.Age$data)) return(NULL)  
       rv.Age$data %>%  
@@ -1984,8 +2016,10 @@ observeEvent(req(!is.null(rv.Age$data)), {
         ylab("Frequency") + 
         scale_fill_viridis_d() 
     }) 
+  plotOutput("Ageplot")
+  }
+    })
   })
-
 # output$Ageplot <- renderPlot({ 
 # 		inFile_age <- rv.Age$data 
 # 		if (is.null(inFile_age)) return(NULL) 
@@ -2000,26 +2034,17 @@ observeEvent(req(!is.null(rv.Age$data)), {
 # 	}) 
  
 
- observeEvent(req(!is.null(rv.Ct$data)), {
-    	shinyjs::show(output$catch_comp_plots_label<-renderText({"Removal history"}))
+
+ observeEvent(req(!is.null(rv.Index$data)), {
+      shinyjs::show(output$index_plots_label<-renderText({"Indices of Abundance"}))
   })
 
-output$Ctplot <- renderPlot({ 
-		#inCatch <- input$file2 
-		if (is.null(rv.Ct$data)) return(NULL) 
- 
-		rv.Ct$data %>%  
-		    pivot_longer(-1, names_to = "Fleet", values_to = "catch") %>%  
-		    ggplot(aes_string(names(.)[1], "catch", color = "Fleet")) +  
-		    geom_point() +  
-		    geom_line(lwd=1.5) + 
-		    ylab("Removals") + 
-		    xlab("Year") +  
-		    scale_color_viridis_d() 
-		}) 
-
-output$Indexplot <- renderPlot({ 
-    if (is.null(rv.Index$data)) return(NULL)     
+  observeEvent(req(!is.null(rv.Index$data)), {
+  output$Indexplot_it<-renderUI({
+  if(!is.null(rv.Index$data))
+    {
+    output$Indexplot <- renderPlot({ 
+      if (is.null(rv.Index$data)) return(NULL)     
         
         plot.Index<-rv.Index$data
         plot.Index[,3]<-as.factor(plot.Index[,3])
@@ -2030,7 +2055,11 @@ output$Indexplot <- renderPlot({
         ylab("Index") + 
         xlab("Year") +  
         scale_color_viridis_d() 
-    }) 
+    })
+      plotOutput("Indexplot")
+  }
+    })
+  })
 
 
 
