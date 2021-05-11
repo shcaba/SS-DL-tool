@@ -380,6 +380,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 
         shinyjs::hide("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::hide("panel_SSS_reps")
 
@@ -439,6 +440,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
 
         shinyjs::hide("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::hide("panel_SSS_reps")
 
@@ -496,6 +498,7 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
 
         shinyjs::hide("panel_advanced_SS")
         shinyjs::show("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -553,6 +556,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 
         shinyjs::hide("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::show("panel_advanced_SSS")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -610,6 +614,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 
         shinyjs::show("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::hide("panel_SSS_reps")
 
@@ -670,6 +675,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
 
         shinyjs::show("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -733,6 +739,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
         
         shinyjs::show("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
@@ -792,6 +799,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         
         shinyjs::hide("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
@@ -851,6 +859,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         
         shinyjs::hide("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
@@ -910,6 +919,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         
         shinyjs::hide("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
@@ -969,6 +979,7 @@ observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
         
         shinyjs::hide("panel_advanced_SS")
         shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
 
         shinyjs::hide("panel_SSS_reps")
 
@@ -1648,6 +1659,14 @@ output$AdvancedSS_GT1<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_GT5_SSS<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "GT5", label = "Use 5 growth types (default is 1)",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
 output$AdvancedSS_Sex3<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
@@ -1696,7 +1715,21 @@ output$AdvancedSS_Ctunits<- renderUI({
 output$AdvancedSS_Ctunitsfleets <- renderUI({ 
     if(!is.null(input$Ct_units_choice)){       
       if(input$Ct_units_choice){
-      fluidRow(column(width=12, textInput("fleet_ct_units", "Enter catch units for each fleet (1=biomass; 2=numbers)", value="")))        
+      fluidRow(column(width=12, textInput("fleet_ct_units", "Enter catch units for each fleet", value="")))        
+      }
+    } 
+  }) 
+
+output$AdvancedSS_Ctunits_SSS<- renderUI({ 
+        fluidRow(column(width=12, prettyCheckbox(
+        inputId = "Ct_units_choice_SSS", label = "Specify catch units for each fleet?",
+        shape = "round", outline = TRUE, status = "info"))) 
+  }) 
+
+output$AdvancedSS_Ctunitsfleets_SSS<- renderUI({ 
+    if(!is.null(input$Ct_units_choice_SSS)){       
+      if(input$Ct_units_choice_SSS){
+      fluidRow(column(width=12, textInput("fleet_ct_units_SSS", "Enter catch units for each fleet (1=biomass; 2=numbers)", value="")))        
       }
     } 
   }) 
@@ -2421,11 +2454,26 @@ SSS.run<-observeEvent(input$run_SSS,{
 		# data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
 		# colnames(data.file$ageerror)<-paste0("age",1:Nages())		
 		# 	}
+#Catch units     
+    if(input$Ct_units_choice_SSS)
+    {
+      ct.units<-as.numeric(trimws(unlist(strsplit(input$fleet_ct_units_SSS,","))))
+      #data.file$fleetinfo[ct.units,4]<-2 #use this when just specifying which are fleets are numbers
+      data.file$fleetinfo[,4]<-c(ct.units,1)
+    }
 		
 		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/sss_example.dat"),overwrite=TRUE)			
 		####################### END DATA FILE #####################################
 
     ####################### START SSS CTL FILE #####################################
+    if(!is.null(input$GT5)){if(input$GT5)
+      {
+        ctl.file$N_platoon<-5
+        ctl.file$sd_ratio<-0.7
+        ctl.file$submorphdist<-c(-1,0.25,0.5,0.25,0.125)
+      }
+    }
+    
     #if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))==TRUE)
     #{
     fem_vbgf<-VBGF(input$Linf_f_mean_sss,input$k_f_mean_sss,input$t0_f_mean_sss,c(0:Nages()))
@@ -2656,14 +2704,15 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     #4 = uniform
     #99 = used only for the steepness parameter. Indicates h will come from FMSY/M prior
     
+    #browser()
     sss.prior.name<-c("no prior","symmetric beta","beta","normal","truncated normal","lognormal","truncated lognormal","uniform")
     sss.prior.type<-c(-1,1,2,0,10,3,30,4)
     Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$Depl_mean_sss,input$Depl_SD_sss)
     h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_mean_sss,input$h_SD_sss)
-    M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss)
-    Linf.in_sss<-c(sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss,sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss)
-    k.in_sss<-c(sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss,sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss)      
-    t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss)
+    M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,0)
+    Linf.in_sss<-c(sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss,sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,0)
+    k.in_sss<-c(sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss,sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,0)      
+    t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,0)
     
     if(input$male_parms_SSS)
     {
@@ -2691,7 +2740,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       t0.in=t0.in_sss,
       Zfrac.Beta.in=c(-99,0.2,0.6,-99,0.5,2),
       R_start=c(0,input$lnR0_sss),
-      doR0.loop=c(1,round(input$lnR0_sss*0.5),round(input$lnR0_sss*1.3),0.5),
+      doR0.loop=c(1,round(input$lnR0_sss*0.5),round(input$lnR0_sss*1.5),(round(input$lnR0_sss*1.3)-round(input$lnR0_sss*0.5))/10),
       sum_age=0,
       ts_yrs=c(input$styr,input$endyr),
       pop.ltbins=NA,
@@ -4041,13 +4090,6 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
              starter.file$jitter_fraction<-0
          SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
          #R-run to get new best fit model
-         show_modal_spinner(spin="flower",color="red",text="Re-run best model post-jitters")
-         RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
-         Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
-          if(class(Model.output)=="try-error")
-          {
-            Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
-          }
          show_modal_spinner(spin="flower",color="red",text="Making plots")
          SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
          show_modal_spinner(spin="flower",color="red",text="Making tables")
@@ -4075,8 +4117,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
           save(profilesummary,file=paste0("jitter_summary.DMP"))
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(1), new = FALSE,print=TRUE,plotdir=getwd())
           SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE,print=TRUE,plotdir=getwd())
-        
-        output$Jitterplot<-renderPlot({
+         
+         output$Jitterplot<-renderPlot({
         # if(input$Njitter==1){return(NULL)}
         # if(input$Njitter>1)
         # {
@@ -4101,6 +4143,15 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       output$Jittercompplot2<-renderPlot({
         SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE)
         })
+
+        show_modal_spinner(spin="flower",color="red",text="Re-run best model post-jitters")
+         RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
+         Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
+          if(class(Model.output)=="try-error")
+          {
+            Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+          }
+        
     }   
     setwd(main.dir)
   }

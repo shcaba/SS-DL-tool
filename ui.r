@@ -678,7 +678,20 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       )
      ),
 
-      #SSS iterations
+    shinyjs::hidden(wellPanel(id="panel_advanced_SSS",
+    h4(strong("Additional SS options")),
+    h5(strong("Choosing catch units")),
+    h6(strong("Default is biomass (in MT), but click below button to specify for each fleet.")),
+    #fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS options",FALSE))),
+      uiOutput("AdvancedSS_Ctunits_SSS"),
+      uiOutput("AdvancedSS_Ctunitsfleets_SSS"),
+    h5(strong("Add additional growth platoons?")),
+      uiOutput("AdvancedSS_GT5_SSS")
+    
+      )
+     ),
+
+    #SSS iterations
     shinyjs::hidden(wellPanel(id="panel_SSS_reps",
     h4(strong("SSS run specifications")),
     fluidRow(column(width=10,numericInput("SSS_reps", "Number of SSS iterations", value=1000,min=1, max=1000000, step=1))),
