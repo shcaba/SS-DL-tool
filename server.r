@@ -2534,15 +2534,15 @@ SSS.run<-observeEvent(input$run_SSS,{
     if(input$male_offset_SSS)
     {
       ctl.file$parameter_offset_approach<-2                         #Change to offset approach
-      ctl.file$MG_parms[13,3:4]<-0                                  #M
-      ctl.file$MG_parms[14,3:4]<-0                                  #L0
-      ctl.file$MG_parms[15,3:4]<-0                                  #Linf
-      ctl.file$MG_parms[16,3:4]<-0                                  #k
-      ctl.file$MG_parms[17,3:4]<-0                                  #CV
-      ctl.file$MG_parms[18,3:4]<-0                                  #CV
+      ctl.file$MG_parms[13,c(1,3:4)]<-0                                  #M
+      ctl.file$MG_parms[14,c(1,3:4)]<-0                                  #L0
+      ctl.file$MG_parms[15,c(1,3:4)]<-0                                  #Linf
+      ctl.file$MG_parms[16,c(1,3:4)]<-0                                  #k
+      ctl.file$MG_parms[17,c(1,3:4)]<-0                                  #CV
+      ctl.file$MG_parms[18,c(1,3:4)]<-0                                  #CV
       #Weight-length
-      ctl.file$MG_parms[19,3:4]<-0                                  #coefficient
-      ctl.file$MG_parms[20,3:4]<-0                                  #exponent  
+      ctl.file$MG_parms[19,c(1,3:4)]<-0                                  #coefficient
+      ctl.file$MG_parms[20,c(1,3:4)]<-0                                  #exponent  
     }
     
     if(input$male_parms_SSS)
@@ -2703,17 +2703,27 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     #30 = truncated lognormal
     #4 = uniform
     #99 = used only for the steepness parameter. Indicates h will come from FMSY/M prior
-    
-    #browser()
+
     sss.prior.name<-c("no prior","symmetric beta","beta","normal","truncated normal","lognormal","truncated lognormal","uniform")
     sss.prior.type<-c(-1,1,2,0,10,3,30,4)
     Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$Depl_mean_sss,input$Depl_SD_sss)
     h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_mean_sss,input$h_SD_sss)
-    M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,0)
-    Linf.in_sss<-c(sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss,sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,0)
-    k.in_sss<-c(sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss,sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,0)      
-    t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,0)
-    
+    if(!input$male_offset_SSS)
+    {
+      M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss)
+      Linf.in_sss<-c(sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss,sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss)
+      k.in_sss<-c(sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss,sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss)      
+      t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss)
+    }
+
+   if(input$male_offset_SSS)
+     {
+       M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_prior_sss],0,0)
+       Linf.in_sss<-c(sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],input$Linf_f_mean_sss,input$Linf_f_SD_sss,sss.prior.type[sss.prior.name==input$Linf_f_prior_sss],0,0)
+       k.in_sss<-c(sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss,sss.prior.type[sss.prior.name==input$k_f_prior_sss],0,0)      
+       t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_f_prior_sss],0,0)
+     }
+
     if(input$male_parms_SSS)
     {
       M.in_sss<-c(sss.prior.type[sss.prior.name==input$M_prior_sss],input$M_f_mean_sss,input$M_f_SD_sss,sss.prior.type[sss.prior.name==input$M_m_prior_sss],input$M_m_mean_sss,input$M_m_SD_sss)
