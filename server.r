@@ -4709,9 +4709,9 @@ SensiRE_headers_in<-trimws(unlist(strsplit(input$SensiRE_headers,",")))
 yminmax_sensi<-rep(c(input$SensiRE_ymin,input$SensiRE_ymax),5)
 r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
               model.summaries=modsummary.sensi,
-              current.year=2019,
+              current.year=modsummary.sensi$endyrs[1]+1,
               mod.names=modelnames, #List the names of the sensitivity runs
-              likelihood.out=c(0,0,0),
+              #likelihood.out=c(0,0,0),
               Sensi.RE.out="Sensi_RE_out.DMP", #Saved file of relative errors
               CI=0.95, #Confidence interval box based on the reference model
               TRP.in=input$Sensi_TRP, #Target relative abundance value
