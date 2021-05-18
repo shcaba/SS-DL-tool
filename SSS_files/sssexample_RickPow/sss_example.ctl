@@ -37,8 +37,8 @@
 0 #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate
   #_no additional input for selected M option; read 1P per morph
 1 # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K; 4=not implemented
-3 #_Growth_Age_for_L1
-20 #_Growth_Age_for_L2 (999 to use as Linf)
+0 #_Growth_Age_for_L1
+999 #_Growth_Age_for_L2 (999 to use as Linf)
 0.055 #_exponential decay for growth above maxage (fixed at 0.2 in 3.24; value should approx initial Z; -999 replicates 3.24)
 0  #_placeholder for future growth feature
 0 #_SD_add_to_LAA (set to 0.1 for SS2 V1.x compatibility)

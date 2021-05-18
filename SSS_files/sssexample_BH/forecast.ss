@@ -8,19 +8,19 @@
 0	0	0	0	0	0	0	0	0	0
 2 #Bmark_relF_Basis: 1 = use year range; 2 = set relF same as forecast below
 #
-2 # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (uses first-last relF yrs); 5=input annual F scalar
-3 # N forecast years 
+1 # Forecast: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (uses first-last relF yrs); 5=input annual F scalar
+1 # N forecast years 
 1 # F scalar (only used for Do_Forecast==5)
 #_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  (enter actual year, or values of 0 or -integer to be rel. endyr)
- 0	0	0	0	0	0
-0 # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)
+ 0	0	0	0	0	0	
+1 # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)
 1 # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) 
-0.40 # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) 
+0.4 # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) 
 0.1 # Control rule Biomass level for no F (as frac of Bzero, e.g. 0.10) 
-0.956 # Control rule target as fraction of Flimit (e.g. 0.75) 
+0.913 # Sigma = 0.72 and P* = 0.45; Control rule target as fraction of Flimit (e.g. 0.75) 
 3 #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)
 3 #_First forecast loop with stochastic recruitment
--1 #_Forecast loop control #3 (reserved for future bells&whistles) 
+0 #_Forecast loop control #3 (reserved for future bells&whistles) 
 0 #_Forecast loop control #4 (reserved for future bells&whistles) 
 0 #_Forecast loop control #5 (reserved for future bells&whistles) 
 2019  #FirstYear for caps and allocations (should be after years with fixed inputs) 
@@ -38,7 +38,7 @@
 # enter list of fleet number and max for fleets with max annual catch; terminate with fleet=-9999
 -9999 -1
 # enter list of area ID and max annual catch; terminate with area=-9999
--9999 -1
+-9999 -1 
 # enter list of fleet number and allocation group assignment, if any; terminate with fleet=-9999
 -9999 -1
 #_if N allocation groups >0, list year, allocation fraction for each group 
