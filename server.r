@@ -4317,7 +4317,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       pickerInput(
       inputId = "myPicker_LP",
       label = "Choose parameters to profile over",
-      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female","Natural mortality male","Linf male","k male"),
+      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male"),
       options = list(
         `actions-box` = TRUE,
         size = 12,
@@ -4330,9 +4330,9 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
 observeEvent(input$run_Profiles,{
        show_modal_spinner(spin="flower",color="red",text="Profiles running")
-       SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1")
+       SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","CV_young_Fem_GP_1","CV_old_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1","CV_young_Mal_GP_1","CV_old_Mal_GP_1")
        parmnames<-input$myPicker_LP
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female","Natural mortality male","Linf male","k male")
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        mydir = dirname(pathLP())
        get = get_settings_profile( parameters =  prof_parms_names,
