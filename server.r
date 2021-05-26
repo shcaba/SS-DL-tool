@@ -262,7 +262,7 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
   observe({
     req(input$file33)
     req(!rv.AgeErr$clear)
-    rv.AgeErr$data <- read.csv(input$file33$datapath,check.names=FALSE)
+    rv.AgeErr$data <- read.csv(input$file33$datapath,check.names=FALSE,header=FALSE)
   })
 
   observeEvent(input$file33, {
@@ -1536,11 +1536,16 @@ output$RP_selection1<- renderUI({
  
 output$RP_selection2<- renderUI({ 
     if(input$RP_choices){ 
-        fluidRow(column(width=4, numericInput("CR_Ct_F", "Control rule type",  
-                                              value=1, min=0, max=1, step=0.001)), 
-        	       column(width=4, numericInput("slope_hi", "Upper ratio value",  
+        fluidRow(column(width=6,selectInput("CR_Ct_F","Control rule type",
+            c("1: Catch fxn of SSB, buffer on F",
+              "2: F fxn of SSB, buffer on F",
+              "3: Catch fxn of SSB, buffer on catch",
+              "4: F fxn of SSB, buffer on catch"))),
+          #column(width=4, numericInput("CR_Ct_F", "Control rule type",  
+           #                                   value=1, min=0, max=1, step=0.001)), 
+        	       column(width=3, numericInput("slope_hi", "Upper ratio value",  
         	                                    value=0.4, min=0, max=1, step=0.001)),    
-                 column(width=4, numericInput("slope_low", "Lower ratio value",  
+                 column(width=3, numericInput("slope_low", "Lower ratio value",  
                                               value=0.1, min=0, max=1, step=0.001)))
     	} 
 	}) 
@@ -1647,6 +1652,22 @@ output$AdvancedSS_controlnew_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "use_controlnew", label = "Use the control.ss_new file?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_forecastnew<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_forecastnew", label = "Use the forecast.ss_new file?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_forecastnew_user<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "use_forecastnew", label = "Use the forecast.ss_new file?",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -2676,13 +2697,19 @@ SSS.run<-observeEvent(input$run_SSS,{
 
 #Forecast file modfications
 #Reference points
-forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss"))
 
-if(input$RP_choices){
+if(!input$use_forecastnew)
+{
+forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss"))
+  if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
     forecast.file$Btarget<-input$B_target
-
-    forecast.file$ControlRuleMethod<-input$CR_Ct_F
+    CR_choices<-c("1: Catch as function of SSB, buffer on F",
+              "2: F as function of SSB, buffer on F",
+              "3: Catch as function of SSB, buffer on catch",
+              "4: F is a function of SSB, buffer on catch")
+    CR_choices_num.vec<-c(1:4)
+    forecast.file$ControlRuleMethod<-CR_choices_num.vec[CR_choices==input$CR_Ct_F]
     forecast.file$SBforconstantF<-input$slope_hi
     forecast.file$BfornoF<-input$slope_low  
   }
@@ -2693,8 +2720,16 @@ if(input$Forecast_choice)
     forecast.file$Flimitfraction<-input$forecast_buffer
   }
 
-#Set prior inputs
 SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+}
+
+if(input$use_forecastnew)
+  {
+    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
+    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+  }
+
+#Set prior inputs
     #0 = normal
     #10 = truncated normal
     #1 = symmetric beta (rbeta)
@@ -2928,7 +2963,6 @@ if(input$use_controlnew)
   #    data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
   #    ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
   #  }
-
 if(!input$use_par)
   {
     if(all(!input$use_datanew,!input$user_model))
@@ -3144,10 +3178,11 @@ if(!input$use_par)
       if(!is.null(input$Ageing_error_choice)){       
       if(input$Ageing_error_choice)
         {
-          data.file$ageerror<-data.frame(t(rv.AgeErr$data[,-1]))
-          data.file$N_ageerror_definitions<-ncol(rv.AgeErr$data[,-1])/2
+          data.file$ageerror<-data.frame((rv.AgeErr$data))
+          data.file$N_ageerror_definitions<-nrow(rv.AgeErr$data)/2
         }
       }
+
       #Label object for r4ss
       colnames(data.file$ageerror)<-paste0("age",0:Nages())         
       rownames(data.file$ageerror)<-c(1:nrow(data.file$ageerror))
@@ -3989,13 +4024,20 @@ if(!input$use_par)
 
 #Forecast file modfications
 #Reference points
+if(!input$use_forecastnew)
+{
 forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss"))
 
 if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
     forecast.file$Btarget<-input$B_target
 
-    forecast.file$ControlRuleMethod<-input$CR_Ct_F
+    CR_choices<-c("1: Catch as function of SSB, buffer on F",
+              "2: F as function of SSB, buffer on F",
+              "3: Catch as function of SSB, buffer on catch",
+              "4: F is a function of SSB, buffer on catch")
+    CR_choices_num.vec<-c(1:4)
+    forecast.file$ControlRuleMethod<-CR_choices_num.vec[CR_choices==input$CR_Ct_F]
     forecast.file$SBforconstantF<-input$slope_hi
     forecast.file$BfornoF<-input$slope_low  
   }
@@ -4003,10 +4045,26 @@ if(input$RP_choices){
 if(input$Forecast_choice)
   {
     forecast.file$Nforecastyrs<-input$forecast_num
-    forecast.file$Flimitfraction<-input$forecast_buffer
+    buffer.in<-as.numeric(trimws(unlist(strsplit(input$forecast_buffer,","))))
+    if(length(buffer.in)==1){forecast.file$Flimitfraction<-buffer.in}    
+    if(length(buffer.in)>1)
+      {
+        forecast.file$Flimitfraction<--1
+        buffer.datafr<-data.frame(Year=c(data.file$endyr+1:data.file$endyr+input$forecast_num),Fraction=buffer.in)
+        rownames(buffer.datafr)<-paste0("#_Flimitfraction_m",1:input$forecast_num)
+        forecast.file$Flimitfraction_m<-buffer.datafr      
+      }
   }
 
 SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+}
+
+if(input$use_forecastnew)
+  {
+    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
+    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+  }
+
 ########
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color="red",text="Model run in progress")
@@ -4076,7 +4134,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       {      
         #Make SS plots  
         show_modal_spinner(spin="flower",color="red",text="Making plots")
-        SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
+        SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
         #Make SS tables
         show_modal_spinner(spin="flower",color="red",text="Making tables")
         try(SSexecutivesummary(Model.output))   
@@ -4101,7 +4159,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
          SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
          #R-run to get new best fit model
          show_modal_spinner(spin="flower",color="red",text="Making plots")
-         SS_plots(Model.output,maxyr=data.file$endyr,verbose=FALSE)
+         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
          show_modal_spinner(spin="flower",color="red",text="Making tables")
          try(SSexecutivesummary(Model.output))    
          jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
