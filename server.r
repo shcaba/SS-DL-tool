@@ -1554,8 +1554,7 @@ output$Forecasts<- renderUI({
     if(input$Forecast_choice){ 
         fluidRow(column(width=6, numericInput("forecast_num", "# of forecast years",  
                                               value=2, min=1, max=1000, step=1)), 
-        	       column(width=6, numericInput("forecast_buffer", "Control rule buffer",  
-        	                                    value=0.913, min=0, max=1, step=0.001)))    
+        	       column(width=6, textInput("forecast_buffer", "Control rule buffer", value="1")))    
     	} 
 	}) 
 
@@ -2697,17 +2696,18 @@ SSS.run<-observeEvent(input$run_SSS,{
 
 #Forecast file modfications
 #Reference points
-
 if(!input$use_forecastnew)
 {
 forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss"))
-  if(input$RP_choices){
+
+if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
     forecast.file$Btarget<-input$B_target
-    CR_choices<-c("1: Catch as function of SSB, buffer on F",
-              "2: F as function of SSB, buffer on F",
-              "3: Catch as function of SSB, buffer on catch",
-              "4: F is a function of SSB, buffer on catch")
+
+    CR_choices<-c("1: Catch fxn of SSB, buffer on F",
+              "2: F fxn of SSB, buffer on F",
+              "3: Catch fxn of SSB, buffer on catch",
+              "4: F fxn of SSB, buffer on catch")
     CR_choices_num.vec<-c(1:4)
     forecast.file$ControlRuleMethod<-CR_choices_num.vec[CR_choices==input$CR_Ct_F]
     forecast.file$SBforconstantF<-input$slope_hi
@@ -2717,7 +2717,15 @@ forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecas
 if(input$Forecast_choice)
   {
     forecast.file$Nforecastyrs<-input$forecast_num
-    forecast.file$Flimitfraction<-input$forecast_buffer
+    buffer.in<-as.numeric(trimws(unlist(strsplit(input$forecast_buffer,","))))
+    if(length(buffer.in)==1){forecast.file$Flimitfraction<-buffer.in}    
+    if(length(buffer.in)>1)
+      {
+        forecast.file$Flimitfraction<--1
+        buffer.datafr<-data.frame(Year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),Fraction=buffer.in)
+        rownames(buffer.datafr)<-paste0("#_Flimitfraction_m",1:input$forecast_num)
+        forecast.file$Flimitfraction_m<-buffer.datafr      
+      }
   }
 
 SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
@@ -4032,10 +4040,10 @@ if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
     forecast.file$Btarget<-input$B_target
 
-    CR_choices<-c("1: Catch as function of SSB, buffer on F",
-              "2: F as function of SSB, buffer on F",
-              "3: Catch as function of SSB, buffer on catch",
-              "4: F is a function of SSB, buffer on catch")
+    CR_choices<-c("1: Catch fxn of SSB, buffer on F",
+              "2: F fxn of SSB, buffer on F",
+              "3: Catch fxn of SSB, buffer on catch",
+              "4: F fxn of SSB, buffer on catch")
     CR_choices_num.vec<-c(1:4)
     forecast.file$ControlRuleMethod<-CR_choices_num.vec[CR_choices==input$CR_Ct_F]
     forecast.file$SBforconstantF<-input$slope_hi
@@ -4050,8 +4058,8 @@ if(input$Forecast_choice)
     if(length(buffer.in)>1)
       {
         forecast.file$Flimitfraction<--1
-        buffer.datafr<-data.frame(Year=c(data.file$endyr+1:data.file$endyr+input$forecast_num),Fraction=buffer.in)
-        rownames(buffer.datafr)<-paste0("#_Flimitfraction_m",1:input$forecast_num)
+        buffer.datafr<-data.frame(Year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),Fraction=buffer.in)
+        #rownames(buffer.datafr)<-paste0("#_Flimitfraction_m",1:input$forecast_num)
         forecast.file$Flimitfraction_m<-buffer.datafr      
       }
   }
