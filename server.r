@@ -19,6 +19,7 @@ require(flextable)
 require(officer)
 require(gridExtra)
 require(ggpubr)
+require(grid)
 
 
 #require(paletteer)
@@ -1846,9 +1847,9 @@ Nages<-reactive({
     if(!is.na(input$M_f_mean_sss)) {Nages<-ceiling(5.4/input$M_f_mean_sss)} 
     if(!is.null(rv.Age$data))
     {
-      Nages_in<-max(as.numeric(colnames(rv.Age$data[,9:ncol(rv.Age$data)])))
-      if(!is.na(Nages)&Nages_in>Nages){Nages<-Nages_in}
-      if(is.na(Nages)){Nages<-Nages_in}
+     Nages_in<-max(as.numeric(colnames(rv.Age$data[,9:ncol(rv.Age$data)])))
+     if(!is.na(Nages)&Nages_in>Nages){Nages<-Nages_in}
+     if(is.na(Nages)){Nages<-Nages_in}
     }
     Nages
   })
@@ -2129,9 +2130,12 @@ output$Mplot<-renderPlot({
       Female_M = data.frame(Ages = 0:Nages(), PopN = exp(-mf.in * 0:Nages()), Sex="Female") 
 			Male_M = data.frame(Ages = 0:Nages(), PopN=exp(-mm.in * 0:Nages()), Sex="Male") 
 			M_sexes <- rbind(Female_M, Male_M) 
-			ggplot(M_sexes,aes(Ages, PopN, color=Sex))+ 
+			Nage_4_plot <- grobTree(textGrob(paste0("Max age =", Nages()), x=0.1,  y=0.95, hjust=0,
+      gp=gpar(col="darkblue", fontsize=12, fontface="italic")))
+      ggplot(M_sexes,aes(Ages, PopN, color=Sex))+ 
 					geom_line(aes(linetype=Sex), lwd=2)+ 
-					ylab("Cohort decline by M") 
+					ylab("Cohort decline by M")+
+          annotation_custom(Nage_4_plot) 
 		}) 
 
 #Plot VBGF and maturity
@@ -2939,7 +2943,6 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 		    file.rename(paste0("Scenarios/SS_LB_files"), paste0("Scenarios/",input$Scenario_name))
         }
   }
-
 
 # if(!input$use_customfile)
 #   {
