@@ -1104,8 +1104,7 @@ output$Male_parms_inputs2 <- renderUI({
 
 output$Male_parms_inputs3 <- renderUI({ 
 	if(input$male_parms){ 
-    fluidRow(column(width=6, numericInput("CV_lt_m", "CV at length",  
-                                          value=0.1, min=0, max=10000, step=0.01))) 
+    fluidRow(column(width=6, textInput("CV_lt_m", "CV at length (young then old)", value="0.1,0.1"))) 
     	} 
 	})  
 
@@ -1145,8 +1144,7 @@ output$Male_parms_inputs2_fix <- renderUI({
 
 output$Male_parms_inputs3_fix <- renderUI({ 
   if(input$male_parms_fix){ 
-    fluidRow(column(width=6, numericInput("CV_lt_m_fix", "CV at length",  
-                                          value=0.1, min=0, max=10000, step=0.01))) 
+    fluidRow(column(width=6, textInput("CV_lt_m_fix", "CV at length (young then old)", value="0.1,0.1"))) 
       } 
   })  
 
@@ -1248,14 +1246,26 @@ output$Male_parms_inputs_t0_est <- renderUI({
   } 
 }) 
 
-output$Male_parms_inputs_CV_est <- renderUI({ 
+output$Male_parms_inputs_CV_est_young <- renderUI({ 
   if(input$male_parms_est){ 
       dropdownButton(
-        selectInput("CV_lt_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
-        numericInput("CV_lt_m_mean", "Mean", value=0.1,min=0, max=10000, step=0.001),
-        numericInput("CV_lt_m_SD", "SD", value=0,min=0, max=10000, step=0.001),
-        numericInput("CV_lt_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
-        circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
+        selectInput("CV_lt_m_young_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+        numericInput("CV_lt_m_young_mean", "Mean", value=0.1,min=0, max=10000, step=0.001),
+        numericInput("CV_lt_m_young_SD", "SD", value=0,min=0, max=10000, step=0.001),
+        numericInput("CV_lt_m_young_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+        circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length (young)"
+          )
+  } 
+})
+
+output$Male_parms_inputs_CV_est_old <- renderUI({ 
+  if(input$male_parms_est){ 
+      dropdownButton(
+        selectInput("CV_lt_m_old_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+        numericInput("CV_lt_m_old_mean", "Mean", value=0.1,min=0, max=10000, step=0.001),
+        numericInput("CV_lt_m_old_SD", "SD", value=0,min=0, max=10000, step=0.001),
+        numericInput("CV_lt_m_old_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
+        circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length (old)"
           )
   } 
 })
@@ -1402,17 +1412,27 @@ output$Male_parms_inputs_t0_SSS <- renderUI({
     } 
 }) 
 
-output$Male_parms_inputs_CV_SSS <- renderUI({ 
+output$Male_parms_inputs_CV_young_SSS <- renderUI({ 
   if(input$male_parms_SSS){ 
     dropdownButton(
-          selectInput("CV_lt_m_prior_sss","Prior type",c("no prior")),
-          numericInput("CV_lt_m_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.001),
-          numericInput("CV_lt_m_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          selectInput("CV_lt_m_young_prior_sss","Prior type",c("no prior")),
+          numericInput("CV_lt_m_young_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.001),
+          numericInput("CV_lt_m_young_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
             )
     } 
-
 	})
+
+output$Male_parms_inputs_CV_old_SSS <- renderUI({ 
+  if(input$male_parms_SSS){ 
+    dropdownButton(
+          selectInput("CV_lt_m_old_prior_sss","Prior type",c("no prior")),
+          numericInput("CV_lt_m_old_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.001),
+          numericInput("CV_lt_m_old_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
+          circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
+            )
+    } 
+  })
 
 
 output$Male_parms_inputs4_SSS<- renderUI({
@@ -2526,11 +2546,11 @@ SSS.run<-observeEvent(input$run_SSS,{
     else {ctl.file$MG_parms[4,3:4]<-input$k_f_mean_sss}
     
     #CV young
-    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_mean_sss,log(input$CV_lt_f_mean_sss))}     
+    if(input$CV_lt_f_young_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_mean_sss,log(input$CV_lt_f_mean_sss))}     
     else{ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_mean_sss}
     
     #CV old
-    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_mean_sss,log(input$CV_lt_f_mean_sss))}
+    if(input$CV_lt_f_old_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_mean_sss,log(input$CV_lt_f_mean_sss))}
     else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean_sss}
     
     #Weight-length
@@ -2547,8 +2567,8 @@ SSS.run<-observeEvent(input$run_SSS,{
     ctl.file$MG_parms[14,3:4]<-0                                                #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f_mean_sss                            #Linf
     ctl.file$MG_parms[16,3:4]<-input$k_f_mean_sss                               #k
-    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_mean_sss                           #CV
-    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_mean_sss                           #CV
+    ctl.file$MG_parms[17,3:4]<-input$CV_lt_young_f_mean_sss                           #CV
+    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_old_mean_sss                           #CV
     #Weight-length
     ctl.file$MG_parms[19,3:4]<-input$WLa_f_sss                                  #coefficient
     ctl.file$MG_parms[20,3:4]<- input$WLb_f_sss                                 #exponent  
@@ -2592,12 +2612,12 @@ SSS.run<-observeEvent(input$run_SSS,{
         else {ctl.file$MG_parms[16,3:4]<-c(input$k_m_mean_sss,input$k_m_mean_sss)}
         
         #CV young
-        if(input$CV_lt_f_prior_sss=="lognormal"){ctl.file$MG_parms[17,3:4]<-c(input$CV_lt_m_mean_sss,log(input$CV_lt_m_mean_sss))}     
-        else{ctl.file$MG_parms[17,3:4]<-c(input$CV_lt_m_mean_sss,input$CV_lt_m_mean_sss)}
+        if(input$CV_lt_f_young_prior_sss=="lognormal"){ctl.file$MG_parms[17,3:4]<-c(input$CV_lt_m_young_mean_sss,log(input$CV_lt_m_young_mean_sss))}     
+        else{ctl.file$MG_parms[17,3:4]<-c(input$CV_lt_m_young_mean_sss,input$CV_lt_m_young_mean_sss)}
         
         #CV old
-        if(input$CV_lt_f_prior_sss=="lognormal"){ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_mean_sss,log(input$CV_lt_m_mean_sss))}
-        else{ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_mean_sss,input$CV_lt_m_mean_sss)}
+        if(input$CV_lt_f_old_prior_sss=="lognormal"){ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_old_mean_sss,log(input$CV_lt_m_old_mean_sss))}
+        else{ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_old_mean_sss,input$CV_lt_m_old_mean_sss)}
         
         #Weight-length
         ctl.file$MG_parms[19,3:4]<-input$WLa_m_sss                                    #coefficient
@@ -3386,8 +3406,8 @@ if(!input$use_par)
     ctl.file$MG_parms[2,3:4]<-0               #L0
     ctl.file$MG_parms[3,3:4]<-input$Linf_f    #Linf
     ctl.file$MG_parms[4,3:4]<-input$k_f       #k
-    ctl.file$MG_parms[5,3:4]<-input$CV_lt_f   #CV
-    ctl.file$MG_parms[6,3:4]<-input$CV_lt_f   #CV
+    ctl.file$MG_parms[5,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_f,","))))[1]   #CV
+    ctl.file$MG_parms[6,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_f,","))))[2]   #CV
     #Maturity
     ctl.file$MG_parms[9,3:4]<-input$L50_f                                 #Lmat50%
     ctl.file$MG_parms[10,3:4]<- log(0.05/0.95)/(input$L95_f-input$L50_f)  #Maturity slope
@@ -3399,8 +3419,8 @@ if(!input$use_par)
     ctl.file$MG_parms[14,3:4]<-0              #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f   #Linf
     ctl.file$MG_parms[16,3:4]<-input$k_f      #k
-    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f  #CV
-    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f  #CV
+    ctl.file$MG_parms[17,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_f,","))))[1]  #CV
+    ctl.file$MG_parms[18,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_f,","))))[2]  #CV
     #ctl.file$MG_parms[19,3:4]<-input$WLa_f       #coefficient
     #ctl.file$MG_parms[20,3:4]<-input$WLb_f      #exponent  
 
@@ -3425,8 +3445,8 @@ if(!input$use_par)
         ctl.file$MG_parms[14,3:4]<-male_vbgf[1]      #L0
         ctl.file$MG_parms[15,3:4]<-input$Linf_m      #Linf
         ctl.file$MG_parms[16,3:4]<-input$k_m         #k
-        ctl.file$MG_parms[17,3:4]<-input$CV_lt_m     #CV
-        ctl.file$MG_parms[18,3:4]<-input$CV_lt_m     #CV
+        ctl.file$MG_parms[17,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[1]     #CV
+        ctl.file$MG_parms[18,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[2]     #CV
 #        ctl.file$MG_parms[19,3:4]<-input$WLa_m       #coefficient
 #        ctl.file$MG_parms[20,3:4]<-input$WLb_m       #exponent  
       }
@@ -3447,8 +3467,8 @@ if(!input$use_par)
     ctl.file$MG_parms[2,3:4]<-0                     #L0
     ctl.file$MG_parms[3,3:4]<-input$Linf_f_fix      #Linf
     ctl.file$MG_parms[4,3:4]<-input$k_f_fix         #k
-    ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_fix     #CV
-    ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_fix     #CV
+    ctl.file$MG_parms[5,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_f_fix,","))))[1]     #CV
+    ctl.file$MG_parms[6,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_f_fix,","))))[2]     #CV
     #Weight-length
     ctl.file$MG_parms[7,3:4]<-input$WLa_f_fix       #coefficient
     ctl.file$MG_parms[8,3:4]<- input$WLb_f_fix      #exponent  
@@ -3464,8 +3484,8 @@ if(!input$use_par)
     ctl.file$MG_parms[14,3:4]<-0                    #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f_fix     #Linf
     ctl.file$MG_parms[16,3:4]<-input$k_f_fix        #k
-    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_fix    #CV
-    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_fix    #CV
+    ctl.file$MG_parms[17,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_f_fix,","))))[1]    #CV
+    ctl.file$MG_parms[18,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_f_fix,","))))[2]    #CV
     ctl.file$MG_parms[19,3:4]<-input$WLa_f_fix       #coefficient
     ctl.file$MG_parms[20,3:4]<- input$WLb_f_fix      #exponent  
 
@@ -3491,8 +3511,8 @@ if(!input$use_par)
         ctl.file$MG_parms[14,3:4]<-male_vbgf[1]       #L0
         ctl.file$MG_parms[15,3:4]<-input$Linf_m_fix   #Linf
         ctl.file$MG_parms[16,3:4]<-input$k_m_fix      #k
-        ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_fix  #CV
-        ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_fix  #CV
+        ctl.file$MG_parms[17,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m_fix,","))))[1]  #CV
+        ctl.file$MG_parms[18,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m_fix,","))))[2]  #CV
         #Weight-length
         ctl.file$MG_parms[19,3:4]<-input$WLa_m_fix       #coefficient
         ctl.file$MG_parms[20,3:4]<-input$WLb_m_fix       #exponent  
@@ -3544,19 +3564,19 @@ if(!input$use_par)
     ctl.file$MG_parms[4,7]<-input$k_f_phase         
     
     #CV young
-    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_mean,log(input$CV_lt_f_mean))}     
-    else{ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_mean}
-    ctl.file$MG_parms[5,5]<-input$CV_lt_f_SD       
-    ctl.file$MG_parms[5,6]<-prior.type[prior.name==input$CV_lt_f_prior]       
-    ctl.file$MG_parms[5,7]<-input$CV_lt_f_phase       
+    if(input$CV_lt_f_young_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_young_mean,log(input$CV_lt_f_young_mean))}     
+    else{ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_young_mean}
+    ctl.file$MG_parms[5,5]<-input$CV_lt_f_young_SD       
+    ctl.file$MG_parms[5,6]<-prior.type[prior.name==input$CV_lt_f_young_prior]       
+    ctl.file$MG_parms[5,7]<-input$CV_lt_f_young_phase       
     
     #CV old
-    if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_mean,log(input$CV_lt_f_mean))}
-    else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean}
-    ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean     
-    ctl.file$MG_parms[6,5]<-input$CV_lt_f_SD       
-    ctl.file$MG_parms[6,6]<-prior.type[prior.name==input$CV_lt_f_prior]  
-    ctl.file$MG_parms[6,7]<-input$CV_lt_f_phase 
+    if(input$CV_lt_f_old_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_old_mean,log(input$CV_lt_f_old_mean))}
+    else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_old_mean}
+    ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_old_mean     
+    ctl.file$MG_parms[6,5]<-input$CV_lt_f_old_SD       
+    ctl.file$MG_parms[6,6]<-prior.type[prior.name==input$CV_lt_f_old_prior]  
+    ctl.file$MG_parms[6,7]<-input$CV_lt_f_old_phase 
 
     #Weight-length
     ctl.file$MG_parms[7,3:4]<-input$WLa_f_est       #coefficient
@@ -3574,8 +3594,8 @@ if(!input$use_par)
     ctl.file$MG_parms[14,3:4]<-0                                        #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f_mean                        #Linf
     ctl.file$MG_parms[16,3:4]<-input$k_f_mean                           #k
-    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_mean                       #CV
-    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_mean                       #CV
+    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_old_mean                       #CV
+    ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_old_mean                       #CV
     #Weight-length
     ctl.file$MG_parms[19,3:4]<-input$WLa_f_est       #coefficient
     ctl.file$MG_parms[20,3:4]<- input$WLb_f_est      #exponent  
@@ -3615,39 +3635,39 @@ if(!input$use_par)
         #L0    
         #if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_est[1],log(male_vbgf_est[1]+0.000000001))}
         #else {ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]}
-        if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_est[1],log(male_vbgf_est[1]+0.000000001))}
+        if(input$t0_m_prior=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_est[1],log(male_vbgf_est[1]+0.000000001))}
         else {ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]}
         ctl.file$MG_parms[14,5]<-input$t0_m_SD             
         ctl.file$MG_parms[14,6]<-prior.type[prior.name==input$t0_m_prior]
         ctl.file$MG_parms[14,7]<-input$t0_m_phase
 
         #Linf
-        if(input$Linf_f_prior=="lognormal"){ctl.file$MG_parms[15,3:4]<-c(input$Linf_m_mean,log(input$Linf_m_mean))}     
+        if(input$Linf_m_prior=="lognormal"){ctl.file$MG_parms[15,3:4]<-c(input$Linf_m_mean,log(input$Linf_m_mean))}     
         else{ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean}
         ctl.file$MG_parms[15,5]<-input$Linf_m_SD         
         ctl.file$MG_parms[15,6]<-prior.type[prior.name==input$Linf_m_prior]      
         ctl.file$MG_parms[15,7]<-input$Linf_m_phase      
 
         #k
-        if(input$k_f_prior=="lognormal"){ctl.file$MG_parms[16,3:4]<-c(input$k_m_mean,log(input$k_m_mean))}        
+        if(input$k_m_prior=="lognormal"){ctl.file$MG_parms[16,3:4]<-c(input$k_m_mean,log(input$k_m_mean))}        
         else {ctl.file$MG_parms[16,3:4]<-input$k_m_mean}
         ctl.file$MG_parms[16,5]<-input$k_m_SD            
         ctl.file$MG_parms[16,6]<-prior.type[prior.name==input$k_m_prior]        
         ctl.file$MG_parms[16,7]<-input$k_m_phase         
         
         #CV young
-        if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[17,3:4]<-c(input$CV_lt_m_mean,log(input$CV_lt_m_mean))}     
-        else{ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_mean}
-        ctl.file$MG_parms[17,5]<-input$CV_lt_m_SD       
-        ctl.file$MG_parms[17,6]<-prior.type[prior.name==input$CV_lt_m_prior]       
-        ctl.file$MG_parms[17,7]<-input$CV_lt_m_phase       
+        if(input$CV_lt_m_young_prior=="lognormal"){ctl.file$MG_parms[17,3:4]<-c(input$CV_lt_m_young_mean,log(input$CV_lt_m_young_mean))}     
+        else{ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_young_mean}
+        ctl.file$MG_parms[17,5]<-input$CV_lt_m_young_SD       
+        ctl.file$MG_parms[17,6]<-prior.type[prior.name==input$CV_lt_m_young_prior]       
+        ctl.file$MG_parms[17,7]<-input$CV_lt_m_young_phase       
         
         #CV old
-        if(input$CV_lt_f_prior=="lognormal"){ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_mean,log(input$CV_lt_m_mean))}
-        else{ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_mean}
-        ctl.file$MG_parms[18,5]<-input$CV_lt_m_SD       
-        ctl.file$MG_parms[18,6]<-prior.type[prior.name==input$CV_lt_m_prior]  
-        ctl.file$MG_parms[18,7]<-input$CV_lt_m_phase 
+        if(input$CV_lt_m_old_prior=="lognormal"){ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_old_mean,log(input$CV_lt_m_old_mean))}
+        else{ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_old_mean}
+        ctl.file$MG_parms[18,5]<-input$CV_lt_m_old_SD       
+        ctl.file$MG_parms[18,6]<-prior.type[prior.name==input$CV_lt_m_old_prior]  
+        ctl.file$MG_parms[18,7]<-input$CV_lt_m_old_phase 
 
         #Weight-length
         ctl.file$MG_parms[19,3:4]<-input$WLa_m_est       #coefficient
@@ -4157,7 +4177,6 @@ if(input$use_forecastnew)
     {
       if(input$Njitter>0)
       {
-         browser()
          show_modal_spinner(spin="flower",color="red",text="Run jitters")
          #file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.exe"),paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),overwrite = FALSE)
          jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,jitter_fraction=input$jitter_fraction,printlikes = TRUE,init_values_src=0)
