@@ -2927,6 +2927,7 @@ show_modal_spinner(spin="flower",color="red",text="Model run in progress")
   #          }
 
 if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
+#if(which(c(input$use_par,input$use_datanew,input$use_datanew_user,input$use_controlnew,input$use_controlnew_user,input$user_model))!=0)
   {
       #Copy and move files
 	  	if(file.exists(paste0("Scenarios/",input$Scenario_name)))
@@ -3977,7 +3978,6 @@ if(!input$use_par)
 }
 		####################### END CTL FILE ####################################
       starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
-
 #Use par file
     if(input$use_par)
     {
@@ -3997,7 +3997,7 @@ if(!input$use_par)
 
     if(!input$use_datanew|is.null(input$use_datanew))
     {
-      if(!input$user_model|is.null(input$use_controlnew)){starter.file$datfile<-"SS_LB.dat"}
+      if(!input$user_model|is.null(input$use_datanew)){starter.file$datfile<-"SS_LB.dat"}
     }
 
 #Use controlnew file
@@ -4157,25 +4157,19 @@ if(input$use_forecastnew)
     {
       if(input$Njitter>0)
       {
+         browser()
          show_modal_spinner(spin="flower",color="red",text="Run jitters")
+         #file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.exe"),paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),overwrite = FALSE)
          jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,jitter_fraction=input$jitter_fraction,printlikes = TRUE,init_values_src=0)
          profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
          profilesummary <- SSsummarize(profilemodels)
          minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
          #Find best fit model
          index.minlikes<-c(1:length(minlikes))[minlikes]
-         file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0("Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
-             starter.file$init_values_src<-1
-             starter.file$jitter_fraction<-0
-         SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
-         #R-run to get new best fit model
-         show_modal_spinner(spin="flower",color="red",text="Making plots")
-         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
-         show_modal_spinner(spin="flower",color="red",text="Making tables")
-         try(SSexecutivesummary(Model.output))    
          jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
-         ref.like<-min(jitter.likes)
-           #Make plot and save to folder
+         ref.like<-min(jitter.likes,na.rm = TRUE)
+         
+         #Make plot and save to folder
            main.dir<-getwd()
            if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/Jitter Results")))
           {
@@ -4184,7 +4178,7 @@ if(input$use_forecastnew)
            setwd(paste0("Scenarios/",input$Scenario_name,"/Jitter Results"))
            png("jitterplot.png")
          jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
-         points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
+         points(c(1:length(jitter.likes))[jitter.likes>ref.like],jitter.likes[jitter.likes>ref.like],type="p",col="black",bg="red",pch=21,cex=1.25)
          abline(h=ref.like)
          # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
          # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
@@ -4203,10 +4197,10 @@ if(input$use_forecastnew)
         # {
          #jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
          #ref.like<-min(jitter.likes)
-           jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
-         points(c(1:length(jitter.likes))[jitter.likes>min(jitter.likes)],jitter.likes[jitter.likes>min(jitter.likes)],type="p",col="black",bg="red",pch=21,cex=1.25)
+         jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
+         points(c(1:length(jitter.likes))[jitter.likes>ref.like],jitter.likes[jitter.likes>ref.like],type="p",col="black",bg="red",pch=21,cex=1.25)
          abline(h=ref.like)
-        # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
+         # likebc<-round((length(jitter.likes[ref.like==jitter.likes])/(input$Njitter+1))*100,0)
          # likelessbc<-round((length(jitter.likes[ref.like>jitter.likes])/(input$Njitter+1))*100,0)
          # like10<-round((length(jitter.likes[(ref.like+10)<jitter.likes])/(input$Njitter+1))*100,0)
          # like2<-round(((length(jitter.likes[(ref.like+2)>jitter.likes])-(length(jitter.likes[ref.like==jitter.likes])))/(input$Njitter+1))*100,0)
@@ -4223,14 +4217,23 @@ if(input$use_forecastnew)
         SSplotComparisons(profilesummary, legendlabels = c(0:input$Njitter), ylimAdj = 1.30, subplot = c(3), new = FALSE)
         })
 
-        show_modal_spinner(spin="flower",color="red",text="Re-run best model post-jitters")
-         RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
-         Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
+         #R-run to get new best fit model
+         show_modal_spinner(spin="flower",color="red",text="Re-run best model post-jitters")
+         file.copy(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
+         #file.rename(paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),paste0("Scenarios/",input$Scenario_name,"/ss.exe"),overwrite = FALSE)
+             starter.file$init_values_src<-1
+             starter.file$jitter_fraction<-0
+         SS_writestarter(starter.file,paste0(main.dir,"/Scenarios/",input$Scenario_name),overwrite=TRUE)
+         RUN.SS(paste0(main.dir,"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
+         Model.output<-try(SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
           if(class(Model.output)=="try-error")
           {
-            Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
+            Model.output<-SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
-        
+         show_modal_spinner(spin="flower",color="red",text="Making plots")
+         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
+         show_modal_spinner(spin="flower",color="red",text="Making tables")
+         try(SSexecutivesummary(Model.output))                 
     }   
     setwd(main.dir)
   }
@@ -4752,14 +4755,22 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        if(is.na(LRP.in)){LRP.in<-0}
        
        dir.create(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file))
+       #Sensi_uncertainty_choice<-input$Sensi_uncertainty_choice
+       Sensi_uncertainty_choice<-TRUE
        pngfun(wd = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
        par(mfrow = c(1,3))
-       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, new = FALSE,btarg=TRP.in,minbthresh=LRP.in,uncertainty=TRUE))
-       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, new = FALSE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=TRUE))
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, new = FALSE,btarg=TRP.in,minbthresh=LRP.in,uncertainty=Sensi_uncertainty_choice))
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, new = FALSE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=Sensi_uncertainty_choice))
        dev.off()
-       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30,col = col.vec, new = FALSE,print=TRUE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=TRUE,plotdir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file)))
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30,col = col.vec, new = FALSE,print=TRUE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=Sensi_uncertainty_choice,plotdir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file)))
        save(modsummary.sensi,file=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file,".DMP"))
 
+       pngfun(wd = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file), file = paste0(input$Sensi_comp_file,"_no_uncertainty.png"), h = 7,w = 12)
+       par(mfrow = c(1,3))
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(1,3),col = col.vec, new = FALSE,btarg=TRP.in,minbthresh=LRP.in,uncertainty=Sensi_uncertainty_choice))
+       try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = 11,col = col.vec, new = FALSE, legendloc = 'topleft',btarg=TRP.in,minbthresh=LRP.in,uncertainty=Sensi_uncertainty_choice))
+       dev.off()
+       
        output$Sensi_comp_plot <- renderImage({
        image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file, '.png')),mustWork=FALSE)
        return(list(
