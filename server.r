@@ -2585,8 +2585,8 @@ SSS.run<-observeEvent(input$run_SSS,{
       ctl.file$MG_parms[17,c(1,3:4)]<-0                                  #CV
       ctl.file$MG_parms[18,c(1,3:4)]<-0                                  #CV
       #Weight-length
-      ctl.file$MG_parms[19,c(1,3:4)]<-0                                  #coefficient
-      ctl.file$MG_parms[20,c(1,3:4)]<-0                                  #exponent  
+      ctl.file$MG_parms[19,c(1,3:4)]<-input$WLa_f_sss                                  #coefficient
+      ctl.file$MG_parms[20,c(1,3:4)]<-input$WLb_f_sss                                  #exponent  
     }
     
     if(input$male_parms_SSS)
