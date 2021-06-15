@@ -131,7 +131,7 @@
 #
 #_Q_setup
 #_   fleet      link link_info  extra_se   biasadj     float  #  fleetname
-         2         1         0         0         0         1  #  Depletion
+         2         1         0         0         0         0  #  Depletion
 -9999 0 0 0 0 0
 #
 #_Q_parms(if_any);Qunits_are_ln(q)

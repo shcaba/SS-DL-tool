@@ -2510,6 +2510,7 @@ SSS.run<-observeEvent(input$run_SSS,{
 		####################### END DATA FILE #####################################
 
     ####################### START SSS CTL FILE #####################################
+    #browser()
     if(!is.null(input$GT5)){if(input$GT5)
       {
         ctl.file$N_platoon<-5
@@ -2546,12 +2547,12 @@ SSS.run<-observeEvent(input$run_SSS,{
     else {ctl.file$MG_parms[4,3:4]<-input$k_f_mean_sss}
     
     #CV young
-    if(input$CV_lt_f_young_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_mean_sss,log(input$CV_lt_f_mean_sss))}     
-    else{ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_mean_sss}
+    if(input$CV_lt_f_young_prior=="lognormal"){ctl.file$MG_parms[5,3:4]<-c(input$CV_lt_f_young_mean_sss,log(input$CV_lt_f_young_mean_sss))}     
+    else{ctl.file$MG_parms[5,3:4]<-input$CV_lt_f_young_mean_sss}
     
     #CV old
-    if(input$CV_lt_f_old_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_mean_sss,log(input$CV_lt_f_mean_sss))}
-    else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_mean_sss}
+    if(input$CV_lt_f_old_prior=="lognormal"){ctl.file$MG_parms[6,3:4]<-c(input$CV_lt_f_old_mean_sss,log(input$CV_lt_f_old_mean_sss))}
+    else{ctl.file$MG_parms[6,3:4]<-input$CV_lt_f_old_mean_sss}
     
     #Weight-length
     ctl.file$MG_parms[7,3:4]<-input$WLa_f_sss                                    #coefficient
@@ -2567,7 +2568,7 @@ SSS.run<-observeEvent(input$run_SSS,{
     ctl.file$MG_parms[14,3:4]<-0                                                #L0
     ctl.file$MG_parms[15,3:4]<-input$Linf_f_mean_sss                            #Linf
     ctl.file$MG_parms[16,3:4]<-input$k_f_mean_sss                               #k
-    ctl.file$MG_parms[17,3:4]<-input$CV_lt_young_f_mean_sss                           #CV
+    ctl.file$MG_parms[17,3:4]<-input$CV_lt_f_young_mean_sss                           #CV
     ctl.file$MG_parms[18,3:4]<-input$CV_lt_f_old_mean_sss                           #CV
     #Weight-length
     ctl.file$MG_parms[19,3:4]<-input$WLa_f_sss                                  #coefficient
@@ -2720,8 +2721,8 @@ SSS.run<-observeEvent(input$run_SSS,{
 
 #Forecast file modfications
 #Reference points
-if(!input$use_forecastnew)
-{
+#if(!input$use_forecastnew)
+#{
 forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss"))
 
 if(input$RP_choices){
@@ -2753,13 +2754,13 @@ if(input$Forecast_choice)
   }
 
 SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
-}
+#}
 
-if(input$use_forecastnew)
-  {
-    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
-    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
-  }
+#if(input$use_forecastnew)
+#  {
+#    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
+#    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+#  }
 
 #Set prior inputs
     #0 = normal
