@@ -1539,7 +1539,7 @@ output$Rec_options5 <- renderUI({
 output$Jitter_value <- renderUI({ 
     if(input$jitter_choice){ 
         fluidRow(column(width=6, numericInput("jitter_fraction", "Jitter value",  
-                                             value=0.1, min=0, max=10, step=0.001)), 
+                                             value=0.01, min=0, max=10, step=0.001)), 
         	       column(width=6, numericInput("Njitter", "# of jitters",  
         	                                   value=0, min=1, max=10000, step=1)))    
     	} 
@@ -2510,7 +2510,6 @@ SSS.run<-observeEvent(input$run_SSS,{
 		####################### END DATA FILE #####################################
 
     ####################### START SSS CTL FILE #####################################
-    #browser()
     if(!is.null(input$GT5)){if(input$GT5)
       {
         ctl.file$N_platoon<-5
@@ -4530,36 +4529,34 @@ observeEvent(input$run_MultiProfiles,{
         string = prof_parms_names,
         profilevec = par.df,
         extras = "-nohess",
-        prior_check=FALSE
+        prior_check=TRUE
       )
 
     # get model output
     profilemodels <- SSgetoutput(dirvec=profile_dir,keyvec=1:nrow(par.df), getcovar=FALSE)
     n <- length(profilemodels)
     profilesummary <- SSsummarize(profilemodels)
-    
     try(SSplotComparisons(profilesummary, legendlabels = modelnames, ylimAdj = 1.30, new = FALSE,plot=FALSE,print=TRUE, legendloc = 'topleft',uncertainty=TRUE,plotdir=profile_dir))
     save(profilesummary,file=paste0(profile_dir,"/multiprofile.DMP"))
     # add total likelihood (row 1) to table created above
     par.df$like <- as.numeric(profilesummary$likelihoods[1, 1:n])
     par.df$likediff <- as.numeric(profilesummary$likelihoods[1, 1:n]-ref.model$likelihoods_used[1,1])
-    par.df$Bratio <- as.numeric(profilesummary$Bratio[grep((profilesummary$endyrs[1]-1),profilesummary$Bratio$Label), 1:n])
+    par.df$Bratio <- as.numeric(profilesummary$Bratio[grep((profilesummary$endyrs[1]),profilesummary$Bratio$Label), 1:n])
     par.df$SB0 <- as.numeric(profilesummary$SpawnBio[1, 1:n])
-    par.df$SBcurrent <- as.numeric(profilesummary$SpawnBio[grep((profilesummary$endyrs[1]-1),profilesummary$SpawnBio$Label), 1:n])
+    par.df$SBcurrent <- as.numeric(profilesummary$SpawnBio[grep((profilesummary$endyrs[1]),profilesummary$SpawnBio$Label), 1:n])
     SBcurrmax<-max(par.df$SBcurrent)
-    colnames(par.df)<-c(parmnames,c("Likelihood","Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)))
+    colnames(par.df)<-c(parmnames,c("Likelihood","Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1])))
     save(par.df,file=paste0(profile_dir,"/multiprofilelikelihoods.DMP"))
     write.csv(par.df,file=paste0(profile_dir,"/multiprofilelikelihoods.csv"))
     
     #This reactive object is needed to get the plots to work
     plot.dat<-reactive({
-      plot.dat<-melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)))
+      plot.dat<-melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1])))
       plot.dat
       })
-
-    blank_data<- data.frame(variable = c("Likelihood_difference", "Likelihood_difference", paste0("SB",profilesummary$endyrs[1]-1,"/SB0"), paste0("SB",profilesummary$endyrs[1]-1,"/SB0"), "SB0", "SB0",paste0("SB",profilesummary$endyrs[1]-1),paste0("SB",profilesummary$endyrs[1]-1)), x =min(par.df[,1]),y = c(min(par.df$Likelihood_difference),max(par.df$Likelihood_difference), 0, 1, 0, ceiling(max(par.df$SB0)),0,ceiling(SBcurrmax)))
-    blank_data$variable<-factor(blank_data$variable,c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)))
-    refmodel.dat<-data.frame(variable = c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)), x =ref.model$parameters[grep(prof_parms_names[1],ref.model$parameters$Label),3],y = c(0,ref.model$current_depletion,ref.model$SBzero,ref.model$derived_quants[grep((profilesummary$endyrs[1]-1),profilesummary$SpawnBio$Label),2]))
+    blank_data<- data.frame(variable = c("Likelihood_difference", "Likelihood_difference", paste0("SB",profilesummary$endyrs[1],"/SB0"), paste0("SB",profilesummary$endyrs[1],"/SB0"), "SB0", "SB0",paste0("SB",profilesummary$endyrs[1]),paste0("SB",profilesummary$endyrs[1])), x =min(par.df[,1]),y = c(min(par.df$Likelihood_difference),max(par.df$Likelihood_difference), 0, 1, 0, ceiling(max(par.df$SB0)),0,ceiling(SBcurrmax)))
+    blank_data$variable<-factor(blank_data$variable,c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1])))
+    refmodel.dat<-data.frame(variable = c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1])), x =ref.model$parameters[grep(prof_parms_names[1],ref.model$parameters$Label),3],y = c(0,ref.model$sprseries$Deplete[grep((profilesummary$endyrs[1]),profilesummary$Bratio$Label)+1],ref.model$SBzero,ref.model$derived_quants[grep((profilesummary$endyrs[1]),profilesummary$SpawnBio$Label),2]))
       #multiprofplotfun<-function(plot.dat)
       #{
       output$LikeProf_multiplot <- renderPlot({
@@ -4571,7 +4568,7 @@ observeEvent(input$run_MultiProfiles,{
       scale_x_continuous(name = paste(parmnames[1],"and",parmnames[2]), 
             breaks =par.df[,1], 
             labels = paste0(par.df[,1],"\n",par.df[,2]))+
-      geom_hline(data = data.frame(yint=c(-1.96,0,1.96,0.4,0.25),variable=c("Likelihood_difference","Likelihood_difference","Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),paste0("SB",profilesummary$endyrs[1]-1,"/SB0"))), 
+      geom_hline(data = data.frame(yint=c(-1.96,0,1.96,0.4,0.25),variable=c("Likelihood_difference","Likelihood_difference","Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),paste0("SB",profilesummary$endyrs[1],"/SB0"))), 
             aes(yintercept = yint), linetype = c("solid","dotted","solid","dotted","solid"),color=c("red","black","red","darkgreen","red"),lwd=1)+
       geom_point(data=refmodel.dat,aes(x=x,y=y),color="blue",size=4)+
       theme_bw()
