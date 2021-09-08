@@ -6,7 +6,13 @@ The tool builds Stock Synthesis files for provided data and life history informa
 
 ## Installing libraries and running the SS-DL tool
 ```R
-install.packages(c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy","truncnorm","ggpubr","flextable","officer","gridExtra",""))
+packages<-c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy","truncnorm","ggpubr","flextable","officer","gridExtra")
+
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+
 
 Make sure the following packages are using the most recent versions:
 library(devtools)
