@@ -95,7 +95,7 @@ if(OS.in=="Windows")
 if(OS.in=="Mac")  
   {
     
-    command <- c(paste("cd", path), "chmod +x ./ss_mac","./ss_mac") 
+    command <- c(paste("cd", path), "chmod +x ./ss_osx","./ss_osx") 
     system(paste(command, collapse=";"),invisible=TRUE)
     
     #command <- paste0(path,"/./ss_mac", ss.cmd) 
@@ -2023,11 +2023,12 @@ if(!is.null(rv.Lt$data))
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
-		    mutate(Fleet = factor(fleet),
+		    mutate(Year = factor(year),
 		           name = as.numeric(gsub("[^0-9.-]", "", name))) %>%  
-		    ggplot(aes(name, value, fill=Fleet)) + 
-		    geom_col(position="dodge") + 
-		    facet_grid(sex~year, scales="free_y") + 
+		    ggplot(aes(name, value, color=Year)) + 
+		    geom_line() + 
+        #geom_col(position="dodge") + 
+		    facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        facet_wrap(sex~year, scales="free_y",ncol=5) + 
 		    xlab("Length bin") + 
 		    ylab("Frequency") + 
@@ -2062,37 +2063,70 @@ if(!is.null(rv.Lt$data))
 # 		# }
 # 		})
 # 	})
+observeEvent(req(!is.null(rv.Age$data)), {
+    	shinyjs::show(output$marginal_age_comp_plots_label<-renderText({"Marginal age compositions"}))
+  })
 
 observeEvent(req(!is.null(rv.Age$data)), {
-    	shinyjs::show(output$age_comp_plots_label<-renderText({"Age compositions"}))
+      shinyjs::show(output$conditional_age_comp_plots_label<-renderText({"Conditional age at length"}))
   })
 
   observeEvent(req(!is.null(rv.Age$data)), {
-  output$Ageplot_it<-renderUI({
+    marginal_ages<-subset(rv.Age$data,Lbin_hi<0)
+    Cond_ages<-subset(rv.Age$data,Lbin_hi>=0)
+
+  output$Ageplot_it_marginal<-renderUI({
   if(!is.null(rv.Age$data))
   {
-    output$Ageplot<-renderPlot({ 
+        
+    output$Ageplot_marginal<-renderPlot({ 
       #inFile_age <- rv.Age$data 
-      if (is.null(rv.Age$data)) return(NULL)  
-      rv.Age$data %>%  
+      # if (is.null(rv.Age$data)) return(NULL)  
+      if (nrow(marginal_ages)==0) return(NULL)  
+        
+        # rv.Age$data %>%  
+        marginal_ages %>%
         rename_all(tolower) %>%  
         dplyr::select(-nsamps,-lbin_hi) %>%  
         pivot_longer(c(-year, -fleet, -sex, -lbin_low)) %>%  
-        mutate(Fleet = factor(fleet), 
+        mutate(Year = factor(year), 
                name = as.numeric(gsub("[^0-9.-]", "", name))) %>%  
-        ggplot(aes(name, value, fill=Fleet)) + 
-        geom_col(position="dodge") + 
+        ggplot(aes(name, value, color=Year)) + 
+        geom_line() + 
+        # geom_col(position="dodge") + 
         #facet_wrap(sex~year, scales="free_y",ncol=5) + 
-        facet_grid(sex~year, scales="free_y") +
+        facet_grid(sex~fleet, scales="free_y",labeller = label_both) +
         #scale_y_continuous(limits=c(0,max(colSums(rv.Age$data[-1,7:ncol(rv.Age$data)]))))+ 
         #scale_y_continuous(limits=c(0,20))+ 
         xlab("Age bin") + 
         ylab("Frequency") + 
         scale_fill_viridis_d() 
-    }) 
-  plotOutput("Ageplot")
+    })
+  plotOutput("Ageplot_marginal")
   }
     })
+
+
+  output$Ageplot_it_cond<-renderUI({
+  if(!is.null(rv.Age$data))
+  {
+      output$Ageplot_conditional<-renderPlot({ 
+      # if (is.null(rv.Age$data)) return(NULL)  
+      if (nrow(Cond_ages)==0) return(NULL)  
+        
+        Cond_ages_plots<-melt(Cond_ages[,c(1,3,4,7,9:ncol(Cond_ages))],id.vars=c("Year","Fleet","Sex","Lbin_hi"))
+        Cond_ages_plots_pos<-subset(Cond_ages_plots,value>0)
+
+        ggplot(Cond_ages_plots_pos,aes(x=as.numeric(variable),y=as.numeric(Lbin_hi),color=Year))+
+        geom_point()+
+        facet_grid(vars(Sex),vars(Fleet),labeller = label_both)+
+        xlab("Age bin")+
+        ylab("Length bin")
+    })
+  plotOutput("Ageplot_conditional")
+}
+    })
+
   })
 # output$Ageplot <- renderPlot({ 
 # 		inFile_age <- rv.Age$data 
@@ -4356,7 +4390,7 @@ if(input$use_forecastnew)
        sendSweetAlert(
         session = session,
         title = "Model Warning",
-        text = "Hessian did not invert. Re-run model using a different specification (e.g., starting values).",
+        text = "Model did not run or Hessian did not invert. Double check each input for missing values (or for 0 SD for lognormal priors) and/or re-run model using a different specification (e.g., starting values).",
         type = "warning")
      }
     remove_modal_spinner()
@@ -4422,7 +4456,10 @@ if(input$use_forecastnew)
 observeEvent(input$run_Profiles,{
        show_modal_spinner(spin="flower",color="red",text="Profiles running")
        starter.file<-SS_readstarter(paste0(pathLP(),"/starter.ss"))
-       SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","CV_young_Fem_GP_1","CV_old_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1","CV_young_Mal_GP_1","CV_old_Mal_GP_1")
+       data.file<-SS_readdat(paste0(pathLP(),"/SS_LB.dat"))
+       ctl.file<-SS_readctl(paste0(pathLP(),"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)
+       # SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","CV_young_Fem_GP_1","CV_old_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1","CV_young_Mal_GP_1","CV_old_Mal_GP_1")
+       SS_parm_names<-c(rownames(ctl.file$SR_parms)[2], rownames(ctl.file$SR_parms)[1],rownames(ctl.file$MG_parms)[1],rownames(ctl.file$MG_parms)[3],rownames(ctl.file$MG_parms)[4],rownames(ctl.file$MG_parms)[5],rownames(ctl.file$MG_parms)[6],rownames(ctl.file$MG_parms)[13],rownames(ctl.file$MG_parms)[15],rownames(ctl.file$MG_parms)[16],rownames(ctl.file$MG_parms)[17],rownames(ctl.file$MG_parms)[18])
        parmnames<-input$myPicker_LP
        parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
