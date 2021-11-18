@@ -4380,7 +4380,7 @@ if(input$use_forecastnew)
  		
  		#Paramters
  		output$Parameters_table <- renderTable({
- 				Model.output$estimated_non_dev_parameters
+ 				cbind(rownames(Model.output$estimated_non_dev_parameters),Model.output$estimated_non_dev_parameters)
 			})
 
 } 	
@@ -4535,8 +4535,8 @@ observeEvent(input$run_MultiProfiles,{
        ref.model<-SS_output(refdir)
        #Read in parameter files
        par.df <- read.csv(input$file_multi_profile$datapath,check.names=FALSE)
-       SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1")
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female","Natural mortality male","Linf male","k male")
+       SS_parm_names<-rownames(ref.model$parameters)[c(23:24,1,3,4:6,13,15:18)]
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        parmnames<-colnames(par.df)
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        modelnames<-paste0(parmnames[1]," ",par.df[,1],";",parmnames[2]," ",par.df[,2])
@@ -4556,7 +4556,7 @@ observeEvent(input$run_MultiProfiles,{
        starter.file<-SS_readstarter(paste0(profile_dir,"/starter.ss"))
        starter.file$ctlfile<-"control_modified.ss"
        starter.file$init_values_src<-0
-       #starter.file$prior_like<-0
+       starter.file$prior_like<-1
        SS_writestarter(starter.file,profile_dir,overwrite=TRUE)
 #       low_in <-  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
 #       high_in <- as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
@@ -4564,21 +4564,36 @@ observeEvent(input$run_MultiProfiles,{
 #       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
 #       colnames(par.df)<-prof_parms_names
       
-      profile <- SS_profile(
-        dir = profile_dir, # directory
-        masterctlfile = "control.ss_new",
-        newctlfile = "control_modified.ss",
-        string = prof_parms_names,
-        profilevec = par.df,
-        extras = "-nohess",
-        prior_check=TRUE
-      )
+      if(input$Hess_multi_like==FALSE)
+      {
+        profile <- SS_profile(
+          dir = profile_dir, # directory
+          masterctlfile = "control.ss_new",
+          newctlfile = "control_modified.ss",
+          string = prof_parms_names,
+          profilevec = par.df,
+          extras = "-nohess",
+          prior_check=TRUE
+        )        
+      }
+
+      if(input$Hess_multi_like==TRUE)
+      {
+        profile <- SS_profile(
+          dir = profile_dir, # directory
+          masterctlfile = "control.ss_new",
+          newctlfile = "control_modified.ss",
+          string = prof_parms_names,
+          profilevec = par.df,
+          prior_check=TRUE
+        )
+      }
 
     # get model output
     profilemodels <- SSgetoutput(dirvec=profile_dir,keyvec=1:nrow(par.df), getcovar=FALSE)
     n <- length(profilemodels)
     profilesummary <- SSsummarize(profilemodels)
-    try(SSplotComparisons(profilesummary, legendlabels = modelnames, ylimAdj = 1.30, new = FALSE,plot=FALSE,print=TRUE, legendloc = 'topleft',uncertainty=TRUE,plotdir=profile_dir))
+    try(SSplotComparisons(profilesummary, legendlabels = modelnames, ylimAdj = 1.30, new = FALSE,plot=FALSE,print=TRUE, legendloc = 'topleft',uncertainty=TRUE,plotdir=profile_dir,btarg=TRP_multi_like,minbthresh=LRP_multi_like))
     save(profilesummary,file=paste0(profile_dir,"/multiprofile.DMP"))
     # add total likelihood (row 1) to table created above
     par.df$like <- as.numeric(profilesummary$likelihoods[1, 1:n])
