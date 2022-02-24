@@ -640,7 +640,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 
 
 #SS-CL fixed parameters
-observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
+observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
@@ -704,7 +704,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
    })
 
 #SS-CL with parameter estimates
-observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
+observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
@@ -2941,9 +2941,9 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
 
 
 
-#############################################
+##################################################################
 ### PREPARE FILES andD RUN Length and Age-based Stock Synthsis ###
-#############################################
+##################################################################
 SS.file.update<-observeEvent(input$run_SS,{
 		# if(is.null(inFile) | !anyNA(inp$
 		#							styr,ndyr,
