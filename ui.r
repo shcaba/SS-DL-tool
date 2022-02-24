@@ -732,9 +732,10 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
     shinyjs::hidden(wellPanel(id="Scenario_panel",
     h4(strong("Scenario name")),
-    fluidRow(column(width=8,textInput("Scenario_name", strong("Choose the name of your scenario"), value="Scenario 1"))),
+    fluidRow(column(width=8,textInput("Scenario_name", strong("Choose the name of your scenario"), value="Scenario_1"))),
     h5(p(em("Each scenario folder is saved. Changing the scenario name therefore creates a new folder of results."))),
     h5(p(em("Using different scenario names when changing data or parameter values allows easy sensitivity exploration."))),
+    h5(p(strong("For Mac and Linux users, do not leave spaces in the Scenario name."))),
     
     br(),
 

@@ -95,7 +95,7 @@ if(OS.in=="Windows")
 if(OS.in=="Mac")  
   {
     
-    command <- c(paste("cd", path), "chmod +x ./ss_osx","./ss_osx") 
+    command <- c(paste("cd", path), "chmod +x ./ss_mac",paste("./ss_mac", ss.cmd)) 
     system(paste(command, collapse=";"),invisible=TRUE)
     
     #command <- paste0(path,"/./ss_mac", ss.cmd) 
@@ -103,9 +103,9 @@ if(OS.in=="Mac")
   } 
 if(OS.in=="Linux") 
   {
-    command <- c(paste("cd", path), "chmod +x ./ss_linux","./ss_linux") 
+    command <- c(paste("cd", path), "chmod +x ./ss_linux",paste("./ss_linux", ss.cmd)) 
     system(paste(command, collapse=";"), invisible=TRUE)
-  } 
+  }   
 }  
 
 pngfun <- function(wd, file,w=7,h=7,pt=12){

@@ -1,7 +1,6 @@
 # The Stock Synthesis Data-limited Tool (SS-DL tool)
 
-The SS-DL tool uses Stock Synthesis (Methot and Wetzel 2013) to implement several common data-limited assessment methods all in one modelling framework. Under a unified modelling framework, additional data can be added as it becomes avaialble.
-The tool builds Stock Synthesis files for provided data and life history information. It produces full plots and tables for each model run via the r4ss package, as well as additional screen output for easy interpretation.
+The SS-DL tool uses Stock Synthesis (Methot and Wetzel 2013) to implement several common data-limited assessment methods all in one modelling framework. Under a unified modelling framework, additional data can be added as it becomes available. The tool builds Stock Synthesis files for provided data and life history information. It produces full plots and tables for each model run via the r4ss package, as well as additional screen output for easy interpretation.
 <br></br>
 
 ## Installing libraries and running the SS-DL tool
