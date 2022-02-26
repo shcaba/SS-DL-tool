@@ -95,7 +95,7 @@ if(OS.in=="Windows")
 if(OS.in=="Mac")  
   {
     
-    command <- c(paste("cd", path), "chmod +x ./ss_mac",paste("./ss_mac", ss.cmd)) 
+    command <- c(paste("cd", path), "chmod +x ./ss_osx",paste("./ss_osx", ss.cmd)) 
     system(paste(command, collapse=";"),invisible=TRUE)
     
     #command <- paste0(path,"/./ss_mac", ss.cmd) 
