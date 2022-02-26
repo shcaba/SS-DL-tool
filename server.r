@@ -2434,13 +2434,12 @@ output$Selplot_SSS <- renderPlot({
 #############################################
 #############################################
 
-
 #############################################
 ######## PREPARE FILES andD RUN SSS #########
 #############################################
 SSS.run<-observeEvent(input$run_SSS,{
       show_modal_spinner(spin="flower",color="red",text="Create model files")
-
+print(1)
     # progress <- shiny::Progress$new(session, min=1, max=2)
     #        on.exit(progress$close())
        
@@ -3110,7 +3109,7 @@ if(!input$use_par)
     data.file$CPUE<-data.frame(year=rv.Index$data[,1],seas=rv.Index$data[,2],index=rv.Index$data[,3],obs=rv.Index$data[,4],se_log=rv.Index$data[,5])
     }
 
-  #Population length data bins
+#Population length data bins
   data.file$binwidth<-2
   if(!is.null(rv.Lt$data)){data.file$binwidth<-as.numeric(colnames(rv.Lt$data)[7])-as.numeric(colnames(rv.Lt$data)[6])}
   data.file$minimum_size<-2
@@ -3127,6 +3126,14 @@ if(!input$use_par)
 	#Length composition data
 		#inFile<- rv.Lt$data
 		if (is.null(rv.Lt$data)) {
+		  if(input$est_parms==FALSE){Linf_bins<-input$Linf_f_fix}
+		  if(input$est_parms==TRUE){Linf_bins<-input$Linf_f_mean}
+		  data.file$binwidth<-2
+		  data.file$minimum_size<-2
+      max.bin.in<-2*(round((Linf()+(Linf()*0.25))/2))+2 #0.2326
+      data.file$maximum_size<-max.bin.in
+      data.file$lbin_vector<-seq(data.file$minimum_size,data.file$maximum_size,data.file$binwidth)
+      data.file$N_lbins<-length(data.file$lbin_vector)
       data.file$lencomp<-NULL  
       }
       
