@@ -643,7 +643,8 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
         shinyjs::hide("panel_Ct_F_LO")
-        shinyjs::show("panel_data_wt_lt")
+        if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
+        else (shinyjs::hide("panel_data_wt_lt"))
         shinyjs::hide("panel_ct_wt_LO")
          
         shinyjs::hide("panel_SSS")
@@ -707,7 +708,8 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
 observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
         shinyjs::hide("panel_Ct_F_LO")
-        shinyjs::show("panel_data_wt_lt")
+        if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
+        else (shinyjs::hide("panel_data_wt_lt"))
         shinyjs::hide("panel_ct_wt_LO")
         
         shinyjs::hide("panel_SSS")
