@@ -2374,7 +2374,6 @@ output$Selplot_SSS <- renderPlot({
        PeakDesc<-rep(10000,length(Selpeak))
        LtPeakFinal<-rep(0.0001,length(Selpeak))
        FinalSel<-rep(0.999,length(Selpeak))
-            
        Sel.out<-doubleNorm24.sel(Sel50=Sel50[1],Selpeak=Selpeak[1],PeakDesc=PeakDesc[1],LtPeakFinal=LtPeakFinal[1],FinalSel=FinalSel[1])
        Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet="Fleet 1")
        if(length(Sel50)>1)
@@ -2393,13 +2392,13 @@ output$Selplot_SSS <- renderPlot({
           scale_color_viridis_d() 
       }
     }
-    
-    if(input$Sel_choice_sss=="Dome-shaped")
+
+  if(input$Sel_choice_sss=="Dome-shaped")
     {
-        if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))),
-        length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))),
-        length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))),
-        length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))),
+        if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))),
+        length(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))==length(as.numeric(trimws(unlist(strsplit(input$PeakDesc_sss,","))))),
+        length(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))==length(as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_sss,","))))),
+        length(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))==length(as.numeric(trimws(unlist(strsplit(input$FinalSel_sss,","))))),
         all(input$Sel50_sss!=""),
         all(!is.null(input$Sel50_sss)),
         all(input$Selpeak_sss!=""),
@@ -2525,8 +2524,9 @@ print(1)
 		if(input$Linf_f_mean_sss>30){data.file$binwidth<-2}
 		data.file$minimum_size<-floor(input$Linf_f_mean_sss/10)
 		data.file$maximum_size<-ceiling(input$Linf_f_mean_sss+(input$Linf_f_mean_sss*0.1))
-		
-	#Age composition data
+		data.file$lbin_vector<-seq(data.file$minimum_size,data.file$maximum_size,data.file$binwidth)
+	  data.file$N_lbinspop<-length(data.file$lbin_vector)
+  #Age composition data
 		# if (is.null(inFile_age)){
 		# data.file$N_agebins<-Nages()
 		# data.file$agebin_vector<-1:Nages()		
