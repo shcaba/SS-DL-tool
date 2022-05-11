@@ -1649,7 +1649,7 @@ output$AdvancedSS_phase0_user<- renderUI({
 output$AdvancedSS_datanew<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "use_datanew", label = "Use the data.ss_new file?",
+        inputId = "use_datanew", label = "Use the data_echo.ss_new file?",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -1657,7 +1657,7 @@ output$AdvancedSS_datanew<- renderUI({
 output$AdvancedSS_datanew_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "use_datanew", label = "Use the data.ss_new file?",
+        inputId = "use_datanew", label = "Use the data_echo.ss_new file?",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -3014,12 +3014,12 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 
 if(input$use_datanew)
   {
-    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")) 
+    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
   }
 
 if(input$use_controlnew)
   {
-    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")) 
+    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/control.ss_new"),use_datlist = TRUE, datlist=data.file) 
   }
 
@@ -4055,7 +4055,7 @@ if(!input$use_par)
 #Use datanew file
     if(input$use_datanew)
     {
-      starter.file$datfile<-"data.ss_new"
+      starter.file$datfile<-"data_echo.ss_new"
     }
 
     if(!input$use_datanew|is.null(input$use_datanew))
@@ -4150,7 +4150,7 @@ if(input$use_forecastnew)
     if(is.null(input$no_hess)){
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
 
-      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data.ss_new")))
+      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
         {
           RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)
         }
@@ -4169,7 +4169,7 @@ if(input$use_forecastnew)
     }
 
 
-    if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")))
+    if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")))
       {
       Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
 
@@ -4192,7 +4192,7 @@ if(input$use_forecastnew)
              }
          }
       
-      data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data.ss_new"))    
+      data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new"))    
       #No plots or figures
       if(is.null(input$no_plots_tables))
         {      
@@ -4394,7 +4394,7 @@ if(input$use_forecastnew)
 
 } 	
 
-      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/data.ss_new")))
+      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")))
       {
        sendSweetAlert(
         session = session,
@@ -4465,7 +4465,7 @@ if(input$use_forecastnew)
 observeEvent(input$run_Profiles,{
        show_modal_spinner(spin="flower",color="red",text="Profiles running")
        starter.file<-SS_readstarter(paste0(pathLP(),"/starter.ss"))
-       #data.file<-SS_readdat(paste0(pathLP(),"/data.ss_new"))
+       #data.file<-SS_readdat(paste0(pathLP(),"/data_echo.ss_new"))
        #ctl.file<-SS_readctl(paste0(pathLP(),"/control.ss_new"),use_datlist = TRUE, datlist=data.file)
        rep.parms<-SS_output(pathLP(),covar=FALSE,verbose=FALSE)
        rep.parms.names<-rownames(rep.parms$parameters)
