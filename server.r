@@ -301,6 +301,25 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
     reset('file4')
   }, priority = 1000)
 
+#Throw an error if fleets are not consecutively represented in all loaded data sets.
+observeEvent(req(any(!is.null(rv.Ct$data),!is.null(rv.Lt$data),!is.null(rv.Age$data),!is.null(rv.Index$data))),{
+
+  ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+  if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)))}
+  if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+  if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+  if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
+
+  if(length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt))))!=length(seq(1:max(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)),na.rm=TRUE)))))
+   {
+     sendSweetAlert(
+        session = session,
+        title = "Model Warning",
+        text = "Non-consecutive fleet numbering. Check all data sets (e.g., catch, lengths, ages, indices) to make sure all fleets from 1 to the maximum fleet number are found when across all data sets. For instance, if you have 3 total fleets, there should not be a fleet number > 3 (e.g., 1,2,4). All fleets are not expected in each data file, just across all data files.",
+        type = "warning")      
+   }
+})
+
 #######
 
    
