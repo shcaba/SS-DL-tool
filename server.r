@@ -3780,6 +3780,7 @@ if(!input$use_par)
 			}
 
 		#Selectivity
+      if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){ctl.file$size_selex_types[2]<-3} #Change to recognize discard fishery
 		  Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
       Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
@@ -3843,7 +3844,8 @@ if(!input$use_par)
 			{
 				ctl.file$init_F<-rbind(ctl.file$init_F,ctl.file$init_F[1,])
 				ctl.file$size_selex_types<-rbind(ctl.file$size_selex_types,ctl.file$size_selex_types[1,])
-				ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
+				  if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){ctl.file$size_selex_types[,2]<-3}
+        ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
 				ctl.file$size_selex_parms<-rbind(ctl.file$size_selex_parms,ctl.file$size_selex_parms[1:6,])
         minmaxbin<-min(Selpeak[i+1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[i+1])
 

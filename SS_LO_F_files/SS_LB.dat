@@ -32,7 +32,7 @@
  2 -1 1 1 0 Fishery  # 1
 
 #Bycatch input
-1 2 3 1993 2019 0
+1 2 3 1993 2020 0
 #Bycatch_fleet_input_goes_next
 #a:  fleet index
 #b:  1=include dead bycatch in total dead catch for F0.1 and MSY optimizations and forecast ABC; 2=omit from total catch for these purposes (but still include the mortality)
