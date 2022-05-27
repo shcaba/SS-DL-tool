@@ -10,13 +10,13 @@ SS_LB.ctl
 0 # write to cumreport.sso (0=no,1=like&timeseries; 2=add survey fits)
 0 # Include prior_like for non-estimated parameters (0,1) 
 1 # Use Soft Boundaries to aid convergence (0,1) (recommended)
-1 # Number of datafiles to produce: 1st is input, 2nd is estimates, 3rd and higher are bootstrap
-5 # Turn off estimation for parameters entering after this phase
+2 # Number of datafiles to produce: 1st is input, 2nd is estimates, 3rd and higher are bootstrap
+10 # Turn off estimation for parameters entering after this phase
 1 # MCeval burn interval
 1 # MCeval thin interval
 0 # jitter initial parm value by this fraction
 -1 # min yr for sdreport outputs (-1 for styr)
--1 # max yr for sdreport outputs (-1 for endyr; -2 for endyr+Nforecastyrs
+-2 # max yr for sdreport outputs (-1 for endyr; -2 for endyr+Nforecastyrs
 0 # N individual STD years 
 # vector of year values 
 1e-004 # final convergence criteria (e.g. 1.0e-04) 
@@ -30,4 +30,5 @@ SS_LB.ctl
 0 # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt
 0 # MCMC output detail (0=default; 1=obj func components; 2=expanded; 3=make output subdir for each MCMC vector)
 0 # ALK tolerance (example 0.0001)
+-1 # random number seed for bootstrap data (-1 to use long(time) as seed): # 1653424853
 3.30 # check value for end of file and for version control

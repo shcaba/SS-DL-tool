@@ -30,4 +30,5 @@ SS_LB.ctl
 0 # F_std_basis: 0=raw_F_report; 1=F/Fspr; 2=F/Fmsy ; 3=F/Fbtgt
 0 # MCMC output detail (0=default; 1=obj func components; 2=expanded; 3=make output subdir for each MCMC vector)
 0 # ALK tolerance (example 0.0001)
+-1 # random number seed for bootstrap data (-1 to use long(time) as seed): # 1653424853
 3.30 # check value for end of file and for version control
