@@ -90,7 +90,7 @@ if(OS.in=="Windows")
   {
     #command <- paste0(navigate," & ", "ss", ss.cmd) 
     #shell(command, invisible=TRUE, translate=TRUE)
-    run_SS_models(path,model="ss.exe",extras=ss.cmd,systemcmd=TRUE,skipfinished=FALSE)
+    run(path,exe="ss",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
   } 
 if(OS.in=="Mac")  
   {
@@ -3779,7 +3779,8 @@ if(!input$use_par)
 				}
 			}
 
-		#Selectivity
+		#SELECTIVITY
+    #Length Selectivity
       if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){ctl.file$size_selex_types[2]<-3} #Change to recognize discard fishery
 		  Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
       Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
@@ -4203,12 +4204,12 @@ if(input$use_forecastnew)
          {
            if(Model.output$inputs$covar==TRUE)
              {
-               SS_tune_comps(dir=paste0("Scenarios/",input$Scenario_name),Model.output,option=DataWT_opt,niters_tuning=2)
+               tune_comps(Model.output,dir=paste0("Scenarios/",input$Scenario_name),niters_tuning=2,option=DataWT_opt,show_in_console = TRUE,verbose=FALSE)
                Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
              }
            if(Model.output$inputs$covar==FALSE)
               {
-               SS_tune_comps(dir=paste0("Scenarios/",input$Scenario_name),Model.output,option=DataWT_opt,niters_tuning=2,extras = " -nohess")
+               tune_comps(Model.output,dir=paste0("Scenarios/",input$Scenario_name),option=DataWT_opt,niters_tuning=2,extras = " -nohess",show_in_console = TRUE,verbose=FALSE)
                Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
              }
          }
