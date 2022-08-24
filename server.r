@@ -25,6 +25,8 @@ require(grid)
 #require(paletteer)
 #require(RColorBrewer)
 #require(ggthemes)
+#devtools::load_all("C:/Users/Jason.Cope/Documents/Github/nwfscDiag")
+
 source('Functions.r',local = FALSE)
 
 theme_report <- function(base_size = 11) {
@@ -4204,12 +4206,12 @@ if(input$use_forecastnew)
          {
            if(Model.output$inputs$covar==TRUE)
              {
-               tune_comps(Model.output,dir=paste0("Scenarios/",input$Scenario_name),niters_tuning=2,option=DataWT_opt,show_in_console = TRUE,verbose=FALSE)
+               tune_comps(Model.output,dir=paste0("Scenarios/",input$Scenario_name),niters_tuning=3,option=DataWT_opt,show_in_console = TRUE,verbose=FALSE)
                Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
              }
            if(Model.output$inputs$covar==FALSE)
               {
-               tune_comps(Model.output,dir=paste0("Scenarios/",input$Scenario_name),option=DataWT_opt,niters_tuning=2,extras = " -nohess",show_in_console = TRUE,verbose=FALSE)
+               tune_comps(Model.output,dir=paste0("Scenarios/",input$Scenario_name),option=DataWT_opt,niters_tuning=3,extras = " -nohess",show_in_console = TRUE,verbose=FALSE)
                Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
              }
          }
@@ -4244,7 +4246,16 @@ if(input$use_forecastnew)
       {
          show_modal_spinner(spin="flower",color="red",text="Run jitters")
          #file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.exe"),paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),overwrite = FALSE)
-         jits<-SS_RunJitter(paste0("Scenarios/",input$Scenario_name),Njitter=input$Njitter,jitter_fraction=input$jitter_fraction,printlikes = TRUE,init_values_src=0)
+         jits<-jitter(
+                      dir=paste0(getwd(),"/Scenarios/",input$Scenario_name),
+                      Njitter=input$Njitter,
+                      printlikes = TRUE,
+                      jitter_fraction=input$jitter_fraction,
+                      init_values_src=0,
+                      verbose=FALSE,
+                      extras = "-nohess"
+                      )
+         
          profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
          profilesummary <- SSsummarize(profilemodels)
          minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
@@ -4501,7 +4512,7 @@ observeEvent(input$run_Profiles,{
        use_prior_like_in<-rep(0,length(prof_parms_names))
        if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
        mydir = dirname(pathLP())
-       get = get_settings_profile( parameters =  prof_parms_names,
+              get = get_settings_profile( parameters =  prof_parms_names,
               low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
@@ -4600,26 +4611,28 @@ observeEvent(input$run_MultiProfiles,{
       
       if(input$Hess_multi_like==FALSE)
       {
-        profile <- SS_profile(
+        profile <- profile(
           dir = profile_dir, # directory
           masterctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
           extras = "-nohess",
-          prior_check=TRUE
+          prior_check=TRUE,
+          show_in_console = TRUE
         )        
       }
 
       if(input$Hess_multi_like==TRUE)
       {
-        profile <- SS_profile(
+        profile <- profile(
           dir = profile_dir, # directory
           masterctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
-          prior_check=TRUE
+          prior_check=TRUE,
+          show_in_console = TRUE
         )
       }
 
@@ -4864,7 +4877,9 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        
        dir.create(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file))
        #Sensi_uncertainty_choice<-input$Sensi_uncertainty_choice
+       #if (all(is.na(quantsSD[, i]) | quantsSD[, i] == 0))
        Sensi_uncertainty_choice<-TRUE
+
        pngfun(wd = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
        par(mfrow = c(1,3))
        try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, new = FALSE,btarg=TRP.in,minbthresh=LRP.in,uncertainty=Sensi_uncertainty_choice))
@@ -4880,13 +4895,26 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        dev.off()
        
        output$Sensi_comp_plot <- renderImage({
-       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file, '.png')),mustWork=FALSE)
-       return(list(
-        src = image.path,
-        contentType = "image/png",
-       #  width = 400,
-       # height = 300,
-       style='height:60vh'))
+       if (all(is.na(modsummary.sensi[, 1]) | modsummary.sensi[, 1] == 0))
+       {
+        image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file, '_no_uncertainty.png')),mustWork=FALSE)
+          return(list(
+          src = image.path,
+          contentType = "image/png",
+         #  width = 400,
+         # height = 300,
+          style='height:60vh'))
+        }
+        else
+        {
+        image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file, '.png')),mustWork=FALSE)
+          return(list(
+          src = image.path,
+          contentType = "image/png",
+         #  width = 400,
+         # height = 300,
+          style='height:60vh'))          
+        }
       },deleteFile=FALSE)
 
 #Relative error sensitivity plots
