@@ -4895,14 +4895,14 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        dev.off()
        
        output$Sensi_comp_plot <- renderImage({
-       if (all(is.na(modsummary.sensi[, 1]) | modsummary.sensi[, 1] == 0))
+       if (all(is.na(modsummary.sensi$quantsSD[, 1]) | modsummary.sensi$quantsSD[, 1] == 0))
        {
         image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/",input$Sensi_comp_file, '_no_uncertainty.png')),mustWork=FALSE)
           return(list(
           src = image.path,
           contentType = "image/png",
-         #  width = 400,
-         # height = 300,
+          # width = 400,
+          # height = 300,
           style='height:60vh'))
         }
         else
@@ -4911,8 +4911,8 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
           return(list(
           src = image.path,
           contentType = "image/png",
-         #  width = 400,
-         # height = 300,
+          # width = 400,
+          # height = 300,
           style='height:60vh'))          
         }
       },deleteFile=FALSE)

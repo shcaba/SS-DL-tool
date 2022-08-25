@@ -598,7 +598,12 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
        uiOutput("Sel_parms2"),
        uiOutput("Sel_parms3"),
        uiOutput("Sel_parms4"),
-       uiOutput("Sel_parms5")
+       uiOutput("Sel_parms5"),
+
+    fluidRow(checkboxInput("Sex_lt_sel","Sex-specific selectivity?",FALSE)),
+    
+    fluidRow(checkboxInput("age_sel_choice","Age-based selectivity?",FALSE))
+     
        
   #      ),
       )
@@ -1060,18 +1065,20 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           tabPanel("Sensitivities",
             # uiOutput("Sensi_comp_plot"),            
             h4("Time series sensitivity plots"), 
-            imageOutput("Sensi_comp_plot"),            
+            imageOutput("Sensi_comp_plot",width="50%"),            
             linebreaks(8),
+            headerPanel(""),
             h4("Relative change (Scenario relative to reference model) sensitivity plots for 5 different metrics"), 
             h5("Unfished spawning output and terminal year spawning output measure scale"), 
             h5("Relative biomass is a stock status measure"), 
             h5("FMSY is a measure of productivity; MSY is a measure of productivity and scale"), 
             h5(paste("For more details on interpreting these plots, please see "),tags$a("Cope and Gertseva 2020",target="_blank",href="CopeandGertseva2020.pdf")),
-            imageOutput("SensiRE_comp_plot"),            
+            imageOutput("SensiRE_comp_plot",width="100%"),            
             linebreaks(8),
+            headerPanel(""),
             h4("Log relative change (scenario relative to reference model) sensitivity plots for 5 different metrics"), 
             h5("Log relative change addresses the assymetry in possible relative change (infinity at the highest and 0 at the lowest)."), 
-            imageOutput("SensiRElog_comp_plot"),            
+            imageOutput("SensiRElog_comp_plot",width="100%"),            
             value=6),
           
           tabPanel("Ensemble models",
