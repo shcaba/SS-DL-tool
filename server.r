@@ -1,6 +1,7 @@
 require(shiny)
 require(shinyjs)
 require(r4ss)
+require(plyr)
 require(dplyr)
 require(ggplot2)
 require(reshape2)
@@ -11,7 +12,6 @@ require(sss)
 require(shinyWidgets)
 require(shinyFiles)
 require(HandyCode)
-require(plyr)
 require(nwfscDiag)
 require(shinybusy)
 require(truncnorm)
@@ -20,7 +20,7 @@ require(officer)
 require(gridExtra)
 require(ggpubr)
 require(grid)
-
+require(wesanderson)
 
 #require(paletteer)
 #require(RColorBrewer)
@@ -2460,7 +2460,7 @@ output$Selplot_SSS <- renderPlot({
 ######## PREPARE FILES andD RUN SSS #########
 #############################################
 SSS.run<-observeEvent(input$run_SSS,{
-      show_modal_spinner(spin="flower",color="red",text="Create model files")
+      show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[1],text="Create model files")
 print(1)
     # progress <- shiny::Progress$new(session, min=1, max=2)
     #        on.exit(progress$close())
@@ -2854,7 +2854,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       k.in_sss<-c(sss.prior.type[sss.prior.name==input$k_f_prior_sss],input$k_f_mean_sss,input$k_f_SD_sss,sss.prior.type[sss.prior.name==input$k_m_prior_sss],input$k_m_mean_sss,input$k_m_SD_sss)      
       t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_m_prior_sss],input$t0_m_mean_sss,input$t0_m_SD_sss)
     }
-      show_modal_spinner(spin="flower",color="red",text="Model run in progress")
+      show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
 
 #Run SSS
   SSS.out<-SSS(paste0("Scenarios/",input$Scenario_name),
@@ -2882,7 +2882,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       BH_FMSY_comp=F,
       OStype=input$OS_choice)
 #save(SSS.out)
-show_modal_spinner(spin="flower",color="red",text="Process model output")
+show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[3],text="Process model output")
 
 if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
   {
@@ -2990,7 +2990,7 @@ SS.file.update<-observeEvent(input$run_SS,{
       selected = '1')
    # })
 
-show_modal_spinner(spin="flower",color="red",text="Model run in progress")
+show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
 		# progress <- shiny::Progress$new(session, min=1, max=2)
   #          on.exit(progress$close())
        
@@ -4165,7 +4165,7 @@ if(input$use_forecastnew)
 
 ########
 	#Run Stock Synthesis and plot output
-    show_modal_spinner(spin="flower",color="red",text="Model run in progress")
+    show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
 		if(input$Data_wt=="None"){DataWT_opt<-"none"}
     if(input$Data_wt=="Dirichlet"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
@@ -4220,10 +4220,10 @@ if(input$use_forecastnew)
       #No plots or figures
       if(is.null(input$no_plots_tables))
         {      
-          show_modal_spinner(spin="flower",color="red",text="Making plots")
+          show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[4],text="Making plots")
           SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
           #Make SS tables
-          show_modal_spinner(spin="flower",color="red",text="Making tables")
+          show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
           try(SSexecutivesummary(Model.output))   
         }
 
@@ -4231,10 +4231,10 @@ if(input$use_forecastnew)
       if(input$no_plots_tables==FALSE)
       {      
         #Make SS plots  
-        show_modal_spinner(spin="flower",color="red",text="Making plots")
+        show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[4],text="Making plots")
         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
         #Make SS tables
-        show_modal_spinner(spin="flower",color="red",text="Making tables")
+        show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
         try(SSexecutivesummary(Model.output))   
       }
     }
@@ -4244,7 +4244,7 @@ if(input$use_forecastnew)
     {
       if(input$Njitter>0)
       {
-         show_modal_spinner(spin="flower",color="red",text="Run jitters")
+         show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[1],text="Run jitters")
          #file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.exe"),paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),overwrite = FALSE)
          jits<-jitter(
                       dir=paste0(getwd(),"/Scenarios/",input$Scenario_name),
@@ -4313,7 +4313,7 @@ if(input$use_forecastnew)
         })
 
          #R-run to get new best fit model
-         show_modal_spinner(spin="flower",color="red",text="Re-run best model post-jitters")
+         show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[2],text="Re-run best model post-jitters")
          file.copy(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
          #file.rename(paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),paste0("Scenarios/",input$Scenario_name,"/ss.exe"),overwrite = FALSE)
              starter.file$init_values_src<-1
@@ -4325,9 +4325,9 @@ if(input$use_forecastnew)
           {
             Model.output<-SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
-         show_modal_spinner(spin="flower",color="red",text="Making plots")
+         show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[3],text="Making plots")
          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
-         show_modal_spinner(spin="flower",color="red",text="Making tables")
+         show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
          try(SSexecutivesummary(Model.output))                 
     }   
     setwd(main.dir)
@@ -4496,7 +4496,7 @@ if(input$use_forecastnew)
 })
 
 observeEvent(input$run_Profiles,{
-       show_modal_spinner(spin="flower",color="red",text="Profiles running")
+       show_modal_spinner(spin="flower",color=wes_palettes$Darjeeling1[1],text="Profiles running")
        starter.file<-SS_readstarter(paste0(pathLP(),"/starter.ss"))
        #data.file<-SS_readdat(paste0(pathLP(),"/data_echo.ss_new"))
        #ctl.file<-SS_readctl(paste0(pathLP(),"/control.ss_new"),use_datlist = TRUE, datlist=data.file)
@@ -4573,7 +4573,7 @@ observeEvent(input$run_Profiles,{
 })
 
 observeEvent(input$run_MultiProfiles,{
-       show_modal_spinner(spin="flower",color="red",text="Multi-profiles running")
+       show_modal_spinner(spin="flower",color=wes_palettes$Darjeeling1[2],text="Multi-profiles running")
        refdir<-pathLP()
        mydir <- dirname(refdir)
        #Read in reference model
@@ -4755,7 +4755,7 @@ observeEvent(input$run_MultiProfiles,{
   observeEvent(input$run_Retro_comps,{
       
    #if(input$run_Retro_comps){           
-     show_modal_spinner(spin="flower",color="red",text="Running retrospectives")
+     show_modal_spinner(spin="flower",color=wes_palettes$Royal1[1],text="Running retrospectives")
      mydir_in<-dirname(pathRetro())
      scenario_in<-basename(pathRetro())
      model_settings = get_settings(settings = list(base_name = scenario_in,
@@ -4859,7 +4859,7 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
 
 #&exists(Sensi_model_dir_out())
   observeEvent(req(input$run_Sensi_comps),{
-      show_modal_spinner(spin="flower",color="red",text="Comparisons running")
+      show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Comparisons running")
       
        modelnames<-c(input$myPicker_Ref,input$myPicker)
        zz<-list()
@@ -4946,8 +4946,8 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
        return(list(
         src = image.path,
         contentType = "image/png",
-       #  width = 400,
-       # height = 300,
+         width = 800,
+         height = 1200,
        style='height:60vh'))
       },deleteFile=FALSE)
 
@@ -4956,8 +4956,8 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
        return(list(
         src = image.path,
         contentType = "image/png",
-       #  width = 400,
-       # height = 300,
+         width = 400,
+         height = 300,
        style='height:60vh'))
       },deleteFile=FALSE)
 

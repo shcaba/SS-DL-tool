@@ -148,7 +148,7 @@
 # implementation error by year in forecast:  0
 #
 #Fishing Mortality info 
-0.03 # F ballpark value in units of annual_F
+0.1 # F ballpark value in units of annual_F
 -1999 # F ballpark year (neg value to disable)
 2 # F_Method:  1=Pope; 2=instan. F; 3=hybrid (hybrid is recommended)
 4 # max F or harvest rate, depends on F_Method
@@ -226,7 +226,7 @@
             10            91       30.7974            36            2             1          1          0          0          0          0          0          0          0  #  Size_DblN_peak_Fishery(1)
            -15            15            15            15            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_top_logit_Fishery(1)
             -4            12       5.15329             3            99             0          1          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_Fishery(1)
-           -10             6            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
+           -15             6            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
           -999            15           -15           -10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_start_logit_Fishery(1)
             -5            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
 

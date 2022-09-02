@@ -154,7 +154,7 @@
              1            91       30.7974            36            99             0         -1          0          0          0          0          0          0          0  #  Size_DblN_peak_Fishery(1)
            -15            20            15            15            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_top_logit_Fishery(1)
            -15            15       5.15329             3            99             0         -1          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_Fishery(1)
-           -10            20            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
+           -15            20            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
           -999            15           -15           -10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_start_logit_Fishery(1)
             -5            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
 # timevary selex parameters 
