@@ -5,6 +5,7 @@ require(plyr)
 require(dplyr)
 require(ggplot2)
 require(reshape2)
+require(data.table)
 require(tidyr)
 require(rlist)
 require(viridis)
@@ -214,7 +215,9 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
   observe({
     req(input$file2)
     req(!rv.Ct$clear)
-    rv.Ct$data <- read.csv(input$file2$datapath,check.names=FALSE)
+    rv.Ct$data <- fread(input$file2$datapath,check.names=FALSE,data.table=FALSE)
+    #L <- readLines(input$file2$datapath, n = 1)
+    #if(grepl(";", L)) {rv.Ct$data <- read.csv2(input$file2$datapath,check.names=FALSE)}
   })
 
   observeEvent(input$file2, {
@@ -231,7 +234,10 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
   observe({
     req(input$file1)
     req(!rv.Lt$clear)
-    rv.Lt$data <- read.csv(input$file1$datapath,check.names=FALSE)
+    rv.Lt$data <- fread(input$file1$datapath,check.names=FALSE,data.table=FALSE)
+    #L <- readLines(input$file1$datapath, n = 1)
+    #rv.Lt$data <- read.csv(input$file1$datapath,check.names=FALSE)
+    #if(grepl(";", L)) {rv.Lt$data <- read.csv2(input$file1$datapath,check.names=FALSE)}
   })
 
   observeEvent(input$file1, {
@@ -248,7 +254,9 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
   observe({
     req(input$file3)
     req(!rv.Age$clear)
-    rv.Age$data <- read.csv(input$file3$datapath,check.names=FALSE)
+    rv.Age$data <- fread(input$file3$datapath,check.names=FALSE,data.table=FALSE)
+    #L <- readLines(input$file3$datapath, n = 1)
+    #if(grepl(";", L)) {rv.Age$data <- read.csv2(input$file3$datapath,check.names=FALSE)}
   })
 
   observeEvent(input$file3, {
@@ -265,7 +273,9 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
   observe({
     req(input$file33)
     req(!rv.AgeErr$clear)
-    rv.AgeErr$data <- read.csv(input$file33$datapath,check.names=FALSE,header=FALSE)
+    rv.AgeErr$data <- fread(input$file33$datapath,check.names=FALSE,header=FALSE,data.table=FALSE)
+    #L <- readLines(input$file33$datapath, n = 1)
+    #if(grepl(";", L)) {rv.AgeErr$data <- read.csv2(input$file33$datapath,check.names=FALSE,header=FALSE)}
   })
 
   observeEvent(input$file33, {
@@ -290,7 +300,10 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
   observe({
     req(input$file4)
     req(!rv.Index$clear)
-    rv.Index$data <- read.csv(input$file4$datapath,check.names=FALSE)
+    rv.Index$data <- fread(input$file4$datapath,check.names=FALSE,data.table=FALSE)
+    #L <- readLines(input$file4$datapath, n = 1)
+    #rv.Index$data <- read.csv(input$file4$datapath,check.names=FALSE)
+    #if(grepl(";", L)) {rv.Index$data <- read.csv2(input$file4$datapath,check.names=FALSE,header=FALSE)}
   })
 
   observeEvent(input$file4, {
@@ -305,13 +318,11 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
 
 #Throw an error if fleets are not consecutively represented in all loaded data sets.
 observeEvent(req(any(!is.null(rv.Ct$data),!is.null(rv.Lt$data),!is.null(rv.Age$data),!is.null(rv.Index$data))),{
-
   ct.flt<-lt.flt<-age.flt<-index.flt<-NA
   if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)))}
   if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
   if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
   if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
-
   if(length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt))))!=length(seq(1:max(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)),na.rm=TRUE)))))
    {
      sendSweetAlert(
@@ -4579,7 +4590,9 @@ observeEvent(input$run_MultiProfiles,{
        #Read in reference model
        ref.model<-SS_output(refdir)
        #Read in parameter files
-       par.df <- read.csv(input$file_multi_profile$datapath,check.names=FALSE)
+       par.df <- fread(input$file_multi_profile$datapath,check.names=FALSE,data.table=FALSE)
+       L <- readLines(input$file_multi_profile$datapath, n = 1)
+       if(grepl(";", L)) {par.df <- read.csv2(input$file_multi_profile$datapath,check.names=FALSE)}
        SS_parm_names<-rownames(ref.model$parameters)[c(23:24,1,3,4:6,13,15:18)]
        parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        parmnames<-colnames(par.df)
@@ -4986,7 +4999,10 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
 # },deleteFile=FALSE)
 ####################################
 
-  #Ensemble modelling
+##########################
+### Ensemble modelling ###
+##########################
+
   pathEnsemble <- reactive({
       shinyDirChoose(input, "Ensemble_dir", roots=roots, filetypes=c('', 'txt'))
       return(parseDirPath(roots, input$Ensemble_dir))
@@ -5009,83 +5025,181 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
   })
 #Ensemble_model_dir_out<-eventReactive(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==6),{
 observeEvent(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==7),{
-Ensemble_model_dir_out<-eventReactive(input$run_Ensemble,{
-#print(as.numeric(input$tabs))
-#print(input$run_Ensemble)
+show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare models to combine into ensembles")
+#Ensemble_model_dir_out<-eventReactive(input$run_Ensemble,{
+#Ensemble.outputs<-eventReactive(input$run_Ensemble,{
     if(!file.exists(paste0(pathEnsemble(),"/Ensemble outputs")))
       {
         dir.create(paste0(pathEnsemble(),"/Ensemble outputs"))
       }
-    Ensemble_model_dir_out<-paste0(pathEnsemble(),"/",input$myEnsemble)
-  })
+    Ensemble_model_dir_out<-paste0(pathEnsemble(),"/Ensemble outputs/",input$Ensemble_file)
+    dir.create(Ensemble_model_dir_out)
+
+#  })
+
 # print(Ensemble_model_dir_out())
 # exists("Ensemble_model_dir_out()")
-Ensemble_model_dir_out
-})
-
+#Ensemble_model_dir_out
+#})
 #exists(Ensemble_model_dir_out())
-  observeEvent(req(input$run_Ensemble&!is.null(input$myEnsemble)),{
-  Ensemble.outputs<-eventReactive(input$run_Ensemble,{
-       print(length(Ensemble_model_dir_out()))
+#  observeEvent(req(input$run_Ensemble&!is.null(input$myEnsemble)),{
+#  Ensemble.outputs<-eventReactive(input$run_Ensemble,{
        modelnames<-input$myEnsemble
        zz<-list()
-       Runs<-length(Ensemble_model_dir_out())
-       for(i in 1:Runs) {zz[[i]]<-SS_output(paste0(Ensemble_model_dir_out()[i]))}
+       Runs<-length(input$myEnsemble)
+       for(i in 1:Runs) {zz[[i]]<-SS_output(paste0(pathEnsemble(),"/",input$myEnsemble[i]))}
        modsummary.ensemble<- SSsummarize(zz)
        Ensemble_wts<-as.numeric(trimws(unlist(strsplit(input$Ensemble_wts,","))))
        Stand_ensemble_wts<-Ensemble_wts/sum(Ensemble_wts)
-       Nsamps_ensemble<-100000
-       Nsamps_ensemble_wts<-Nsamps_ensemble*Stand_ensemble_wts
+       Nsamps_ensemble<-10000
+       Nsamps_ensemble_wts<-round(Nsamps_ensemble*Stand_ensemble_wts)
        #Calculate weighted values
-       #Unfished spawning outputs
-       SO.init.mods<-modsummary.ensemble$SpawnBio[2,1:(ncol(modsummary.ensemble$SpawnBio)-2)] 
-       SO.init.sd.mods<-modsummary.ensemble$SpawnBioSD[2,1:(ncol(modsummary.ensemble$SpawnBio)-2)] 
-       #Current spawning output
-       SO.cur.mods<-modsummary.ensemble$SpawnBio[nrow(modsummary.ensemble$SpawnBio),1:(ncol(modsummary.ensemble$SpawnBio)-2)] 
-       SO.cur.sd.mods<-modsummary.ensemble$SpawnBioSD[nrow(modsummary.ensemble$SpawnBio),1:(ncol(modsummary.ensemble$SpawnBio)-2)] 
-       #Current reatlive stock status
-       Bratio.mods<-modsummary.ensemble$Bratio[2,1:(ncol(modsummary.ensemble$Bratio)-2)] 
-       Bratio.sd.mods<-modsummary.ensemble$BratioSD[2,1:(ncol(modsummary.ensemble$Bratio)-2)] 
-       #SPR
-       SPR.mods<-modsummary.ensemble$SPRratio[2,1:(ncol(modsummary.ensemble$SPRratio)-2)] 
-       SPR.sd.mods<-modsummary.ensemble$SPRratioSD[2,1:(ncol(modsummary.ensemble$SPRratio)-2)] 
-       #Overfishing levels
-       
-       #Forecasted catches
-
+       mean.fxn <- function(x, y) rnorm(numdraws, mean = x, sd = y)
+       #Spawning outputs
+       #Bratio
+       SpOt_en<-Bratio_en<-F_en<-SPR_en<-list()
+       SO_0<-SO_t<-Bratio_t<-F_t<-SPR_t<-data.frame(Year=NA,Metric=NA,Model=NA)
        #Create weighted ensembles
-       Ensemble.outputs<-list()
-       Ensemble.outputs[[1]]<-list.rbind(mapply(function(x) data.frame(SO=rrnorm(Nsamps_ensemble_wts[x],
-                                  SO.init.mods[x],
-                                  SO.init.sd.mods[x]),
-                                  Label=modelnames[x]),
-                                  x=1:length(SO.init.mods),
-                                  SIMPLIFY=FALSE))
-       Ensemble.outputs[[2]]<-list.rbind(mapply(function(x) data.frame(SO=rrnorm(Nsamps_ensemble_wts[x],
-                                  SO.cur.mods[x],
-                                  SO.cur.sd.mods[x]),
-                                  Label=modelnames[x]),
-                                  x=1:length(SO.cur.mods),
-                                  SIMPLIFY=FALSE))
-       Ensemble.outputs[[3]]<-list.rbind(mapply(function(x) data.frame(SO=rrnorm(Nsamps_ensemble_wts[x],
-                                  Bratio.mods[x],
-                                  Bratio.sd.mods[x]),
-                                  Label=modelnames[x]),
-                                  x=1:length(Bratio.mods),
-                                  SIMPLIFY=FALSE))
-       Ensemble.outputs[[4]]<-list.rbind(mapply(function(x) data.frame(SO=rrnorm(Nsamps_ensemble_wts[x],
-                                  SPR.mods[x],
-                                  SPR.sd.mods[x]),
-                                  Label=modelnames[x]),
-                                  x=1:length(SPR.mods),
-                                  SIMPLIFY=FALSE))
-       names(Ensemble.outputs)<-c("SOinitial","SOcurrent","RelativeSO_curr","SPR_curr")
-       save(Ensemble.outputs,file=paste0(path2(),"/Ensemble outputs/",input$Ensemble_file,".DMP"))
-       output$Ensemble_plots <- renderPlot({ 
-       hist(Ensemble.outputs()[[1]][,1])})
-       return(Ensemble.outputs)
+       for (i in 1:length(Nsamps_ensemble_wts))
+       {
+         numdraws<-Nsamps_ensemble_wts[i]
+         SpOt_en[[i]]<-Map(mean.fxn,modsummary.ensemble$SpawnBio[,i],modsummary.ensemble$SpawnBioSD[,i])
+         names(SpOt_en[[i]])<-modsummary.ensemble$SpawnBio$Yr
+         SO_0<-rbind(SO_0,data.frame(Year=as.numeric(names(SpOt_en[[i]][1])),Metric=unlist(SpOt_en[[i]][1]),Model=input$myEnsemble[i]))
+         SO_t<-rbind(SO_t,data.frame(Year=names(SpOt_en[[i]][nrow(modsummary.ensemble$SpawnBio)]),Metric=unlist(SpOt_en[[i]][length(Nsamps_ensemble_wts)]),Model=input$myEnsemble[i]))
+         Bratio_en[[i]]<-Map(mean.fxn,modsummary.ensemble$Bratio[,i],modsummary.ensemble$BratioSD[,i])               
+         names(Bratio_en[[i]])<-modsummary.ensemble$Bratio$Yr       
+         Bratio_t<-rbind(Bratio_t,data.frame(Year=names(Bratio_en[[i]][nrow(modsummary.ensemble$Bratio)]),Metric=unlist(Bratio_en[[i]][nrow(modsummary.ensemble$Bratio)]),Model=input$myEnsemble[i]))
+         F_en[[i]]<-Map(mean.fxn,modsummary.ensemble$Fvalue[,i],modsummary.ensemble$FvalueSD[,i])               
+         names(F_en[[i]])<-modsummary.ensemble$Fvalue$Yr       
+         F_t<-rbind(F_t,data.frame(Year=names(F_en[[i]][nrow(modsummary.ensemble$Fvalue)]),Metric=unlist(F_en[[i]][nrow(modsummary.ensemble$Fvalue)]),Model=input$myEnsemble[i]))
+         SPR_en[[i]]<-Map(mean.fxn,modsummary.ensemble$SPRratio[,i],modsummary.ensemble$SPRratioSD[,i])               
+         names(SPR_en[[i]])<-modsummary.ensemble$SPRratio$Yr       
+         SPR_t<-rbind(SPR_t,data.frame(Year=names(SPR_en[[i]][nrow(modsummary.ensemble$SPRratio)]),Metric=unlist(SPR_en[[i]][nrow(modsummary.ensemble$SPRratio)]),Model=input$myEnsemble[i]))
+       }
+
+       #Reduce(intersect,list(names(list1),names(list2),names(list3))) # Code to find matches in multiple vectors. For future option of mixing models with different dimensions.
+
+       #Assemble ensembles
+       Ensemble_SO<-SpOt_en[[1]]
+       Ensemble_Bratio<-Bratio_en[[1]]
+       Ensemble_F<-F_en[[1]]
+       Ensemble_SPR<-SPR_en[[1]]
+       for(ii in 2:length(Nsamps_ensemble_wts))
+       {
+         Ensemble_SO<-mapply(c,Ensemble_SO,SpOt_en[[ii]])
+         Ensemble_Bratio<-mapply(c,Ensemble_Bratio,Bratio_en[[ii]])
+         Ensemble_F<-mapply(c,Ensemble_F,F_en[[ii]])
+         Ensemble_SPR<-mapply(c,Ensemble_SPR,SPR_en[[ii]])
+       }
+       
+       SO_0<-rbind(SO_0[-1,],data.frame(Year=as.numeric(colnames(Ensemble_SO)[1]),Metric=Ensemble_SO[,1],Model="Ensemble"))
+       SO_t<-rbind(SO_t[-1,],data.frame(Year=as.numeric(colnames(Ensemble_SO)[ncol(Ensemble_SO)]),Metric=Ensemble_SO[,ncol(Ensemble_SO)],Model="Ensemble"))
+       Bratio_t<-rbind(Bratio_t[-1,],data.frame(Year=as.numeric(colnames(Ensemble_Bratio)[ncol(Ensemble_Bratio)]),Metric=Ensemble_Bratio[,ncol(Ensemble_Bratio)],Model="Ensemble"))
+       F_t<-rbind(F_t[-1,],data.frame(Year=as.numeric(colnames(Ensemble_F)[ncol(Ensemble_F)]),Metric=Ensemble_F[,ncol(Ensemble_F)],Model="Ensemble"))
+       SPR_t<-rbind(SPR_t[-1,],data.frame(Year=as.numeric(colnames(Ensemble_SPR)[ncol(Ensemble_SPR)]),Metric=Ensemble_SPR[,ncol(Ensemble_SPR)],Model="Ensemble"))
+
+       SO_0$Year<-as.factor(SO_0$Year)
+       SO_t$Year<-as.factor(SO_t$Year)
+       Bratio_t$Year<-as.factor(Bratio_t$Year)
+       F_t$Year<-as.factor(F_t$Year)
+       SPR_t$Year<-as.factor(SPR_t$Year)
+
+#       mean_cl_quantile <- function(x, q = c(0.1, 0.9), na.rm = TRUE){
+#                    dat <- data.frame(y = mean(x, na.rm = na.rm),
+#                    ymin = quantile(x, probs = q[1], na.rm = na.rm),
+#                    ymax = quantile(x, probs = q[2], na.rm = na.rm))
+#                    return(dat)
+#        }
+
+       
+      show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[2],text="Preparing ensemble plots")
+      
+       #Boxplots
+       gg1<-ggplot(SO_0,aes(Model,Metric))+
+        geom_violin()+
+        ylab("Initial Spawning Output")
+       gg2<-ggplot(SO_t,aes(Model,Metric))+
+        geom_violin()+
+        ylab("Terminal Year Spawning Output")
+       gg3<-ggplot(Bratio_t,aes(Model,Metric))+
+        geom_violin()+
+        ylab("Relative stock status")
+       gg4<-ggplot(F_t,aes(Model,Metric))+
+        geom_violin()+
+        ylab("Fishing mortality")
+       gg5<-ggplot(SPR_t,aes(Model,Metric))+
+        geom_violin()+
+        ylab("1-SPR")
+
+        
+        ggarrange(gg1,gg2,gg3,gg4,gg5)
+        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots.png"))
+             output$Ensemble_plots <- renderPlot({ 
+       ggarrange(gg1,gg2,gg3,gg4,gg5)})
+
+      #Spawning Output plot
+      Ensemble_SO_plot<-reshape2::melt(Ensemble_SO,value.name="SO")
+      colnames(Ensemble_SO_plot)[2]<-"Year"
+      Ensemble_SO_plot$Year<-as.factor(Ensemble_SO_plot$Year)
+      ggplot(Ensemble_SO_plot,aes(Year,SO,fill=Year))+
+        geom_violin()+
+        theme(legend.position="none")+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        ylab("Spawning Output")
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SO.png"))
+
+      #Relative stock status plot
+      Ensemble_Bratio_plot<-reshape2::melt(Ensemble_Bratio,value.name="Bratio")
+      colnames(Ensemble_Bratio_plot)[2]<-"Year"
+      Ensemble_Bratio_plot$Year<-as.factor(Ensemble_Bratio_plot$Year)
+      ggplot(Ensemble_Bratio_plot,aes(Year,Bratio,fill=Year))+
+        geom_violin()+
+        theme(legend.position="none")+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        ylab("SBt/SO0")
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_Bratio.png"))
+
+      #F plot
+      Ensemble_F_plot<-reshape2::melt(Ensemble_F,value.name="F")
+      colnames(Ensemble_F_plot)[2]<-"Year"
+      Ensemble_F_plot$Year<-as.factor(Ensemble_F_plot$Year)
+      ggplot(Ensemble_F_plot,aes(Year,F,fill=Year))+
+        geom_violin()+
+        theme(legend.position="none")+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        ylab("Fishing mortality")
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_F.png"))
+
+      #1-SPR plot
+      Ensemble_SPR_plot<-reshape2::melt(Ensemble_SO,value.name="SPR")
+      colnames(Ensemble_SPR_plot)[2]<-"Year"
+      Ensemble_SPR_plot$Year<-as.factor(Ensemble_SPR_plot$Year)
+      ggplot(Ensemble_SPR_plot,aes(Year,SPR,fill=Year))+
+        geom_violin()+
+        theme(legend.position="none")+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        ylab("1-SPR")
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SPR.png"))
+
+      #Get simpler plots for SB0, SBcurrent, RSS, F, and SPR in terminal year
+
+#      ggplot(reshape2::melt(Ensemble_Bratio,value.name="Bratio"),aes(Var2,Bratio))+
+#        stat_summary(geom = "line", fun  = median)+
+#        ylim(0,1)+
+#        stat_summary(geom = "ribbon", fun.data = mean_cl_quantile, alpha = 0.3)
+      #Make outputs
+      show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[3],text="Saving ensemble objects")
+       Model.outputs<-list("Spawning Output"=SpOt_en,"Relative Stock Status"=Bratio_en,"Fishing mortality"=F_en,"1-SPR"=SPR_en)
+       Ensemble.outputs<-list("Spawning Output"=Ensemble_SO,"Relative Stock Status"=Ensemble_Bratio,"Fishing mortality"=Ensemble_F,"1-SPR"=Ensemble_SPR)
+       Ensemble.outputs.plots<-list("Spawning Output"=Ensemble_SO_plot,"Relative Stock Status"=Ensemble_Bratio_plot,"Fishing mortality"=Ensemble_F_plot,"1-SPR"=Ensemble_SPR_plot)
+       save(Model.outputs,file=paste0(Ensemble_model_dir_out,"/Model_results",".DMP"))
+       save(Ensemble.outputs,file=paste0(Ensemble_model_dir_out,"/Ensemble_results",".DMP"))
+       save(Ensemble.outputs.plots,file=paste0(Ensemble_model_dir_out,"/Ensemble_results_plots",".DMP"))
+    remove_modal_spinner()       
+#       return(Ensemble.outputs)
     })
-  })
+  #})
 
 #observeEvent(req(input$run_Ensemble&exists("Ensemble.outputs()")),{
  #   

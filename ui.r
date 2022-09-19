@@ -2,13 +2,14 @@ require(shiny)
 require(shinyjs)
 require(shinyWidgets)
 require(shinyFiles)
+require(shinyBS)
 
 linebreaks <- function(n){HTML(strrep(br(), n))}
 
 shinyUI(fluidPage(theme = "bootstrap.css",
   useShinyjs(),
   titlePanel("Welcome to the Stock Synthesis data-limited tool (SS-DL tool)"),
-      h5(p(strong("This tool uses the Stock Synthesis framework to implement the following types of models:"))),
+      h5(p(strong("This tool uses the Stock Synthesis framework to implement a variety of types of models:"))),
        tags$ul(tags$li(h5(p(em("Simple Stock Synthesis (SSS) estimator of sustainable catch."))))),
        tags$ul(tags$li(h5(p(em("Extended Simple Stock Synthesis for MLE (XSSS-MLE) estimator of sustainable catch."))))),
        tags$ul(tags$li(h5(p(em("Length-only (SS-LO) estimation of relative biomass, SPR and F."))))),
@@ -1063,7 +1064,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             imageOutput("Retro_comp_plotBratio"),                      
             value=5),
 
-          tabPanel("Sensitivities",
+          tabPanel("Sensitivity Plots",
             # uiOutput("Sensi_comp_plot"),            
             h4("Time series sensitivity plots"), 
             imageOutput("Sensi_comp_plot",width="50%"),            
