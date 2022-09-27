@@ -5,7 +5,7 @@ The SS-DL tool uses Stock Synthesis (Methot and Wetzel 2013) to implement severa
 
 ## Installing libraries and running the SS-DL tool
 ```R
-packages<-c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy","truncnorm","ggpubr","flextable","officer","gridExtra","wesanderson")
+packages<-c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy","truncnorm","ggpubr","flextable","officer","gridExtra","wesanderson","data.table")
 
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
