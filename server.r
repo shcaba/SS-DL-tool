@@ -2975,7 +2975,7 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
 
 
 ##################################################################
-### PREPARE FILES andD RUN Length and Age-based Stock Synthsis ###
+### PREPARE FILES and RUN Length and Age-based Stock Synthsis ###
 ##################################################################
 SS.file.update<-observeEvent(input$run_SS,{
 		# if(is.null(inFile) | !anyNA(inp$
@@ -3471,7 +3471,7 @@ if(!input$use_par)
     if(!is.null(input$GT1)){if(input$GT1){ctl.file$N_platoon<-1}}
     
     #LENGTH or AGE-ONLY
-		if(all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))==TRUE)
+		if(all(!is.null(c(rv.Lt$data,rv.Age$data,rv.Index$data)),is.null(rv.Ct$data))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f,input$k_f,input$t0_f,c(0:Nages()))
     #Females
@@ -3532,7 +3532,7 @@ if(!input$use_par)
     }
 
     #LENGTH and CATCH with fixed parameters
-    if(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))==TRUE)
+    if(all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f_fix,input$k_f_fix,input$t0_f_fix,c(0:Nages()))
     #Females
@@ -3599,7 +3599,7 @@ if(!input$use_par)
     }
 
     #LENGTH and CATCH with estimated parameters
-    if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))==TRUE)
+    if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))==TRUE)
     {
     fem_vbgf<-VBGF(input$Linf_f_mean,input$k_f_mean,input$t0_f_mean,c(0:Nages()))
     #c("lognormal","truncated normal","uniform","beta")
