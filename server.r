@@ -4443,7 +4443,7 @@ if(input$use_forecastnew)
        sendSweetAlert(
         session = session,
         title = "Model Warning",
-        text = "Model did not run or Hessian did not invert. Double check each input for missing values (or for 0 SD for lognormal priors) and/or re-run model using a different specification (e.g., starting values).",
+        text = "Model did not run or Hessian did not invert. Double check data files for errors and each input for missing values (or for 0 SD for lognormal priors) and/or re-run model using a different model specification (e.g., starting values).",
         type = "warning")
      }
     remove_modal_spinner()

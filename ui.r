@@ -672,7 +672,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       uiOutput("AdvancedSS_GT1"),
       uiOutput("AdvancedSS_retro_choice"),
       uiOutput("AdvancedSS_retro_years"),
-      h5(p("Define modelled length bins. Default values are by 2 cm bin ranging from 4 to 25% above the Linf value")),
+      h5(p("Define modelled length bins. Default values are by 2 cm bin ranging from 4 to 25% above the Linf value. If using conditional age at lengths, length bins must be consistent with these population bins, not the length data bins.")),
       h5(p(em("Inputs must be smaller and larger than the length compositin bins. Input values will be overridden to meet this requirement"))),
       uiOutput("AdvancedSS_Ltbin")
       
