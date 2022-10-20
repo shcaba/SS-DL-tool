@@ -1374,7 +1374,7 @@ output$Male_parms_inputs_M_SSS<- renderUI({
        dropdownButton(
           selectInput("M_m_prior_sss","Prior type",c("lognormal","normal","uniform","no prior")),
           numericInput("M_m_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
-          numericInput("M_m_SD_sss", "SD", value=0.2,min=0, max=10000, step=0.001),
+          numericInput("M_m_SD_sss", "SD", value=0.44,min=0, max=10000, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
             )
     }

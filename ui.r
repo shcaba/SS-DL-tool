@@ -385,7 +385,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
         dropdownButton(
           selectInput("M_prior_sss","Prior type",c("lognormal","normal","uniform","no prior")),
           numericInput("M_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.00001),
-          numericInput("M_f_SD_sss", "SD", value=0.2,min=0, max=10000, step=0.00001),
+          numericInput("M_f_SD_sss", "SD", value=0.44,min=0, max=10000, step=0.00001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
             ),
       h5(strong("Growth")),            

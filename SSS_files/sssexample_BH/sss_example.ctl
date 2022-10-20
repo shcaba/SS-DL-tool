@@ -55,8 +55,8 @@
 -100  1000  20.7718 20.8  10  0 -3  0 0 0 0 0 0 0 # L_at_Amin_Fem_GP_1
 1  1000  41.6366 41.4  10  0 -3  0 0 0 0 0 0 0 # L_at_Amax_Fem_GP_1
 0.001 0.4 0.165916  0.166 0.05  0 -3  0 0 0 0 0 0 0 # VonBert_K_Fem_GP_1
-0.01  5 1.34174 1.31  0.5 0 -5  0 0 0 0 0 0 0 # CV_young_Fem_GP_1
-0.01  5 2.56502 2.68  0.5 0 -5  0 0 0 0 0 0 0 # CV_old_Fem_GP_1
+0.01  5 0.1 1.31  0.5 0 -5  0 0 0 0 0 0 0 # CV_young_Fem_GP_1
+0.01  5 0.1 2.68  0.5 0 -5  0 0 0 0 0 0 0 # CV_old_Fem_GP_1
 -1 3 1.00E-05  1.00E-05  99  0 -99 0 0 0 0 0 0 0 # Wtlen_1_Fem
 1 5 3.1026  3.1026  99  0 -99 0 0 0 0 0 0 0 # Wtlen_2_Fem
 0.1  1000  32.1  32.1  99  0 -99 0 0 0 0 0 0 0 # Mat50%_Fem
@@ -67,8 +67,8 @@
 -100  1000  20.7718 20.8  10  0 -3  0 0 0 0 0 0 0 # L_at_Amin_Mal_GP_1
 0.1  1000  41.6366 41.4  10  0 -3  0 0 0 0 0 0 0 # L_at_Amax_Mal_GP_1
 0.01 0.4 0.165916  0.166 0.05  0 -3  0 0 0 0 0 0 0 # VonBert_K_Mal_GP_1
-0.01  5 1.34174 1.31  0.5 0 -5  0 0 0 0 0 0 0 # CV_young_Mal_GP_1
-0.01  5 2.56502 2.68  0.5 0 -5  0 0 0 0 0 0 0 # CV_old_Mal_GP_1
+0.01  5 0.1 1.31  0.5 0 -5  0 0 0 0 0 0 0 # CV_young_Mal_GP_1
+0.01  5 0.1 2.68  0.5 0 -5  0 0 0 0 0 0 0 # CV_old_Mal_GP_1
 -1 3 9.88E-06  9.88E-06  99  0 -99 0 0 0 0 0 0 0 # Wtlen_1_Mal
 1 5 3.1039  3.1039  99  0 -99 0 0 0 0 0 0 0 # Wtlen_2_Mal
 #0 2 1 1 99  0 -99 0 0 0 0 0 0 0 # RecrDist_GP_1
@@ -89,7 +89,7 @@
 0  # 0/1 to use steepness in initial equ recruitment calculation
 0  #  future feature:  0/1 to make realized sigmaR a function of SR curvature
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn #  parm_name
-0.01 20 9 9 5 0 1 0 0 0 0 0 0 0 # SR_LN_R0
+0.0001 20 9 9 5 0 1 0 0 0 0 0 0 0 # SR_LN_R0
 0.2 1 0.79 0.79 0.15 2 -2 0 0 0 0 0 0 0 # SR_BH_steep
            0.5           1.2           0.7           0.7            99             0         -6          0          0          0          0          0          0          0 # SR_sigmaR
             -5             5             0             0            99             0        -99          0          0          0          0          0          0          0 # SR_regime
