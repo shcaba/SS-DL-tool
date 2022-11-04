@@ -1,6 +1,6 @@
 # Starter File
-SS_LB.dat
-SS_LB.ctl
+datafile.dat
+controlfile.ctl
 0 # 0=use init values in control file; 1=use ss.par
 ##############################################################
 # File output is verbose by default, console output is not.

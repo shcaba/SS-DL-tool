@@ -2016,6 +2016,9 @@ L95<-reactive({
 ### PLOTS ###
 #############
 
+##################
+### CATCH PLOT ###
+##################
  observeEvent(req(!is.null(rv.Ct$data)), {
       shinyjs::show(output$catch_plots_label<-renderText({"Removal history"}))
   })
@@ -2040,9 +2043,9 @@ L95<-reactive({
     })
   })
 
-
-#Plot length compoistions
-# length compositions 
+##########################
+### LENGTH COMPS PLOTS ###
+########################## 
 observeEvent(req(!is.null(rv.Lt$data)), {
       shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions"}))
   })
@@ -2097,6 +2100,10 @@ if(!is.null(rv.Lt$data))
 # 		# }
 # 		})
 # 	})
+
+#################
+### AGE PLOTS ###
+#################
 observeEvent(req(!is.null(rv.Age$data)), {
     	shinyjs::show(output$marginal_age_comp_plots_label<-renderText({"Marginal age compositions"}))
   })
@@ -2175,8 +2182,9 @@ observeEvent(req(!is.null(rv.Age$data)), {
 # 					ylab("Frequency")			 
 # 	}) 
  
-
-
+##################
+### INDEX PLOT ###
+##################
  observeEvent(req(!is.null(rv.Index$data)), {
       shinyjs::show(output$index_plots_label<-renderText({"Indices of Abundance"}))
   })
@@ -2187,14 +2195,21 @@ observeEvent(req(!is.null(rv.Age$data)), {
     {
     output$Indexplot <- renderPlot({ 
       if (is.null(rv.Index$data)) return(NULL)     
-        
         plot.Index<-rv.Index$data
         plot.Index[,3]<-as.factor(plot.Index[,3])
-        ggplot(plot.Index,aes(x=Year,y=Index,group=Fleet, colour=Fleet)) +  
+        plot.Index.zscore<-list()
+        for(i in 1:length(unique(plot.Index$Fleet)))
+        {
+          plot.Index.temp<-plot.Index[plot.Index$Fleet %in% unique(plot.Index$Fleet)[i],]
+          plot.Index.temp$Index<-(plot.Index.temp$Index-mean(plot.Index.temp$Index))/sd(plot.Index.temp$Index)
+          plot.Index.zscore[[i]]<-plot.Index.temp
+        }
+          plot.Index.zs<-do.call("rbind", plot.Index.zscore)
+        ggplot(plot.Index.zs,aes(x=Year,y=Index,group=Fleet, colour=Fleet)) +  
         geom_line(lwd=1.1) +
         geom_errorbar(aes(ymin=qlnorm(0.0275,log(Index),CV),ymax=qlnorm(0.975,log(Index),CV),group=Fleet),width=0,size=1)+ 
         geom_point(aes(colour=Fleet),size=4) +  
-        ylab("Index") + 
+        ylab("Z-score") + 
         xlab("Year") +  
         scale_color_viridis_d() 
     })
@@ -2204,8 +2219,9 @@ observeEvent(req(!is.null(rv.Age$data)), {
   })
 
 
-
-#Plot M by age
+#####################
+### Plot M by age ###
+#####################
 output$Mplot<-renderPlot({ 
 			mf.in = M_f_in()+0.000000000000001 
 			mm.in = M_f_in()+0.000000000000001
@@ -2226,7 +2242,9 @@ output$Mplot<-renderPlot({
           annotation_custom(Nage_4_plot) 
 		}) 
 
-#Plot VBGF and maturity
+##############################
+### Plot VBGF and maturity ###
+##############################
 output$VBGFplot<-renderPlot({ 
    	f_Linf = m_Linf = Linf() 
    	f_k = m_k = k_vbgf() 
@@ -2263,7 +2281,9 @@ output$VBGFplot<-renderPlot({
   	 } 
 	}) 
 
-#Selectivity
+###################
+### Selectivity ###
+###################
  # observeEvent(req(input$Sel50,input$Selpeak), {
  #      shinyjs::show(output$Sel_plots_label<-renderText({"Selectivity"}))
  #  })
@@ -2465,6 +2485,7 @@ output$Selplot_SSS <- renderPlot({
     })
 
 #############################################
+###              END PLOTS                ###
 #############################################
 
 #############################################
@@ -2972,7 +2993,9 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
     remove_modal_spinner()
 })
 
-
+###############
+### END SSS ###
+###############
 
 ##################################################################
 ### PREPARE FILES and RUN Length and Age-based Stock Synthsis ###
@@ -3073,8 +3096,10 @@ if(!input$use_par)
     if(!is.null(rv.Ct$data)){catch.fleets<-max(ncol(rv.Ct$data)-1)}
     if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets<-max(rv.Lt$data[,3])}
     data.file$Nfleets<-max(catch.fleets,rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3])
-    
-	#Catches
+
+#########
+#Catches#
+#########
 		if (is.null(rv.Ct$data)) 
 		{
 		#inFile<- rv.Lt$data
@@ -3133,16 +3158,16 @@ if(!input$use_par)
 		}
 
 #Index data
-    # if (is.null(rv.Index$data)) {
-    #   data.file$CPUE<-NULL  
-    #   }
-
     if (!is.null(rv.Index$data)) {
     Index.data<-rv.Index$data
     data.file$N_cpue<-unique(rv.Index$data[,3])
     data.file$CPUE<-data.frame(year=rv.Index$data[,1],seas=rv.Index$data[,2],index=rv.Index$data[,3],obs=rv.Index$data[,4],se_log=rv.Index$data[,5])
     }
 
+
+#########################
+#Length composition data#
+#########################
 #Population length data bins
   data.file$binwidth<-2
   if(!is.null(rv.Lt$data)){data.file$binwidth<-as.numeric(colnames(rv.Lt$data)[7])-as.numeric(colnames(rv.Lt$data)[6])}
@@ -3156,9 +3181,8 @@ if(!input$use_par)
       data.file$minimum_size<-input$lt_min_bin
       data.file$maximum_size<-input$lt_max_bin 
     # }
-
-	#Length composition data
 		#inFile<- rv.Lt$data
+
 		if (is.null(rv.Lt$data)) {
 		  if(input$est_parms==FALSE){Linf_bins<-input$Linf_f_fix}
 		  if(input$est_parms==TRUE){Linf_bins<-input$Linf_f_mean}
@@ -3266,7 +3290,9 @@ if(!input$use_par)
 		# }
 #		colnames(data.file$lencomp)<-lt.data.names
 
-  #Age composition data
+######################
+#Age composition data#
+######################
     Age.comp.data<-rv.Age$data
     if (is.null(Age.comp.data)) 
     {
@@ -3411,6 +3437,7 @@ if(!input$use_par)
 		# colnames(data.file$agecomp)<-age.data.names
 		# }
 
+#Create data info 
   if(data.file$Nfleets>1){
       for(i in 1:(data.file$Nfleets-1))
       {
@@ -3426,6 +3453,8 @@ if(!input$use_par)
       #Set up the correct fleet enumeration
 #      data.file$len_info[,6]<-1:data.file$Nfleets #Used for Dirichlet set-up
 #      data.file$age_info[,6]<-(data.file$Nfleets+1):(2*data.file$Nfleets) #Used for Dirichlet set-up
+
+#Survey names
       if(is.null(rv.Ct$data)){data.file$fleetinfo$fleetname<-paste0("Fishery",1:data.file$Nfleets)}
       if(!is.null(rv.Ct$data))
         {
@@ -3445,11 +3474,15 @@ if(!input$use_par)
   
   if(!is.null(rv.Index$data)&data.file$Nfleets>catch.fleets)
   {
-    if(fleet.survey.names=="RSS")
+    if(any(fleet.survey.names=="RSS"))
     {
       data.file$CPUEinfo[grep("RSS",fleet.survey.names),2]<-34
     }
   }
+
+#Change survey timing to 1
+browser()
+  data.file$fleetinfo$surveytiming[data.file$fleetinfo$type%in%3]<-1
 
 #Catch units     
     if(input$Ct_units_choice)
@@ -3974,7 +4007,7 @@ if(!input$use_par)
         ctl.file$Q_parms<-q.lines
   if(data.file$Nfleets>catch.fleets)
   {
-    if(fleet.survey.names=="RSS")
+    if(any(fleet.survey.names=="RSS"))
       {
         RSS.index<-grep("RSS",fleet.survey.names) 
         #ctl.file$Q_parms<-ctl.file$Q_parms
