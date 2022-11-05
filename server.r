@@ -3481,7 +3481,7 @@ if(!input$use_par)
   }
 
 #Change survey timing to 1
-browser()
+
   data.file$fleetinfo$surveytiming[data.file$fleetinfo$type%in%3]<-1
 
 #Catch units     
