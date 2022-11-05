@@ -3062,8 +3062,8 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 		#Read data and control files
     if(!input$user_model)
     {
-      data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
-      ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
+      data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/datafile.dat")) 
+      ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),use_datlist = TRUE, datlist=data.file)       
     }
 
 
@@ -3492,7 +3492,7 @@ browser()
       data.file$fleetinfo[,4]<-ct.units
     }
 
-		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/SS_LB.dat"),overwrite=TRUE)			
+		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/datafile.dat"),overwrite=TRUE)			
   }
 		####################### END DATA FILE #####################################
 ##################################################################################
@@ -4104,7 +4104,7 @@ browser()
 				ctl.file$init_F[,7]<--1
 			}
 
-		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/SS_LB.ctl"),overwrite=TRUE)
+		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)
   }
 }
 		####################### END CTL FILE ####################################
@@ -4128,7 +4128,7 @@ browser()
 
     if(!input$use_datanew|is.null(input$use_datanew))
     {
-      if(!input$user_model|is.null(input$use_datanew)){starter.file$datfile<-"SS_LB.dat"}
+      if(!input$user_model|is.null(input$use_datanew)){starter.file$datfile<-"datafile.dat"}
     }
 
 #Use controlnew file
@@ -4139,7 +4139,7 @@ browser()
 
     if(!input$use_controlnew|is.null(input$use_controlnew))
     {
-      if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"SS_LB.ctl"}
+      if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
     }
 
 
