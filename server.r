@@ -323,12 +323,14 @@ observeEvent(req(any(!is.null(rv.Ct$data),!is.null(rv.Lt$data),!is.null(rv.Age$d
   if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
   if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
   if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
-  if(length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt))))!=length(seq(1:max(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)),na.rm=TRUE)))))
+  
+  fleets.no.negs<-unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0] #remove any negative fleets
+  if(length(fleets.no.negs)!=length(seq(1:max(fleets.no.negs))))
    {
      sendSweetAlert(
         session = session,
         title = "Model Warning",
-        text = "Non-consecutive fleet numbering. Check all data sets (e.g., catch, lengths, ages, indices) to make sure all fleets from 1 to the maximum fleet number are found when across all data sets. For instance, if you have 3 total fleets, there should not be a fleet number > 3 (e.g., 1,2,4). All fleets are not expected in each data file, just across all data files.",
+        text = "Non-consecutive fleet numbering. Check all data sets (e.g., catch, lengths, ages, indices) to make sure all fleets from 1 to the maximum fleet number are found when considered across all data sets. For instance, if you have 3 total fleets, there should not be a fleet number > 3 (e.g., 1,2,4). All fleets are not expected in each data file, just across all data files.",
         type = "warning")      
    }
 })
@@ -3019,12 +3021,9 @@ SS.file.update<-observeEvent(input$run_SS,{
 		# 							))
 		# {
 
-  #observeEvent(input$run_SS, {
     updateTabsetPanel(session, "tabs",
       selected = '1')
-   # })
 
-show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
 		# progress <- shiny::Progress$new(session, min=1, max=2)
   #          on.exit(progress$close())
        
@@ -3085,7 +3084,48 @@ if(input$use_controlnew)
   #    data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
   #    ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
   #  }
-if(!input$use_par)
+
+#Prepare inputs to evaluate any errors
+      Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
+      Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
+      Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
+      Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
+      bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
+      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
+      #sel.inputs.comps<-length(Sel50)-length(Sel50_phase)-length(Selpeak)-length(Selpeak_phase)
+      sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase))
+      Nfleets<-max(ncol(rv.Ct$data)-1,rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3])
+
+if(input$Sel_choice=="Dome-shaped")
+    {       
+      PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
+      PeakDesc_phase<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_phase,","))))
+      LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
+      LtPeakFinal_phase<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_phase,","))))
+      FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
+      FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
+      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
+      sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase),length(PeakDesc),length(PeakDesc_phase),length(LtPeakFinal),length(LtPeakFinal_phase),length(FinalSel),length(FinalSel_phase))
+    }
+
+#Search for errors in inputs      
+      #Throw warning if not enough selectivity inputs
+      if(!all(Nfleets==sel.inputs.lts))
+      {
+      #Throw warning if not enough selectivity inputs
+         sendSweetAlert(
+          session = session,
+          title = "Selectivity input warning",
+          text = "Please check to see if you have provided filled in the inputs correctly. Especially check selectivity for missing fleets (both in parameter and phases). Total fleets includes fishing fleets and surveys.",
+          type = "error")
+         remove_modal_spinner()
+      }
+
+
+  if(all(Nfleets==sel.inputs.lts))
+  {     
+  show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
+  if(!input$use_par)
   {
     if(all(!input$use_datanew,!input$user_model))
     {
@@ -3834,10 +3874,24 @@ if(!input$use_par)
       Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
       bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
       minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
+      sel.inputs.comps<-length(Sel50)-length(Sel50_phase)-length(Selpeak)-length(Selpeak_phase)
+      sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase))
 
     if(input$Sel_choice=="Logistic")
 		{
-			#ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
+			#Throw warning if not enough selectivity inputs
+      if(!all(data.file$Nfleets==sel.inputs.lts))
+      {
+         sendSweetAlert(
+          session = session,
+          title = "Selectivity input warning",
+          text = "Please check to see if you have provided selectivity inputs (both parameter and phases) for all fleets in the model. This includes fishing fleets and surverys.",
+          type = "error")
+         remove_modal_spinner()
+         stopApp()
+      }
+      
+      #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin,Selpeak[1]+minmaxbin)
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
@@ -3853,7 +3907,21 @@ if(!input$use_par)
       ctl.file$size_selex_parms[6,7]<- -1
 			}
 		if(input$Sel_choice=="Dome-shaped")
-		{     
+		{       
+      #Throw warning if not enough selectivity inputs
+      sel.inputs.comps<-length(Sel50)-length(Sel50_phase)-length(Selpeak)-length(Selpeak_phase)-length(PeakDesc)-length(PeakDesc_phase)-length(LtPeakFinal)-length(LtPeakFinal_phase)-length(FinalSel)-length(FinalSel_phase)
+      sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase),length(PeakDesc),length(PeakDesc_phase),length(LtPeakFinal),length(LtPeakFinal_phase),length(FinalSel),length(FinalSel_phase))
+      if(!all(data.file$Nfleets==sel.inputs.lts))
+      {
+         sendSweetAlert(
+          session = session,
+          title = "Selectivity input warning",
+          text = "Please check to see if you have provided selectivity inputs (both parameter and phases) for all fleets in the model. This includes fishing fleets and surverys.",
+          type = "error")
+          remove_modal_spinner()
+          break
+      }
+
       PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
       PeakDesc_phase<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_phase,","))))
       LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
@@ -4485,7 +4553,7 @@ if(input$use_forecastnew)
     updateTabsetPanel(session, "tabs",
       selected = '2')
     })
-
+  }
  })
 
 
