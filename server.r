@@ -3085,6 +3085,8 @@ if(input$use_controlnew)
   #    ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)       
   #  }
 
+if(!input$user_model)
+{
 #Prepare inputs to evaluate any errors
       Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
       Sel50_phase<-as.numeric(trimws(unlist(strsplit(input$Sel50_phase,","))))
@@ -3095,6 +3097,7 @@ if(input$use_controlnew)
       #sel.inputs.comps<-length(Sel50)-length(Sel50_phase)-length(Selpeak)-length(Selpeak_phase)
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase))
       Nfleets<-max(ncol(rv.Ct$data)-1,rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3])
+
 
 if(input$Sel_choice=="Dome-shaped")
     {       
@@ -3124,7 +3127,8 @@ if(input$Sel_choice=="Dome-shaped")
 
   if(all(Nfleets==sel.inputs.lts))
   {     
-  show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
+        checkmod<-1  #add object to verify no errors in inputs and model can be run
+        show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
   if(!input$use_par)
   {
     if(all(!input$use_datanew,!input$user_model))
@@ -4175,7 +4179,11 @@ if(input$Sel_choice=="Dome-shaped")
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)
   }
 }
+}
+}
 		####################### END CTL FILE ####################################
+if(exists("checkmod")|input$user_model)
+  {
       starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
 #Use par file
     if(input$use_par)
@@ -4553,7 +4561,7 @@ if(input$use_forecastnew)
     updateTabsetPanel(session, "tabs",
       selected = '2')
     })
-  }
+  }  
  })
 
 
