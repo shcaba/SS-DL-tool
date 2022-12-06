@@ -1471,7 +1471,7 @@ output$Male_parms_inputs_CV_old_SSS <- renderUI({
   })
 
 
-output$Male_parms_inputs4_SSS<- renderUI({
+output$Male_parms_inputs_WL_SSS<- renderUI({
 	if(input$male_parms_SSS){
       fluidRow(column(width=6,numericInput("WLa_m_sss", "Weight-Length alpha", 
       										value=0.00001,min=0, max=10000, step=0.000000001)),
@@ -2708,7 +2708,7 @@ print(1)
         #CV old
         if(input$CV_lt_f_old_prior_sss=="lognormal"){ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_old_mean_sss,log(input$CV_lt_m_old_mean_sss))}
         else{ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_old_mean_sss,input$CV_lt_m_old_mean_sss)}
-        
+browser()        
         #Weight-length
         ctl.file$MG_parms[19,3:4]<-input$WLa_m_sss                                    #coefficient
         ctl.file$MG_parms[20,3:4]<- input$WLb_m_sss                                   #exponent  
