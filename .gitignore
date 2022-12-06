@@ -6,6 +6,7 @@ Scenarios
 
 # Ignore files related to API keys
 .env
+.Rhistory
 
 # Ignore SASS config files
 .sass-cache
