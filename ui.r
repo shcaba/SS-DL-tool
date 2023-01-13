@@ -449,7 +449,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
                      uiOutput("Male_parms_inputs_t0_SSS"),
                      uiOutput("Male_parms_inputs_space4_SSS"),
                      uiOutput("Male_parms_inputs_CV_young_SSS"),
-                     uiOutput("Male_parms_inputs_CV_old_SSS")
+                     uiOutput("Male_parms_inputs_CV_old_SSS"),
+                     uiOutput("Male_parms_inputs_WL_SSS")
      ),
      )
     ),
