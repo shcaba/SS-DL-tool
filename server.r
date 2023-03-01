@@ -22,6 +22,9 @@ require(gridExtra)
 require(ggpubr)
 require(grid)
 require(wesanderson)
+require(adnuts)
+require(shinystan)
+
 
 #require(paletteer)
 #require(RColorBrewer)
@@ -424,7 +427,8 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")        
-  
+        
+        shinyjs::hide("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -485,6 +489,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")        
   
+        shinyjs::hide("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -541,6 +546,7 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")        
 
+        shinyjs::hide("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -599,6 +605,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::show("run_SSS")
         shinyjs::hide("run_SS")        
 
+        shinyjs::hide("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -659,6 +666,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
+        shinyjs::hide("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -721,6 +729,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
+        shinyjs::hide("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -786,6 +795,68 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
+        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Profile_panel")
+        shinyjs::hide("Retro_panel")
+        shinyjs::hide("Sensi_Comparison_panel")
+        shinyjs::hide("Ensemble_panel")
+
+        hideTab(inputId = "tabs", target = "11")
+        showTab(inputId = "tabs", target = "2")
+        # showTab(inputId = "tabs", target = "3")
+        # showTab(inputId = "tabs", target = "4")
+        # showTab(inputId = "tabs", target = "5")
+        # showTab(inputId = "tabs", target = "6")
+   })
+
+#Model Efficiency
+observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
+        shinyjs::hide("Data_panel")
+        shinyjs::hide("panel_Ct_F_LO")
+        shinyjs::hide("panel_data_wt_lt")
+        shinyjs::hide("panel_ct_wt_LO")
+        
+        shinyjs::hide("panel_SSS")
+        shinyjs::hide("panel_SSLO_LH")
+        shinyjs::hide("panel_SSLO_fixed")
+        shinyjs::hide("panel_SS_LH_fixed_est_tog")
+        shinyjs::hide("panel_SS_LH_fixed")
+        shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_LH_est")
+        shinyjs::hide("panel_SS_est")
+
+        shinyjs::hide("panel_SS_stock_status") 
+
+        shinyjs::hide("panel_SSS_prod")
+        shinyjs::hide("panel_SS_LO_prod")
+        shinyjs::hide("panel_SS_prod_fixed")
+        shinyjs::hide("panel_SS_prod_est")
+
+        shinyjs::hide("panel_selectivity")
+        shinyjs::hide("panel_selectivity_sss")
+
+        shinyjs::hide("panel_SS_recdevs")
+
+        shinyjs::hide("panel_SS_jitter")        
+   
+        shinyjs::hide("panel_RPs")
+        shinyjs::hide("panel_Forecasts")
+
+        shinyjs::hide("panel_Mod_dims")
+        
+        shinyjs::hide("panel_advanced_SS")
+        shinyjs::hide("panel_advanced_user_SS")
+        shinyjs::hide("panel_advanced_SSS")
+
+        shinyjs::hide("OS_choice")
+        shinyjs::hide("Scenario_panel")
+
+        shinyjs::hide("panel_SSS_reps")
+
+        shinyjs::hide("run_SSS")
+        shinyjs::hide("run_SS")
+
+        shinyjs::show("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -846,6 +917,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
+        shinyjs::hide("Modeff_panel")  
         shinyjs::show("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -906,6 +978,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
+        shinyjs::hide("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::show("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -966,6 +1039,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
+        shinyjs::hide("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::show("Sensi_Comparison_panel")
@@ -1026,6 +1100,7 @@ observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
+        shinyjs::hide("Modeff_panel")  
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -1631,11 +1706,41 @@ output$AdvancedSS_nohess_user<- renderUI({
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
+  
+output$AdvancedSS_addcomms<- renderUI({ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "add_comms", 
+        label = "Add additional SS run commands",
+        shape = "round", outline = TRUE, status = "info"))) 
+  }) 
+
+  output$AdvancedSS_addcomms_comms <- renderUI({ 
+    if(!is.null(input$add_comms)){       
+      if(input$add_comms){
+      fluidRow(column(width=12, textInput("add_comms_in", "Enter additional run commands", value="")))        
+  }
+    }
+}) 
+
+output$AdvancedSS_addcomms_user<- renderUI({ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "add_comms", 
+        label = "Add additional SS run commands",
+        shape = "round", outline = TRUE, status = "info"))) 
+  }) 
+
+  output$AdvancedSS_addcomms_comms_user <- renderUI({ 
+    if(!is.null(input$add_comms_user)){       
+      if(input$add_comms_user){
+      fluidRow(column(width=12, textInput("add_comms_in", "Enter additional run commands", value="")))        
+  }
+    }
+}) 
 
 output$AdvancedSS_noplots<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_plots_tables", label = "Turn off plots and tables",
+        inputId = "no_plots_tables", label = "Turn off plots",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -1643,7 +1748,23 @@ output$AdvancedSS_noplots<- renderUI({
 output$AdvancedSS_noplots_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_plots_tables", label = "Turn off plots and tables",
+        inputId = "no_plots_tables", label = "Turn off plots",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_noestabs<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "no_tables", label = "No exectutive summary tables",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_noestabs_user<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "no_tables", label = "No exectutive summary tables",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -2708,7 +2829,7 @@ print(1)
         #CV old
         if(input$CV_lt_f_old_prior_sss=="lognormal"){ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_old_mean_sss,log(input$CV_lt_m_old_mean_sss))}
         else{ctl.file$MG_parms[18,3:4]<-c(input$CV_lt_m_old_mean_sss,input$CV_lt_m_old_mean_sss)}
-browser()        
+        
         #Weight-length
         ctl.file$MG_parms[19,3:4]<-input$WLa_m_sss                                    #coefficient
         ctl.file$MG_parms[20,3:4]<- input$WLb_m_sss                                   #exponent  
@@ -4292,11 +4413,15 @@ if(input$use_forecastnew)
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
     
     if(is.null(input$no_hess)){
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
+      cmd.in<-""
+      if(input$add_comms==TRUE){cmd.in=paste0(" ",input$add_comms_in)}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
 
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
         {
-          RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)
+      cmd.in<-" -nohess"
+      if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}
+          RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
         }
     }
 
@@ -4304,11 +4429,15 @@ if(input$use_forecastnew)
     {
       if(input$no_hess)
       {
-        RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=" -nohess",OS.in=input$OS_choice)
+      cmd.in<-" -nohess"
+      if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}
+           RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
       }
       if(!input$no_hess)
       {
-        RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
+        cmd.in<-""
+        if(input$add_comms==TRUE){cmd.in=paste0(" ",input$add_comms_in)}
+        RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
       }
     }
 
@@ -4342,17 +4471,26 @@ if(input$use_forecastnew)
         {      
           show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[4],text="Making plots")
           SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
-          #Make SS tables
+        }
+
+      if(is.null(input$no_tables))
+        {      
           show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
           try(SSexecutivesummary(Model.output))   
         }
 
-    if(!is.null(input$no_plots_tables)){      
+   if(!is.null(input$no_plots_tables)){      
       if(input$no_plots_tables==FALSE)
       {      
         #Make SS plots  
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[4],text="Making plots")
         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
+      }
+    }
+
+   if(!is.null(input$no_tables)){      
+      if(input$no_tables==FALSE)
+      {      
         #Make SS tables
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
         try(SSexecutivesummary(Model.output))   
@@ -4454,22 +4592,22 @@ if(input$use_forecastnew)
   }
  
      #Add retro runs   
-     if(input$Retro_choice){           
-     mydir<-paste0(getwd(),"/Scenarios/")
-     model_settings = get_settings(settings = list(base_name = input$Scenario_name,
-                        run = "retro",
-                        retro_yrs = input$first_retro_year:input$final_retro_year))
+  #    if(input$Retro_choice){           
+  #    mydir<-paste0(getwd(),"/Scenarios/")
+  #    model_settings = get_settings(settings = list(base_name = input$Scenario_name,
+  #                       run = "retro",
+  #                       retro_yrs = input$first_retro_year:input$final_retro_year))
 
-    # tryCatch({
-        run_diagnostics(mydir = mydir, model_settings = model_settings)
-    # },
-    # warning = function(warn){
-    #     showNotification(paste0(warn), type = 'warning')
-    # },
-    # error = function(err){
-    #     showNotification(paste0(err), type = 'err')
-    # })
-  } 
+  #   # tryCatch({
+  #       run_diagnostics(mydir = mydir, model_settings = model_settings)
+  #   # },
+  #   # warning = function(warn){
+  #   #     showNotification(paste0(warn), type = 'warning')
+  #   # },
+  #   # error = function(err){
+  #   #     showNotification(paste0(err), type = 'err')
+  #   # })
+  # } 
 	 
 	 
   	#Convergence diagnostics
@@ -4588,6 +4726,120 @@ if(input$use_forecastnew)
       if(input$Retro_choice){file.copy(paste0("Scenarios/",input$Scenario_name,"_retro"), pathModelout.dir,recursive=TRUE,overwrite=TRUE)}
     }
     })
+
+
+########################
+### Model efficiency ###
+########################
+
+      shinyDirChoose(input,"ModEff_dir", roots=roots,session=session, filetypes=c('', 'txt'))
+  pathRetro <- reactive({
+        return(parseDirPath(roots, input$ModEff_dir))
+      })
+
+  
+
+# if(exists("ModEff_dir")){print(ModEff_dir)}
+#  observeEvent(as.numeric(input$tabs)==12,{      
+#   output$ModEff_model_pick<-renderUI({
+#       pickerInput(
+#       inputId = "myModEff",
+#       label = "Choose model to evaluate",
+#       choices = list.files(pathModEff()),
+#       options = list(
+#         `actions-box` = TRUE,
+#         size = 12,
+#         `selected-text-format` = "count > 3"
+#         ),
+#       multiple = TRUE
+#       )
+#     })
+#   })
+ observeEvent(req(input$run_adnuts),{
+ modeff.mod.dir<-parseDirPath(roots, input$ModEff_dir) #pathModEff()
+ modeff.dir<-dirname(modeff.mod.dir)
+ modeff.name<-paste0(basename(modeff.mod.dir),"_",input$ModEff_choice)
+if(dir.exists(file.path(modeff.dir,modeff.name))==FALSE)
+{
+ dir.create(file.path(modeff.dir,modeff.name))
+ file.copy(list.files(modeff.mod.dir,full.names=TRUE),to=file.path(modeff.dir,modeff.name),recursive=TRUE,overwrite=TRUE)
+}
+
+#optimize model
+if(input$Opt_mod==TRUE)
+{
+  show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run initial optimization?"))
+  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="/ss -nox -mcmc 100 -hbf",OS.in=input$OS_choice)
+
+  remove_modal_spinner()
+}
+ 
+#Set mcmc model
+show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
+chains <- parallel::detectCores()-1
+m<-"ss"
+p<-file.path(modeff.dir,modeff.name)
+#Run MCMC model with either rwm or nuts
+ if(input$ModEff_choice=="RWM")
+   {
+     fit_model<- sample_rwm(model=m, path=p, iter=input$iter, warmup=0.25*input$iter,
+                       chains=chains, thin=input$thin, duration=NULL)
+   }
+
+  if (input$ModEff_choice=="Nuts") 
+  {
+    fit_model <- sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
+          chains=4, cores=4,control=list(metric='mle', max_treedepth=5))
+  }
+
+fit.mod.summary<-utils::capture.output(summary(fit_model), file=NULL)
+
+
+output$fit.model.summary <- renderText({
+ 				#paste0(fit.mod.summary[1],fit.mod.summary[2],fit.mod.summary[3])
+ 				fit.mod.summary
+			})
+
+parmax<-10
+if(length(fit_model$par_names)<10){parmax<-length(fit_model$par_names)}
+
+png(paste0(p,"/pairs_plot_slow.png"),width=600, height=350)
+ pairs_admb(fit_model, pars=1:parmax, order='slow')
+ dev.off()
+
+png(paste0(p,"/pairs_plot_fast.png"),width=600, height=350)
+ pairs_admb(fit_model, pars=1:parmax, order='fast')
+ dev.off()
+
+
+output$pairs_slow <- renderImage({
+       #region image.path1<-normalizePath(paste0(p,"/pairs_plot_fast.png"),mustWork=FALSE)
+       return(list(
+        src = paste0(p,"/pairs_plot_slow.png"),
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
+
+output$pairs_fast <- renderImage({
+       #region image.path1<-normalizePath(paste0(p,"/pairs_plot_fast.png"),mustWork=FALSE)
+       return(list(
+        src = paste0(p,"/pairs_plot_fast.png"),
+        contentType = "image/png",
+       #  width = 400,
+       # height = 300,
+       style='height:60vh'))
+      },deleteFile=FALSE)
+
+save(fit_model,file=paste0(p,"/fit_model.RData"))
+
+    remove_modal_spinner()
+
+#if(input$run_stanout==TRUE){launch_shinyadmb(fit_model)}
+
+      })
+
 
   ###########################  
   ### Likelihood profiles ###
@@ -5107,6 +5359,7 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
 #   print(input$run_Sensi_comps[1])
 # },deleteFile=FALSE)
 ####################################
+
 
 ##########################
 ### Ensemble modelling ###

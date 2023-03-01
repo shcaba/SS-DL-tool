@@ -9,7 +9,7 @@ linebreaks <- function(n){HTML(strrep(br(), n))}
 shinyUI(fluidPage(theme = "bootstrap.css",
   useShinyjs(),
   titlePanel("Welcome to the Stock Synthesis data-limited tool (SS-DL tool)"),
-      h4(p(strong("This tool uses the Stock Synthesis framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models:"))),
+      h4(p(strong("This tool uses the Stock Synthesis framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
       br(),
 
 sidebarLayout(
@@ -654,9 +654,14 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
     shinyjs::hidden(wellPanel(id="panel_advanced_SS",
     h4(strong("Additional SS options")),
+    h5(p(strong("Advanced SS commands can be found ",tags$a(href="javascript:window.open('SS_commands.html', '_blank','width=600,height=400')", " here")))),
+      
     #fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS options",FALSE))),
       uiOutput("AdvancedSS_nohess"),
+      uiOutput("AdvancedSS_addcomms"),
+      uiOutput("AdvancedSS_addcomms_comms"),
       uiOutput("AdvancedSS_noplots"),
+      uiOutput("AdvancedSS_noestabs"),
       uiOutput("AdvancedSS_par"),
       uiOutput("AdvancedSS_datanew"),
       uiOutput("AdvancedSS_controlnew"),
@@ -669,8 +674,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       uiOutput("AdvancedSS_Ctunits"),
       uiOutput("AdvancedSS_Ctunitsfleets"),
       uiOutput("AdvancedSS_GT1"),
-      uiOutput("AdvancedSS_retro_choice"),
-      uiOutput("AdvancedSS_retro_years"),
+      #uiOutput("AdvancedSS_retro_choice"),
+      #uiOutput("AdvancedSS_retro_years"),
       h5(p("Define modelled length bins. Default values are by 2 cm bin ranging from 4 to 25% above the Linf value. If using conditional age at lengths, length bins must be consistent with these population bins, not the length data bins.")),
       h5(p(em("Inputs must be smaller and larger than the length compositin bins. Input values will be overridden to meet this requirement"))),
       uiOutput("AdvancedSS_Ltbin")
@@ -694,14 +699,17 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h4(strong("Additional SS options")),
     #fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS options",FALSE))),
       uiOutput("AdvancedSS_nohess_user"),
+      uiOutput("AdvancedSS_addcomms_user"),
+      uiOutput("AdvancedSS_addcomms_comms_user"),
       uiOutput("AdvancedSS_noplots_user"),
+      uiOutput("AdvancedSS_noestabs_user"),
       uiOutput("AdvancedSS_par_user"),
       uiOutput("AdvancedSS_datanew_user"),
       uiOutput("AdvancedSS_controlnew_user"),
       uiOutput("AdvancedSS_forecastnew_user"),
       uiOutput("AdvancedSS_phase0_user"),
-      uiOutput("AdvancedSS_retro_choice_user"),
-      uiOutput("AdvancedSS_retro_years_user")
+      #uiOutput("AdvancedSS_retro_choice_user"),
+      #uiOutput("AdvancedSS_retro_years_user")
       )
      ),
 
@@ -769,6 +777,87 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 #################### 
 ### Other panels ###
 ####################
+
+########################
+### Model efficiency ###
+########################
+
+ shinyjs::hidden(wellPanel(id="Modeff_panel",
+    h4(strong("Model efficiency and Bayesian analysis")),
+    h5(em("Using ",tags$a(href="https://github.com/Cole-Monnahan-NOAA/adnuts", "AD NUTS"),"to improve model efficiency and performance.")),
+    h5(em("This can also offer speedier Bayesian approaches.")),
+    br(),
+    h5(strong("Choose folder of model to evaluate")),
+    h5(em("")),
+    shinyDirButton(
+      "ModEff_dir",
+      label="Select model folder",
+      title="Choose folder of model to evaluate"
+      ),
+    br(),
+    #uiOutput("ModEff_model_pick"),
+    br(),
+    h5(strong("Choose method to use")),
+    h5(("There are two main Bayesian methods to choose from:")),
+    tags$ul(tags$li(h5(p(em("Random walk Metropolis (RWM). This method is useful to quickly explore parameter behavior."))))),
+    tags$ul(tags$li(h5(p(em("No u-turn (Nuts). This method can quickly run Bayesian models once an efficient model is established. No thinning necessary, as that is part of the algorithm"))))),
+    
+    h5(("The following is a recommended work flow to find and run an efficient Bayesian model:")),
+    tags$ul(tags$li(h5(p(em("Optimize you model with a short Bayesian run. Click the 'optimize model' button."))))),
+    tags$ul(tags$li(h5(p(em("Run your optimized model using RWM with 2000 iterations and thin = 10, then use the pairs plots to look for parameters that don't change value across kept draws."))))),
+    tags$ul(tags$li(h5(p(em("Evaluate the produced pairs plots to look for parameters that don't change value across kept draws."))))),
+    tags$ul(tags$li(h5(p(em("Parameters that don't move should be fixed in the model, and the model re-optimized."))))),
+    tags$ul(tags$li(h5(p(em("Run the RWM model again and continue looking for and fixing any non-moving parameters."))))),
+    br(),
+    h5(("Once the model specification is finalized, you can")),
+    tags$ul(tags$li(h5(p(em("Re-run with Hessian (go back to the first tab to re-run model) to get asymptotic variance estimates. "))))),
+    tags$ul(tags$li(h5(p(em("Re-optimize, then consider using the NUTS option with 1000 iterations or keep running the RWM option until convergence criteria are reached by increasing the thinning value and/or number of iterations. This produces a Bayesian representation of uncertainty."))))),
+    br(),
+    h5(("Good model convergence is indicated when:")),
+    tags$ul(tags$li(h5(p(em("Minimum effective sample size (ESS) > 200"))))),
+    tags$ul(tags$li(h5(p(em("Rhat <1.1, This measures the ratio of overestimated to underestimated variance."))))),
+     
+  awesomeCheckbox(
+   inputId = "Opt_mod",
+   label = "Optimize model?", 
+    value = TRUE,
+   status = "danger"
+    ),
+    h5(("One should include model optimization before running the evaluation methods below if this is the first run of a given model specification, including if parameters have been fixed since the last exploration.")),
+    br(),
+
+  # awesomeCheckbox(
+  #  inputId = "run_stanout",
+  #  label = "Run Stan GUI?", 
+  #   value = TRUE,
+  #  status = "danger"
+  #   ),
+  #   br(),
+
+   h5(strong("Choose method and evaluation inputs")),
+    awesomeRadio(
+   inputId = "ModEff_choice",
+   label = "",
+    choices = c("RWM", "Nuts"),
+   selected="RWM", 
+   inline = TRUE, 
+    status = "success"
+),
+  
+
+    fluidRow(column(width=5,numericInput("iter", "How many iterations to run?", value=2000,min=1, max=1000000000000, step=1)),
+                column(width=5,numericInput("thin","Thinning (RWM only): # of iterations to keep?", value=1,min=1, max=1000000000, step=1))),
+    actionButton("run_adnuts",strong("Run model"),
+        width="100%",
+        icon("circle-play"),
+        style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192"),
+
+br(),
+br(),
+h5(strong("Once the model is finished, further model diagnostics are available by loading the fit_model.RData object created (use the load() function in R) and running launch_shinyadmb(fit_model).")),
+h5(strong("This cannot be done while the SS-DL tool is open, so either use another R terminal or close the SS-DL app.")),
+  )),
+
 
 ###########################
 ### Likelihood profiles ###
@@ -996,7 +1085,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             value=11),
 
           
-          tabPanel("SS Model output",
+          tabPanel("Model output",
             h4("Full model output is contained in the Report.sso file. The following reports are meant for quick examination."),
             h4("Checking model convergence. Check also fit to length composition data"),
             tableOutput("converge.grad"),
@@ -1027,7 +1116,25 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             h4("Time series"),
             tableOutput("SSout_table"),
             value=2),
-          
+
+          tabPanel("Model efficiency",
+            h4("Evaluate model for parameterization choices and convergence."),
+            h5("Model summary. Check if ESS>200 and Rhat<1.1."),
+            textOutput("fit.model.summary"),
+            br(),
+            br(),
+            br(),
+            h4("Pairs plot of slow mixing parameters"),
+            plotOutput("pairs_slow"),
+            br(),
+            br(),
+            br(),
+            br(),
+            br(),
+            h4("Pairs plot of fast mixing parameters"),
+            plotOutput("pairs_fast"),
+            value=12),
+
           tabPanel("Jitter exploration",
             plotOutput("Jitterplot"),
             h4("Blue values indicate minimum likelihood values; red indicate values higher than the minimum."),  

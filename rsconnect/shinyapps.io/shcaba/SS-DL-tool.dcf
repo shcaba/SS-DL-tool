@@ -1,0 +1,12 @@
+name: SS-DL-tool
+title: SS-DL-tool
+username:
+account: shcaba
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3503943
+bundleId: 4128536
+url: https://shcaba.shinyapps.io/SS-DL-tool/
+when: 1611297280.35632
+asMultiple: FALSE
+asStatic: FALSE
