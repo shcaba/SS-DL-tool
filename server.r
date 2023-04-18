@@ -560,7 +560,8 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
 
 #SSS panels
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)), {
-        shinyjs::show("Data_panel")
+        shinyjs::hide("Data_panel")
+        shinyjs::show("Data_panel_SSS")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -4789,7 +4790,7 @@ p<-file.path(modeff.dir,modeff.name)
   if (input$ModEff_choice=="Nuts") 
   {
     fit_model <- sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
-          chains=4, cores=4,control=list(metric='mle', max_treedepth=5))
+          chains=4, cores=4,control=list(metric='mle', max_treedepth=5),mceval=TRUE)
   }
 
 fit.mod.summary<-utils::capture.output(summary(fit_model), file=NULL)
