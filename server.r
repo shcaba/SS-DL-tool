@@ -4340,7 +4340,6 @@ if(exists("checkmod")|input$user_model)
       if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
     }
 
-
 #Phase 0
     if(input$use_phase0)
     {
@@ -4412,7 +4411,7 @@ if(input$use_forecastnew)
     if(input$Data_wt=="Dirichlet"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
-    
+ 				    
     if(is.null(input$no_hess)){
       cmd.in<-""
       if(input$add_comms==TRUE){cmd.in=paste0(" ",input$add_comms_in)}
@@ -4442,7 +4441,7 @@ if(input$use_forecastnew)
       }
     }
 
-
+ 				
     if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")))
       {
       Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
