@@ -384,6 +384,7 @@ hideTab(inputId = "tabs", target = "11")
 #Switch back to data from different tabs
 observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -445,6 +446,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 #Reset when all things are clicked off
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -502,6 +504,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
 #User chosen model
 observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -560,8 +563,8 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
 
 #SSS panels
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)), {
-        shinyjs::hide("Data_panel")
-        shinyjs::show("Data_panel_SSS")
+        shinyjs::show("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -621,6 +624,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 #SS-LO panels
 observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::show("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
         if(length(unique(rv.Lt$data[,3]))>1|length(unique(rv.Age$data[,3]))>1){shinyjs::show("panel_ct_wt_LO")}
@@ -685,6 +689,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 #SS-CL fixed parameters
 observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
         else (shinyjs::hide("panel_data_wt_lt"))
@@ -751,6 +756,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
 #SS-CL with parameter estimates
 observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
         else (shinyjs::hide("panel_data_wt_lt"))
@@ -813,6 +819,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
 #Model Efficiency
 observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -874,6 +881,7 @@ observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
 #Profiles
 observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -935,6 +943,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
 #Retrospecitves
 observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -996,6 +1005,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
 #Sensitivities
 observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -1057,6 +1067,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 #Ensembles
 observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")

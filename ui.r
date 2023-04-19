@@ -63,68 +63,18 @@ shinyjs::hidden(wellPanel(id="Data_panel",
               column(width=3,actionButton("reset_lt", "Length")),
               column(width=3,actionButton("reset_age", "Ages")),
               column(width=3,actionButton("reset_index", "Index"))), 
-  br(),
-  br(),
-  fluidRow(column(width=10,checkboxInput("user_model","Use existing model files?",FALSE))),
+)
+),
+
+shinyjs::hidden(wellPanel(id="Existing_files",
+ fluidRow(column(width=10,checkboxInput("user_model","Use existing model files?",FALSE))),
   h5(em("Do not use this option with catch only models.")),
   h5(em("Make sure the model run is in the Scenarios folder. Put that folder name in the Scenario name input and run the model.")),
   h5(em("Using an existing model allows you to do run complex and custom model runs outside the options of the SS-DL tool, but still use some of the quick features.")),
   h5(em("Examples are applying jitters or any of the additional SS options that do not modify the data or control files.")),
   h5(em("To do sensitivity runs for pre-existing models, make a copy of the folder and re-name it, then make desired changes in the data and/or control files.")),
-)
-),
-
-shinyjs::hidden(wellPanel(id="Data_panel_SSS",
-  h4(strong("Choose data file")),
- fluidRow(column(width=12,fileInput('file2', 'Catch time series',
-                           accept = c(
-                             'text/csv',
-                             'text/comma-separated-values',
-                             'text/tab-separated-values',
-                             'text/plain',
-                             '.csv'
-                           )
-  ))),
- 
-  fluidRow(column(width=12,fileInput('file1', 'Length composition',
-                                    accept = c(
-                                      'text/csv',
-                                      'text/comma-separated-values',
-                                      'text/tab-separated-values',
-                                      'text/plain',
-                                      '.csv'
-                                    )
-  ))),
- 
-  fluidRow(column(width=12,fileInput('file3', 'Age composition',
-            accept = c(
-              'text/csv',
-              'text/comma-separated-values',
-              'text/tab-separated-values',
-              'text/plain',
-              '.csv'
-            )
-          ))),
-
- 
-  #Mute for now, pull back in when index methods are ready
-  fileInput('file4', 'Abundance index',
-            accept = c(
-              'text/csv',
-              'text/comma-separated-values',
-              'text/tab-separated-values',
-              'text/plain',
-              '.csv'
-            )
-          ),
- 
-  h4(strong("Clear data files")),
-     fluidRow(column(width=3,actionButton("reset_ct", "Catches")),
-              column(width=3,actionButton("reset_lt", "Length")),
-              column(width=3,actionButton("reset_age", "Ages")),
-              column(width=3,actionButton("reset_index", "Index"))), 
-)
-),
+     )
+   ),
 
     shinyjs::hidden(wellPanel(id="panel_Ct_F_LO",
         h4(strong("Use constant catch or estimate fishing mortality directly?")),
