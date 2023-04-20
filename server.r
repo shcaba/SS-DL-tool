@@ -1658,6 +1658,13 @@ output$Rec_options5 <- renderUI({
     	} 
 	})  
 
+output$Rec_options6 <- renderUI({ 
+    if(input$rec_choice){ 
+          fluidRow(column(width=6, selectInput("RecDevChoice","Recruit deviation option",c("1: Devs sum to zero","2: Simple deviations","3: deviation vector","4: option 3 plus penalties"),selected="1: Devs sum to zero"))) 
+    	} 
+	})  
+
+
 #Jitter value
 output$Jitter_value <- renderUI({ 
     if(input$jitter_choice){ 
@@ -3984,7 +3991,10 @@ if(input$Sel_choice=="Dome-shaped")
 		if(input$rec_choice)
 			{
 				ctl.file$SR_parms[3,3:4]<-input$sigmaR 			#sigma R
-				ctl.file$do_recdev<-1
+        if(input$RecDevChoice=="1: Devs sum to zero"){ctl.file$do_recdev<-1}
+				if(input$RecDevChoice=="2: Simple deviations"){ctl.file$do_recdev<-2}
+				if(input$RecDevChoice=="3: deviation vector"){ctl.file$do_recdev<-3}
+				if(input$RecDevChoice=="4: option 3 plus penalties"){ctl.file$do_recdev<-4}
 				ctl.file$MainRdevYrFirst<-input$Rdev_startyr	#Start year of recruitment estimation
 				ctl.file$MainRdevYrLast<-input$Rdev_endyr		#Last year of recruitment estimation
 				ctl.file$recdev_phase<- 1
