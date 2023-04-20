@@ -555,6 +555,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
        }"),
                    uiOutput("Rec_options1"),
+                   uiOutput("Rec_options6"),
                    uiOutput("Rec_options2"),
                   fluidRow(column(width=10,checkboxInput("biasC_choice","Bias correct recruitments?",FALSE))),
                    h5("Years of no bias correction"),
