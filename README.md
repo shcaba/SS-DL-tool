@@ -3,6 +3,14 @@
 The SS-DL tool uses Stock Synthesis (Methot and Wetzel 2013) to implement several common data-limited assessment methods all in one modelling framework. Under a unified modelling framework, additional data can be added as it becomes available. The tool builds Stock Synthesis files for provided data and life history information. It produces full plots and tables for each model run via the r4ss package, as well as additional screen output for easy interpretation.
 <br></br>
 
+# Downloading the SS-DL GUI
+You want to obtain all contents in the SS-DL folder. There are two main ways to do this:
+1) Clone the SS-DL repository to your computer
+2) On this page you will find a green "Code" button at the top right of the files list. Click on this button and choose the "Download ZIP" option. This will download all contents you need. Once downloaded, unzip this folder and put it somewhere you can locate it.
+
+Once the content is on your computer, please see below on how to run the GUI.
+<br></br>
+
 ## Installing libraries and running the SS-DL tool
 ```R
 packages<-c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr","tidyr","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy","truncnorm","ggpubr","flextable","officer","gridExtra","wesanderson","data.table","adnuts","shinystan")
