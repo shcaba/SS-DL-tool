@@ -682,7 +682,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       #uiOutput("AdvancedSS_retro_choice"),
       #uiOutput("AdvancedSS_retro_years"),
       h5(p("Define modelled length bins. Default values are by 2 cm bin ranging from 4 to 25% above the Linf value. If using conditional age at lengths, length bins must be consistent with these population bins, not the length data bins.")),
-      h5(p(em("Inputs must be smaller and larger than the length compositin bins. Input values will be overridden to meet this requirement"))),
+      h5(p(em("Inputs must be smaller and larger than the length composition bins. Input values will be overridden to meet this requirement"))),
       uiOutput("AdvancedSS_Ltbin")
       
      #  prettyCheckbox(
@@ -992,7 +992,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
     h5(strong("Add reference points to spawning output plots. Blank input adds no line.")),
     fluidRow(column(width=5,numericInput("Sensi_TRP", "Target", value=NA,min=0, max=1, step=0.001)),
                 column(width=5,numericInput("Sensi_LRP","Limit", value=NA,min=0, max=1, step=0.001))),    
-    h5(strong("Sensitvitiy relative error plot features")),
+    h5(strong("Sensitivity relative error plot features")),
     h5(strong("Add sensitivity group headers, controlling number, position, and text")),
     fluidRow(column(width=6,numericInput("SensiRE_ymin", "Minimum y-axis value", value=-1,min=-100, max=100, step=0.01)),
                 column(width=6,numericInput("SensiRE_ymax","Maximum y-axis value", value=1,min=-100, max=100, step=0.01 ))),    
