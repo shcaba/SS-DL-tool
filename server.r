@@ -24,7 +24,7 @@ require(grid)
 require(wesanderson)
 require(adnuts)
 require(shinystan)
-
+#require(geomtextpath)
 
 #require(paletteer)
 #require(RColorBrewer)
@@ -2196,7 +2196,10 @@ observeEvent(req(!is.null(rv.Lt$data)), {
 output$Ltplot_it<-renderUI({
 if(!is.null(rv.Lt$data))
 {
-	output$Ltplot<-renderPlot({ 
+#	L50.plot<-Linf.plot<--1
+ # if(L50()!=NA){L50.plot=L50()}
+  #if(Linf()!=NA){Linf.plot=Linf()}
+  output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
 		  rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
@@ -2211,7 +2214,13 @@ if(!is.null(rv.Lt$data))
 #        facet_wrap(sex~year, scales="free_y",ncol=5) + 
 		    xlab("Length bin") + 
 		    ylab("Frequency") + 
-		    scale_fill_viridis_d() 
+		    scale_fill_viridis_d()+
+        #geom_vline(xintercept = -1)+
+        #geom_textvline(label = "L50", xintercept = L50(), vjust = 1.3) +
+        #geom_textvline(label="Linf", xintercept = Linf(), vjust = -0.7,hjust=2) +
+        #,lty=c(1,1,2),color=c("black","purple","blue")
+  geom_vline(xintercept = c(-1,L50(),Linf()),linetype=c("solid","solid","dashed"),colour = c("black", "black", "blue"),na.rm = TRUE,show.legend = TRUE)+
+        xlim(0,NA) 
 		}) 
       plotOutput("Ltplot")
     }
@@ -4068,7 +4077,7 @@ if(input$Sel_choice=="Dome-shaped")
           remove_modal_spinner()
           break
       }
-
+#browser()
       PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
       PeakDesc_phase<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_phase,","))))
       LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
@@ -4081,7 +4090,7 @@ if(input$Sel_choice=="Dome-shaped")
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin,Selpeak[1]+minmaxbin)
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
-			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
+			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width+0.000000001))
 			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
 			ctl.file$size_selex_parms[4,3:4]<- log(LtPeakFinal[1])
 			ctl.file$size_selex_parms[6,3:4]<- -log((1/(FinalSel[1]+0.000000001)-1))
@@ -4134,7 +4143,7 @@ if(input$Sel_choice=="Dome-shaped")
           ctl.file$size_selex_parms[6*i+1,1:2]<-c(Selpeak[i+1]-minmaxbin,Selpeak[1]+minmaxbin)
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
-          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width))
+          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width+0.000000001))
           ctl.file$size_selex_parms[6*i+2,7]<- PeakDesc_phase[i+1]
           ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
           ctl.file$size_selex_parms[6*i+3,7]<- Sel50_phase[i+1]
