@@ -2195,32 +2195,41 @@ observeEvent(req(!is.null(rv.Lt$data)), {
 observeEvent(req(!is.null(rv.Lt$data)), {
 output$Ltplot_it<-renderUI({
 if(!is.null(rv.Lt$data))
-{
-#	L50.plot<-Linf.plot<--1
- # if(L50()!=NA){L50.plot=L50()}
-  #if(Linf()!=NA){Linf.plot=Linf()}
+{  
   output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
-		  rv.Lt$data %>%  
+		   #browser()
+       rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
 		    mutate(Year = factor(year),
-		           name = as.numeric(gsub("[^0-9.-]", "", name))) %>%  
+		           name = as.numeric(gsub("[^0-9.-]", "", name)),
+               Lnu=-1,
+               L50_vline=if_else(is.na(L50()),-1,L50()),
+		           Linf_vline=if_else(is.na(Linf()),-1,Linf())) %>%
 		    ggplot(aes(name, value, color=Year)) + 
 		    geom_line() + 
         #geom_col(position="dodge") + 
-		    facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
+#		    geom_vline(data=rv.Lt$data,xintercept = c(-1,40,48),
+		    geom_vline(xintercept = c(-1,L50(),Linf()),
+        #            linetype=c("solid","solid","dashed"),
+                    #colour = c("black", "black", "blue"),
+                    na.rm = TRUE,
+                    show.legend = TRUE)+
+        #annotate("text", x=if_else(is.na(Linf()),-1,Linf()), y=-1, label= "Linf")
+        facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        facet_wrap(sex~year, scales="free_y",ncol=5) + 
 		    xlab("Length bin") + 
 		    ylab("Frequency") + 
 		    scale_fill_viridis_d()+
-        #geom_vline(xintercept = -1)+
-        #geom_textvline(label = "L50", xintercept = L50(), vjust = 1.3) +
-        #geom_textvline(label="Linf", xintercept = Linf(), vjust = -0.7,hjust=2) +
-        #,lty=c(1,1,2),color=c("black","purple","blue")
-  geom_vline(xintercept = c(-1,L50(),Linf()),linetype=c("solid","solid","dashed"),colour = c("black", "black", "blue"),na.rm = TRUE,show.legend = TRUE)+
-        xlim(0,NA) 
+        xlim(0,NA)
+        # geom_text(mapping = aes(x = vals,
+        #             y = 0,
+        #             label = Ref,
+        #             hjust = -1,
+        #             vjust = -1),
+        #             data=cuts) 
 		}) 
       plotOutput("Ltplot")
     }
@@ -4077,7 +4086,7 @@ if(input$Sel_choice=="Dome-shaped")
           remove_modal_spinner()
           break
       }
-#browser()
+
       PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc,","))))
       PeakDesc_phase<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_phase,","))))
       LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))

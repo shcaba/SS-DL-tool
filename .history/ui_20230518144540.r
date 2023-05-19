@@ -14,6 +14,7 @@ shinyUI(fluidPage(theme = "bootstrap.css",
 
 sidebarLayout(
    sidebarPanel(
+    style = "position:fixed; width:inherit;height: 90vh; overflow-y: scroll;",
 shinyjs::hidden(wellPanel(id="Data_panel",
   h4(strong("Choose data file")),
  fluidRow(column(width=12,fileInput('file2', 'Catch time series',
@@ -63,68 +64,18 @@ shinyjs::hidden(wellPanel(id="Data_panel",
               column(width=3,actionButton("reset_lt", "Length")),
               column(width=3,actionButton("reset_age", "Ages")),
               column(width=3,actionButton("reset_index", "Index"))), 
-  br(),
-  br(),
-  fluidRow(column(width=10,checkboxInput("user_model","Use existing model files?",FALSE))),
+)
+),
+
+shinyjs::hidden(wellPanel(id="Existing_files",
+ fluidRow(column(width=10,checkboxInput("user_model","Use existing model files?",FALSE))),
   h5(em("Do not use this option with catch only models.")),
-  h5(em("Using an existing model allows you to do jitters and other things on a pre-existing model run.")),
-  h5(em("Choose Jitters or any of the Additional SS options that do not modify the data or control files.")),
-  h5(em("To do sensitivity runs for pre-existing models, make changes in the data_new or control_new files and choose those files in the options list.")),
   h5(em("Make sure the model run is in the Scenarios folder. Put that folder name in the Scenario name input and run the model.")),
-)
-),
-
-shinyjs::hidden(wellPanel(id="Data_panel_SSS",
-  h4(strong("Choose data file")),
- fluidRow(column(width=12,fileInput('file2', 'Catch time series',
-                           accept = c(
-                             'text/csv',
-                             'text/comma-separated-values',
-                             'text/tab-separated-values',
-                             'text/plain',
-                             '.csv'
-                           )
-  ))),
- 
-  fluidRow(column(width=12,fileInput('file1', 'Length composition',
-                                    accept = c(
-                                      'text/csv',
-                                      'text/comma-separated-values',
-                                      'text/tab-separated-values',
-                                      'text/plain',
-                                      '.csv'
-                                    )
-  ))),
- 
-  fluidRow(column(width=12,fileInput('file3', 'Age composition',
-            accept = c(
-              'text/csv',
-              'text/comma-separated-values',
-              'text/tab-separated-values',
-              'text/plain',
-              '.csv'
-            )
-          ))),
-
- 
-  #Mute for now, pull back in when index methods are ready
-  fileInput('file4', 'Abundance index',
-            accept = c(
-              'text/csv',
-              'text/comma-separated-values',
-              'text/tab-separated-values',
-              'text/plain',
-              '.csv'
-            )
-          ),
- 
-  h4(strong("Clear data files")),
-     fluidRow(column(width=3,actionButton("reset_ct", "Catches")),
-              column(width=3,actionButton("reset_lt", "Length")),
-              column(width=3,actionButton("reset_age", "Ages")),
-              column(width=3,actionButton("reset_index", "Index"))), 
-)
-),
+  h5(em("Using an existing model allows you to do run complex and custom model runs outside the options of the SS-DL tool, but still use some of the quick features.")),
+  h5(em("Examples are applying jitters or any of the additional SS options that do not modify the data or control files.")),
+  h5(em("To do sensitivity runs for pre-existing models, make a copy of the folder and re-name it, then make desired changes in the data and/or control files.")),
+     )
+   ),
 
     shinyjs::hidden(wellPanel(id="panel_Ct_F_LO",
         h4(strong("Use constant catch or estimate fishing mortality directly?")),
@@ -605,6 +556,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
        }"),
                    uiOutput("Rec_options1"),
+                   uiOutput("Rec_options6"),
                    uiOutput("Rec_options2"),
                   fluidRow(column(width=10,checkboxInput("biasC_choice","Bias correct recruitments?",FALSE))),
                    h5("Years of no bias correction"),
@@ -731,7 +683,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       #uiOutput("AdvancedSS_retro_choice"),
       #uiOutput("AdvancedSS_retro_years"),
       h5(p("Define modelled length bins. Default values are by 2 cm bin ranging from 4 to 25% above the Linf value. If using conditional age at lengths, length bins must be consistent with these population bins, not the length data bins.")),
-      h5(p(em("Inputs must be smaller and larger than the length compositin bins. Input values will be overridden to meet this requirement"))),
+      h5(p(em("Inputs must be smaller and larger than the length composition bins. Input values will be overridden to meet this requirement"))),
       uiOutput("AdvancedSS_Ltbin")
       
      #  prettyCheckbox(
@@ -1041,7 +993,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
     h5(strong("Add reference points to spawning output plots. Blank input adds no line.")),
     fluidRow(column(width=5,numericInput("Sensi_TRP", "Target", value=NA,min=0, max=1, step=0.001)),
                 column(width=5,numericInput("Sensi_LRP","Limit", value=NA,min=0, max=1, step=0.001))),    
-    h5(strong("Sensitvitiy relative error plot features")),
+    h5(strong("Sensitivity relative error plot features")),
     h5(strong("Add sensitivity group headers, controlling number, position, and text")),
     fluidRow(column(width=6,numericInput("SensiRE_ymin", "Minimum y-axis value", value=-1,min=-100, max=100, step=0.01)),
                 column(width=6,numericInput("SensiRE_ymax","Maximum y-axis value", value=1,min=-100, max=100, step=0.01 ))),    

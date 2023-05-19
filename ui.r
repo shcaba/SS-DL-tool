@@ -14,7 +14,7 @@ shinyUI(fluidPage(theme = "bootstrap.css",
 
 sidebarLayout(
    sidebarPanel(
-    style = "height: 90vh; overflow-y: scroll;",
+    style = "position:fixed;width:32%;height: 90vh; overflow-y: scroll;",
 shinyjs::hidden(wellPanel(id="Data_panel",
   h4(strong("Choose data file")),
  fluidRow(column(width=12,fileInput('file2', 'Catch time series',
