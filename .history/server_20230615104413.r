@@ -24,7 +24,7 @@ require(grid)
 require(wesanderson)
 require(adnuts)
 require(shinystan)
-
+#require(geomtextpath)
 
 #require(paletteer)
 #require(RColorBrewer)
@@ -384,6 +384,7 @@ hideTab(inputId = "tabs", target = "11")
 #Switch back to data from different tabs
 observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -445,6 +446,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 #Reset when all things are clicked off
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -502,6 +504,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
 #User chosen model
 observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -560,8 +563,8 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
 
 #SSS panels
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)), {
-        shinyjs::hide("Data_panel")
-        shinyjs::show("Data_panel_SSS")
+        shinyjs::show("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -621,6 +624,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 #SS-LO panels
 observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::show("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
         if(length(unique(rv.Lt$data[,3]))>1|length(unique(rv.Age$data[,3]))>1){shinyjs::show("panel_ct_wt_LO")}
@@ -685,6 +689,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 #SS-CL fixed parameters
 observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
         else (shinyjs::hide("panel_data_wt_lt"))
@@ -751,6 +756,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
 #SS-CL with parameter estimates
 observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
         shinyjs::show("Data_panel")
+        shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
         else (shinyjs::hide("panel_data_wt_lt"))
@@ -813,6 +819,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
 #Model Efficiency
 observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -874,6 +881,7 @@ observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
 #Profiles
 observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -935,6 +943,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
 #Retrospecitves
 observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -996,6 +1005,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
 #Sensitivities
 observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -1057,6 +1067,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 #Ensembles
 observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
         shinyjs::hide("Data_panel")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -1647,6 +1658,13 @@ output$Rec_options5 <- renderUI({
     	} 
 	})  
 
+output$Rec_options6 <- renderUI({ 
+    if(input$rec_choice){ 
+          fluidRow(column(width=6, selectInput("RecDevChoice","Recruit deviation option",c("1: Devs sum to zero","2: Simple deviations","3: deviation vector","4: option 3 plus penalties"),selected="1: Devs sum to zero"))) 
+    	} 
+	})  
+
+
 #Jitter value
 output$Jitter_value <- renderUI({ 
     if(input$jitter_choice){ 
@@ -2177,23 +2195,34 @@ observeEvent(req(!is.null(rv.Lt$data)), {
 observeEvent(req(!is.null(rv.Lt$data)), {
 output$Ltplot_it<-renderUI({
 if(!is.null(rv.Lt$data))
-{
-	output$Ltplot<-renderPlot({ 
+{  
+  output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
-		  rv.Lt$data %>%  
+		   
+       rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
 		    mutate(Year = factor(year),
-		           name = as.numeric(gsub("[^0-9.-]", "", name))) %>%  
+		           name = as.numeric(gsub("[^0-9.-]", "", name)),
+               Lnu=-1,
+               L50_vline=if_else(is.na(L50()),-1,L50()),
+		           Linf_vline=if_else(is.na(Linf()),-1,Linf())) %>%
 		    ggplot(aes(name, value, color=Year)) + 
 		    geom_line() + 
         #geom_col(position="dodge") + 
-		    facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
+		    geom_vline(xintercept = c(-1,L50(),Linf()),
+        #            linetype=c("solid","solid","dashed"),
+                    #colour = c("black", "black", "blue"),
+                    na.rm = TRUE,
+                    show.legend = TRUE)+
+        #annotate("text", x=if_else(is.na(Linf()),-1,Linf()), y=-1, label= "Linf")
+        facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        facet_wrap(sex~year, scales="free_y",ncol=5) + 
 		    xlab("Length bin") + 
 		    ylab("Frequency") + 
-		    scale_fill_viridis_d() 
+		    scale_fill_viridis_d()+
+        xlim(0,NA)
 		}) 
       plotOutput("Ltplot")
     }
@@ -3178,7 +3207,6 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 
 # if(!input$use_customfile)
 #   {
-
 #   }
 		#Read data and control files
     if(!input$user_model)
@@ -3322,6 +3350,7 @@ if(input$Sel_choice=="Dome-shaped")
 		data.file$catch<-list.rbind(catch_temp)
 		colnames(data.file$catch)<-catch.cols
 		}
+
 
 #Index data
     if (!is.null(rv.Index$data)) {
@@ -3632,8 +3661,9 @@ if(input$Sel_choice=="Dome-shaped")
               survey.fleets<-unique(Surveyonly[,3])      
               data.file$fleetinfo$fleetname<-fleet.survey.names 
             }
-          if(is.null(rv.Index$data)|all(!is.null(rv.Index$data)&data.file$Nfleets==catch.fleets)){data.file$fleetinfo$fleetname<-fishery.names}
-          if(!is.null(rv.Index$data)& max(rv.Index$data[,3])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
+          if(is.null(rv.Index$data)|all(!is.null(rv.Index$data)&data.file$Nfleets==catch.fleets)){data.file$fleetinfo$fleetname[1:length(fishery.names)]<-fishery.names}
+          #if(!is.null(rv.Index$data)& max(rv.Index$data[,3])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
+          if(length(data.file$fleetinfo$fleetname)>length(fishery.names)){data.file$fleetinfo[c((length(fishery.names)+1):length(data.file$fleetinfo$fleetname)),1]<-3}
         }
        data.file$CPUEinfo[,1]<-1:data.file$Nfleets
      }
@@ -3973,7 +4003,10 @@ if(input$Sel_choice=="Dome-shaped")
 		if(input$rec_choice)
 			{
 				ctl.file$SR_parms[3,3:4]<-input$sigmaR 			#sigma R
-				ctl.file$do_recdev<-1
+        if(input$RecDevChoice=="1: Devs sum to zero"){ctl.file$do_recdev<-1}
+				if(input$RecDevChoice=="2: Simple deviations"){ctl.file$do_recdev<-2}
+				if(input$RecDevChoice=="3: deviation vector"){ctl.file$do_recdev<-3}
+				if(input$RecDevChoice=="4: option 3 plus penalties"){ctl.file$do_recdev<-4}
 				ctl.file$MainRdevYrFirst<-input$Rdev_startyr	#Start year of recruitment estimation
 				ctl.file$MainRdevYrLast<-input$Rdev_endyr		#Last year of recruitment estimation
 				ctl.file$recdev_phase<- 1
@@ -4060,7 +4093,7 @@ if(input$Sel_choice=="Dome-shaped")
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin,Selpeak[1]+minmaxbin)
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
-			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
+			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width+0.000000001))
 			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
 			ctl.file$size_selex_parms[4,3:4]<- log(LtPeakFinal[1])
 			ctl.file$size_selex_parms[6,3:4]<- -log((1/(FinalSel[1]+0.000000001)-1))
@@ -4113,7 +4146,7 @@ if(input$Sel_choice=="Dome-shaped")
           ctl.file$size_selex_parms[6*i+1,1:2]<-c(Selpeak[i+1]-minmaxbin,Selpeak[1]+minmaxbin)
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
-          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width))
+          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width+0.000000001))
           ctl.file$size_selex_parms[6*i+2,7]<- PeakDesc_phase[i+1]
           ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
           ctl.file$size_selex_parms[6*i+3,7]<- Sel50_phase[i+1]
@@ -4146,10 +4179,15 @@ if(input$Sel_choice=="Dome-shaped")
 		}
 
     #Remove surveys from initial F lines and add q and xtra variance lines
-    
-    if(!is.null(rv.Index$data))
+    #browser()
+    if(!is.null(rv.Index$data)|data.file$Nfleets>catch.fleets)
       {
-        if(data.file$Nfleets>catch.fleets){ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]}
+        if(data.file$Nfleets>catch.fleets)
+          {
+            noncatch.fleets<-c((catch.fleets+1):data.file$Nfleets)
+            ctl.file$init_F<-ctl.file$init_F[-noncatch.fleets,]
+#            ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
+          }
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
         q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,0,0,1)))
         if(input$Indexvar){q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,1,0,1)))}
@@ -4516,7 +4554,7 @@ if(input$use_forecastnew)
          
          profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
          profilesummary <- SSsummarize(profilemodels)
-         minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
+         minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)],na.rm=TRUE)
          #Find best fit model
          index.minlikes<-c(1:length(minlikes))[minlikes]
          jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
@@ -4678,7 +4716,7 @@ if(input$use_forecastnew)
         Output_table<-Model.output$sprseries[,c(1,5,6,7,8,9,11,12,13,25,37)]
 			})
  		
- 		#Paramters
+ 		#Parameters
  		output$Parameters_table <- renderTable({
  				cbind(rownames(Model.output$estimated_non_dev_parameters),Model.output$estimated_non_dev_parameters)
 			})
@@ -4699,6 +4737,8 @@ if(input$use_forecastnew)
     updateTabsetPanel(session, "tabs",
       selected = '2')
     })
+
+    updateCheckboxInput(inputId=input$user_model,value=FALSE)
   }  
  })
 
@@ -4856,7 +4896,7 @@ save(fit_model,file=paste0(p,"/fit_model.RData"))
       pickerInput(
       inputId = "myPicker_LP",
       label = "Choose parameters to profile over",
-      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male"),
+      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)"),
       options = list(
         `actions-box` = TRUE,
         size = 12,
@@ -4876,15 +4916,16 @@ observeEvent(input$run_Profiles,{
        rep.parms.names<-rownames(rep.parms$parameters)
        # SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","CV_young_Fem_GP_1","CV_old_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1","CV_young_Mal_GP_1","CV_old_Mal_GP_1")
        #SS_parm_names<-c(rownames(ctl.file$SR_parms)[2], rownames(ctl.file$SR_parms)[1],rownames(ctl.file$MG_parms)[1],rownames(ctl.file$MG_parms)[3],rownames(ctl.file$MG_parms)[4],rownames(ctl.file$MG_parms)[5],rownames(ctl.file$MG_parms)[6],rownames(ctl.file$MG_parms)[13],rownames(ctl.file$MG_parms)[15],rownames(ctl.file$MG_parms)[16],rownames(ctl.file$MG_parms)[17],rownames(ctl.file$MG_parms)[18])
-       SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18])
+       SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18],"LnQ_base_Acoustic_Visual(6)")
        parmnames<-input$myPicker_LP
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
+       
        prior_like<-starter.file$prior_like
        use_prior_like_in<-rep(0,length(prof_parms_names))
        if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
        mydir = dirname(pathLP())
-              get = get_settings_profile( parameters =  prof_parms_names,
+       get = get_settings_profile( parameters =  prof_parms_names,
               low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
@@ -4975,7 +5016,7 @@ observeEvent(input$run_MultiProfiles,{
        starter.file<-SS_readstarter(paste0(profile_dir,"/starter.ss"))
        starter.file$ctlfile<-"control_modified.ss"
        starter.file$init_values_src<-0
-       starter.file$prior_like<-1
+       #starter.file$prior_like<-1
        SS_writestarter(starter.file,profile_dir,overwrite=TRUE)
 #       low_in <-  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
 #       high_in <- as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
@@ -4992,7 +5033,7 @@ observeEvent(input$run_MultiProfiles,{
           string = prof_parms_names,
           profilevec = par.df,
           extras = "-nohess",
-          prior_check=TRUE,
+          prior_check=FALSE,
           show_in_console = TRUE
         )        
       }

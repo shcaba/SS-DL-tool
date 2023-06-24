@@ -2198,7 +2198,7 @@ if(!is.null(rv.Lt$data))
 {  
   output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
-		   #browser()
+		   
        rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
@@ -2211,7 +2211,6 @@ if(!is.null(rv.Lt$data))
 		    ggplot(aes(name, value, color=Year)) + 
 		    geom_line() + 
         #geom_col(position="dodge") + 
-#		    geom_vline(data=rv.Lt$data,xintercept = c(-1,40,48),
 		    geom_vline(xintercept = c(-1,L50(),Linf()),
         #            linetype=c("solid","solid","dashed"),
                     #colour = c("black", "black", "blue"),
@@ -2224,12 +2223,6 @@ if(!is.null(rv.Lt$data))
 		    ylab("Frequency") + 
 		    scale_fill_viridis_d()+
         xlim(0,NA)
-        # geom_text(mapping = aes(x = vals,
-        #             y = 0,
-        #             label = Ref,
-        #             hjust = -1,
-        #             vjust = -1),
-        #             data=cuts) 
 		}) 
       plotOutput("Ltplot")
     }
@@ -3214,7 +3207,6 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 
 # if(!input$use_customfile)
 #   {
-
 #   }
 		#Read data and control files
     if(!input$user_model)
@@ -3358,6 +3350,7 @@ if(input$Sel_choice=="Dome-shaped")
 		data.file$catch<-list.rbind(catch_temp)
 		colnames(data.file$catch)<-catch.cols
 		}
+
 
 #Index data
     if (!is.null(rv.Index$data)) {
@@ -3668,8 +3661,9 @@ if(input$Sel_choice=="Dome-shaped")
               survey.fleets<-unique(Surveyonly[,3])      
               data.file$fleetinfo$fleetname<-fleet.survey.names 
             }
-          if(is.null(rv.Index$data)|all(!is.null(rv.Index$data)&data.file$Nfleets==catch.fleets)){data.file$fleetinfo$fleetname<-fishery.names}
-          if(!is.null(rv.Index$data)& max(rv.Index$data[,3])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
+          if(is.null(rv.Index$data)|all(!is.null(rv.Index$data)&data.file$Nfleets==catch.fleets)){data.file$fleetinfo$fleetname[1:length(fishery.names)]<-fishery.names}
+          #if(!is.null(rv.Index$data)& max(rv.Index$data[,3])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
+          if(length(data.file$fleetinfo$fleetname)>length(fishery.names)){data.file$fleetinfo[c((length(fishery.names)+1):length(data.file$fleetinfo$fleetname)),1]<-3}
         }
        data.file$CPUEinfo[,1]<-1:data.file$Nfleets
      }
@@ -4185,10 +4179,15 @@ if(input$Sel_choice=="Dome-shaped")
 		}
 
     #Remove surveys from initial F lines and add q and xtra variance lines
-    
-    if(!is.null(rv.Index$data))
+    #browser()
+    if(!is.null(rv.Index$data)|data.file$Nfleets>catch.fleets)
       {
-        if(data.file$Nfleets>catch.fleets){ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]}
+        if(data.file$Nfleets>catch.fleets)
+          {
+            noncatch.fleets<-c((catch.fleets+1):data.file$Nfleets)
+            ctl.file$init_F<-ctl.file$init_F[-noncatch.fleets,]
+#            ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
+          }
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
         q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,0,0,1)))
         if(input$Indexvar){q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,1,0,1)))}
@@ -4555,7 +4554,7 @@ if(input$use_forecastnew)
          
          profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
          profilesummary <- SSsummarize(profilemodels)
-         minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
+         minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)],na.rm=TRUE)
          #Find best fit model
          index.minlikes<-c(1:length(minlikes))[minlikes]
          jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
@@ -4717,7 +4716,7 @@ if(input$use_forecastnew)
         Output_table<-Model.output$sprseries[,c(1,5,6,7,8,9,11,12,13,25,37)]
 			})
  		
- 		#Paramters
+ 		#Parameters
  		output$Parameters_table <- renderTable({
  				cbind(rownames(Model.output$estimated_non_dev_parameters),Model.output$estimated_non_dev_parameters)
 			})
@@ -4738,6 +4737,8 @@ if(input$use_forecastnew)
     updateTabsetPanel(session, "tabs",
       selected = '2')
     })
+
+    updateCheckboxInput(inputId=input$user_model,value=FALSE)
   }  
  })
 
@@ -4895,7 +4896,7 @@ save(fit_model,file=paste0(p,"/fit_model.RData"))
       pickerInput(
       inputId = "myPicker_LP",
       label = "Choose parameters to profile over",
-      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male"),
+      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)"),
       options = list(
         `actions-box` = TRUE,
         size = 12,
@@ -4915,15 +4916,16 @@ observeEvent(input$run_Profiles,{
        rep.parms.names<-rownames(rep.parms$parameters)
        # SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","CV_young_Fem_GP_1","CV_old_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1","CV_young_Mal_GP_1","CV_old_Mal_GP_1")
        #SS_parm_names<-c(rownames(ctl.file$SR_parms)[2], rownames(ctl.file$SR_parms)[1],rownames(ctl.file$MG_parms)[1],rownames(ctl.file$MG_parms)[3],rownames(ctl.file$MG_parms)[4],rownames(ctl.file$MG_parms)[5],rownames(ctl.file$MG_parms)[6],rownames(ctl.file$MG_parms)[13],rownames(ctl.file$MG_parms)[15],rownames(ctl.file$MG_parms)[16],rownames(ctl.file$MG_parms)[17],rownames(ctl.file$MG_parms)[18])
-       SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18])
+       SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18],"LnQ_base_Acoustic_Visual(6)")
        parmnames<-input$myPicker_LP
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
+       
        prior_like<-starter.file$prior_like
        use_prior_like_in<-rep(0,length(prof_parms_names))
        if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
        mydir = dirname(pathLP())
-              get = get_settings_profile( parameters =  prof_parms_names,
+       get = get_settings_profile( parameters =  prof_parms_names,
               low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
@@ -5014,24 +5016,25 @@ observeEvent(input$run_MultiProfiles,{
        starter.file<-SS_readstarter(paste0(profile_dir,"/starter.ss"))
        starter.file$ctlfile<-"control_modified.ss"
        starter.file$init_values_src<-0
-       starter.file$prior_like<-1
+       #starter.file$prior_like<-1
        SS_writestarter(starter.file,profile_dir,overwrite=TRUE)
 #       low_in <-  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
 #       high_in <- as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
 #       step_size_in <- as.numeric(trimws(unlist(strsplit(input$Prof_step,","))))
 #       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
 #       colnames(par.df)<-prof_parms_names
-      
+      browser()
       if(input$Hess_multi_like==FALSE)
       {
         profile <- profile(
           dir = profile_dir, # directory
-          masterctlfile = "control.ss_new",
+          #globalpar = TRUE,
+          oldctlfile = "controlfile.ctl",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
           extras = "-nohess",
-          prior_check=TRUE,
+          prior_check=FALSE,
           show_in_console = TRUE
         )        
       }
@@ -5040,7 +5043,8 @@ observeEvent(input$run_MultiProfiles,{
       {
         profile <- profile(
           dir = profile_dir, # directory
-          masterctlfile = "control.ss_new",
+          #globalpar = TRUE,
+          oldctlfile = "controlfile.ctl",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
@@ -5066,6 +5070,101 @@ observeEvent(input$run_MultiProfiles,{
     save(par.df,file=paste0(profile_dir,"/multiprofilelikelihoods.DMP"))
     write.csv(par.df,file=paste0(profile_dir,"/multiprofilelikelihoods.csv"))
     
+    #Extract component likelihoods
+    #Likelihoods
+    likes_non0<-rowSums(profilesummary$likelihoods[,1:nrow(par.df)])>0
+    likes_non0_par<-likes_non0_par.min<-profilesummary$likelihoods[likes_non0,]
+    for(ii in 1:nrow(likes_non0_par))
+    {
+      likes_non0_par.min[ii,1:nrow(par.df)]<-likes_non0_par[ii,1:nrow(par.df)]-min(likes_non0_par[ii,1:nrow(par.df)])
+    }
+    colnames(likes_non0_par.min)<-c(par.df[,1],"Label")
+    like.comps.plot<-melt(likes_non0_par.min,id = "Label")
+
+    #Lengths
+    likes_length<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Length_like",]
+    likes_length_short<-likes_length[,3:ncol(likes_length)]
+    likes_length_non0<-likes_length_non0.min<-data.frame(model=likes_length[,1],likes_length_short[,colSums(likes_length[,3:ncol(likes_length)])!=0])
+    likes_length_non0$model<-likes_length_non0.min$model<-as.numeric(par.df[,1])
+    for(ii in 2:ncol(likes_length_non0))
+    {
+      likes_length_non0.min[,ii]<-likes_length_non0[,ii]-min(likes_length_non0.min[,ii])
+    }
+    likes_length_non0.min.melt<-melt(likes_length_non0.min,id.vars="model")
+
+    #Ages
+    likes_age<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Age_like",]
+    likes_age_short<-likes_age[,3:ncol(likes_age)]
+    likes_age_non0<-likes_age_non0.min<-data.frame(model=likes_age[,1],likes_age_short[,colSums(likes_age[,3:ncol(likes_age)])!=0])
+    likes_age_non0$model<-likes_age_non0.min$model<-as.numeric(par.df[,1])
+    for(ii in 2:ncol(likes_age_non0))
+    {
+      likes_age_non0.min[,ii]<-likes_age_non0[,ii]-min(likes_age_non0.min[,ii])
+    }
+    likes_age_non0.min.melt<-melt(likes_age_non0.min,id.vars="model")
+
+    #Survey
+    likes_survey<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Surv_like",]
+    likes_survey_short<-likes_survey[,3:ncol(likes_survey)]
+    likes_survey_non0<-likes_survey_non0.min<-data.frame(model=likes_survey[,1],likes_survey_short[,colSums(likes_survey[,3:ncol(likes_survey)])!=0])
+    likes_survey_non0$model<-likes_survey_non0.min$model<-as.numeric(par.df[,1])
+    for(ii in 2:ncol(likes_survey_non0))
+    {
+      likes_survey_non0.min[,ii]<-likes_survey_non0[,ii]-min(likes_survey_non0.min[,ii])
+    }
+    likes_survey_non0.min.melt<-melt(likes_survey_non0.min,id.vars="model")
+
+
+    #Plots
+    #Components
+    LC.plot<-ggplot(like.comps.plot,aes(variable,value,group=Label,color=Label))+
+      geom_point(size=5)+
+      geom_line(lwd=1.2)+
+      ylab("Difference in likelihood from the minimum") +
+      theme(legend.position = c(0.8, 0.8))+
+      labs(color = "Likelihood component") +
+      scale_x_discrete(name = paste(parmnames[1],"and",parmnames[2]), 
+                       breaks =par.df[,1], 
+                       labels = paste0(par.df[,1],"\n",par.df[,2]))
+    ggsave(paste0(profile_dir,"/","like_component_profile.png"),plot=LC.plot,width=10,height=10,units="in")
+    
+    #Lengths
+    LC_lt.plot<-ggplot(likes_length_non0.min.melt,aes(model,value,group=variable,color=variable))+
+      geom_point(size=5)+
+      geom_line(lwd=1.2)+
+      theme(legend.position = c(0.8, 0.8))+
+      ylab("Difference in likelihood from the minimum")+
+      labs(color = "Length components") +
+      scale_x_continuous(name = paste(parmnames[1],"and",parmnames[2]), 
+                       breaks =par.df[,1], 
+                       labels = paste0(par.df[,1],"\n",par.df[,2])) 
+    ggsave(paste0(profile_dir,"/","length_component_profile.png"),plot=LC_lt.plot,width=10,height=10,units="in")
+
+    #Ages
+    LC_age.plot<-ggplot(likes_age_non0.min.melt,aes(model,value,group=variable,color=variable))+
+      geom_point(size=5)+
+      geom_line(lwd=1.2)+
+      theme(legend.position = c(0.8, 0.8))+
+      ylab("Difference in likelihood from the minimum")+
+      labs(color = "Age components")+
+      scale_x_continuous(name = paste(parmnames[1],"and",parmnames[2]), 
+                         breaks =par.df[,1], 
+                         labels = paste0(par.df[,1],"\n",par.df[,2])) 
+      ggsave(paste0(profile_dir,"/","age_component_profile.png"),plot=LC_age.plot,width=10,height=10,units="in")
+
+    #Survey
+    LC_survey.plot<-ggplot(likes_survey_non0.min.melt,aes(model,value,group=variable,color=variable))+
+      geom_point(size=5)+
+      geom_line(lwd=1.2)+
+      theme(legend.position = c(0.8, 0.8))+
+      ylab("Difference in likelihood from the minimum")+
+      labs(color = "Survey components")+
+      scale_x_continuous(name = paste(parmnames[1],"and",parmnames[2]), 
+                         breaks =par.df[,1], 
+                         labels = paste0(par.df[,1],"\n",par.df[,2])) 
+      ggsave(paste0(profile_dir,"/","survey_component_profile.png"),plot=LC_survey.plot,width=10,height=10,units="in")
+
+
     #This reactive object is needed to get the plots to work
     plot.dat<-reactive({
       plot.dat<-melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1])))
@@ -5437,6 +5536,7 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
     dir.create(Ensemble_model_dir_out)
 
 #  })
+
 
 # print(Ensemble_model_dir_out())
 # exists("Ensemble_model_dir_out()")

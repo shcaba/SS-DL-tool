@@ -62,7 +62,7 @@
 20  40  32.1  32.1  99  0 -99 0 0 0 0 0 0 0 # Mat50%_Fem
 -2  4 -1  -1  99  0 -99 0 0 0 0 0 0 0 # Mat_slope_Fem
 0 6 8.66E-10  1 99  0 -99 0 0 0 0 0 0 0 # Eggs_scalar_Fem
--3  5 4.9767  5 99  0 -99 0 0 0 0 0 0 0 # Eggs_exp_len_Fem
+-3  10 4.9767  5 99  0 -99 0 0 0 0 0 0 0 # Eggs_exp_len_Fem
 0.0000001  0.03 0.03 -2.92 0.44  3 -5  0 0 0 0 0 0 0 # NatM_p_1_Mal_GP_1
 15  25  20.7718 20.8  10  0 -3  0 0 0 0 0 0 0 # L_at_Amin_Mal_GP_1
 35  45  41.6366 41.4  10  0 -3  0 0 0 0 0 0 0 # L_at_Amax_Mal_GP_1
@@ -157,7 +157,7 @@
             -4            12       5.15329             3            99             0         -1          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_Fishery(1)
            -10             6            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
           -999            15           -15           -10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_start_logit_Fishery(1)
-            -5            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
+           -15            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
 ## timevary selex parameters 
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type    PHASE  #  parm_name
 # info on dev vectors created for selex parms are reported with other devs after tag parameter section 

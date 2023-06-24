@@ -24,7 +24,7 @@ require(grid)
 require(wesanderson)
 require(adnuts)
 require(shinystan)
-
+#require(geomtextpath)
 
 #require(paletteer)
 #require(RColorBrewer)
@@ -1658,6 +1658,13 @@ output$Rec_options5 <- renderUI({
     	} 
 	})  
 
+output$Rec_options6 <- renderUI({ 
+    if(input$rec_choice){ 
+          fluidRow(column(width=6, selectInput("RecDevChoice","Recruit deviation option",c("1: Devs sum to zero","2: Simple deviations","3: deviation vector","4: option 3 plus penalties"),selected="1: Devs sum to zero"))) 
+    	} 
+	})  
+
+
 #Jitter value
 output$Jitter_value <- renderUI({ 
     if(input$jitter_choice){ 
@@ -2188,23 +2195,34 @@ observeEvent(req(!is.null(rv.Lt$data)), {
 observeEvent(req(!is.null(rv.Lt$data)), {
 output$Ltplot_it<-renderUI({
 if(!is.null(rv.Lt$data))
-{
-	output$Ltplot<-renderPlot({ 
+{  
+  output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
-		  rv.Lt$data %>%  
+		   #browser()
+       rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
 		    mutate(Year = factor(year),
-		           name = as.numeric(gsub("[^0-9.-]", "", name))) %>%  
+		           name = as.numeric(gsub("[^0-9.-]", "", name)),
+               Lnu=-1,
+               L50_vline=if_else(is.na(L50()),-1,L50()),
+		           Linf_vline=if_else(is.na(Linf()),-1,Linf())) %>%
 		    ggplot(aes(name, value, color=Year)) + 
 		    geom_line() + 
         #geom_col(position="dodge") + 
-		    facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
+		    geom_vline(xintercept = c(-1,L50(),Linf()),
+        #            linetype=c("solid","solid","dashed"),
+                    #colour = c("black", "black", "blue"),
+                    na.rm = TRUE,
+                    show.legend = TRUE)+
+        #annotate("text", x=if_else(is.na(Linf()),-1,Linf()), y=-1, label= "Linf")
+        facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        facet_wrap(sex~year, scales="free_y",ncol=5) + 
 		    xlab("Length bin") + 
 		    ylab("Frequency") + 
-		    scale_fill_viridis_d() 
+		    scale_fill_viridis_d()+
+        xlim(0,NA)
 		}) 
       plotOutput("Ltplot")
     }
@@ -3189,7 +3207,7 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 
 # if(!input$use_customfile)
 #   {
-
+browser()
 #   }
 		#Read data and control files
     if(!input$user_model)
@@ -3984,7 +4002,10 @@ if(input$Sel_choice=="Dome-shaped")
 		if(input$rec_choice)
 			{
 				ctl.file$SR_parms[3,3:4]<-input$sigmaR 			#sigma R
-				ctl.file$do_recdev<-1
+        if(input$RecDevChoice=="1: Devs sum to zero"){ctl.file$do_recdev<-1}
+				if(input$RecDevChoice=="2: Simple deviations"){ctl.file$do_recdev<-2}
+				if(input$RecDevChoice=="3: deviation vector"){ctl.file$do_recdev<-3}
+				if(input$RecDevChoice=="4: option 3 plus penalties"){ctl.file$do_recdev<-4}
 				ctl.file$MainRdevYrFirst<-input$Rdev_startyr	#Start year of recruitment estimation
 				ctl.file$MainRdevYrLast<-input$Rdev_endyr		#Last year of recruitment estimation
 				ctl.file$recdev_phase<- 1
@@ -4071,7 +4092,7 @@ if(input$Sel_choice=="Dome-shaped")
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin,Selpeak[1]+minmaxbin)
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
-			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
+			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width+0.000000001))
 			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
 			ctl.file$size_selex_parms[4,3:4]<- log(LtPeakFinal[1])
 			ctl.file$size_selex_parms[6,3:4]<- -log((1/(FinalSel[1]+0.000000001)-1))
@@ -4124,7 +4145,7 @@ if(input$Sel_choice=="Dome-shaped")
           ctl.file$size_selex_parms[6*i+1,1:2]<-c(Selpeak[i+1]-minmaxbin,Selpeak[1]+minmaxbin)
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
-          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width))
+          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width+0.000000001))
           ctl.file$size_selex_parms[6*i+2,7]<- PeakDesc_phase[i+1]
           ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
           ctl.file$size_selex_parms[6*i+3,7]<- Sel50_phase[i+1]
@@ -4710,6 +4731,8 @@ if(input$use_forecastnew)
     updateTabsetPanel(session, "tabs",
       selected = '2')
     })
+
+    updateCheckboxInput(inputId=input$user_model,value=FALSE)
   }  
  })
 
