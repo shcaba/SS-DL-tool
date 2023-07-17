@@ -5023,7 +5023,7 @@ observeEvent(input$run_MultiProfiles,{
 #       step_size_in <- as.numeric(trimws(unlist(strsplit(input$Prof_step,","))))
 #       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
 #       colnames(par.df)<-prof_parms_names
-      browser()
+
       if(input$Hess_multi_like==FALSE)
       {
         profile <- profile(
@@ -5079,7 +5079,7 @@ observeEvent(input$run_MultiProfiles,{
       likes_non0_par.min[ii,1:nrow(par.df)]<-likes_non0_par[ii,1:nrow(par.df)]-min(likes_non0_par[ii,1:nrow(par.df)])
     }
     colnames(likes_non0_par.min)<-c(par.df[,1],"Label")
-    like.comps.plot<-melt(likes_non0_par.min,id = "Label")
+    like.comps.plot<-reshape2::melt(likes_non0_par.min,id = "Label")
 
     #Lengths
     likes_length<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Length_like",]
@@ -5090,7 +5090,7 @@ observeEvent(input$run_MultiProfiles,{
     {
       likes_length_non0.min[,ii]<-likes_length_non0[,ii]-min(likes_length_non0.min[,ii])
     }
-    likes_length_non0.min.melt<-melt(likes_length_non0.min,id.vars="model")
+    likes_length_non0.min.melt<-reshape2::melt(likes_length_non0.min,id.vars="model")
 
     #Ages
     likes_age<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Age_like",]
@@ -5101,7 +5101,7 @@ observeEvent(input$run_MultiProfiles,{
     {
       likes_age_non0.min[,ii]<-likes_age_non0[,ii]-min(likes_age_non0.min[,ii])
     }
-    likes_age_non0.min.melt<-melt(likes_age_non0.min,id.vars="model")
+    likes_age_non0.min.melt<-reshape2::melt(likes_age_non0.min,id.vars="model")
 
     #Survey
     likes_survey<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Surv_like",]
@@ -5112,7 +5112,7 @@ observeEvent(input$run_MultiProfiles,{
     {
       likes_survey_non0.min[,ii]<-likes_survey_non0[,ii]-min(likes_survey_non0.min[,ii])
     }
-    likes_survey_non0.min.melt<-melt(likes_survey_non0.min,id.vars="model")
+    likes_survey_non0.min.melt<-reshape2::melt(likes_survey_non0.min,id.vars="model")
 
 
     #Plots
@@ -5167,7 +5167,7 @@ observeEvent(input$run_MultiProfiles,{
 
     #This reactive object is needed to get the plots to work
     plot.dat<-reactive({
-      plot.dat<-melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1])))
+      plot.dat<-reshape2::melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1])))
       plot.dat
       })
     blank_data<- data.frame(variable = c("Likelihood_difference", "Likelihood_difference", paste0("SB",profilesummary$endyrs[1],"/SB0"), paste0("SB",profilesummary$endyrs[1],"/SB0"), "SB0", "SB0",paste0("SB",profilesummary$endyrs[1]),paste0("SB",profilesummary$endyrs[1])), x =min(par.df[,1]),y = c(min(par.df$Likelihood_difference),max(par.df$Likelihood_difference), 0, 1, 0, ceiling(max(par.df$SB0)),0,ceiling(SBcurrmax)))
