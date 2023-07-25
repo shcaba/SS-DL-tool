@@ -5458,8 +5458,8 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
        return(list(
         src = image.path,
         contentType = "image/png",
-         width = 800,
-         height = 1200,
+         #width = 800,
+         #height = 1200,
        style='height:60vh'))
       },deleteFile=FALSE)
 
@@ -5468,8 +5468,8 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
        return(list(
         src = image.path,
         contentType = "image/png",
-         width = 400,
-         height = 300,
+         #width = 800,
+         #height = 1200,
        style='height:60vh'))
       },deleteFile=FALSE)
 
