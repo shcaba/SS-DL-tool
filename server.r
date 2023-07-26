@@ -5435,13 +5435,14 @@ SensiRE_xcenter_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_xcenter,",")
 SensiRE_ycenter_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_ycenter,","))))
 SensiRE_headers_in<-trimws(unlist(strsplit(input$SensiRE_headers,",")))
 yminmax_sensi<-rep(c(input$SensiRE_ymin,input$SensiRE_ymax),5)
-r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
-              model.summaries=modsummary.sensi,
+#r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
+Sensi_plot_horiz(model.summaries=modsummary.sensi,
+              dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
               current.year=modsummary.sensi$endyrs[1]+1,
               mod.names=modelnames, #List the names of the sensitivity runs
               #likelihood.out=c(0,0,0),
-              Sensi.RE.out="Sensi_RE_out.DMP", #Saved file of relative errors
-              CI=0.95, #Confidence interval box based on the reference model
+              #Sensi.RE.out="Sensi_RE_out.DMP", #Saved file of relative errors
+              #CI=0.95, #Confidence interval box based on the reference model
               TRP.in=input$Sensi_TRP, #Target relative abundance value
               LRP.in=input$Sensi_LRP, #Limit relative abundance value
               sensi_xlab="Sensitivity scenarios", #X-axis label
@@ -5450,26 +5451,28 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
               sensi.type.breaks=SensiRE_breaks_in, #vertical breaks that can separate out types of sensitivities
               anno.x=SensiRE_xcenter_in, # Vertical positioning of the sensitivity types labels
               anno.y=SensiRE_ycenter_in, # Horizontal positioning of the sensitivity types labels
-              anno.lab=SensiRE_headers_in #Sensitivity types labels
+              anno.lab=SensiRE_headers_in, #Sensitivity types labels
+              header.text=input$SensiRE_headers_text,
+              horizontal = TRUE
 )
 
        output$SensiRE_comp_plot <- renderImage({
-       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_REplot_SB_Dep_F_MSY.png")),mustWork=FALSE)
+       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_REplot_SB_Dep_F_Yield.png")),mustWork=FALSE)
        return(list(
         src = image.path,
         contentType = "image/png",
-         #width = 800,
-         #height = 1200,
+         width = 800,
+         height = 1200,
        style='height:60vh'))
       },deleteFile=FALSE)
 
        output$SensiRElog_comp_plot <- renderImage({
-       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_logREplot_SB_Dep_F_MSY.png")),mustWork=FALSE)
+       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_logREplot_SB_Dep_F_Yield.png")),mustWork=FALSE)
        return(list(
         src = image.path,
         contentType = "image/png",
-         #width = 800,
-         #height = 1200,
+         width = 800,
+         height = 1200,
        style='height:60vh'))
       },deleteFile=FALSE)
 
