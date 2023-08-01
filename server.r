@@ -5014,6 +5014,7 @@ observeEvent(input$run_MultiProfiles,{
  
        #Set-up the starter file control file
        starter.file<-SS_readstarter(paste0(profile_dir,"/starter.ss"))
+       ctlfile.in<-starter.file$ctlfile
        starter.file$ctlfile<-"control_modified.ss"
        starter.file$init_values_src<-0
        #starter.file$prior_like<-1
@@ -5029,7 +5030,7 @@ observeEvent(input$run_MultiProfiles,{
         profile <- profile(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = "controlfile.ctl",
+          oldctlfile = ctlfile.in,
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
@@ -5044,7 +5045,7 @@ observeEvent(input$run_MultiProfiles,{
         profile <- profile(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = "controlfile.ctl",
+          oldctlfile = ctlfile.in,
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
