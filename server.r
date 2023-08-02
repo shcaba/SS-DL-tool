@@ -1713,7 +1713,7 @@ output$Forecasts<- renderUI({
 output$AdvancedSS_nohess<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_hess", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
+        inputId = "no_hess", label = "Turn off variance estimation (speeds up runs)",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -1887,7 +1887,7 @@ output$AdvancedSS_GT5_SSS<- renderUI({
 output$AdvancedSS_Sex3<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "Sex3", label = "Retain sex ratio in length compositions (Sex option = 3)",
+        inputId = "Sex3", label = "Maintain sex ratio in length compositions",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
