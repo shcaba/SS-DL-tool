@@ -24,6 +24,8 @@ require(grid)
 require(wesanderson)
 require(adnuts)
 require(shinystan)
+require(gt)
+require(gtExtras)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -1884,12 +1886,37 @@ output$AdvancedSS_GT5_SSS<- renderUI({
       # } 
   }) 
 
-output$AdvancedSS_Sex3<- renderUI({ 
+output$AdvancedSS_Sex3options<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "Sex3", label = "Maintain sex ratio in length compositions",
+        inputId = "Sex3options", label = "Maintain sex ratio in biological compositions",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
+  }) 
+
+output$AdvancedSS_Sex3<- renderUI({ 
+    if(!is.null(input$Sex3options)){       
+      if(input$Sex3options){       
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "Sex3", label = "Length compositions",
+        shape = "curve", inline = TRUE, status = "success",animation="smooth"))) 
+      # } 
+    }
+   }
+  }) 
+
+
+output$AdvancedSS_AgeSex3<- renderUI({ 
+    if(!is.null(input$Sex3options)){       
+      if(input$Sex3options){       
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "AgeSex3", label = "Age compositions",
+        shape = "curve", inline = TRUE, status = "success",animation="smooth"))) 
+      # } 
+    }
+   }
   }) 
 
 output$AdvancedSS_Indexvar<- renderUI({ 
@@ -1925,7 +1952,7 @@ output$AdvancedSS_ageerror_in <- renderUI({
 
 output$AdvancedSS_Ctunits<- renderUI({ 
         fluidRow(column(width=12, prettyCheckbox(
-        inputId = "Ct_units_choice", label = "Specify catch units (1=biomass (default); 2=numbers) for each fleet?",
+        inputId = "Ct_units_choice", label = "Specify non-biomass catch units for each fleet.",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
@@ -2196,10 +2223,10 @@ observeEvent(req(!is.null(rv.Lt$data)), {
 output$Ltplot_it<-renderUI({
 if(!is.null(rv.Lt$data))
 {  
+  
   output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
-		   
-       rv.Lt$data %>%  
+		   rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
@@ -2211,15 +2238,21 @@ if(!is.null(rv.Lt$data))
 		    ggplot(aes(name, value, color=Year)) + 
 		    geom_line() + 
         #geom_col(position="dodge") + 
-		    geom_vline(xintercept = c(-1,L50(),Linf()),
-        #            linetype=c("solid","solid","dashed"),
-                    #colour = c("black", "black", "blue"),
+		    geom_vline(xintercept = c(-1,L50()),
+                    linetype="dashed",
+                    colour = "blue",
                     na.rm = TRUE,
                     show.legend = TRUE)+
-        #annotate("text", x=if_else(is.na(Linf()),-1,Linf()), y=-1, label= "Linf")
+        geom_vline(xintercept = c(-1,Linf()),
+                    colour = "black",
+                    na.rm = TRUE,
+                    show.legend = TRUE)+
         facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        facet_wrap(sex~year, scales="free_y",ncol=5) + 
-		    xlab("Length bin") + 
+		    #annotate(x=if_else(is.na(Linf()),-1,Linf()), y=+Inf, label= "Linf")+
+        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf")+
+        annotate("text",x=if_else(is.na(L50()),-1,L50())*1.1, y=5, label= "L50%",color="blue")+
+        xlab("Length bin") + 
 		    ylab("Frequency") + 
 		    scale_fill_viridis_d()+
         xlim(0,NA)
@@ -3457,7 +3490,7 @@ if(input$Sel_choice=="Dome-shaped")
         Lt.comp.data_female_sex3[,3],
         rep(3,nrow(Lt.comp.data_female_sex3)),
         rep(0,nrow(Lt.comp.data_female_sex3)),
-        Lt.comp.data_female_sex3[,5]+Lt.comp.data_male_sex3[,4],
+        Lt.comp.data_female_sex3[,5]+Lt.comp.data_male_sex3[,5],
         Lt.comp.data_female_sex3[,6:ncol(Lt.comp.data_female_sex3)],
         Lt.comp.data_male_sex3[,6:ncol(Lt.comp.data_male_sex3)])
         )
@@ -3517,7 +3550,7 @@ if(input$Sel_choice=="Dome-shaped")
       # data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       # colnames(data.file$ageerror)<-paste0("age",1:Nages())         
       age.data.names<-c(c("Yr","Month","Fleet","Sex","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
-      age.data.females<-age.data.males<-age.data.unknowns<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
+      age.data.females<-age.data.males<-age.data.unknowns<-age.data.sex3<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
       colnames(Age.comp.data)[1:8]<-c("Year","Month","Fleet","Sex","AgeErr","Lbin_low","Lbin_hi","Nsamps")
     #female ages
     if(nrow(subset(Age.comp.data,Sex==1))>0){
@@ -3570,13 +3603,40 @@ if(input$Sel_choice=="Dome-shaped")
         Age.comp.data_unknown[,9:ncol(Age.comp.data_unknown)]*0)
         )
       }
+
+    #Maintain sample sex ratio
+     if(input$AgeSex3){
+      age_yrsfleetagetype_females<-paste0(Age.comp.data_female[,1],Age.comp.data_female[,3],Age.comp.data_female[,6])
+      age_yrsfleetagetype_males<-paste0(Age.comp.data_male[,1],Age.comp.data_male[,3],Age.comp.data_male[,6])
+      #Match years
+      age_sex3_match_female<-age_yrsfleetagetype_females%in%age_yrsfleetagetype_males
+      age_sex3_match_male<-age_yrsfleetagetype_males%in%age_yrsfleetagetype_females
+      #Subset years
+      Age.comp.data_female_sex3<-Age.comp.data_female[age_sex3_match_female,]
+      Age.comp.data_male_sex3<-Age.comp.data_male[age_sex3_match_male,]
+      age.data.sex3<-data.frame(cbind(Age.comp.data_female_sex3[,1],
+        Age.comp.data_female_sex3[,2],
+        Age.comp.data_female_sex3[,3],
+        rep(3,nrow(Age.comp.data_female_sex3)),
+        rep(0,nrow(Age.comp.data_female_sex3)),
+        Age.comp.data_female_sex3[,5],
+        Age.comp.data_female_sex3[,6],
+        Age.comp.data_female_sex3[,7],
+        Age.comp.data_female_sex3[,8]+Age.comp.data_male_sex3[,8],
+        Age.comp.data_female_sex3[,9:ncol(Age.comp.data_female_sex3)],
+        Age.comp.data_male_sex3[,9:ncol(Age.comp.data_male_sex3)])
+        )
+      age.data.females<-age.data.females[!age_sex3_match_female,]
+      age.data.males<-age.data.males[!age_sex3_match_male,]
+       }
+
     #if(nrow(subset(Age.comp.data,Sex==0))>0){age.data.unknowns<-data.frame(cbind(
     #  age.data.unknowns,
     #  Age.comp.data[1,7:ncol(Age.comp.data_unknown)],
     #    Age.comp.data[1,7:ncol(Age.comp.data_unknown)]*0))
     #  }
-    colnames(age.data.females)<-colnames(age.data.males)<-colnames(age.data.unknowns)<-age.data.names
-    data.file$agecomp<-na.omit(rbind(age.data.females,age.data.males,age.data.unknowns))
+    colnames(age.data.females)<-colnames(age.data.males)<-colnames(age.data.unknowns)<-colnames(age.data.sex3)<-age.data.names
+    data.file$agecomp<-na.omit(rbind(age.data.females,age.data.males,age.data.unknowns,age.data.sex3))
     }
   
 
@@ -4666,7 +4726,7 @@ if(input$use_forecastnew)
 			})
  		
  		#Relative biomass
-		output$SSout_relSB_table <- renderTable({
+		output$SSout_relSB_table <- render_gt({
 				SB_indices<-c(which(rownames(Model.output$derived_quants)==paste0("Bratio_",input$endyr)),
 					which(rownames(Model.output$derived_quants)=="B_MSY/SSB_unfished"),
 					which(rownames(Model.output$derived_quants)==paste0("SPRratio_",input$endyr)),
@@ -4686,7 +4746,18 @@ if(input$use_forecastnew)
 										  paste0("OFL",(input$endyr+1)),
 										  paste0("ABC",(input$endyr+1))
 										  )
-				Output_relSB_table	
+				Output_relSB_table<-mutate_if(Output_relSB_table,is.numeric, round, 2)  
+        relSB_tab<-gt(Output_relSB_table) %>%
+        tab_header(
+        title = "Key Derived Outputs",
+        subtitle = ""
+        ) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = Value)) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
+        
 					# rownames=c(expression(SO[input$endyr]/SO[0]),
 					# 					  expression(SO[MSY]/SO[0]),
 					# 					  expression(SPR[input$endyr]),
@@ -4702,24 +4773,58 @@ if(input$use_forecastnew)
 				})
 
 		#F estimate and relative to FMSY and proxies		
-		output$SSout_F_table <- renderTable({
+		output$SSout_F_table <- render_gt({
 				F_indices<-c(which(rownames(Model.output$derived_quants)==paste0("F_",input$endyr)),
 							which(rownames(Model.output$derived_quants)=="annF_Btgt"),
 							which(rownames(Model.output$derived_quants)=="annF_SPR"),
 							which(rownames(Model.output$derived_quants)=="annF_MSY")
 							)
 				F_values<-Model.output$derived_quants[F_indices,1:3]
+        F_values<-mutate_if(F_values,is.numeric, round, 2)  
+        F_values_tab<-gt(F_values) %>%
+        tab_header(
+        title = "Fishing Intensity",
+        subtitle = ""
+        ) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = c(Value))) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
  			})
 		#Time series output
- 		output$SSout_table <- renderTable({
-# 				Output_table<-Model.output$sprseries[-nrow(Model.output$sprseries),c(1,5,6,7,8,9,11,12,13,25,37)]
-        Output_table<-Model.output$sprseries[,c(1,5,6,7,8,9,11,12,13,25,37)]
-			})
+ 		output$SSout_table <- render_gt({
+        Output_table<-Model.output$sprseries[,c(1,3,4,23,24,7,8,9,10,12,13,25,53,54)]
+        Output_table<-mutate_if(Output_table,is.numeric, round, 2)  
+       gt(Output_table)%>%
+        tab_header(
+        title = "Time Series of Derived Model Outputs",
+        subtitle = ""
+        ) %>%
+        data_color(columns = c(4,7,10,12), method = "auto", palette = "viridis",reverse=TRUE) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = c(Deplete))) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
+      })
  		
  		#Parameters
- 		output$Parameters_table <- renderTable({
- 				cbind(rownames(Model.output$estimated_non_dev_parameters),Model.output$estimated_non_dev_parameters)
-			})
+ 		output$Parameters_table <- render_gt({
+ 				parm_tab<-cbind(rownames(Model.output$estimated_non_dev_parameters),Model.output$estimated_non_dev_parameters)
+			  colnames(parm_tab)[1]<-"Parameter"
+        parm_tab<-mutate_if(parm_tab,is.numeric, round, 2)  
+        gt(parm_tab)%>%
+        tab_header(
+        title = "Estimated Parameters",
+        subtitle = ""
+        ) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = c(Value))) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
+      })
 
 } 	
 

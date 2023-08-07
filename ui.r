@@ -605,11 +605,11 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
        uiOutput("Sel_parms2"),
        uiOutput("Sel_parms3"),
        uiOutput("Sel_parms4"),
-       uiOutput("Sel_parms5"),
+       uiOutput("Sel_parms5")
 
-    fluidRow(checkboxInput("Sex_lt_sel","Sex-specific selectivity?",FALSE)),
+#    fluidRow(checkboxInput("Sex_lt_sel","Sex-specific selectivity?",FALSE)),
     
-    fluidRow(checkboxInput("age_sel_choice","Age-based selectivity?",FALSE))
+#    fluidRow(checkboxInput("age_sel_choice","Age-based selectivity?",FALSE))
      
        
   #      ),
@@ -673,7 +673,12 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       popify(uiOutput("AdvancedSS_datanew"),"Switch starter file to use the data_echo.ss_new file.","This file is a copy of the data file used in the last run. It has additional notes for inputs, and can be modified to run new scenarios, if desired."),
       popify(uiOutput("AdvancedSS_controlnew"),"Switch starter file to use the control.ss_new file.","This file is a copy of the control file used in the previous run, but starting values are the ending values of the previous model. Like the ss.par file, it can be used to run from where the last model finished, but also provides a convenient way to change other parameter specifications."),
       popify(uiOutput("AdvancedSS_forecastnew"),"Overwrite the forecast.ss file with the forecast.ss_new file.","This file is a copy of the forecast file used in the previous run. In the event you want to use this file, this switch will overwite the forecast file content with what is in the forecast.ss_new."),
-      popify(uiOutput("AdvancedSS_Sex3"),"Sex=3 option","This switch changes the per sex length compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the length compositions by sex. This does not convert ages to option sex=3."),
+      popify(uiOutput("AdvancedSS_Sex3options"),"Sex=3 option for biological compositions","This switch changes the per sex biological compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall biological composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the biological compositions by sex. Choose to apply this method to lengths and/or ages."),
+      fluidRow(column(width=6,uiOutput("AdvancedSS_Sex3")),
+        column(width=6,uiOutput("AdvancedSS_AgeSex3"))),    
+  
+      #popify(uiOutput("AdvancedSS_Sex3"),"Sex=3 option for lengths","This switch changes the per sex length compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the length compositions by sex."),
+      #popify(uiOutput("AdvancedSS_AgeSex3"),"Sex=3 option for ages","This switch changes the per sex age compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the age compositions by sex."),
       popify(uiOutput("AdvancedSS_Indexvar"),"Added index variance.","The input index variance is often underestimated. This option allows more variance to be added to each index in order to improve model fit. This is a type of weighting option for indices. The added variance is the same for each year of a particular index, but can be different across indices. Beware large index outliers that may overinflate added variances in order to get the model to fit that one data point."),
       popify(uiOutput("AdvancedSS_ageerror"),"Ageing error matrices","Add as many custom ageing error matrices as needed. See the folders 'Example data files' < 'ageing error matrices' for examples of the ageing error input"),
       uiOutput("AdvancedSS_ageerror_in"),
@@ -1111,16 +1116,16 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
                          )
               ),
             br(),
-            h4("Relative spawning output"),
+            #h4("Relative spawning output"),
             tableOutput("SSout_relSB_table"),
             br(),
-            h4("Fishing intensity"),
+            #h4("Fishing intensity"),
             tableOutput("SSout_F_table"),
             br(),
-            h4("Estimated parameters"),
+            #h4("Estimated parameters"),
             tableOutput("Parameters_table"),
             br(),
-            h4("Time series"),
+            #h4("Time series"),
             tableOutput("SSout_table"),
             value=2),
 
