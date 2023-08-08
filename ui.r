@@ -10,6 +10,7 @@ shinyUI(fluidPage(theme = "bootstrap.css",
   useShinyjs(),
   titlePanel("Welcome to the Stock Synthesis data-limited tool (SS-DL tool)"),
       h4(p(strong("This tool uses the Stock Synthesis framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
+      h5(p("Any suggested changes or requests? Please submit an issue with the recommendation" ,tags$a(href="https://github.com/shcaba/SS-DL-tool/issues", "here"))),
       br(),
 
 sidebarLayout(
@@ -192,6 +193,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
         onStatus = "success",
         offStatus = "danger"))), 
 
+       h5("Parameters can either be fixed (i.e., set to specific value) or estimated."),
        h5("Estimating parameters is a data-based approach to determining life history values"),
        h5("Estimating parameters can also propagate parameter uncertainty into derived model outputs"),
        br(),
@@ -201,7 +203,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
        tags$ul(tags$li(h5(p("Parameters that seem informed by the data (i.e., result in realistic values) are good candidates for estimation.")))),
        tags$ul(tags$li(h5(p("The most likely parameters to have information from fishery-based lengths are Linf and M.")))),
        h5("Not all parameters need be estimated. Fix parameters by turning the phase negative (e.g., -1)"),
-       
+       h5(p("Natural mortality is an often difficult value to obtain. Consider using",tags$a(href="https://connect.fisheries.noaa.gov/natural-mortality-tool/", "The Natural Mortality Tool"), "to either obtain natural mortality values or developing a prior for use in estimating natural mortality. The Github repository for it can be found",tags$a(href="https://github.com/shcaba/Natural-Mortality-Tool", "here"),".")),       
 )),
 
   shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed",
