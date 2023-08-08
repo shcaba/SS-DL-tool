@@ -3320,8 +3320,12 @@ if(input$Sel_choice=="Dome-shaped")
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
-    if(!is.null(rv.Ct$data)){catch.fleets<-max(ncol(rv.Ct$data)-1)}
-    if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets<-max(rv.Lt$data[,3])}
+    browser()
+    catch.fleets.Ct<-catch.fleets.Lt<-catch.fleets.Age<-NA
+    if(!is.null(rv.Ct$data)){catch.fleets.Ct<-max(ncol(rv.Ct$data)-1)}
+    if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets.Lt<-max(rv.Lt$data[,3])}
+    if(all(!is.null(rv.Age$data),is.null(rv.Ct$data))){catch.fleets.Age<-max(rv.Age$data[,3])}
+    catch.fleets<-max(catch.fleets.Ct,catch.fleets.Lt,catch.fleets.Age,na.rm=TRUE)
     data.file$Nfleets<-max(catch.fleets,rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3])
 
 #########
@@ -3473,8 +3477,9 @@ if(input$Sel_choice=="Dome-shaped")
         Lt.comp.data_unknown[,6:ncol(Lt.comp.data_unknown)]*0)
         )
       }
-
+browser()
     #Maintain sample sex ratio
+     if(input$Sex3options){
      if(input$Sex3){
       yrsfleet_females<-paste0(Lt.comp.data_female[,1],Lt.comp.data_female[,3])
       yrsfleet_males<-paste0(Lt.comp.data_male[,1],Lt.comp.data_male[,3])
@@ -3497,7 +3502,7 @@ if(input$Sel_choice=="Dome-shaped")
       lt.data.females<-lt.data.females[!sex3_match_female,]
       lt.data.males<-lt.data.males[!sex3_match_male,]
        }
-
+     }
     colnames(lt.data.females)<-colnames(lt.data.males)<-colnames(lt.data.unknowns)<-colnames(lt.data.sex3)<-lt.data.names
     
     data.file$lencomp<-na.omit(rbind(lt.data.unknowns,lt.data.females,lt.data.males,lt.data.sex3))      
@@ -3605,6 +3610,7 @@ if(input$Sel_choice=="Dome-shaped")
       }
 
     #Maintain sample sex ratio
+     if(input$Sex3options){
      if(input$AgeSex3){
       age_yrsfleetagetype_females<-paste0(Age.comp.data_female[,1],Age.comp.data_female[,3],Age.comp.data_female[,6])
       age_yrsfleetagetype_males<-paste0(Age.comp.data_male[,1],Age.comp.data_male[,3],Age.comp.data_male[,6])
@@ -3629,6 +3635,7 @@ if(input$Sel_choice=="Dome-shaped")
       age.data.females<-age.data.females[!age_sex3_match_female,]
       age.data.males<-age.data.males[!age_sex3_match_male,]
        }
+     }
 
     #if(nrow(subset(Age.comp.data,Sex==0))>0){age.data.unknowns<-data.frame(cbind(
     #  age.data.unknowns,
