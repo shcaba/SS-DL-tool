@@ -3320,7 +3320,6 @@ if(input$Sel_choice=="Dome-shaped")
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-Nages()
-    browser()
     catch.fleets.Ct<-catch.fleets.Lt<-catch.fleets.Age<-NA
     if(!is.null(rv.Ct$data)){catch.fleets.Ct<-max(ncol(rv.Ct$data)-1)}
     if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets.Lt<-max(rv.Lt$data[,3])}
@@ -3477,7 +3476,6 @@ if(input$Sel_choice=="Dome-shaped")
         Lt.comp.data_unknown[,6:ncol(Lt.comp.data_unknown)]*0)
         )
       }
-browser()
     #Maintain sample sex ratio
      if(input$Sex3options){
      if(input$Sex3){
@@ -4246,7 +4244,6 @@ browser()
 		}
 
     #Remove surveys from initial F lines and add q and xtra variance lines
-    #browser()
     if(!is.null(rv.Index$data)|data.file$Nfleets>catch.fleets)
       {
         if(data.file$Nfleets>catch.fleets)
