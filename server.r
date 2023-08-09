@@ -5695,17 +5695,20 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
        #Reduce(intersect,list(names(list1),names(list2),names(list3))) # Code to find matches in multiple vectors. For future option of mixing models with different dimensions.
 
        #Assemble ensembles
-       Ensemble_SO<-SpOt_en[[1]]
-       Ensemble_Bratio<-Bratio_en[[1]]
-       Ensemble_F<-F_en[[1]]
-       Ensemble_SPR<-SPR_en[[1]]
-       for(ii in 2:length(Nsamps_ensemble_wts))
-       {
-         Ensemble_SO<-mapply(c,Ensemble_SO,SpOt_en[[ii]])
-         Ensemble_Bratio<-mapply(c,Ensemble_Bratio,Bratio_en[[ii]])
-         Ensemble_F<-mapply(c,Ensemble_F,F_en[[ii]])
-         Ensemble_SPR<-mapply(c,Ensemble_SPR,SPR_en[[ii]])
-       }
+       
+       Ensemble_SO<-do.call(rbind.data.frame, SpOt_en)
+       colnames(Ensemble_SO)<-names(SpOt_en[[1]])
+       Ensemble_Bratio<-do.call(rbind.data.frame, Bratio_en)
+       Ensemble_F<-do.call(rbind.data.frame, F_en)
+       Ensemble_SPR<-do.call(rbind.data.frame, SPR_en)
+       colnames(Ensemble_Bratio)<-colnames(Ensemble_F)<-colnames(Ensemble_SPR)<-names(Bratio_en[[1]])
+       # for(ii in 2:length(Nsamps_ensemble_wts))
+       # {
+       #   Ensemble_SO<-mapply(c,Ensemble_SO,SpOt_en[[ii]])
+       #   Ensemble_Bratio<-mapply(c,Ensemble_Bratio,Bratio_en[[ii]])
+       #   Ensemble_F<-mapply(c,Ensemble_F,F_en[[ii]])
+       #   Ensemble_SPR<-mapply(c,Ensemble_SPR,SPR_en[[ii]])
+       # }
        
        SO_0<-rbind(SO_0[-1,],data.frame(Year=as.numeric(colnames(Ensemble_SO)[1]),Metric=Ensemble_SO[,1],Model="Ensemble"))
        SO_t<-rbind(SO_t[-1,],data.frame(Year=as.numeric(colnames(Ensemble_SO)[ncol(Ensemble_SO)]),Metric=Ensemble_SO[,ncol(Ensemble_SO)],Model="Ensemble"))
@@ -5754,45 +5757,45 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
 
       #Spawning Output plot
       Ensemble_SO_plot<-reshape2::melt(Ensemble_SO,value.name="SO")
-      colnames(Ensemble_SO_plot)[2]<-"Year"
+      colnames(Ensemble_SO_plot)<-c("Year","SO")
       Ensemble_SO_plot$Year<-as.factor(Ensemble_SO_plot$Year)
       ggplot(Ensemble_SO_plot,aes(Year,SO,fill=Year))+
         geom_violin()+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5))+
         ylab("Spawning Output")
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SO.png"))
 
       #Relative stock status plot
       Ensemble_Bratio_plot<-reshape2::melt(Ensemble_Bratio,value.name="Bratio")
-      colnames(Ensemble_Bratio_plot)[2]<-"Year"
+      colnames(Ensemble_Bratio_plot)<-c("Year","Bratio")
       Ensemble_Bratio_plot$Year<-as.factor(Ensemble_Bratio_plot$Year)
       ggplot(Ensemble_Bratio_plot,aes(Year,Bratio,fill=Year))+
         geom_violin()+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5))+
         ylab("SBt/SO0")
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_Bratio.png"))
 
       #F plot
       Ensemble_F_plot<-reshape2::melt(Ensemble_F,value.name="F")
-      colnames(Ensemble_F_plot)[2]<-"Year"
+      colnames(Ensemble_F_plot)<-c("Year","F")
       Ensemble_F_plot$Year<-as.factor(Ensemble_F_plot$Year)
       ggplot(Ensemble_F_plot,aes(Year,F,fill=Year))+
         geom_violin()+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5))+
         ylab("Fishing mortality")
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_F.png"))
 
       #1-SPR plot
       Ensemble_SPR_plot<-reshape2::melt(Ensemble_SO,value.name="SPR")
-      colnames(Ensemble_SPR_plot)[2]<-"Year"
+      colnames(Ensemble_SPR_plot)<-c("Year","SPR")
       Ensemble_SPR_plot$Year<-as.factor(Ensemble_SPR_plot$Year)
       ggplot(Ensemble_SPR_plot,aes(Year,SPR,fill=Year))+
         geom_violin()+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5))+
         ylab("1-SPR")
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SPR.png"))
 
