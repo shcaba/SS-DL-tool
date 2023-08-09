@@ -5105,7 +5105,7 @@ observeEvent(input$run_MultiProfiles,{
        L <- readLines(input$file_multi_profile$datapath, n = 1)
        if(grepl(";", L)) {par.df <- read.csv2(input$file_multi_profile$datapath,check.names=FALSE)}
        SS_parm_names<-rownames(ref.model$parameters)[c(23:24,1,3,4:6,13,15:18)]
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
+       parmnames_vec<-c("lnR0","Steepness","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        parmnames<-colnames(par.df)
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        modelnames<-paste0(parmnames[1]," ",par.df[,1],";",parmnames[2]," ",par.df[,2])
@@ -5136,7 +5136,7 @@ observeEvent(input$run_MultiProfiles,{
 
       if(input$Hess_multi_like==FALSE)
       {
-        profile <- profile(
+        profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
           oldctlfile = ctlfile.in,
@@ -5151,7 +5151,7 @@ observeEvent(input$run_MultiProfiles,{
 
       if(input$Hess_multi_like==TRUE)
       {
-        profile <- profile(
+        profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
           oldctlfile = ctlfile.in,
@@ -5167,7 +5167,7 @@ observeEvent(input$run_MultiProfiles,{
     profilemodels <- SSgetoutput(dirvec=profile_dir,keyvec=1:nrow(par.df), getcovar=FALSE)
     n <- length(profilemodels)
     profilesummary <- SSsummarize(profilemodels)
-    try(SSplotComparisons(profilesummary, legendlabels = modelnames, ylimAdj = 1.30, new = FALSE,plot=FALSE,print=TRUE, legendloc = 'topleft',uncertainty=TRUE,plotdir=profile_dir,btarg=TRP_multi_like,minbthresh=LRP_multi_like))
+    try(SSplotComparisons(profilesummary, legendlabels = modelnames, ylimAdj = 1.30, new = FALSE,plot=FALSE,print=TRUE, legendloc = 'topleft',uncertainty=TRUE,plotdir=profile_dir,btarg=input$TRP_multi_like,minbthresh=input$LRP_multi_like))
     save(profilesummary,file=paste0(profile_dir,"/multiprofile.DMP"))
     # add total likelihood (row 1) to table created above
     par.df$like <- as.numeric(profilesummary$likelihoods[1, 1:n])
