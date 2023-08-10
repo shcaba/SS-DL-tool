@@ -8,7 +8,7 @@ The SS-DL tool was developed by Dr. Jason Cope (NWFSC - NOAA) and use Stock Synt
 packages<-c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr",
 "tidyr","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy",
 "truncnorm","ggpubr","flextable","officer","gridExtra","wesanderson",
-"data.table","adnuts","shinystan","gt","gtExtras")
+"data.table","adnuts","shinystan","gt","gtExtras","stringr")
 
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {

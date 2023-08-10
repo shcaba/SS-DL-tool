@@ -26,6 +26,7 @@ require(adnuts)
 require(shinystan)
 require(gt)
 require(gtExtras)
+require(stringr)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -5680,7 +5681,7 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
          SpOt_en[[i]]<-Map(mean.fxn,modsummary.ensemble$SpawnBio[,i],modsummary.ensemble$SpawnBioSD[,i])
          names(SpOt_en[[i]])<-modsummary.ensemble$SpawnBio$Yr
          SO_0<-rbind(SO_0,data.frame(Year=as.numeric(names(SpOt_en[[i]][1])),Metric=unlist(SpOt_en[[i]][1]),Model=input$myEnsemble[i]))
-         SO_t<-rbind(SO_t,data.frame(Year=names(SpOt_en[[i]][nrow(modsummary.ensemble$SpawnBio)]),Metric=unlist(SpOt_en[[i]][length(Nsamps_ensemble_wts)]),Model=input$myEnsemble[i]))
+         SO_t<-rbind(SO_t,data.frame(Year=names(SpOt_en[[i]][nrow(modsummary.ensemble$SpawnBio)]),Metric=unlist(SpOt_en[[i]][nrow(modsummary.ensemble$SpawnBio)]),Model=input$myEnsemble[i]))
          Bratio_en[[i]]<-Map(mean.fxn,modsummary.ensemble$Bratio[,i],modsummary.ensemble$BratioSD[,i])               
          names(Bratio_en[[i]])<-modsummary.ensemble$Bratio$Yr       
          Bratio_t<-rbind(Bratio_t,data.frame(Year=names(Bratio_en[[i]][nrow(modsummary.ensemble$Bratio)]),Metric=unlist(Bratio_en[[i]][nrow(modsummary.ensemble$Bratio)]),Model=input$myEnsemble[i]))
@@ -5731,27 +5732,32 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
 
        
       show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[2],text="Preparing ensemble plots")
-      
-       #Boxplots
-       gg1<-ggplot(SO_0,aes(Model,Metric))+
-        geom_violin()+
-        ylab("Initial Spawning Output")
-       gg2<-ggplot(SO_t,aes(Model,Metric))+
-        geom_violin()+
-        ylab("Terminal Year Spawning Output")
-       gg3<-ggplot(Bratio_t,aes(Model,Metric))+
-        geom_violin()+
-        ylab("Relative stock status")
-       gg4<-ggplot(F_t,aes(Model,Metric))+
-        geom_violin()+
-        ylab("Fishing mortality")
-       gg5<-ggplot(SPR_t,aes(Model,Metric))+
-        geom_violin()+
-        ylab("1-SPR")
 
-        
+       #Boxplots
+       SO_0$Model.labs<-SO_t$Model.labs<-Bratio_t$Model.labs<-F_t$Model.labs<-SPR_t$Model.labs<- str_wrap(SO_0$Model, width = 5)
+       gg1<-ggplot(SO_0,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("Initial Spawning Output")+
+        theme(legend.position = "none")
+       gg2<-ggplot(SO_t,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("Terminal Year Spawning Output")+
+        theme(legend.position = "none")
+       gg3<-ggplot(Bratio_t,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("Relative stock status")+
+        theme(legend.position = "none")
+       gg4<-ggplot(F_t,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("Fishing mortality")+
+        theme(legend.position = "none")
+       gg5<-ggplot(SPR_t,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("1-SPR")+
+        theme(legend.position = "none")
+
         ggarrange(gg1,gg2,gg3,gg4,gg5)
-        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots.png"))
+        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots.png"),width=20,height=10)
              output$Ensemble_plots <- renderPlot({ 
        ggarrange(gg1,gg2,gg3,gg4,gg5)})
 
@@ -5759,45 +5765,49 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       Ensemble_SO_plot<-reshape2::melt(Ensemble_SO,value.name="SO")
       colnames(Ensemble_SO_plot)<-c("Year","SO")
       Ensemble_SO_plot$Year<-as.factor(Ensemble_SO_plot$Year)
-      ggplot(Ensemble_SO_plot,aes(Year,SO,fill=Year))+
-        geom_violin()+
+      SO.ts.plot<-ggplot(Ensemble_SO_plot,aes(Year,SO,fill=Year))+
+        geom_violin(scale="count")+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5))+
+        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("Spawning Output")
-      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SO.png"))
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SO.png"),width=20,height=10)
+         output$Ensemble_plots_SO_ts <- renderPlot({ 
+       SO.ts.plot})
 
       #Relative stock status plot
       Ensemble_Bratio_plot<-reshape2::melt(Ensemble_Bratio,value.name="Bratio")
       colnames(Ensemble_Bratio_plot)<-c("Year","Bratio")
       Ensemble_Bratio_plot$Year<-as.factor(Ensemble_Bratio_plot$Year)
-      ggplot(Ensemble_Bratio_plot,aes(Year,Bratio,fill=Year))+
-        geom_violin()+
+      Bratio.ts.plot<-ggplot(Ensemble_Bratio_plot,aes(Year,Bratio,fill=Year))+
+        geom_violin(bw=0.01)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5))+
+        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("SBt/SO0")
-      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_Bratio.png"))
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_Bratio.png"),width=20,height=10)
+         output$Ensemble_plots_Bratio_ts <- renderPlot({ 
+       Bratio.ts.plot})
 
       #F plot
       Ensemble_F_plot<-reshape2::melt(Ensemble_F,value.name="F")
       colnames(Ensemble_F_plot)<-c("Year","F")
       Ensemble_F_plot$Year<-as.factor(Ensemble_F_plot$Year)
       ggplot(Ensemble_F_plot,aes(Year,F,fill=Year))+
-        geom_violin()+
+        geom_violin(bw=0.001)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5))+
+        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("Fishing mortality")
-      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_F.png"))
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_F.png"),width=20,height=10)
 
       #1-SPR plot
-      Ensemble_SPR_plot<-reshape2::melt(Ensemble_SO,value.name="SPR")
+      Ensemble_SPR_plot<-reshape2::melt(Ensemble_SPR,value.name="SPR")
       colnames(Ensemble_SPR_plot)<-c("Year","SPR")
       Ensemble_SPR_plot$Year<-as.factor(Ensemble_SPR_plot$Year)
       ggplot(Ensemble_SPR_plot,aes(Year,SPR,fill=Year))+
-        geom_violin()+
+        geom_violin(bw=0.01)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5))+
+        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("1-SPR")
-      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SPR.png"))
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SPR.png"),width=20,height=10)
 
       #Get simpler plots for SB0, SBcurrent, RSS, F, and SPR in terminal year
 

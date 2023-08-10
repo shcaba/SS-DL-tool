@@ -1205,6 +1205,8 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
           
           tabPanel("Ensemble models",
             plotOutput("Ensemble_plots"),            
+            plotOutput("Ensemble_plots_SO_ts"),            
+            plotOutput("Ensemble_plots_Bratio_ts"),            
             value=7)
           ) 
    )
