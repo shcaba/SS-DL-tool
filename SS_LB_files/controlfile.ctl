@@ -79,7 +79,7 @@
  0.0001 1000 36.3 19.7 99 0 -99 0 0 0 0 0 0 0 # Mat50%_Fem_GP_1
  -2 4 -0.5 -1 99 0 -99 0 0 0 0 0 0 0 # Mat_slope_Fem_GP_1
  0 3 0.00001 1 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_scalar_Fem_GP_1
- 0 3 3 1 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_exp_len_Fem_GP_1
+ 0 10 3 1 0.8 0 -3 0 0 0 0 0 0 0 # Eggs_exp_len_Fem_GP_1
 # Sex: 2  BioPattern: 1  NatMort
  0.001 2 0.18 -2.92 0.22 3 -1 0 0 0 0 0 0 0 # NatM_p_1_Mal_GP_1
 # Sex: 2  BioPattern: 1  Growth
@@ -226,7 +226,7 @@
             -4            12       5.15329             3            99             0          1          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_Fishery(1)
            -15             6            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
           -999            15           -15           -10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_start_logit_Fishery(1)
-            -5            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
+          -15            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
 
 # 1   Fishery AgeSelex
 #_no timevary selex parameters

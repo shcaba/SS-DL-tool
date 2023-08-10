@@ -10,3 +10,4 @@ Scenarios
 
 # Ignore SASS config files
 .sass-cache
+.Rproj.user
