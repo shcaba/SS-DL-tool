@@ -1752,8 +1752,8 @@ output$AdvancedSS_addcomms_user<- renderUI({
   }) 
 
   output$AdvancedSS_addcomms_comms_user <- renderUI({ 
-    if(!is.null(input$add_comms_user)){       
-      if(input$add_comms_user){
+    if(!is.null(input$add_comms)){       
+      if(input$add_comms){
       fluidRow(column(width=12, textInput("add_comms_in", "Enter additional run commands", value="")))        
   }
     }
