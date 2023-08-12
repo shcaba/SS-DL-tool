@@ -559,8 +559,8 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::hide("Ensemble_panel")
 
         #shinyjs::show("tab_sss")
-        showTab(inputId = "tabs", target = "11")
-        hideTab(inputId = "tabs", target = "2")
+        hideTab(inputId = "tabs", target = "11")
+        showTab(inputId = "tabs", target = "2")
 
 })
 
@@ -1724,7 +1724,7 @@ output$AdvancedSS_nohess<- renderUI({
 output$AdvancedSS_nohess_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_hess", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
+        inputId = "no_hess_user", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -1746,15 +1746,15 @@ output$AdvancedSS_addcomms<- renderUI({
 
 output$AdvancedSS_addcomms_user<- renderUI({ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "add_comms", 
+        inputId = "add_comms_user", 
         label = "Add additional SS run commands",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
   output$AdvancedSS_addcomms_comms_user <- renderUI({ 
-    if(!is.null(input$add_comms)){       
-      if(input$add_comms){
-      fluidRow(column(width=12, textInput("add_comms_in", "Enter additional run commands", value="")))        
+    if(!is.null(input$add_comms_user)){       
+      if(input$add_comms_user){
+      fluidRow(column(width=12, textInput("add_comms_in_user", "Enter additional run commands", value="")))        
   }
     }
 }) 
@@ -4514,17 +4514,20 @@ if(input$use_forecastnew)
     if(input$Data_wt=="Dirichlet"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
- 				    
+ 				    browser()
+#RUN SS MODELS
+    if(is.null(input$user_model))
+    {
     if(is.null(input$no_hess)){
       cmd.in<-""
-      if(input$add_comms==TRUE){cmd.in=paste0(" ",input$add_comms_in)}
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
 
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
         {
       cmd.in<-" -nohess"
-      if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}
-          RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
         }
     }
 
@@ -4533,17 +4536,104 @@ if(input$use_forecastnew)
       if(input$no_hess)
       {
       cmd.in<-" -nohess"
-      if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}
-           RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
       }
       if(!input$no_hess)
       {
-        cmd.in<-""
-        if(input$add_comms==TRUE){cmd.in=paste0(" ",input$add_comms_in)}
-        RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      cmd.in<-""
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
       }
     }
+    }
 
+
+###
+    if(!is.null(input$user_model))
+    {
+    if(input$user_model==FALSE)
+    {
+    if(is.null(input$no_hess)){
+      cmd.in<-""
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+
+      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
+        {
+      cmd.in<-" -nohess"
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+        }
+    }
+
+    if(!is.null(input$no_hess))
+    {
+      if(input$no_hess)
+      {
+      cmd.in<-" -nohess"
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      }
+      if(!input$no_hess)
+      {
+      cmd.in<-""
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      }
+    }
+  }
+
+    if(input$user_model==TRUE)
+    {
+    if(is.null(input$no_hess_user)){
+      cmd.in<-""
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+
+      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
+        {
+      cmd.in<-" -nohess"
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+        }
+    }
+
+    if(!is.null(input$no_hess_user))
+    {
+      if(input$no_hess_user)
+      {
+      cmd.in<-" -nohess"
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      }
+      if(!input$no_hess_user)
+      {
+      cmd.in<-""
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      }
+    }
+  }
+}
+
+###
+
+#  observeEvent(input$add_comms, {
+#     updatePrettyCheckbox(
+#       session = session,
+#       inputId = "add_comms",
+#       value = FALSE
+#     )
+#   })
+
+# observeEvent(input$add_comms_user, {
+#     updatePrettyCheckbox(
+#       session = session,
+#       inputId = "add_comms_user",
+#       value = FALSE
+#     )
+#   })
  				
     if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")))
       {
