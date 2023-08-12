@@ -4514,7 +4514,7 @@ if(input$use_forecastnew)
     if(input$Data_wt=="Dirichlet"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
- 				    browser()
+ 				    
 #RUN SS MODELS
     if(is.null(input$user_model))
     {
