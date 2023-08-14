@@ -3153,8 +3153,8 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
       load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
-      ofl.years<-as.numeric(unique(melt(SSS.out$OFL)$Var2))
-      ggplot(melt(SSS.out$OFL),aes(Var2,value,group=Var2))+
+      ofl.years<-as.numeric(unique(reshape2::melt(SSS.out$OFL)$Var2))
+      ggplot(reshape2::melt(SSS.out$OFL),aes(Var2,value,group=Var2))+
           geom_boxplot(fill="#236192")+
           scale_x_continuous(breaks=ofl.years,labels=as.character(ofl.years))+
           ylab("OFL (mt)")+
@@ -3167,8 +3167,8 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
       load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
-      abc.years<-as.numeric(unique(melt(SSS.out$ABC)$Var2))
-      ggplot(melt(SSS.out$ABC),aes(Var2,value,group=Var2))+
+      abc.years<-as.numeric(unique(reshape2::melt(SSS.out$ABC)$Var2))
+      ggplot(reshape2::melt(SSS.out$ABC),aes(Var2,value,group=Var2))+
           geom_boxplot(fill="#658D1B")+
           scale_x_continuous(breaks=abc.years,labels=as.character(abc.years))+
           ylab("ABC (mt)")+
