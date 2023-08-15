@@ -1202,6 +1202,22 @@ output$Model_dims2 <- renderUI({
 # 		}
 # })
 
+#Load life history values via csv
+output$LH_load_file <- renderUI({ 
+    if(!is.null(input$LH_in_file)){       
+      if(input$LH_in_file){
+      fluidRow(column(width=12,fileInput('file14', 'Life history values file',
+                           accept = c(
+                             'text/csv',
+                             'text/comma-separated-values',
+                             'text/tab-separated-values',
+                             'text/plain',
+                             '.csv'
+                           )
+       )))        
+      }
+    } 
+  }) 
 
 #Male life history parameters 
 output$Male_parms_inputs_label <- renderUI({ 

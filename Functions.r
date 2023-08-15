@@ -63,8 +63,27 @@ gg_color_hue <- function(n) {
   grDevices::hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
+#Create all likelihood names
+mod.like.names<-unique(model.summaries$likelihoods_by_fleet$Label)
+build.like.tab<-colnames(model.summaries$likelihoods_by_fleet)
+Fleet.likes<-model.summaries$likelihoods_by_fleet
+mod_sums.temp1<-Fleet.likes[1,]
+mod_sums.temp1[,1:length(mod_sums.temp1)]<-NA
+for(t in 1:model.summaries$n)
+  {
+    mod.labs.in<-subset(Fleet.likes,model==t)$Label
+    add.labs<-mod.like.names[!mod.like.names%in%mod.labs.in]
+    if(length(add.labs)>0)
+    {
+      mod.likes<-mod_sums.temp1%>% slice(rep(1:n(), each = length(add.labs)))    
+      mod.likes[,1]<-t
+      mod.likes[,2]<-add.labs
+      Fleet.likes<-rbind(Fleet.likes,mod.likes)
+    }
+  }
+
 # num.likes<-sum(likelihood.out)*2+2
-num.likes <- dim(subset(model.summaries$likelihoods_by_fleet, model == 1))[1] # determine how many likelihoods components
+num.likes <- dim(Fleet.likes)[1] # determine how many likelihoods components
 
 if (missing(mod.names)) {
   mod.names <- paste("model ", 1:model.summaries$n)
@@ -72,30 +91,30 @@ if (missing(mod.names)) {
 
 # grab the survey likelihoods
 if (likelihood.out[1] == 1) {
-  syrvlambda_index <- c(1:num.likes)[subset(model.summaries$likelihoods_by_fleet, model == 1)$Label == "Surv_lambda"]
-  survey.lambda <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[seq(3, dim(model.summaries$likelihoods_by_fleet)[1], num.likes), ][-1:-2]), "Survey_lambda")
-  syrvlike_index <- c(1:num.likes)[subset(model.summaries$likelihoods_by_fleet, model == 1)$Label == "Surv_like"]
-  survey.like <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[seq(syrvlike_index, dim(model.summaries$likelihoods_by_fleet)[1], num.likes), ][-1:-2]), "Survey_likelihood")
+  syrvlambda_index <- c(1:num.likes)[Fleet.likes$Label == "Surv_lambda"]
+  survey.lambda <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[syrvlambda_index, ][-1:-2]), "Survey_lambda")
+  syrvlike_index <- c(1:num.likes)[Fleet.likes$Label == "Surv_like"]
+  survey.like <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[syrvlike_index, ][-1:-2]), "Survey_likelihood")
 } else {
   survey.lambda <- survey.like <- data.frame(t(rep(NA, model.summaries$n + 2)))
 }
 
 # length likelihoods
 if (likelihood.out[2] == 1) {
-  Ltlambda_index <- c(1:num.likes)[subset(model.summaries$likelihoods_by_fleet, model == 1)$Label == "Length_lambda"]
-  Lt.lambda <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[seq(Ltlambda_index, dim(model.summaries$likelihoods_by_fleet)[1], num.likes), ][-1:-2]), "Lt_lambda")
-  Ltlike_index <- c(1:num.likes)[subset(model.summaries$likelihoods_by_fleet, model == 1)$Label == "Length_like"]
-  Lt.like <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[seq(Ltlike_index, dim(model.summaries$likelihoods_by_fleet)[1], num.likes), ][-1:-2]), "Lt_likelihood")
+  Ltlambda_index <- c(1:num.likes)[Fleet.likes$Label == "Length_lambda"]
+  Lt.lambda <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Ltlambda_index, ][-1:-2]), "Lt_lambda")
+  Ltlike_index <- c(1:num.likes)[Fleet.likes$Label == "Length_like"]
+  Lt.like <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Ltlike_index, ][-1:-2]), "Lt_likelihood")
 } else {
   Lt.lambda <- Lt.like <- data.frame(t(rep(NA, model.summaries$n + 2)))
 }
 
 # age likelihood
 if (likelihood.out[3] == 1) {
-  Agelambda_index <- c(1:num.likes)[subset(model.summaries$likelihoods_by_fleet, model == 1)$Label == "Age_lambda"]
-  Age.lambda <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[seq(Agelambda_index, dim(model.summaries$likelihoods_by_fleet)[1], num.likes), ][-1:-2]), "Age_lambda")
-  Agelike_index <- c(1:num.likes)[subset(model.summaries$likelihoods_by_fleet, model == 1)$Label == "Age_like"]
-  Age.like <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[seq(Agelike_index, dim(model.summaries$likelihoods_by_fleet)[1], num.likes), ][-1:-2]), "Age_likelihood")
+  Agelambda_index <- c(1:num.likes)[Fleet.likes$Label == "Age_lambda"]
+  Age.lambda <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Agelambda_index, ][-1:-2]), "Age_lambda")
+  Agelike_index <- c(1:num.likes)[Fleet.likes$Label == "Age_like"]
+  Age.like <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Agelike_index, ][-1:-2]), "Age_likelihood")
 } else {
   Age.lambda <- Age.like <- data.frame(t(rep(NA, model.summaries$n + 2)))
 }
@@ -145,10 +164,9 @@ dev.quants.labs <- data.frame(c("SB0", paste0("SSB_", current.year),
   AICs <- 2 * model.summaries[["npars"]] + (2 * as.numeric(model.summaries[["likelihoods"]][1, 
     1:model.summaries[["n"]]]))
   deltaAICs <- AICs - AICs[1]
-  AIC.out <- data.frame(cbind(c("AIC", "deltaAIC"), rbind.data.frame(AICs, 
-    deltaAICs), c("AIC")))
-  colnames(AIC.out) <- colnames(survey.lambda) <- colnames(survey.like) <- colnames(Lt.lambda) <- colnames(Lt.like) <- colnames(Age.lambda) <- colnames(Age.like) <- colnames(parms) <- colnames(dev.quants.labs) <- c("Type", 
-    mod.names, "Label")
+  AIC.out <- data.frame(cbind(c("AIC", "deltaAIC"), rbind.data.frame(AICs, deltaAICs), c("AIC")))
+  colnames(AIC.out) <- colnames(survey.lambda) <- colnames(survey.like) <- colnames(Lt.lambda) <- colnames(Lt.like) <- colnames(Age.lambda) <- colnames(Age.like) <- colnames(parms) <- colnames(dev.quants.labs) <- 
+  c("Type",mod.names, "Label")
   Like.parm.quants <- rbind(AIC.out, survey.like, survey.lambda, 
     Lt.like, Lt.lambda, Age.like, Age.lambda, parms, dev.quants.labs)
   Like.parm.quants.table.data <- flextable::as_grouped_data(Like.parm.quants, 
@@ -219,7 +237,7 @@ SPRtarg.lab<-paste0('SPR',model.summaries[["sprtargs"]][1]*100,"%")
     geom_rect(aes(ymin = 1, ymax = model.summaries$n + 1, xmin = -CI_DQs_RE[3], xmax = CI_DQs_RE[3]), fill = NA, color = four.colors[3]) +
     geom_rect(aes(ymin = 1, ymax = model.summaries$n + 1, xmin = -CI_DQs_RE[4], xmax = CI_DQs_RE[4]), fill = NA, color = four.colors[4]) +
     geom_rect(aes(ymin = 1, ymax = model.summaries$n + 1, xmin = -CI_DQs_RE[5], xmax = CI_DQs_RE[5]), fill = NA, color = four.colors[5]) +
-    geom_vline(xintercept = c(TRP, LRP, 0), lty = c(2, 2, 1), color = c("darkgreen", "darkred", "gray")) +
+    geom_vline(xintercept = c(TRP + 0.03, LRP - 0.03, 0), lty = c(2, 2, 1), color = c("darkgreen", "darkred", "gray")) +
     scale_y_continuous(breaks = 2:(model.summaries$n), labels = unique(Dev.quants.ggplot$Model_name)) +
     # scale_y_continuous(limits=ylims.in[1:2])+
     coord_cartesian(xlim = ylims.in[1:2]) +
@@ -256,7 +274,7 @@ SPRtarg.lab<-paste0('SPR',model.summaries[["sprtargs"]][1]*100,"%")
     ) +
     labs(y = "", x = "Relative change") +
     annotate("text", y = anno.x, x = anno.y, label = anno.lab, size = 5, col = 'grey10') +
-    annotate("text", x = c(0, 0), y = c(logTRP + 0.03, logLRP - 0.03), label = c("TRP", "LRP"), size = c(2, 2), color = c("darkgreen", "darkred")) +
+    annotate("text", x = c(0, 0), y = c(TRP + 0.03, LRP - 0.03), label = c("TRP", "LRP"), size = c(2, 2), color = c("darkgreen", "darkred")) +
     #annotate("text", y = c((model.summaries$n + 2), (model.summaries$n + 2)), 
       #x = c(TRP + 0.08, LRP - 0.08), label = c("TRP", "LRP"), size = c(5, 5), color = c("darkgreen", "darkred")) +
     geom_hline(yintercept = c(sensi.type.breaks), lty = lty.in)
