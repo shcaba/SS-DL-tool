@@ -64,6 +64,7 @@ gg_color_hue <- function(n) {
 }
 
 #Create all likelihood names
+browser()
 mod.like.names<-unique(model.summaries$likelihoods_by_fleet$Label)
 build.like.tab<-colnames(model.summaries$likelihoods_by_fleet)
 Fleet.likes<-model.summaries$likelihoods_by_fleet
@@ -90,7 +91,7 @@ if (missing(mod.names)) {
 }
 
 # grab the survey likelihoods
-if (likelihood.out[1] == 1) {
+if (likelihood.out[1] == 1 & any(mod.like.names=="Surv_like")) {
   syrvlambda_index <- c(1:num.likes)[Fleet.likes$Label == "Surv_lambda"]
   survey.lambda <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[syrvlambda_index, ][-1:-2]), "Survey_lambda")
   syrvlike_index <- c(1:num.likes)[Fleet.likes$Label == "Surv_like"]
@@ -100,7 +101,7 @@ if (likelihood.out[1] == 1) {
 }
 
 # length likelihoods
-if (likelihood.out[2] == 1) {
+if (likelihood.out[2] == 1 & any(mod.like.names=="Length_like")) {
   Ltlambda_index <- c(1:num.likes)[Fleet.likes$Label == "Length_lambda"]
   Lt.lambda <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Ltlambda_index, ][-1:-2]), "Lt_lambda")
   Ltlike_index <- c(1:num.likes)[Fleet.likes$Label == "Length_like"]
@@ -110,7 +111,7 @@ if (likelihood.out[2] == 1) {
 }
 
 # age likelihood
-if (likelihood.out[3] == 1) {
+if (likelihood.out[3] == 1 & any(mod.like.names=="Age_like")) {
   Agelambda_index <- c(1:num.likes)[Fleet.likes$Label == "Age_lambda"]
   Age.lambda <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Agelambda_index, ][-1:-2]), "Age_lambda")
   Agelike_index <- c(1:num.likes)[Fleet.likes$Label == "Age_like"]

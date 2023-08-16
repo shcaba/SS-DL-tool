@@ -2042,6 +2042,10 @@ output$AdvancedSS_Ltbin <- renderUI({
     # } 
   }) 
 
+output$AdvancedSS_Nages <- renderUI({ 
+      fluidRow(column(width=6, numericInput("Nages_in", "Plus group age",  
+                                              value=Nages(), min=0, max=10000, step=0.5))) 
+  }) 
 
 output$Profile_multi_values <- renderUI({ 
     #if(!is.null(input$multi_profile)){       
@@ -2243,7 +2247,15 @@ if(!is.null(rv.Lt$data))
   
   output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
-		   rv.Lt$data %>%  
+		  #  if(!is.null(rv.Ct$data))
+      #  {
+      #   fleetnames.ct<-colnames(rv.Ct$data)[-1]
+      #   for(xx in 1:length(fleetnames.ct))
+      #   {
+      #     rv.Lt$data$Fleet[rv.Lt$data$Fleet==xx]<-fleetnames.ct[xx]
+      #   }
+      #  }
+       rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
@@ -2544,21 +2556,27 @@ output$Selplot <- renderPlot({
         #   FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))      
         # }
       
+       if(!is.null(rv.Ct$data))
+       {
+        fleetnames.ct<-colnames(rv.Ct$data)[-1]
+       }
+       else(fleetnames.ct<-1:length(Sel50))
+
        Sel.out<-doubleNorm24.sel(Sel50=Sel50[1],Selpeak=Selpeak[1],PeakDesc=PeakDesc[1],LtPeakFinal=LtPeakFinal[1],FinalSel=FinalSel[1])
-       Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet="Fleet 1")
+       Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet=fleetnames.ct[1])
        if(length(Sel50)>1)
        {
         for(ii in 2:length(Sel50))
         {
         Sel.out.temp<-doubleNorm24.sel(Sel50=Sel50[ii],Selpeak=Selpeak[ii],PeakDesc=PeakDesc[ii],LtPeakFinal=LtPeakFinal[ii],FinalSel=FinalSel[ii])
-        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=paste0("Fleet ",ii))
+        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=fleetnames.ct[ii])
         Sel.out<-rbind(Sel.out,Sel.out.temp)
         }
        }
         selplot.out<-ggplot(Sel.out,aes(Bin,Sel,colour=Fleet)) +  
           geom_line(lwd=1.5) + 
-          ylab("Length Bins") + 
-          xlab("Selectivity") +  
+          ylab("Proportion Selected") + 
+          xlab("Length Bins") +  
           scale_color_viridis_d() 
       }
     }
@@ -2728,9 +2746,10 @@ print(1)
 		data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/sss_example.dat")) 
 		ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
 		#Read, edit then write new DATA file
-		data.file$styr<-input$styr
+		browser()
+    data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
-		data.file$Nages<-Nages()
+		data.file$Nages<-input$Nages_in #Nages()
 
 	#Catches
 		Catch.data<-rv.Ct$data
@@ -4966,22 +4985,22 @@ if(input$use_forecastnew)
   roots <- getVolumes()()  
 
 
-  #
-    pathModelout <- reactive({
-        shinyDirChoose(input, "Modelout_dir", roots= roots,session=session, filetypes=c('', 'txt'))
-        return(parseDirPath(roots, input$Modelout_dir))
-      })
+  #CODE TO ALLOW USERS TO SAVE OUTPUT SOMEWHERE OTHER THAN SCENARIOS FOLDER 
+    # pathModelout <- reactive({
+    #     shinyDirChoose(input, "Modelout_dir", roots= roots,session=session, filetypes=c('', 'txt'))
+    #     return(parseDirPath(roots, input$Modelout_dir))
+    #   })
 
-    observeEvent(as.numeric(input$tabs)==2,{      
-    #observeEvent(exists("Model.output"),{      
-      pathModelout.dir <-pathModelout()
-    if(!identical(pathModelout.dir, character(0)))
-    {
-      #dir.create(paste0(pathModelout.dir,"/Scenarios"))
-      file.copy(paste0("Scenarios/",input$Scenario_name), pathModelout.dir,recursive=TRUE,overwrite=TRUE)
-      if(input$Retro_choice){file.copy(paste0("Scenarios/",input$Scenario_name,"_retro"), pathModelout.dir,recursive=TRUE,overwrite=TRUE)}
-    }
-    })
+    # observeEvent(as.numeric(input$tabs)==2,{      
+    # #observeEvent(exists("Model.output"),{      
+    #   pathModelout.dir <-pathModelout()
+    # if(!identical(pathModelout.dir, character(0)))
+    # {
+    #   #dir.create(paste0(pathModelout.dir,"/Scenarios"))
+    #   file.copy(paste0("Scenarios/",input$Scenario_name), pathModelout.dir,recursive=TRUE,overwrite=TRUE)
+    #   if(input$Retro_choice){file.copy(paste0("Scenarios/",input$Scenario_name,"_retro"), pathModelout.dir,recursive=TRUE,overwrite=TRUE)}
+    # }
+    # })
 
 
 ########################
@@ -5029,7 +5048,7 @@ if(input$Opt_mod==TRUE)
 
   remove_modal_spinner()
 }
- 
+
 #Set mcmc model
 show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
 chains <- parallel::detectCores()-1
@@ -5045,7 +5064,7 @@ p<-file.path(modeff.dir,modeff.name)
   if (input$ModEff_choice=="Nuts") 
   {
     fit_model <- sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
-          chains=4, cores=4,control=list(metric='mle', max_treedepth=5),mceval=TRUE)
+          chains=chains, cores=4,control=list(metric='mle', max_treedepth=5),mceval=TRUE)
   }
 
 fit.mod.summary<-utils::capture.output(summary(fit_model), file=NULL)

@@ -106,7 +106,7 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         h5(em("If using an existing model, chose 'None' to maintain the same weighting as the existing model")),
         # fluidRow(column(width=10,prettyCheckbox(
         #   inputId = "dirichlet",
-        #   label = "Use Dirichlet weighting?",
+        #   label = "Use Dirichlet multinomial weighting?",
         #   value=FALSE, 
         #   shape="curve",
         #   icon = icon("check"),
@@ -694,8 +694,11 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       #uiOutput("AdvancedSS_retro_years"),
       h5(p("Define modelled length bins. Default values are by 2 cm bin ranging from 4 to 25% above the Linf value. If using conditional age at lengths, length bins must be consistent with these population bins, not the length data bins.")),
       h5(p(em("Inputs must be smaller and larger than the length composition bins. Input values will be overridden to meet this requirement"))),
-      uiOutput("AdvancedSS_Ltbin")
-      
+      uiOutput("AdvancedSS_Ltbin"),
+      br(),
+      h5(p("Define plus group age. Default value is based on the female natural mortality value.")),
+      uiOutput("AdvancedSS_Nages")
+
      #  prettyCheckbox(
      #    inputId = "no_hess", label = "Turn off Hessian",
      #    shape = "round", outline = TRUE, status = "info"),    
@@ -769,14 +772,14 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     
     br(),
 
-    h4(strong("Select a folder to copy results")),
-    h5(p(em("Results are copied from the 'Scenarios' folder"))),
-    h5(p(em("Required to access results if using the online version"))),
-    shinyDirButton(
-     id="Modelout_dir",
-     label="Select model folder",
-     title="Choose folder to copy model scenario"
-     ),
+    # h4(strong("Select a folder to copy results")),
+    # h5(p(em("Results are copied from the 'Scenarios' folder"))),
+    # h5(p(em("Required to access results if using the online version"))),
+    # shinyDirButton(
+    #  id="Modelout_dir",
+    #  label="Select model folder",
+    #  title="Choose folder to copy model scenario"
+    #  ),
       )
       ),
 
@@ -789,7 +792,10 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       width="100%",
       icon("circle-play"),
       style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192")),
-  
+    
+    br(),
+    br(),
+ 
 #################### 
 ### Other panels ###
 ####################
@@ -862,7 +868,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
   
 
     fluidRow(column(width=5,numericInput("iter", "How many iterations to run?", value=2000,min=1, max=1000000000000, step=1)),
-                column(width=5,numericInput("thin","Thinning (RWM only): # of iterations to keep?", value=1,min=1, max=1000000000, step=10))),
+                column(width=5,numericInput("thin","Thinning (RWM only): # of iterations to keep?", value=10,min=1, max=1000000000, step=10))),
     actionButton("run_adnuts",strong("Run model"),
         width="100%",
         icon("circle-play"),
