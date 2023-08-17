@@ -64,7 +64,6 @@ gg_color_hue <- function(n) {
 }
 
 #Create all likelihood names
-browser()
 mod.like.names<-unique(model.summaries$likelihoods_by_fleet$Label)
 build.like.tab<-colnames(model.summaries$likelihoods_by_fleet)
 Fleet.likes<-model.summaries$likelihoods_by_fleet
