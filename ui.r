@@ -696,7 +696,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       h5(p(em("Inputs must be smaller and larger than the length composition bins. Input values will be overridden to meet this requirement"))),
       uiOutput("AdvancedSS_Ltbin"),
       br(),
-      h5(p("Define plus group age. Default value is based on the female natural mortality value.")),
+      h5(p("Define plus group age. Default value is based on the female natural mortality value or the maximum age found in the age data file.")), 
+      h5(p("If you change this value here AND you are using age data, you will need to update the age data (and ageing error) to match the dimensions expressed here.")),
       uiOutput("AdvancedSS_Nages")
 
      #  prettyCheckbox(

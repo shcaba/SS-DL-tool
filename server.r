@@ -2496,14 +2496,10 @@ output$VBGFplot<-renderPlot({
   	 } 
 	}) 
 
-###################
-### Selectivity ###
-###################
- # observeEvent(req(input$Sel50,input$Selpeak), {
- #      shinyjs::show(output$Sel_plots_label<-renderText({"Selectivity"}))
- #  })
+########################
+### Depletion Plot ###
+########################
 
-#h4("Selectivity")
 output$Dep_plot_title<-renderUI({
 if(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)){
    h4("Relative Stock Status Prior")
@@ -2527,6 +2523,15 @@ output$Depletion_plot <- renderPlot({
    plotOutput("Depletion_plot")
     }
   })
+
+########################
+### Selectivity Plot ###
+########################
+ # observeEvent(req(input$Sel50,input$Selpeak), {
+ #      shinyjs::show(output$Sel_plots_label<-renderText({"Selectivity"}))
+ #  })
+
+#h4("Selectivity")
 
 output$Selplot <- renderPlot({ 
 
@@ -2556,20 +2561,26 @@ output$Selplot <- renderPlot({
         #   FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))      
         # }
       
-       if(!is.null(rv.Ct$data))
-       {
-        fleetnames.ct<-colnames(rv.Ct$data)[-1]
-       }
-       else(fleetnames.ct<-1:length(Sel50))
+       #if(!is.null(rv.Ct$data))
+       #{
+       # fleetnames.ct<-colnames(rv.Ct$data)[-1]
+       #}
+       #if(!is.null(rv.Index$data))
+       #{
+       # fleetnames.index<-unique(rv.Ct$data$Labels)
+       #}
+       
 
        Sel.out<-doubleNorm24.sel(Sel50=Sel50[1],Selpeak=Selpeak[1],PeakDesc=PeakDesc[1],LtPeakFinal=LtPeakFinal[1],FinalSel=FinalSel[1])
-       Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet=fleetnames.ct[1])
+       #Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet=fleetnames.ct[1])
+       Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet="Fleet 1")
        if(length(Sel50)>1)
        {
         for(ii in 2:length(Sel50))
         {
         Sel.out.temp<-doubleNorm24.sel(Sel50=Sel50[ii],Selpeak=Selpeak[ii],PeakDesc=PeakDesc[ii],LtPeakFinal=LtPeakFinal[ii],FinalSel=FinalSel[ii])
-        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=fleetnames.ct[ii])
+#        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=fleetnames.ct[ii])
+        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=paste0("Fleet ",ii))
         Sel.out<-rbind(Sel.out,Sel.out.temp)
         }
        }
@@ -2746,7 +2757,6 @@ print(1)
 		data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/sss_example.dat")) 
 		ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
 		#Read, edit then write new DATA file
-		browser()
     data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-input$Nages_in #Nages()
@@ -3355,7 +3365,7 @@ if(input$Sel_choice=="Dome-shaped")
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
-		data.file$Nages<-Nages()
+		data.file$Nages<-input$Nages_in #Nages()
     catch.fleets.Ct<-catch.fleets.Lt<-catch.fleets.Age<-NA
     if(!is.null(rv.Ct$data)){catch.fleets.Ct<-max(ncol(rv.Ct$data)-1)}
     if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets.Lt<-max(rv.Lt$data[,3])}
@@ -3561,30 +3571,53 @@ if(input$Sel_choice=="Dome-shaped")
 #Age composition data#
 ######################
     Age.comp.data<-rv.Age$data
+    Plus_age<-input$Nages_in
     if (is.null(Age.comp.data)) 
     {
-      data.file$N_agebins<-Nages()
-      data.file$agebin_vector<-0:(Nages()-1)    
-      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
-      colnames(data.file$ageerror)<-paste0("age",0:Nages())         
+      data.file$N_agebins<-Plus_age
+      data.file$agebin_vector<-0:(Plus_age-1)    
+      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Plus_age+1)),rep(0.001,(Plus_age+1))),2,(Plus_age+1),byrow=TRUE))
+      colnames(data.file$ageerror)<-paste0("age",0:Plus_age)         
     }
 
     if (!is.null(Age.comp.data))
     {
+      
+      if(ncol(Age.comp.data)-8>(Plus_age+1))
+      {
+         sendSweetAlert(
+          session = session,
+          title = "Age data input warning",
+          text = "The max age bin in the age composition data is more than the plus group. Adjust the plus group input to be equal to or more than the maximum age bin.",
+          type = "warning")
+         remove_modal_spinner()
+      }
+      
       data.file$N_agebins<-ncol(Age.comp.data)-8
       data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,9:ncol(Age.comp.data)]))
-      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Plus_age+1)),rep(0.001,(Plus_age+1))),2,(Plus_age+1),byrow=TRUE))
       
       if(!is.null(input$Ageing_error_choice)){       
       if(input$Ageing_error_choice)
         {
           data.file$ageerror<-data.frame((rv.AgeErr$data))
+ 
+       if(ncol(data.frame((rv.AgeErr$data)))-8!=(Plus_age+1))
+      {
+         sendSweetAlert(
+          session = session,
+          title = "Ageing error data input warning",
+          text = "The ageing error does not match the max age in the age composition data. Please makes sure these match.",
+          type = "error")
+         remove_modal_spinner()
+      }
+
           data.file$N_ageerror_definitions<-nrow(rv.AgeErr$data)/2
         }
       }
 
       #Label object for r4ss
-      colnames(data.file$ageerror)<-paste0("age",0:Nages())         
+      colnames(data.file$ageerror)<-paste0("age",0:Plus_age)         
       rownames(data.file$ageerror)<-c(1:nrow(data.file$ageerror))
       # data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       # colnames(data.file$ageerror)<-paste0("age",1:Nages())         
