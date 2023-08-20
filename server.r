@@ -4506,10 +4506,11 @@ if(exists("checkmod")|input$user_model)
       starter.file$ctlfile<-"control.ss_new"
     }
 
-    if(!input$use_controlnew|is.null(input$use_controlnew))
-    {
-      if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
-    }
+
+#    if(!input$use_controlnew|is.null(input$use_controlnew))
+ #   {
+ #     if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
+ #   }
 
 #Phase 0
     if(input$use_phase0)
@@ -4579,7 +4580,7 @@ if(input$use_forecastnew)
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
 		if(input$Data_wt=="None"){DataWT_opt<-"none"}
-    if(input$Data_wt=="Dirichlet"){DataWT_opt<-"DM"}
+    if(input$Data_wt=="Dirichlet-multinomial"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
  				    

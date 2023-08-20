@@ -116,7 +116,7 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         awesomeRadio(
           inputId = "Data_wt",
           label = "Choose data-weighting option", 
-          choices = c("None","Dirichlet", "Francis", "McAllister-Ianelli"),
+          choices = c("None","Dirichlet-multinomial", "Francis", "McAllister-Ianelli"),
           selected = "None",
           status = "warning"
           )
