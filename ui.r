@@ -248,7 +248,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       wellPanel(id="panel_SS_est",
       h4(em("Female")),
         dropdownButton(
-          selectInput("M_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("M_f_prior","Prior type for M",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("M_f_mean", "Mean", value=NA,min=0, max=10000, step=0.00001),
           numericInput("M_f_SD", "SD", value=0,min=0, max=10000, step=0.00001),
           numericInput("M_f_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -257,7 +257,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       br(),
        h5(strong("Growth")),            
        dropdownButton(
-          selectInput("Linf_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("Linf_f_prior","Prior type for Linf",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("Linf_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
           numericInput("Linf_f_SD", "SD", value=0,min=0, max=10000, step=0.0001),
           numericInput("Linf_f_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -265,7 +265,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           ),
      br(),
       dropdownButton(
-          selectInput("k_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("k_f_prior","Prior type for k",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("k_f_mean", "Mean", value=NA,min=0, max=10000, step=0.00001),
           numericInput("k_f_SD", "SD", value=0,min=0, max=10000, step=0.00001),
           numericInput("k_f_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -273,7 +273,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             ),
      br(),
       dropdownButton(
-          selectInput("t0_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("t0_f_prior","Prior type for t0",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("t0_f_mean", "Mean", value=NA,min=-100, max=10000, step=0.001),
           numericInput("t0_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
           numericInput("t0_f_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -281,7 +281,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             ),
      br(),
        dropdownButton(
-          selectInput("CV_lt_f_young_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("CV_lt_f_young_prior","Prior type for CV_lt young",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("CV_lt_f_young_mean", "Mean", value=0.1,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_young_SD", "SD", value=0,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_young_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -290,7 +290,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
      br(),
        dropdownButton(
-          selectInput("CV_lt_f_old_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("CV_lt_f_old_prior","Prior type for CV_lt old",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("CV_lt_f_old_mean", "Mean", value=0.1,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_old_SD", "SD", value=0,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_old_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -390,21 +390,21 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       h4(em("Female")),
       h5(strong("Natural mortality")),            
         dropdownButton(
-          selectInput("M_prior_sss","Prior type",c("lognormal","normal","uniform","no prior")),
+          selectInput("M_prior_sss","Prior type for M",c("lognormal","normal","uniform","no prior")),
           numericInput("M_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.00001),
           numericInput("M_f_SD_sss", "SD", value=0.44,min=0, max=10000, step=0.00001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
             ),
       h5(strong("Growth")),            
           dropdownButton(
-          selectInput("Linf_f_prior_sss","Prior type",c("no prior","normal")),
+          selectInput("Linf_f_prior_sss","Prior type for Linf",c("no prior","normal")),
           numericInput("Linf_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
           numericInput("Linf_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("infinity"), width = "300px",label="Linf: Asymptotic size"
           ),
      br(),
       dropdownButton(
-          selectInput("k_f_prior_sss","Prior type",c("no prior","normal")),
+          selectInput("k_f_prior_sss","Prior type for k",c("no prior","normal")),
           numericInput("k_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.00001),
           numericInput("k_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.00001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("ruler-horizontal"), width = "300px",label="k: VB growth coefficient"
@@ -413,20 +413,20 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
      fluidRow(column(width=6,numericInput("Linf_k_cor_sss", "Correlation between Linf and k", value=-0.9,min=-1, max=1, step=0.001))),
      br(),
       dropdownButton(
-          selectInput("t0_f_prior_sss","Prior type",c("no prior","normal")),
+          selectInput("t0_f_prior_sss","Prior type for t0",c("no prior","normal")),
           numericInput("t0_f_mean_sss", "Mean", value=NA,min=-100, max=10000, step=0.001),
           numericInput("t0_f_SD_sss", "SD", value=0,min=0, max=1000, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
             ),
     h5(em("Length CV")),            
       dropdownButton(
-          selectInput("CV_lt_f_young_prior_sss","Prior type",c("no prior")),
+          selectInput("CV_lt_f_young_prior_sss","Prior type for CV_lt young",c("no prior")),
           numericInput("CV_lt_f_young_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_young_SD_sss", "SD", value=0,min=0, max=10000, step=0.0001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
             ),
       dropdownButton(
-          selectInput("CV_lt_f_old_prior_sss","Prior type",c("no prior")),
+          selectInput("CV_lt_f_old_prior_sss","Prior type for CV_lt old",c("no prior")),
           numericInput("CV_lt_f_old_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_old_SD_sss", "SD", value=0,min=0, max=10000, step=0.0001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
@@ -469,7 +469,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       #wellPanel(
          fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=NA,min=1000, max=3000, step=1))),
          dropdownButton(
-          selectInput("Depl_prior_sss","Prior type",c("beta","lognormal","truncated normal","uniform","no prior")),
+          selectInput("Depl_prior_sss","Prior type for relative stock status",c("beta","lognormal","truncated normal","uniform","no prior")),
           numericInput("Depl_mean_sss", "Mean", value=NA,min=0.001, max=1, step=0.001),
           numericInput("Depl_SD_sss", "SD", value=0.2,min=0, max=1000, step=0.001),
           circle = FALSE, status = "danger", icon = icon("battery-half"), width = "300px",label="Relative Stock Status"
@@ -485,7 +485,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SSS_prod",
     h4(strong("Stock-recruitment parameters")),
           br(),
-          fluidRow(column(width=6,numericInput("lnR0_sss", "Initial recruitment (lnR0)", value=7,min=0.01, max=20, step=0.01))),
+          fluidRow(column(width=6,numericInput("lnR0_sss", "Log initial recruitment (ln(R0))", value=7,min=0.01, max=20, step=0.01))),
           dropdownButton(
           selectInput("h_prior_sss","Steepness",c("symmetric beta","beta","truncated normal","truncated lognormal","uniform","no prior")),
           numericInput("h_mean_sss", "Mean", value=0.7,min=0.2, max=1, step=0.001),
@@ -507,7 +507,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
      fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
-      column(width=6,numericInput("lnR0", "Initial recruitment (lnR0)", value=7,min=0.01, max=20, step=0.01))),
+      column(width=6,numericInput("lnR0", "Log initial recruitment (ln(R0))", value=7,min=0.01, max=20, step=0.01))),
    #    ),
       )
     ),  
@@ -516,13 +516,13 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h4(strong("Stock-recruitment parameters")),
      # wellPanel(
        dropdownButton(
-          selectInput("h_ss_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("h_ss_prior","Prior type for steepness",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("h_mean_ss", "Mean", value=0.7,min=0.2, max=1, step=0.001),
           numericInput("h_SD_ss", "SD", value=0.15,min=0, max=10000, step=0.001),
           numericInput("h_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
        ), 
-     fluidRow(column(width=6,numericInput("lnR0_est", "Initial recruitment (lnR0)", value=9,min=0, max=20, step=0.01))),
+     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment (ln(R0))", value=7,min=0, max=20, step=0.01))),
   )), 
 
     #      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_ss_prior","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),

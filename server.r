@@ -3601,13 +3601,13 @@ if(input$Sel_choice=="Dome-shaped")
       if(input$Ageing_error_choice)
         {
           data.file$ageerror<-data.frame((rv.AgeErr$data))
- 
-       if(ncol(data.frame((rv.AgeErr$data)))-8!=(Plus_age+1))
+
+       if(ncol(data.frame((rv.AgeErr$data)))!=(Plus_age+1))
       {
          sendSweetAlert(
           session = session,
           title = "Ageing error data input warning",
-          text = "The ageing error does not match the max age in the age composition data. Please makes sure these match.",
+          text = "The maximum age in the ageing error matrix does not match the popuation age plus group. Please makes sure these match.",
           type = "error")
          remove_modal_spinner()
       }
