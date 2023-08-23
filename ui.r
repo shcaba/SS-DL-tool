@@ -796,7 +796,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     
     br(),
     br(),
- 
+bookmarkButton(), 
 #################### 
 ### Other panels ###
 ####################
