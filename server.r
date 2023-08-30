@@ -27,7 +27,6 @@ require(shinystan)
 require(gt)
 require(gtExtras)
 require(stringr)
-require(shinyjqui)
 #require(geomtextpath)
 
 #require(paletteer)

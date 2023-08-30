@@ -24,6 +24,9 @@ require(grid)
 require(wesanderson)
 require(adnuts)
 require(shinystan)
+require(gt)
+require(gtExtras)
+require(stringr)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -556,8 +559,8 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::hide("Ensemble_panel")
 
         #shinyjs::show("tab_sss")
-        showTab(inputId = "tabs", target = "11")
-        hideTab(inputId = "tabs", target = "2")
+        hideTab(inputId = "tabs", target = "11")
+        showTab(inputId = "tabs", target = "2")
 
 })
 
@@ -1199,6 +1202,22 @@ output$Model_dims2 <- renderUI({
 # 		}
 # })
 
+#Load life history values via csv
+output$LH_load_file <- renderUI({ 
+    if(!is.null(input$LH_in_file)){       
+      if(input$LH_in_file){
+      fluidRow(column(width=12,fileInput('file14', 'Life history values file',
+                           accept = c(
+                             'text/csv',
+                             'text/comma-separated-values',
+                             'text/tab-separated-values',
+                             'text/plain',
+                             '.csv'
+                           )
+       )))        
+      }
+    } 
+  }) 
 
 #Male life history parameters 
 output$Male_parms_inputs_label <- renderUI({ 
@@ -1713,7 +1732,7 @@ output$Forecasts<- renderUI({
 output$AdvancedSS_nohess<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_hess", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
+        inputId = "no_hess", label = "Turn off variance estimation (speeds up runs)",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -1721,7 +1740,7 @@ output$AdvancedSS_nohess<- renderUI({
 output$AdvancedSS_nohess_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_hess", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
+        inputId = "no_hess_user", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
@@ -1743,7 +1762,7 @@ output$AdvancedSS_addcomms<- renderUI({
 
 output$AdvancedSS_addcomms_user<- renderUI({ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "add_comms", 
+        inputId = "add_comms_user", 
         label = "Add additional SS run commands",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
@@ -1751,7 +1770,7 @@ output$AdvancedSS_addcomms_user<- renderUI({
   output$AdvancedSS_addcomms_comms_user <- renderUI({ 
     if(!is.null(input$add_comms_user)){       
       if(input$add_comms_user){
-      fluidRow(column(width=12, textInput("add_comms_in", "Enter additional run commands", value="")))        
+      fluidRow(column(width=12, textInput("add_comms_in_user", "Enter additional run commands", value="")))        
   }
     }
 }) 
@@ -1884,12 +1903,37 @@ output$AdvancedSS_GT5_SSS<- renderUI({
       # } 
   }) 
 
-output$AdvancedSS_Sex3<- renderUI({ 
+output$AdvancedSS_Sex3options<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "Sex3", label = "Retain sex ratio in length compositions (Sex option = 3)",
+        inputId = "Sex3options", label = "Maintain sex ratio in biological compositions",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
+  }) 
+
+output$AdvancedSS_Sex3<- renderUI({ 
+    if(!is.null(input$Sex3options)){       
+      if(input$Sex3options){       
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "Sex3", label = "Length compositions",
+        shape = "curve", inline = TRUE, status = "success",animation="smooth"))) 
+      # } 
+    }
+   }
+  }) 
+
+
+output$AdvancedSS_AgeSex3<- renderUI({ 
+    if(!is.null(input$Sex3options)){       
+      if(input$Sex3options){       
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "AgeSex3", label = "Age compositions",
+        shape = "curve", inline = TRUE, status = "success",animation="smooth"))) 
+      # } 
+    }
+   }
   }) 
 
 output$AdvancedSS_Indexvar<- renderUI({ 
@@ -1925,7 +1969,7 @@ output$AdvancedSS_ageerror_in <- renderUI({
 
 output$AdvancedSS_Ctunits<- renderUI({ 
         fluidRow(column(width=12, prettyCheckbox(
-        inputId = "Ct_units_choice", label = "Specify catch units (1=biomass (default); 2=numbers) for each fleet?",
+        inputId = "Ct_units_choice", label = "Specify non-biomass catch units for each fleet.",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
@@ -1998,6 +2042,10 @@ output$AdvancedSS_Ltbin <- renderUI({
     # } 
   }) 
 
+output$AdvancedSS_Nages <- renderUI({ 
+      fluidRow(column(width=6, numericInput("Nages_in", "Plus group age",  
+                                              value=Nages(), min=0, max=10000, step=0.5))) 
+  }) 
 
 output$Profile_multi_values <- renderUI({ 
     #if(!is.null(input$multi_profile)){       
@@ -2083,7 +2131,7 @@ Linf<-reactive({
 
 Linf_m_in<-reactive({
     Linf_m_in<-NA
-    if(all(c(is.null(input$Linf_m),is.null(input$Linf_m_fix),is.null(input$Linf_m_mean),is.null(input$Linf_m_mean_sss)))) return(NULL)
+    #if(all(c(is.null(input$Linf_m),is.null(input$Linf_m_fix),is.null(input$Linf_m_mean),is.null(input$Linf_m_mean_sss)))) return(NULL)
     if(any(input$male_parms&!is.na(input$Linf_m))) {Linf_m_in<-input$Linf_m}
     if(any(input$male_parms_fix&!is.na(input$Linf_m_fix))) {Linf_m_in<-input$Linf_m_fix}
     if(any(input$male_parms_est&!is.na(input$Linf_m_mean))) {Linf_m_in<-input$Linf_m_mean}
@@ -2196,9 +2244,17 @@ observeEvent(req(!is.null(rv.Lt$data)), {
 output$Ltplot_it<-renderUI({
 if(!is.null(rv.Lt$data))
 {  
+  
   output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
-		   browser()
+		  #  if(!is.null(rv.Ct$data))
+      #  {
+      #   fleetnames.ct<-colnames(rv.Ct$data)[-1]
+      #   for(xx in 1:length(fleetnames.ct))
+      #   {
+      #     rv.Lt$data$Fleet[rv.Lt$data$Fleet==xx]<-fleetnames.ct[xx]
+      #   }
+      #  }
        rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
@@ -2207,31 +2263,34 @@ if(!is.null(rv.Lt$data))
 		           name = as.numeric(gsub("[^0-9.-]", "", name)),
                Lnu=-1,
                L50_vline=if_else(is.na(L50()),-1,L50()),
-		           Linf_vline=if_else(is.na(Linf()),-1,Linf())) %>%
+		           Linf_vline=if_else(is.na(Linf()),-1,Linf()))%>%		           
+               #Linf_m_vline=if_else(is.na(Linf_m_in()),-1,Linf_m_in())) %>%
 		    ggplot(aes(name, value, color=Year)) + 
 		    geom_line() + 
         #geom_col(position="dodge") + 
-		    geom_vline(data=rv.Lt$data,xintercept = c(Lnu,L50_vline,Linf_vline),
-                    linetype=c("solid","solid","dashed"),
-                    colour = c("black", "black", "blue"),
+		    geom_vline(xintercept = c(-1,L50()),
+                    linetype="dashed",
+                    colour = "darkgreen",
+                    na.rm = TRUE,
+                    show.legend = TRUE)+
+        geom_vline(xintercept = c(-1,Linf()),
+                    colour = "#d26678",
+                    na.rm = TRUE,
+                    show.legend = TRUE)+
+        geom_vline(xintercept = c(-1,Linf_m_in()),
+                    colour = "blue",
                     na.rm = TRUE,
                     show.legend = TRUE)+
         facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        facet_wrap(sex~year, scales="free_y",ncol=5) + 
-		    xlab("Length bin") + 
+		    #annotate(x=if_else(is.na(Linf()),-1,Linf()), y=+Inf, label= "Linf")+
+        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf",color="#d26678")+
+        annotate("text",x=if_else(is.na(Linf_m_in()),-1,Linf_m_in())*1.05, y=5, label= "Linf",color="blue")+
+        annotate("text",x=if_else(is.na(L50()),-1,L50())*1.1, y=5, label= "L50%",color="darkgreen")+
+        xlab("Length bin") + 
 		    ylab("Frequency") + 
 		    scale_fill_viridis_d()+
-        #geom_vline(xintercept = -1)+
-        #geom_textvline(label = "L50", xintercept = L50(), vjust = 1.3) +
-        #geom_textvline(label="Linf", xintercept = Linf(), vjust = -0.7,hjust=2) +
         xlim(0,NA)
-        #annotate("text", x=if_else(is.na(Linf()),-1,Linf()), y=-1, label= "Linf")
-        # geom_text(mapping = aes(x = vals,
-        #             y = 0,
-        #             label = Ref,
-        #             hjust = -1,
-        #             vjust = -1),
-        #             data=cuts) 
 		}) 
       plotOutput("Ltplot")
     }
@@ -2443,14 +2502,10 @@ output$VBGFplot<-renderPlot({
   	 } 
 	}) 
 
-###################
-### Selectivity ###
-###################
- # observeEvent(req(input$Sel50,input$Selpeak), {
- #      shinyjs::show(output$Sel_plots_label<-renderText({"Selectivity"}))
- #  })
+########################
+### Depletion Plot ###
+########################
 
-#h4("Selectivity")
 output$Dep_plot_title<-renderUI({
 if(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)){
    h4("Relative Stock Status Prior")
@@ -2474,6 +2529,15 @@ output$Depletion_plot <- renderPlot({
    plotOutput("Depletion_plot")
     }
   })
+
+########################
+### Selectivity Plot ###
+########################
+ # observeEvent(req(input$Sel50,input$Selpeak), {
+ #      shinyjs::show(output$Sel_plots_label<-renderText({"Selectivity"}))
+ #  })
+
+#h4("Selectivity")
 
 output$Selplot <- renderPlot({ 
 
@@ -2503,21 +2567,33 @@ output$Selplot <- renderPlot({
         #   FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))      
         # }
       
+       #if(!is.null(rv.Ct$data))
+       #{
+       # fleetnames.ct<-colnames(rv.Ct$data)[-1]
+       #}
+       #if(!is.null(rv.Index$data))
+       #{
+       # fleetnames.index<-unique(rv.Ct$data$Labels)
+       #}
+       
+
        Sel.out<-doubleNorm24.sel(Sel50=Sel50[1],Selpeak=Selpeak[1],PeakDesc=PeakDesc[1],LtPeakFinal=LtPeakFinal[1],FinalSel=FinalSel[1])
+       #Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet=fleetnames.ct[1])
        Sel.out<-data.frame(Bin=Sel.out[,1],Sel=Sel.out[,2],Fleet="Fleet 1")
        if(length(Sel50)>1)
        {
         for(ii in 2:length(Sel50))
         {
         Sel.out.temp<-doubleNorm24.sel(Sel50=Sel50[ii],Selpeak=Selpeak[ii],PeakDesc=PeakDesc[ii],LtPeakFinal=LtPeakFinal[ii],FinalSel=FinalSel[ii])
+#        Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=fleetnames.ct[ii])
         Sel.out.temp<-data.frame(Bin=Sel.out.temp[,1],Sel=Sel.out.temp[,2],Fleet=paste0("Fleet ",ii))
         Sel.out<-rbind(Sel.out,Sel.out.temp)
         }
        }
         selplot.out<-ggplot(Sel.out,aes(Bin,Sel,colour=Fleet)) +  
           geom_line(lwd=1.5) + 
-          ylab("Length Bins") + 
-          xlab("Selectivity") +  
+          ylab("Proportion Selected") + 
+          xlab("Length Bins") +  
           scale_color_viridis_d() 
       }
     }
@@ -2687,9 +2763,9 @@ print(1)
 		data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/sss_example.dat")) 
 		ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
 		#Read, edit then write new DATA file
-		data.file$styr<-input$styr
+    data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
-		data.file$Nages<-Nages()
+		data.file$Nages<-input$Nages_in #Nages()
 
 	#Catches
 		Catch.data<-rv.Ct$data
@@ -3128,8 +3204,8 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
       load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
-      ofl.years<-as.numeric(unique(melt(SSS.out$OFL)$Var2))
-      ggplot(melt(SSS.out$OFL),aes(Var2,value,group=Var2))+
+      ofl.years<-as.numeric(unique(reshape2::melt(SSS.out$OFL)$Var2))
+      ggplot(reshape2::melt(SSS.out$OFL),aes(Var2,value,group=Var2))+
           geom_boxplot(fill="#236192")+
           scale_x_continuous(breaks=ofl.years,labels=as.character(ofl.years))+
           ylab("OFL (mt)")+
@@ -3142,8 +3218,8 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
       {
       load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))
-      abc.years<-as.numeric(unique(melt(SSS.out$ABC)$Var2))
-      ggplot(melt(SSS.out$ABC),aes(Var2,value,group=Var2))+
+      abc.years<-as.numeric(unique(reshape2::melt(SSS.out$ABC)$Var2))
+      ggplot(reshape2::melt(SSS.out$ABC),aes(Var2,value,group=Var2))+
           geom_boxplot(fill="#658D1B")+
           scale_x_continuous(breaks=abc.years,labels=as.character(abc.years))+
           ylab("ABC (mt)")+
@@ -3216,7 +3292,6 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 
 # if(!input$use_customfile)
 #   {
-
 #   }
 		#Read data and control files
     if(!input$user_model)
@@ -3296,9 +3371,12 @@ if(input$Sel_choice=="Dome-shaped")
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
-		data.file$Nages<-Nages()
-    if(!is.null(rv.Ct$data)){catch.fleets<-max(ncol(rv.Ct$data)-1)}
-    if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets<-max(rv.Lt$data[,3])}
+		data.file$Nages<-input$Nages_in #Nages()
+    catch.fleets.Ct<-catch.fleets.Lt<-catch.fleets.Age<-NA
+    if(!is.null(rv.Ct$data)){catch.fleets.Ct<-max(ncol(rv.Ct$data)-1)}
+    if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets.Lt<-max(rv.Lt$data[,3])}
+    if(all(!is.null(rv.Age$data),is.null(rv.Ct$data))){catch.fleets.Age<-max(rv.Age$data[,3])}
+    catch.fleets<-max(catch.fleets.Ct,catch.fleets.Lt,catch.fleets.Age,na.rm=TRUE)
     data.file$Nfleets<-max(catch.fleets,rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3])
 
 #########
@@ -3360,6 +3438,7 @@ if(input$Sel_choice=="Dome-shaped")
 		data.file$catch<-list.rbind(catch_temp)
 		colnames(data.file$catch)<-catch.cols
 		}
+
 
 #Index data
     if (!is.null(rv.Index$data)) {
@@ -3449,8 +3528,8 @@ if(input$Sel_choice=="Dome-shaped")
         Lt.comp.data_unknown[,6:ncol(Lt.comp.data_unknown)]*0)
         )
       }
-
     #Maintain sample sex ratio
+     if(input$Sex3options){
      if(input$Sex3){
       yrsfleet_females<-paste0(Lt.comp.data_female[,1],Lt.comp.data_female[,3])
       yrsfleet_males<-paste0(Lt.comp.data_male[,1],Lt.comp.data_male[,3])
@@ -3466,14 +3545,14 @@ if(input$Sel_choice=="Dome-shaped")
         Lt.comp.data_female_sex3[,3],
         rep(3,nrow(Lt.comp.data_female_sex3)),
         rep(0,nrow(Lt.comp.data_female_sex3)),
-        Lt.comp.data_female_sex3[,5]+Lt.comp.data_male_sex3[,4],
+        Lt.comp.data_female_sex3[,5]+Lt.comp.data_male_sex3[,5],
         Lt.comp.data_female_sex3[,6:ncol(Lt.comp.data_female_sex3)],
         Lt.comp.data_male_sex3[,6:ncol(Lt.comp.data_male_sex3)])
         )
       lt.data.females<-lt.data.females[!sex3_match_female,]
       lt.data.males<-lt.data.males[!sex3_match_male,]
        }
-
+     }
     colnames(lt.data.females)<-colnames(lt.data.males)<-colnames(lt.data.unknowns)<-colnames(lt.data.sex3)<-lt.data.names
     
     data.file$lencomp<-na.omit(rbind(lt.data.unknowns,lt.data.females,lt.data.males,lt.data.sex3))      
@@ -3498,35 +3577,58 @@ if(input$Sel_choice=="Dome-shaped")
 #Age composition data#
 ######################
     Age.comp.data<-rv.Age$data
+    Plus_age<-input$Nages_in
     if (is.null(Age.comp.data)) 
     {
-      data.file$N_agebins<-Nages()
-      data.file$agebin_vector<-0:(Nages()-1)    
-      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
-      colnames(data.file$ageerror)<-paste0("age",0:Nages())         
+      data.file$N_agebins<-Plus_age
+      data.file$agebin_vector<-0:(Plus_age-1)    
+      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Plus_age+1)),rep(0.001,(Plus_age+1))),2,(Plus_age+1),byrow=TRUE))
+      colnames(data.file$ageerror)<-paste0("age",0:Plus_age)         
     }
 
     if (!is.null(Age.comp.data))
     {
+      
+      if(ncol(Age.comp.data)-8>(Plus_age+1))
+      {
+         sendSweetAlert(
+          session = session,
+          title = "Age data input warning",
+          text = "The max age bin in the age composition data is more than the plus group. Adjust the plus group input to be equal to or more than the maximum age bin.",
+          type = "warning")
+         remove_modal_spinner()
+      }
+      
       data.file$N_agebins<-ncol(Age.comp.data)-8
       data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,9:ncol(Age.comp.data)]))
-      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
+      data.file$ageerror<-data.frame(matrix(c(rep(-1,(Plus_age+1)),rep(0.001,(Plus_age+1))),2,(Plus_age+1),byrow=TRUE))
       
       if(!is.null(input$Ageing_error_choice)){       
       if(input$Ageing_error_choice)
         {
           data.file$ageerror<-data.frame((rv.AgeErr$data))
+
+       if(ncol(data.frame((rv.AgeErr$data)))!=(Plus_age+1))
+      {
+         sendSweetAlert(
+          session = session,
+          title = "Ageing error data input warning",
+          text = "The maximum age in the ageing error matrix does not match the popuation age plus group. Please makes sure these match.",
+          type = "error")
+         remove_modal_spinner()
+      }
+
           data.file$N_ageerror_definitions<-nrow(rv.AgeErr$data)/2
         }
       }
 
       #Label object for r4ss
-      colnames(data.file$ageerror)<-paste0("age",0:Nages())         
+      colnames(data.file$ageerror)<-paste0("age",0:Plus_age)         
       rownames(data.file$ageerror)<-c(1:nrow(data.file$ageerror))
       # data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       # colnames(data.file$ageerror)<-paste0("age",1:Nages())         
       age.data.names<-c(c("Yr","Month","Fleet","Sex","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
-      age.data.females<-age.data.males<-age.data.unknowns<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
+      age.data.females<-age.data.males<-age.data.unknowns<-age.data.sex3<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
       colnames(Age.comp.data)[1:8]<-c("Year","Month","Fleet","Sex","AgeErr","Lbin_low","Lbin_hi","Nsamps")
     #female ages
     if(nrow(subset(Age.comp.data,Sex==1))>0){
@@ -3579,13 +3681,42 @@ if(input$Sel_choice=="Dome-shaped")
         Age.comp.data_unknown[,9:ncol(Age.comp.data_unknown)]*0)
         )
       }
+
+    #Maintain sample sex ratio
+     if(input$Sex3options){
+     if(input$AgeSex3){
+      age_yrsfleetagetype_females<-paste0(Age.comp.data_female[,1],Age.comp.data_female[,3],Age.comp.data_female[,6])
+      age_yrsfleetagetype_males<-paste0(Age.comp.data_male[,1],Age.comp.data_male[,3],Age.comp.data_male[,6])
+      #Match years
+      age_sex3_match_female<-age_yrsfleetagetype_females%in%age_yrsfleetagetype_males
+      age_sex3_match_male<-age_yrsfleetagetype_males%in%age_yrsfleetagetype_females
+      #Subset years
+      Age.comp.data_female_sex3<-Age.comp.data_female[age_sex3_match_female,]
+      Age.comp.data_male_sex3<-Age.comp.data_male[age_sex3_match_male,]
+      age.data.sex3<-data.frame(cbind(Age.comp.data_female_sex3[,1],
+        Age.comp.data_female_sex3[,2],
+        Age.comp.data_female_sex3[,3],
+        rep(3,nrow(Age.comp.data_female_sex3)),
+        rep(0,nrow(Age.comp.data_female_sex3)),
+        Age.comp.data_female_sex3[,5],
+        Age.comp.data_female_sex3[,6],
+        Age.comp.data_female_sex3[,7],
+        Age.comp.data_female_sex3[,8]+Age.comp.data_male_sex3[,8],
+        Age.comp.data_female_sex3[,9:ncol(Age.comp.data_female_sex3)],
+        Age.comp.data_male_sex3[,9:ncol(Age.comp.data_male_sex3)])
+        )
+      age.data.females<-age.data.females[!age_sex3_match_female,]
+      age.data.males<-age.data.males[!age_sex3_match_male,]
+       }
+     }
+
     #if(nrow(subset(Age.comp.data,Sex==0))>0){age.data.unknowns<-data.frame(cbind(
     #  age.data.unknowns,
     #  Age.comp.data[1,7:ncol(Age.comp.data_unknown)],
     #    Age.comp.data[1,7:ncol(Age.comp.data_unknown)]*0))
     #  }
-    colnames(age.data.females)<-colnames(age.data.males)<-colnames(age.data.unknowns)<-age.data.names
-    data.file$agecomp<-na.omit(rbind(age.data.females,age.data.males,age.data.unknowns))
+    colnames(age.data.females)<-colnames(age.data.males)<-colnames(age.data.unknowns)<-colnames(age.data.sex3)<-age.data.names
+    data.file$agecomp<-na.omit(rbind(age.data.females,age.data.males,age.data.unknowns,age.data.sex3))
     }
   
 
@@ -3670,8 +3801,9 @@ if(input$Sel_choice=="Dome-shaped")
               survey.fleets<-unique(Surveyonly[,3])      
               data.file$fleetinfo$fleetname<-fleet.survey.names 
             }
-          if(is.null(rv.Index$data)|all(!is.null(rv.Index$data)&data.file$Nfleets==catch.fleets)){data.file$fleetinfo$fleetname<-fishery.names}
-          if(!is.null(rv.Index$data)& max(rv.Index$data[,3])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
+          if(is.null(rv.Index$data)|all(!is.null(rv.Index$data)&data.file$Nfleets==catch.fleets)){data.file$fleetinfo$fleetname[1:length(fishery.names)]<-fishery.names}
+          #if(!is.null(rv.Index$data)& max(rv.Index$data[,3])>length(fishery.names)){data.file$fleetinfo[survey.fleets,1]<-3}
+          if(length(data.file$fleetinfo$fleetname)>length(fishery.names)){data.file$fleetinfo[c((length(fishery.names)+1):length(data.file$fleetinfo$fleetname)),1]<-3}
         }
        data.file$CPUEinfo[,1]<-1:data.file$Nfleets
      }
@@ -4187,10 +4319,14 @@ if(input$Sel_choice=="Dome-shaped")
 		}
 
     #Remove surveys from initial F lines and add q and xtra variance lines
-    
-    if(!is.null(rv.Index$data))
+    if(!is.null(rv.Index$data)|data.file$Nfleets>catch.fleets)
       {
-        if(data.file$Nfleets>catch.fleets){ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]}
+        if(data.file$Nfleets>catch.fleets)
+          {
+            noncatch.fleets<-c((catch.fleets+1):data.file$Nfleets)
+            ctl.file$init_F<-ctl.file$init_F[-noncatch.fleets,]
+#            ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
+          }
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
         q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,0,0,1)))
         if(input$Indexvar){q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,1,0,1)))}
@@ -4376,10 +4512,11 @@ if(exists("checkmod")|input$user_model)
       starter.file$ctlfile<-"control.ss_new"
     }
 
-    if(!input$use_controlnew|is.null(input$use_controlnew))
-    {
-      if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
-    }
+
+#    if(!input$use_controlnew|is.null(input$use_controlnew))
+ #   {
+ #     if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
+ #   }
 
 #Phase 0
     if(input$use_phase0)
@@ -4449,20 +4586,23 @@ if(input$use_forecastnew)
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
 		if(input$Data_wt=="None"){DataWT_opt<-"none"}
-    if(input$Data_wt=="Dirichlet"){DataWT_opt<-"DM"}
+    if(input$Data_wt=="Dirichlet-multinomial"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
  				    
+#RUN SS MODELS
+    if(is.null(input$user_model))
+    {
     if(is.null(input$no_hess)){
       cmd.in<-""
-      if(input$add_comms==TRUE){cmd.in=paste0(" ",input$add_comms_in)}
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
 
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
         {
       cmd.in<-" -nohess"
-      if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}
-          RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
         }
     }
 
@@ -4471,17 +4611,104 @@ if(input$use_forecastnew)
       if(input$no_hess)
       {
       cmd.in<-" -nohess"
-      if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}
-           RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
       }
       if(!input$no_hess)
       {
-        cmd.in<-""
-        if(input$add_comms==TRUE){cmd.in=paste0(" ",input$add_comms_in)}
-        RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      cmd.in<-""
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
       }
     }
+    }
 
+
+###
+    if(!is.null(input$user_model))
+    {
+    if(input$user_model==FALSE)
+    {
+    if(is.null(input$no_hess)){
+      cmd.in<-""
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+
+      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
+        {
+      cmd.in<-" -nohess"
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+        }
+    }
+
+    if(!is.null(input$no_hess))
+    {
+      if(input$no_hess)
+      {
+      cmd.in<-" -nohess"
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      }
+      if(!input$no_hess)
+      {
+      cmd.in<-""
+      if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      }
+    }
+  }
+
+    if(input$user_model==TRUE)
+    {
+    if(is.null(input$no_hess_user)){
+      cmd.in<-""
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+
+      if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
+        {
+      cmd.in<-" -nohess"
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+        }
+    }
+
+    if(!is.null(input$no_hess_user))
+    {
+      if(input$no_hess_user)
+      {
+      cmd.in<-" -nohess"
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      }
+      if(!input$no_hess_user)
+      {
+      cmd.in<-""
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      }
+    }
+  }
+}
+
+###
+
+#  observeEvent(input$add_comms, {
+#     updatePrettyCheckbox(
+#       session = session,
+#       inputId = "add_comms",
+#       value = FALSE
+#     )
+#   })
+
+# observeEvent(input$add_comms_user, {
+#     updatePrettyCheckbox(
+#       session = session,
+#       inputId = "add_comms_user",
+#       value = FALSE
+#     )
+#   })
  				
     if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")))
       {
@@ -4557,7 +4784,7 @@ if(input$use_forecastnew)
          
          profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
          profilesummary <- SSsummarize(profilemodels)
-         minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)])
+         minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)],na.rm=TRUE)
          #Find best fit model
          index.minlikes<-c(1:length(minlikes))[minlikes]
          jitter.likes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]
@@ -4669,7 +4896,7 @@ if(input$use_forecastnew)
 			})
  		
  		#Relative biomass
-		output$SSout_relSB_table <- renderTable({
+		output$SSout_relSB_table <- render_gt({
 				SB_indices<-c(which(rownames(Model.output$derived_quants)==paste0("Bratio_",input$endyr)),
 					which(rownames(Model.output$derived_quants)=="B_MSY/SSB_unfished"),
 					which(rownames(Model.output$derived_quants)==paste0("SPRratio_",input$endyr)),
@@ -4689,7 +4916,18 @@ if(input$use_forecastnew)
 										  paste0("OFL",(input$endyr+1)),
 										  paste0("ABC",(input$endyr+1))
 										  )
-				Output_relSB_table	
+				Output_relSB_table<-mutate_if(Output_relSB_table,is.numeric, round, 2)  
+        relSB_tab<-gt(Output_relSB_table) %>%
+        tab_header(
+        title = "Key Derived Outputs",
+        subtitle = ""
+        ) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = Value)) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
+        
 					# rownames=c(expression(SO[input$endyr]/SO[0]),
 					# 					  expression(SO[MSY]/SO[0]),
 					# 					  expression(SPR[input$endyr]),
@@ -4705,24 +4943,58 @@ if(input$use_forecastnew)
 				})
 
 		#F estimate and relative to FMSY and proxies		
-		output$SSout_F_table <- renderTable({
+		output$SSout_F_table <- render_gt({
 				F_indices<-c(which(rownames(Model.output$derived_quants)==paste0("F_",input$endyr)),
 							which(rownames(Model.output$derived_quants)=="annF_Btgt"),
 							which(rownames(Model.output$derived_quants)=="annF_SPR"),
 							which(rownames(Model.output$derived_quants)=="annF_MSY")
 							)
 				F_values<-Model.output$derived_quants[F_indices,1:3]
+        F_values<-mutate_if(F_values,is.numeric, round, 2)  
+        F_values_tab<-gt(F_values) %>%
+        tab_header(
+        title = "Fishing Intensity",
+        subtitle = ""
+        ) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = c(Value))) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
  			})
 		#Time series output
- 		output$SSout_table <- renderTable({
-# 				Output_table<-Model.output$sprseries[-nrow(Model.output$sprseries),c(1,5,6,7,8,9,11,12,13,25,37)]
-        Output_table<-Model.output$sprseries[,c(1,5,6,7,8,9,11,12,13,25,37)]
-			})
+ 		output$SSout_table <- render_gt({
+        Output_table<-Model.output$sprseries[,c(1,3,4,23,24,7,8,9,10,12,13,25,53,54)]
+        Output_table<-mutate_if(Output_table,is.numeric, round, 2)  
+       gt(Output_table)%>%
+        tab_header(
+        title = "Time Series of Derived Model Outputs",
+        subtitle = ""
+        ) %>%
+        data_color(columns = c(4,7,10,12), method = "auto", palette = "viridis",reverse=TRUE) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = c(Deplete))) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
+      })
  		
- 		#Paramters
- 		output$Parameters_table <- renderTable({
- 				cbind(rownames(Model.output$estimated_non_dev_parameters),Model.output$estimated_non_dev_parameters)
-			})
+ 		#Parameters
+ 		output$Parameters_table <- render_gt({
+ 				parm_tab<-cbind(rownames(Model.output$estimated_non_dev_parameters),Model.output$estimated_non_dev_parameters)
+			  colnames(parm_tab)[1]<-"Parameter"
+        parm_tab<-mutate_if(parm_tab,is.numeric, round, 2)  
+        gt(parm_tab)%>%
+        tab_header(
+        title = "Estimated Parameters",
+        subtitle = ""
+        ) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = c(Value))) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
+      })
 
 } 	
 
@@ -4740,6 +5012,8 @@ if(input$use_forecastnew)
     updateTabsetPanel(session, "tabs",
       selected = '2')
     })
+
+    updateCheckboxInput(inputId=input$user_model,value=FALSE)
   }  
  })
 
@@ -4751,22 +5025,22 @@ if(input$use_forecastnew)
   roots <- getVolumes()()  
 
 
-  #
-    pathModelout <- reactive({
-        shinyDirChoose(input, "Modelout_dir", roots= roots,session=session, filetypes=c('', 'txt'))
-        return(parseDirPath(roots, input$Modelout_dir))
-      })
+  #CODE TO ALLOW USERS TO SAVE OUTPUT SOMEWHERE OTHER THAN SCENARIOS FOLDER 
+    # pathModelout <- reactive({
+    #     shinyDirChoose(input, "Modelout_dir", roots= roots,session=session, filetypes=c('', 'txt'))
+    #     return(parseDirPath(roots, input$Modelout_dir))
+    #   })
 
-    observeEvent(as.numeric(input$tabs)==2,{      
-    #observeEvent(exists("Model.output"),{      
-      pathModelout.dir <-pathModelout()
-    if(!identical(pathModelout.dir, character(0)))
-    {
-      #dir.create(paste0(pathModelout.dir,"/Scenarios"))
-      file.copy(paste0("Scenarios/",input$Scenario_name), pathModelout.dir,recursive=TRUE,overwrite=TRUE)
-      if(input$Retro_choice){file.copy(paste0("Scenarios/",input$Scenario_name,"_retro"), pathModelout.dir,recursive=TRUE,overwrite=TRUE)}
-    }
-    })
+    # observeEvent(as.numeric(input$tabs)==2,{      
+    # #observeEvent(exists("Model.output"),{      
+    #   pathModelout.dir <-pathModelout()
+    # if(!identical(pathModelout.dir, character(0)))
+    # {
+    #   #dir.create(paste0(pathModelout.dir,"/Scenarios"))
+    #   file.copy(paste0("Scenarios/",input$Scenario_name), pathModelout.dir,recursive=TRUE,overwrite=TRUE)
+    #   if(input$Retro_choice){file.copy(paste0("Scenarios/",input$Scenario_name,"_retro"), pathModelout.dir,recursive=TRUE,overwrite=TRUE)}
+    # }
+    # })
 
 
 ########################
@@ -4814,7 +5088,7 @@ if(input$Opt_mod==TRUE)
 
   remove_modal_spinner()
 }
- 
+
 #Set mcmc model
 show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
 chains <- parallel::detectCores()-1
@@ -4830,7 +5104,7 @@ p<-file.path(modeff.dir,modeff.name)
   if (input$ModEff_choice=="Nuts") 
   {
     fit_model <- sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
-          chains=4, cores=4,control=list(metric='mle', max_treedepth=5),mceval=TRUE)
+          chains=chains, cores=4,control=list(metric='mle', max_treedepth=5),mceval=TRUE)
   }
 
 fit.mod.summary<-utils::capture.output(summary(fit_model), file=NULL)
@@ -4897,7 +5171,7 @@ save(fit_model,file=paste0(p,"/fit_model.RData"))
       pickerInput(
       inputId = "myPicker_LP",
       label = "Choose parameters to profile over",
-      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male"),
+      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)"),
       options = list(
         `actions-box` = TRUE,
         size = 12,
@@ -4917,15 +5191,16 @@ observeEvent(input$run_Profiles,{
        rep.parms.names<-rownames(rep.parms$parameters)
        # SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","CV_young_Fem_GP_1","CV_old_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1","CV_young_Mal_GP_1","CV_old_Mal_GP_1")
        #SS_parm_names<-c(rownames(ctl.file$SR_parms)[2], rownames(ctl.file$SR_parms)[1],rownames(ctl.file$MG_parms)[1],rownames(ctl.file$MG_parms)[3],rownames(ctl.file$MG_parms)[4],rownames(ctl.file$MG_parms)[5],rownames(ctl.file$MG_parms)[6],rownames(ctl.file$MG_parms)[13],rownames(ctl.file$MG_parms)[15],rownames(ctl.file$MG_parms)[16],rownames(ctl.file$MG_parms)[17],rownames(ctl.file$MG_parms)[18])
-       SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18])
+       SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18],"LnQ_base_Acoustic_Visual(6)")
        parmnames<-input$myPicker_LP
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
+       
        prior_like<-starter.file$prior_like
        use_prior_like_in<-rep(0,length(prof_parms_names))
        if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
        mydir = dirname(pathLP())
-              get = get_settings_profile( parameters =  prof_parms_names,
+       get = get_settings_profile( parameters =  prof_parms_names,
               low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
@@ -4996,7 +5271,7 @@ observeEvent(input$run_MultiProfiles,{
        L <- readLines(input$file_multi_profile$datapath, n = 1)
        if(grepl(";", L)) {par.df <- read.csv2(input$file_multi_profile$datapath,check.names=FALSE)}
        SS_parm_names<-rownames(ref.model$parameters)[c(23:24,1,3,4:6,13,15:18)]
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
+       parmnames_vec<-c("lnR0","Steepness","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        parmnames<-colnames(par.df)
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        modelnames<-paste0(parmnames[1]," ",par.df[,1],";",parmnames[2]," ",par.df[,2])
@@ -5014,35 +5289,38 @@ observeEvent(input$run_MultiProfiles,{
  
        #Set-up the starter file control file
        starter.file<-SS_readstarter(paste0(profile_dir,"/starter.ss"))
+       ctlfile.in<-starter.file$ctlfile
        starter.file$ctlfile<-"control_modified.ss"
        starter.file$init_values_src<-0
-       starter.file$prior_like<-1
+       #starter.file$prior_like<-1
        SS_writestarter(starter.file,profile_dir,overwrite=TRUE)
 #       low_in <-  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
 #       high_in <- as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
 #       step_size_in <- as.numeric(trimws(unlist(strsplit(input$Prof_step,","))))
 #       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
 #       colnames(par.df)<-prof_parms_names
-      
+
       if(input$Hess_multi_like==FALSE)
       {
-        profile <- profile(
+        profile <- profile_multi(
           dir = profile_dir, # directory
-          masterctlfile = "control.ss_new",
+          #globalpar = TRUE,
+          oldctlfile = ctlfile.in,
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
           extras = "-nohess",
-          prior_check=TRUE,
+          prior_check=FALSE,
           show_in_console = TRUE
         )        
       }
 
       if(input$Hess_multi_like==TRUE)
       {
-        profile <- profile(
+        profile <- profile_multi(
           dir = profile_dir, # directory
-          masterctlfile = "control.ss_new",
+          #globalpar = TRUE,
+          oldctlfile = ctlfile.in,
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
@@ -5055,7 +5333,7 @@ observeEvent(input$run_MultiProfiles,{
     profilemodels <- SSgetoutput(dirvec=profile_dir,keyvec=1:nrow(par.df), getcovar=FALSE)
     n <- length(profilemodels)
     profilesummary <- SSsummarize(profilemodels)
-    try(SSplotComparisons(profilesummary, legendlabels = modelnames, ylimAdj = 1.30, new = FALSE,plot=FALSE,print=TRUE, legendloc = 'topleft',uncertainty=TRUE,plotdir=profile_dir,btarg=TRP_multi_like,minbthresh=LRP_multi_like))
+    try(SSplotComparisons(profilesummary, legendlabels = modelnames, ylimAdj = 1.30, new = FALSE,plot=FALSE,print=TRUE, legendloc = 'topleft',uncertainty=TRUE,plotdir=profile_dir,btarg=input$TRP_multi_like,minbthresh=input$LRP_multi_like))
     save(profilesummary,file=paste0(profile_dir,"/multiprofile.DMP"))
     # add total likelihood (row 1) to table created above
     par.df$like <- as.numeric(profilesummary$likelihoods[1, 1:n])
@@ -5068,9 +5346,104 @@ observeEvent(input$run_MultiProfiles,{
     save(par.df,file=paste0(profile_dir,"/multiprofilelikelihoods.DMP"))
     write.csv(par.df,file=paste0(profile_dir,"/multiprofilelikelihoods.csv"))
     
+    #Extract component likelihoods
+    #Likelihoods
+    likes_non0<-rowSums(profilesummary$likelihoods[,1:nrow(par.df)])>0
+    likes_non0_par<-likes_non0_par.min<-profilesummary$likelihoods[likes_non0,]
+    for(ii in 1:nrow(likes_non0_par))
+    {
+      likes_non0_par.min[ii,1:nrow(par.df)]<-likes_non0_par[ii,1:nrow(par.df)]-min(likes_non0_par[ii,1:nrow(par.df)])
+    }
+    colnames(likes_non0_par.min)<-c(par.df[,1],"Label")
+    like.comps.plot<-reshape2::melt(likes_non0_par.min,id = "Label")
+
+    #Lengths
+    likes_length<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Length_like",]
+    likes_length_short<-likes_length[,3:ncol(likes_length)]
+    likes_length_non0<-likes_length_non0.min<-data.frame(model=likes_length[,1],likes_length_short[,colSums(likes_length[,3:ncol(likes_length)])!=0])
+    likes_length_non0$model<-likes_length_non0.min$model<-as.numeric(par.df[,1])
+    for(ii in 2:ncol(likes_length_non0))
+    {
+      likes_length_non0.min[,ii]<-likes_length_non0[,ii]-min(likes_length_non0.min[,ii])
+    }
+    likes_length_non0.min.melt<-reshape2::melt(likes_length_non0.min,id.vars="model")
+
+    #Ages
+    likes_age<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Age_like",]
+    likes_age_short<-likes_age[,3:ncol(likes_age)]
+    likes_age_non0<-likes_age_non0.min<-data.frame(model=likes_age[,1],likes_age_short[,colSums(likes_age[,3:ncol(likes_age)])!=0])
+    likes_age_non0$model<-likes_age_non0.min$model<-as.numeric(par.df[,1])
+    for(ii in 2:ncol(likes_age_non0))
+    {
+      likes_age_non0.min[,ii]<-likes_age_non0[,ii]-min(likes_age_non0.min[,ii])
+    }
+    likes_age_non0.min.melt<-reshape2::melt(likes_age_non0.min,id.vars="model")
+
+    #Survey
+    likes_survey<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Surv_like",]
+    likes_survey_short<-likes_survey[,3:ncol(likes_survey)]
+    likes_survey_non0<-likes_survey_non0.min<-data.frame(model=likes_survey[,1],likes_survey_short[,colSums(likes_survey[,3:ncol(likes_survey)])!=0])
+    likes_survey_non0$model<-likes_survey_non0.min$model<-as.numeric(par.df[,1])
+    for(ii in 2:ncol(likes_survey_non0))
+    {
+      likes_survey_non0.min[,ii]<-likes_survey_non0[,ii]-min(likes_survey_non0.min[,ii])
+    }
+    likes_survey_non0.min.melt<-reshape2::melt(likes_survey_non0.min,id.vars="model")
+
+
+    #Plots
+    #Components
+    LC.plot<-ggplot(like.comps.plot,aes(variable,value,group=Label,color=Label))+
+      geom_point(size=5)+
+      geom_line(lwd=1.2)+
+      ylab("Difference in likelihood from the minimum") +
+      theme(legend.position = c(0.8, 0.8))+
+      labs(color = "Likelihood component") +
+      scale_x_discrete(name = paste(parmnames[1],"and",parmnames[2]), 
+                       breaks =par.df[,1], 
+                       labels = paste0(par.df[,1],"\n",par.df[,2]))
+    ggsave(paste0(profile_dir,"/","like_component_profile.png"),plot=LC.plot,width=10,height=10,units="in")
+    
+    #Lengths
+    LC_lt.plot<-ggplot(likes_length_non0.min.melt,aes(model,value,group=variable,color=variable))+
+      geom_point(size=5)+
+      geom_line(lwd=1.2)+
+      theme(legend.position = c(0.8, 0.8))+
+      ylab("Difference in likelihood from the minimum")+
+      labs(color = "Length components") +
+      scale_x_continuous(name = paste(parmnames[1],"and",parmnames[2]), 
+                       breaks =par.df[,1], 
+                       labels = paste0(par.df[,1],"\n",par.df[,2])) 
+    ggsave(paste0(profile_dir,"/","length_component_profile.png"),plot=LC_lt.plot,width=10,height=10,units="in")
+
+    #Ages
+    LC_age.plot<-ggplot(likes_age_non0.min.melt,aes(model,value,group=variable,color=variable))+
+      geom_point(size=5)+
+      geom_line(lwd=1.2)+
+      theme(legend.position = c(0.8, 0.8))+
+      ylab("Difference in likelihood from the minimum")+
+      labs(color = "Age components")+
+      scale_x_continuous(name = paste(parmnames[1],"and",parmnames[2]), 
+                         breaks =par.df[,1], 
+                         labels = paste0(par.df[,1],"\n",par.df[,2])) 
+      ggsave(paste0(profile_dir,"/","age_component_profile.png"),plot=LC_age.plot,width=10,height=10,units="in")
+
+    #Survey
+    LC_survey.plot<-ggplot(likes_survey_non0.min.melt,aes(model,value,group=variable,color=variable))+
+      geom_point(size=5)+
+      geom_line(lwd=1.2)+
+      theme(legend.position = c(0.8, 0.8))+
+      ylab("Difference in likelihood from the minimum")+
+      labs(color = "Survey components")+
+      scale_x_continuous(name = paste(parmnames[1],"and",parmnames[2]), 
+                         breaks =par.df[,1], 
+                         labels = paste0(par.df[,1],"\n",par.df[,2])) 
+      ggsave(paste0(profile_dir,"/","survey_component_profile.png"),plot=LC_survey.plot,width=10,height=10,units="in")
+
+
     #This reactive object is needed to get the plots to work
     plot.dat<-reactive({
-      plot.dat<-melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1])))
+      plot.dat<-reshape2::melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1],"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1])))
       plot.dat
       })
     blank_data<- data.frame(variable = c("Likelihood_difference", "Likelihood_difference", paste0("SB",profilesummary$endyrs[1],"/SB0"), paste0("SB",profilesummary$endyrs[1],"/SB0"), "SB0", "SB0",paste0("SB",profilesummary$endyrs[1]),paste0("SB",profilesummary$endyrs[1])), x =min(par.df[,1]),y = c(min(par.df$Likelihood_difference),max(par.df$Likelihood_difference), 0, 1, 0, ceiling(max(par.df$SB0)),0,ceiling(SBcurrmax)))
@@ -5338,13 +5711,14 @@ SensiRE_xcenter_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_xcenter,",")
 SensiRE_ycenter_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_ycenter,","))))
 SensiRE_headers_in<-trimws(unlist(strsplit(input$SensiRE_headers,",")))
 yminmax_sensi<-rep(c(input$SensiRE_ymin,input$SensiRE_ymax),5)
-r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
-              model.summaries=modsummary.sensi,
+#r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
+Sensi_plot_horiz(model.summaries=modsummary.sensi,
+              dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
               current.year=modsummary.sensi$endyrs[1]+1,
               mod.names=modelnames, #List the names of the sensitivity runs
               #likelihood.out=c(0,0,0),
-              Sensi.RE.out="Sensi_RE_out.DMP", #Saved file of relative errors
-              CI=0.95, #Confidence interval box based on the reference model
+              #Sensi.RE.out="Sensi_RE_out.DMP", #Saved file of relative errors
+              #CI=0.95, #Confidence interval box based on the reference model
               TRP.in=input$Sensi_TRP, #Target relative abundance value
               LRP.in=input$Sensi_LRP, #Limit relative abundance value
               sensi_xlab="Sensitivity scenarios", #X-axis label
@@ -5353,11 +5727,13 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
               sensi.type.breaks=SensiRE_breaks_in, #vertical breaks that can separate out types of sensitivities
               anno.x=SensiRE_xcenter_in, # Vertical positioning of the sensitivity types labels
               anno.y=SensiRE_ycenter_in, # Horizontal positioning of the sensitivity types labels
-              anno.lab=SensiRE_headers_in #Sensitivity types labels
+              anno.lab=SensiRE_headers_in, #Sensitivity types labels
+              header.text=input$SensiRE_headers_text,
+              horizontal = TRUE
 )
 
        output$SensiRE_comp_plot <- renderImage({
-       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_REplot_SB_Dep_F_MSY.png")),mustWork=FALSE)
+       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_REplot_SB_Dep_F_Yield.png")),mustWork=FALSE)
        return(list(
         src = image.path,
         contentType = "image/png",
@@ -5367,12 +5743,12 @@ r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",inpu
       },deleteFile=FALSE)
 
        output$SensiRElog_comp_plot <- renderImage({
-       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_logREplot_SB_Dep_F_MSY.png")),mustWork=FALSE)
+       image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_logREplot_SB_Dep_F_Yield.png")),mustWork=FALSE)
        return(list(
         src = image.path,
         contentType = "image/png",
-         width = 400,
-         height = 300,
+         width = 800,
+         height = 1200,
        style='height:60vh'))
       },deleteFile=FALSE)
 
@@ -5440,6 +5816,7 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
 
 #  })
 
+
 # print(Ensemble_model_dir_out())
 # exists("Ensemble_model_dir_out()")
 #Ensemble_model_dir_out
@@ -5469,7 +5846,7 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
          SpOt_en[[i]]<-Map(mean.fxn,modsummary.ensemble$SpawnBio[,i],modsummary.ensemble$SpawnBioSD[,i])
          names(SpOt_en[[i]])<-modsummary.ensemble$SpawnBio$Yr
          SO_0<-rbind(SO_0,data.frame(Year=as.numeric(names(SpOt_en[[i]][1])),Metric=unlist(SpOt_en[[i]][1]),Model=input$myEnsemble[i]))
-         SO_t<-rbind(SO_t,data.frame(Year=names(SpOt_en[[i]][nrow(modsummary.ensemble$SpawnBio)]),Metric=unlist(SpOt_en[[i]][length(Nsamps_ensemble_wts)]),Model=input$myEnsemble[i]))
+         SO_t<-rbind(SO_t,data.frame(Year=names(SpOt_en[[i]][nrow(modsummary.ensemble$SpawnBio)]),Metric=unlist(SpOt_en[[i]][nrow(modsummary.ensemble$SpawnBio)]),Model=input$myEnsemble[i]))
          Bratio_en[[i]]<-Map(mean.fxn,modsummary.ensemble$Bratio[,i],modsummary.ensemble$BratioSD[,i])               
          names(Bratio_en[[i]])<-modsummary.ensemble$Bratio$Yr       
          Bratio_t<-rbind(Bratio_t,data.frame(Year=names(Bratio_en[[i]][nrow(modsummary.ensemble$Bratio)]),Metric=unlist(Bratio_en[[i]][nrow(modsummary.ensemble$Bratio)]),Model=input$myEnsemble[i]))
@@ -5484,17 +5861,20 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
        #Reduce(intersect,list(names(list1),names(list2),names(list3))) # Code to find matches in multiple vectors. For future option of mixing models with different dimensions.
 
        #Assemble ensembles
-       Ensemble_SO<-SpOt_en[[1]]
-       Ensemble_Bratio<-Bratio_en[[1]]
-       Ensemble_F<-F_en[[1]]
-       Ensemble_SPR<-SPR_en[[1]]
-       for(ii in 2:length(Nsamps_ensemble_wts))
-       {
-         Ensemble_SO<-mapply(c,Ensemble_SO,SpOt_en[[ii]])
-         Ensemble_Bratio<-mapply(c,Ensemble_Bratio,Bratio_en[[ii]])
-         Ensemble_F<-mapply(c,Ensemble_F,F_en[[ii]])
-         Ensemble_SPR<-mapply(c,Ensemble_SPR,SPR_en[[ii]])
-       }
+       
+       Ensemble_SO<-do.call(rbind.data.frame, SpOt_en)
+       colnames(Ensemble_SO)<-names(SpOt_en[[1]])
+       Ensemble_Bratio<-do.call(rbind.data.frame, Bratio_en)
+       Ensemble_F<-do.call(rbind.data.frame, F_en)
+       Ensemble_SPR<-do.call(rbind.data.frame, SPR_en)
+       colnames(Ensemble_Bratio)<-colnames(Ensemble_F)<-colnames(Ensemble_SPR)<-names(Bratio_en[[1]])
+       # for(ii in 2:length(Nsamps_ensemble_wts))
+       # {
+       #   Ensemble_SO<-mapply(c,Ensemble_SO,SpOt_en[[ii]])
+       #   Ensemble_Bratio<-mapply(c,Ensemble_Bratio,Bratio_en[[ii]])
+       #   Ensemble_F<-mapply(c,Ensemble_F,F_en[[ii]])
+       #   Ensemble_SPR<-mapply(c,Ensemble_SPR,SPR_en[[ii]])
+       # }
        
        SO_0<-rbind(SO_0[-1,],data.frame(Year=as.numeric(colnames(Ensemble_SO)[1]),Metric=Ensemble_SO[,1],Model="Ensemble"))
        SO_t<-rbind(SO_t[-1,],data.frame(Year=as.numeric(colnames(Ensemble_SO)[ncol(Ensemble_SO)]),Metric=Ensemble_SO[,ncol(Ensemble_SO)],Model="Ensemble"))
@@ -5517,73 +5897,82 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
 
        
       show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[2],text="Preparing ensemble plots")
-      
-       #Boxplots
-       gg1<-ggplot(SO_0,aes(Model,Metric))+
-        geom_violin()+
-        ylab("Initial Spawning Output")
-       gg2<-ggplot(SO_t,aes(Model,Metric))+
-        geom_violin()+
-        ylab("Terminal Year Spawning Output")
-       gg3<-ggplot(Bratio_t,aes(Model,Metric))+
-        geom_violin()+
-        ylab("Relative stock status")
-       gg4<-ggplot(F_t,aes(Model,Metric))+
-        geom_violin()+
-        ylab("Fishing mortality")
-       gg5<-ggplot(SPR_t,aes(Model,Metric))+
-        geom_violin()+
-        ylab("1-SPR")
 
-        
+       #Boxplots
+       SO_0$Model.labs<-SO_t$Model.labs<-Bratio_t$Model.labs<-F_t$Model.labs<-SPR_t$Model.labs<- str_wrap(SO_0$Model, width = 5)
+       gg1<-ggplot(SO_0,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("Initial Spawning Output")+
+        theme(legend.position = "none")
+       gg2<-ggplot(SO_t,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("Terminal Year Spawning Output")+
+        theme(legend.position = "none")
+       gg3<-ggplot(Bratio_t,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("Relative stock status")+
+        theme(legend.position = "none")
+       gg4<-ggplot(F_t,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("Fishing mortality")+
+        theme(legend.position = "none")
+       gg5<-ggplot(SPR_t,aes(Model.labs,Metric,fill=Model))+
+        geom_violin()+
+        ylab("1-SPR")+
+        theme(legend.position = "none")
+
         ggarrange(gg1,gg2,gg3,gg4,gg5)
-        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots.png"))
+        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots.png"),width=20,height=10)
              output$Ensemble_plots <- renderPlot({ 
        ggarrange(gg1,gg2,gg3,gg4,gg5)})
 
       #Spawning Output plot
       Ensemble_SO_plot<-reshape2::melt(Ensemble_SO,value.name="SO")
-      colnames(Ensemble_SO_plot)[2]<-"Year"
+      colnames(Ensemble_SO_plot)<-c("Year","SO")
       Ensemble_SO_plot$Year<-as.factor(Ensemble_SO_plot$Year)
-      ggplot(Ensemble_SO_plot,aes(Year,SO,fill=Year))+
-        geom_violin()+
+      SO.ts.plot<-ggplot(Ensemble_SO_plot,aes(Year,SO,fill=Year))+
+        geom_violin(scale="count")+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("Spawning Output")
-      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SO.png"))
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SO.png"),width=20,height=10)
+         output$Ensemble_plots_SO_ts <- renderPlot({ 
+       SO.ts.plot})
 
       #Relative stock status plot
       Ensemble_Bratio_plot<-reshape2::melt(Ensemble_Bratio,value.name="Bratio")
-      colnames(Ensemble_Bratio_plot)[2]<-"Year"
+      colnames(Ensemble_Bratio_plot)<-c("Year","Bratio")
       Ensemble_Bratio_plot$Year<-as.factor(Ensemble_Bratio_plot$Year)
-      ggplot(Ensemble_Bratio_plot,aes(Year,Bratio,fill=Year))+
-        geom_violin()+
+      Bratio.ts.plot<-ggplot(Ensemble_Bratio_plot,aes(Year,Bratio,fill=Year))+
+        geom_violin(bw=0.01)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("SBt/SO0")
-      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_Bratio.png"))
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_Bratio.png"),width=20,height=10)
+         output$Ensemble_plots_Bratio_ts <- renderPlot({ 
+       Bratio.ts.plot})
 
       #F plot
       Ensemble_F_plot<-reshape2::melt(Ensemble_F,value.name="F")
-      colnames(Ensemble_F_plot)[2]<-"Year"
+      colnames(Ensemble_F_plot)<-c("Year","F")
       Ensemble_F_plot$Year<-as.factor(Ensemble_F_plot$Year)
       ggplot(Ensemble_F_plot,aes(Year,F,fill=Year))+
-        geom_violin()+
+        geom_violin(bw=0.001)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("Fishing mortality")
-      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_F.png"))
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_F.png"),width=20,height=10)
 
       #1-SPR plot
-      Ensemble_SPR_plot<-reshape2::melt(Ensemble_SO,value.name="SPR")
-      colnames(Ensemble_SPR_plot)[2]<-"Year"
+      Ensemble_SPR_plot<-reshape2::melt(Ensemble_SPR,value.name="SPR")
+      colnames(Ensemble_SPR_plot)<-c("Year","SPR")
       Ensemble_SPR_plot$Year<-as.factor(Ensemble_SPR_plot$Year)
       ggplot(Ensemble_SPR_plot,aes(Year,SPR,fill=Year))+
-        geom_violin()+
+        geom_violin(bw=0.01)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 45, hjust = 1,vjust=0.5,size=10))+
+        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("1-SPR")
-      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SPR.png"))
+      ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SPR.png"),width=20,height=10)
 
       #Get simpler plots for SB0, SBcurrent, RSS, F, and SPR in terminal year
 
@@ -5620,7 +6009,6 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       #  # height = 300,
       #  style='height:60vh'))
       # },deleteFile=FALSE)
-
-
 })
 
+enableBookmarking(store = "server")
