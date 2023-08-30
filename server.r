@@ -27,6 +27,7 @@ require(shinystan)
 require(gt)
 require(gtExtras)
 require(stringr)
+require(shinyjqui)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -2131,7 +2132,7 @@ Linf<-reactive({
 
 Linf_m_in<-reactive({
     Linf_m_in<-NA
-    if(all(c(is.null(input$Linf_m),is.null(input$Linf_m_fix),is.null(input$Linf_m_mean),is.null(input$Linf_m_mean_sss)))) return(NULL)
+    #if(all(c(is.null(input$Linf_m),is.null(input$Linf_m_fix),is.null(input$Linf_m_mean),is.null(input$Linf_m_mean_sss)))) return(NULL)
     if(any(input$male_parms&!is.na(input$Linf_m))) {Linf_m_in<-input$Linf_m}
     if(any(input$male_parms_fix&!is.na(input$Linf_m_fix))) {Linf_m_in<-input$Linf_m_fix}
     if(any(input$male_parms_est&!is.na(input$Linf_m_mean))) {Linf_m_in<-input$Linf_m_mean}
@@ -2263,24 +2264,30 @@ if(!is.null(rv.Lt$data))
 		           name = as.numeric(gsub("[^0-9.-]", "", name)),
                Lnu=-1,
                L50_vline=if_else(is.na(L50()),-1,L50()),
-		           Linf_vline=if_else(is.na(Linf()),-1,Linf())) %>%
+		           Linf_vline=if_else(is.na(Linf()),-1,Linf()))%>%		           
+               #Linf_m_vline=if_else(is.na(Linf_m_in()),-1,Linf_m_in())) %>%
 		    ggplot(aes(name, value, color=Year)) + 
 		    geom_line() + 
         #geom_col(position="dodge") + 
 		    geom_vline(xintercept = c(-1,L50()),
                     linetype="dashed",
-                    colour = "blue",
+                    colour = "darkgreen",
                     na.rm = TRUE,
                     show.legend = TRUE)+
         geom_vline(xintercept = c(-1,Linf()),
-                    colour = "black",
+                    colour = "#d26678",
+                    na.rm = TRUE,
+                    show.legend = TRUE)+
+        geom_vline(xintercept = c(-1,Linf_m_in()),
+                    colour = "blue",
                     na.rm = TRUE,
                     show.legend = TRUE)+
         facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        facet_wrap(sex~year, scales="free_y",ncol=5) + 
 		    #annotate(x=if_else(is.na(Linf()),-1,Linf()), y=+Inf, label= "Linf")+
-        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf")+
-        annotate("text",x=if_else(is.na(L50()),-1,L50())*1.1, y=5, label= "L50%",color="blue")+
+        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf",color="#d26678")+
+        annotate("text",x=if_else(is.na(Linf_m_in()),-1,Linf_m_in())*1.05, y=5, label= "Linf",color="blue")+
+        annotate("text",x=if_else(is.na(L50()),-1,L50())*1.1, y=5, label= "L50%",color="darkgreen")+
         xlab("Length bin") + 
 		    ylab("Frequency") + 
 		    scale_fill_viridis_d()+
@@ -6003,7 +6010,6 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       #  # height = 300,
       #  style='height:60vh'))
       # },deleteFile=FALSE)
-
-
 })
 
+enableBookmarking(store = "server")

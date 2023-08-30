@@ -6,6 +6,8 @@ require(shinyBS)
 
 linebreaks <- function(n){HTML(strrep(br(), n))}
 
+ui<-function(request){
+
 shinyUI(fluidPage(theme = "bootstrap.css",
   useShinyjs(),
   titlePanel("Welcome to the Stock Synthesis data-limited tool (SS-DL tool)"),
@@ -784,6 +786,17 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       )
       ),
 
+  h4(p(strong("Save session inputs before model run"))),
+  h5(p("Worried about losing your inputs from a crashed model? Click the 'save session inputs' button BEFORE running the model to save your inputs.")),
+  h5(p("To recovery those inputs, you can paste the link into another webpage. The SS-DL tool needs to be running to recovery another session. Note you will also need to reload data files to see the saved inputs.")),
+  h5(p("You can also retain the link to share or report inputs. Consider adding a text file with the link into any model run folders for future explorations.")),
+br(),
+  bookmarkButton(label="Save session inputs",
+      width="50%",
+      icon("circle-play"),
+      style="font-size:120%;border:2px solid;color:#FFFFFF;background:#0000FF"), 
+br(),
+br(),
       shinyjs::hidden(actionButton("run_SS",strong("Run Model"),
       width="100%",
       icon("circle-play"),
@@ -796,7 +809,6 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     
     br(),
     br(),
-bookmarkButton(), 
 #################### 
 ### Other panels ###
 ####################
@@ -1223,4 +1235,5 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
    )
 )
 )
+}
 
