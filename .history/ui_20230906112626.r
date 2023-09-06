@@ -6,10 +6,13 @@ require(shinyBS)
 
 linebreaks <- function(n){HTML(strrep(br(), n))}
 
+ui<-function(request){
+
 shinyUI(fluidPage(theme = "bootstrap.css",
   useShinyjs(),
   titlePanel("Welcome to the Stock Synthesis data-limited tool (SS-DL tool)"),
       h4(p(strong("This tool uses the Stock Synthesis framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
+      h5(p("Any suggested changes or requests? Please submit an issue with the recommendation" ,tags$a(href="https://github.com/shcaba/SS-DL-tool/issues", "here"))),
       br(),
 
 sidebarLayout(
@@ -105,7 +108,7 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         h5(em("If using an existing model, chose 'None' to maintain the same weighting as the existing model")),
         # fluidRow(column(width=10,prettyCheckbox(
         #   inputId = "dirichlet",
-        #   label = "Use Dirichlet weighting?",
+        #   label = "Use Dirichlet multinomial weighting?",
         #   value=FALSE, 
         #   shape="curve",
         #   icon = icon("check"),
@@ -115,7 +118,7 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         awesomeRadio(
           inputId = "Data_wt",
           label = "Choose data-weighting option", 
-          choices = c("None","Dirichlet", "Francis", "McAllister-Ianelli"),
+          choices = c("None","Dirichlet-multinomial", "Francis", "McAllister-Ianelli"),
           selected = "None",
           status = "warning"
           )
@@ -192,6 +195,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
         onStatus = "success",
         offStatus = "danger"))), 
 
+       h5("Parameters can either be fixed (i.e., set to specific value) or estimated."),
        h5("Estimating parameters is a data-based approach to determining life history values"),
        h5("Estimating parameters can also propagate parameter uncertainty into derived model outputs"),
        br(),
@@ -201,7 +205,10 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
        tags$ul(tags$li(h5(p("Parameters that seem informed by the data (i.e., result in realistic values) are good candidates for estimation.")))),
        tags$ul(tags$li(h5(p("The most likely parameters to have information from fishery-based lengths are Linf and M.")))),
        h5("Not all parameters need be estimated. Fix parameters by turning the phase negative (e.g., -1)"),
-       
+       h5(p("Natural mortality is an often difficult value to obtain. Consider using",tags$a(href="https://connect.fisheries.noaa.gov/natural-mortality-tool/", "The Natural Mortality Tool"), "to either obtain natural mortality values or developing a prior for use in estimating natural mortality. The Github repository for it can be found",tags$a(href="https://github.com/shcaba/Natural-Mortality-Tool", "here"),".")),
+       br(),
+       h5("Load life history values instead of inputting them?"),
+       uiOutput("LH_load_file"),       
 )),
 
   shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed",
@@ -243,7 +250,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       wellPanel(id="panel_SS_est",
       h4(em("Female")),
         dropdownButton(
-          selectInput("M_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("M_f_prior","Prior type for M",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("M_f_mean", "Mean", value=NA,min=0, max=10000, step=0.00001),
           numericInput("M_f_SD", "SD", value=0,min=0, max=10000, step=0.00001),
           numericInput("M_f_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -252,7 +259,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       br(),
        h5(strong("Growth")),            
        dropdownButton(
-          selectInput("Linf_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("Linf_f_prior","Prior type for Linf",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("Linf_f_mean", "Mean", value=NA,min=0, max=10000, step=0.001),
           numericInput("Linf_f_SD", "SD", value=0,min=0, max=10000, step=0.0001),
           numericInput("Linf_f_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -260,7 +267,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           ),
      br(),
       dropdownButton(
-          selectInput("k_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("k_f_prior","Prior type for k",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("k_f_mean", "Mean", value=NA,min=0, max=10000, step=0.00001),
           numericInput("k_f_SD", "SD", value=0,min=0, max=10000, step=0.00001),
           numericInput("k_f_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -268,7 +275,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             ),
      br(),
       dropdownButton(
-          selectInput("t0_f_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("t0_f_prior","Prior type for t0",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("t0_f_mean", "Mean", value=NA,min=-100, max=10000, step=0.001),
           numericInput("t0_f_SD", "SD", value=0,min=0, max=10000, step=0.001),
           numericInput("t0_f_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -276,7 +283,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
             ),
      br(),
        dropdownButton(
-          selectInput("CV_lt_f_young_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("CV_lt_f_young_prior","Prior type for CV_lt young",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("CV_lt_f_young_mean", "Mean", value=0.1,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_young_SD", "SD", value=0,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_young_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -285,7 +292,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
      br(),
        dropdownButton(
-          selectInput("CV_lt_f_old_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("CV_lt_f_old_prior","Prior type for CV_lt old",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("CV_lt_f_old_mean", "Mean", value=0.1,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_old_SD", "SD", value=0,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_old_phase", "Phase", value=-1,min=-999, max=10, step=1),
@@ -385,21 +392,21 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       h4(em("Female")),
       h5(strong("Natural mortality")),            
         dropdownButton(
-          selectInput("M_prior_sss","Prior type",c("lognormal","normal","uniform","no prior")),
+          selectInput("M_prior_sss","Prior type for M",c("lognormal","normal","uniform","no prior")),
           numericInput("M_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.00001),
           numericInput("M_f_SD_sss", "SD", value=0.44,min=0, max=10000, step=0.00001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px",label="Natural mortality"
             ),
       h5(strong("Growth")),            
           dropdownButton(
-          selectInput("Linf_f_prior_sss","Prior type",c("no prior","normal")),
+          selectInput("Linf_f_prior_sss","Prior type for Linf",c("no prior","normal")),
           numericInput("Linf_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.001),
           numericInput("Linf_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("infinity"), width = "300px",label="Linf: Asymptotic size"
           ),
      br(),
       dropdownButton(
-          selectInput("k_f_prior_sss","Prior type",c("no prior","normal")),
+          selectInput("k_f_prior_sss","Prior type for k",c("no prior","normal")),
           numericInput("k_f_mean_sss", "Mean", value=NA,min=0, max=10000, step=0.00001),
           numericInput("k_f_SD_sss", "SD", value=0,min=0, max=10000, step=0.00001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("ruler-horizontal"), width = "300px",label="k: VB growth coefficient"
@@ -408,20 +415,20 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
      fluidRow(column(width=6,numericInput("Linf_k_cor_sss", "Correlation between Linf and k", value=-0.9,min=-1, max=1, step=0.001))),
      br(),
       dropdownButton(
-          selectInput("t0_f_prior_sss","Prior type",c("no prior","normal")),
+          selectInput("t0_f_prior_sss","Prior type for t0",c("no prior","normal")),
           numericInput("t0_f_mean_sss", "Mean", value=NA,min=-100, max=10000, step=0.001),
           numericInput("t0_f_SD_sss", "SD", value=0,min=0, max=1000, step=0.001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("baby-carriage"), width = "300px",label="t0: Age at size 0"
             ),
     h5(em("Length CV")),            
       dropdownButton(
-          selectInput("CV_lt_f_young_prior_sss","Prior type",c("no prior")),
+          selectInput("CV_lt_f_young_prior_sss","Prior type for CV_lt young",c("no prior")),
           numericInput("CV_lt_f_young_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_young_SD_sss", "SD", value=0,min=0, max=10000, step=0.0001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
             ),
       dropdownButton(
-          selectInput("CV_lt_f_old_prior_sss","Prior type",c("no prior")),
+          selectInput("CV_lt_f_old_prior_sss","Prior type for CV_lt old",c("no prior")),
           numericInput("CV_lt_f_old_mean_sss", "Mean", value=0.1,min=0, max=10000, step=0.0001),
           numericInput("CV_lt_f_old_SD_sss", "SD", value=0,min=0, max=10000, step=0.0001),
           circle = FALSE, right=TRUE, status = "danger", icon = icon("dice"), width = "300px",label="CV at length"
@@ -464,7 +471,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       #wellPanel(
          fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=NA,min=1000, max=3000, step=1))),
          dropdownButton(
-          selectInput("Depl_prior_sss","Prior type",c("beta","lognormal","truncated normal","uniform","no prior")),
+          selectInput("Depl_prior_sss","Prior type for relative stock status",c("beta","lognormal","truncated normal","uniform","no prior")),
           numericInput("Depl_mean_sss", "Mean", value=NA,min=0.001, max=1, step=0.001),
           numericInput("Depl_SD_sss", "SD", value=0.2,min=0, max=1000, step=0.001),
           circle = FALSE, status = "danger", icon = icon("battery-half"), width = "300px",label="Relative Stock Status"
@@ -480,7 +487,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SSS_prod",
     h4(strong("Stock-recruitment parameters")),
           br(),
-          fluidRow(column(width=6,numericInput("lnR0_sss", "Initial recruitment (lnR0)", value=7,min=0.01, max=20, step=0.01))),
+          fluidRow(column(width=6,numericInput("lnR0_sss", "Log initial recruitment (ln(R0))", value=7,min=0.01, max=20, step=0.01))),
           dropdownButton(
           selectInput("h_prior_sss","Steepness",c("symmetric beta","beta","truncated normal","truncated lognormal","uniform","no prior")),
           numericInput("h_mean_sss", "Mean", value=0.7,min=0.2, max=1, step=0.001),
@@ -502,7 +509,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
      fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
-      column(width=6,numericInput("lnR0", "Initial recruitment (lnR0)", value=7,min=0.01, max=20, step=0.01))),
+      column(width=6,numericInput("lnR0", "Log initial recruitment (ln(R0))", value=7,min=0.01, max=20, step=0.01))),
    #    ),
       )
     ),  
@@ -511,13 +518,13 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     h4(strong("Stock-recruitment parameters")),
      # wellPanel(
        dropdownButton(
-          selectInput("h_ss_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
+          selectInput("h_ss_prior","Prior type for steepness",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("h_mean_ss", "Mean", value=0.7,min=0.2, max=1, step=0.001),
           numericInput("h_SD_ss", "SD", value=0.15,min=0, max=10000, step=0.001),
           numericInput("h_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
        ), 
-     fluidRow(column(width=6,numericInput("lnR0_est", "Initial recruitment (lnR0)", value=9,min=0, max=20, step=0.01))),
+     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment (ln(R0))", value=7,min=0, max=20, step=0.01))),
   )), 
 
     #      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_ss_prior","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
@@ -605,11 +612,11 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
        uiOutput("Sel_parms2"),
        uiOutput("Sel_parms3"),
        uiOutput("Sel_parms4"),
-       uiOutput("Sel_parms5"),
+       uiOutput("Sel_parms5")
 
-    fluidRow(checkboxInput("Sex_lt_sel","Sex-specific selectivity?",FALSE)),
+#    fluidRow(checkboxInput("Sex_lt_sel","Sex-specific selectivity?",FALSE)),
     
-    fluidRow(checkboxInput("age_sel_choice","Age-based selectivity?",FALSE))
+#    fluidRow(checkboxInput("age_sel_choice","Age-based selectivity?",FALSE))
      
        
   #      ),
@@ -660,20 +667,27 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
 
     shinyjs::hidden(wellPanel(id="panel_advanced_SS",
     h4(strong("Additional SS options")),
-    h5(p(strong("Advanced SS commands can be found ",tags$a(href="javascript:window.open('SS_commands.html', '_blank','width=600,height=400')", " here")))),
+    h5(p(strong("Additional SS commands can be found ",tags$a(href="javascript:window.open('SS_commands.html', '_blank','width=600,height=400')", " here")))),
       
     #fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS options",FALSE))),
       popify(uiOutput("AdvancedSS_nohess"),"Run -nohess option","Turning off the Hessian option skips over asymptotic variance and speeds the model up. Use this option to more quickly explore models. Estimate variance once you are done exploring."),
       popify(uiOutput("AdvancedSS_addcomms"),"Custom SS run commands","Click the advanced SS commands link above to get options. One interesting option is -hess_step which attempts to make the model gradient 0. This should be run once a final model is found."),
-      uiOutput("AdvancedSS_addcomms_comms"),"Custom SS run commands","Click the advanced SS commands link above to get options. One interesting option is -hess_step which attempts to make the model gradient 0. This should be run once a final model is found."),
-      uiOutput("AdvancedSS_noplots"),
+      popify(uiOutput("AdvancedSS_addcomms_comms"),"Custom SS run commands"),
+      popify(uiOutput("AdvancedSS_noplots"),"Output plots","Diagnostic and results plots are produced by default. This switch turns those plots off in case you want to speed up the model run."),
+      popify(uiOutput("AdvancedSS_plots_RP"),"Target and limit reference points specification","Reference points are used to interpret the relative stock size plot compared to management objectives"),
+      popify(uiOutput("AdvancedSS_plots_RP_inputs"),"Enter a value between 0 and 1 for both","Enter NA if you do not want them plotted."),
       popify(uiOutput("AdvancedSS_noestabs"),"No Executive Summary tables","Executive Summary tables take time to make, but provide summary tables of the model. When exploring models, it is better to turn this off to speed up the model run."),
       popify(uiOutput("AdvancedSS_par"),"Switch to use the ss.par file","The ss.par file contains all parameter values used in the previous model run. It can be handy to run models from the par file to confirm you have reached the best fit model. The par file can also be used to expedite forecasts by turning the maximum phase to zero (see next option) and using the par file."),
       popify(uiOutput("AdvancedSS_phase0"),"Maximum phase = 0","Setting maximum phase to 0 turns off all parameter estimation and is useful when forecasting catch into the future. Couple with using the ss.par file (see above option)."),
       popify(uiOutput("AdvancedSS_datanew"),"Switch starter file to use the data_echo.ss_new file.","This file is a copy of the data file used in the last run. It has additional notes for inputs, and can be modified to run new scenarios, if desired."),
       popify(uiOutput("AdvancedSS_controlnew"),"Switch starter file to use the control.ss_new file.","This file is a copy of the control file used in the previous run, but starting values are the ending values of the previous model. Like the ss.par file, it can be used to run from where the last model finished, but also provides a convenient way to change other parameter specifications."),
       popify(uiOutput("AdvancedSS_forecastnew"),"Overwrite the forecast.ss file with the forecast.ss_new file.","This file is a copy of the forecast file used in the previous run. In the event you want to use this file, this switch will overwite the forecast file content with what is in the forecast.ss_new."),
-      popify(uiOutput("AdvancedSS_Sex3"),"Sex=3 option","This switch changes the per sex length compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the length compositions by sex. This does not convert ages to option sex=3."),
+      popify(uiOutput("AdvancedSS_Sex3options"),"Sex=3 option for biological compositions","This switch changes the per sex biological compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall biological composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the biological compositions by sex. Choose to apply this method to lengths and/or ages."),
+      fluidRow(column(width=6,uiOutput("AdvancedSS_Sex3")),
+        column(width=6,uiOutput("AdvancedSS_AgeSex3"))),    
+  
+      #popify(uiOutput("AdvancedSS_Sex3"),"Sex=3 option for lengths","This switch changes the per sex length compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the length compositions by sex."),
+      #popify(uiOutput("AdvancedSS_AgeSex3"),"Sex=3 option for ages","This switch changes the per sex age compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the age compositions by sex."),
       popify(uiOutput("AdvancedSS_Indexvar"),"Added index variance.","The input index variance is often underestimated. This option allows more variance to be added to each index in order to improve model fit. This is a type of weighting option for indices. The added variance is the same for each year of a particular index, but can be different across indices. Beware large index outliers that may overinflate added variances in order to get the model to fit that one data point."),
       popify(uiOutput("AdvancedSS_ageerror"),"Ageing error matrices","Add as many custom ageing error matrices as needed. See the folders 'Example data files' < 'ageing error matrices' for examples of the ageing error input"),
       uiOutput("AdvancedSS_ageerror_in"),
@@ -684,8 +698,12 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       #uiOutput("AdvancedSS_retro_years"),
       h5(p("Define modelled length bins. Default values are by 2 cm bin ranging from 4 to 25% above the Linf value. If using conditional age at lengths, length bins must be consistent with these population bins, not the length data bins.")),
       h5(p(em("Inputs must be smaller and larger than the length composition bins. Input values will be overridden to meet this requirement"))),
-      uiOutput("AdvancedSS_Ltbin")
-      
+      uiOutput("AdvancedSS_Ltbin"),
+      br(),
+      h5(p("Define plus group age. Default value is based on the female natural mortality value or the maximum age found in the age data file.")), 
+      h5(p("If you change this value here AND you are using age data, you will need to update the age data (and ageing error) to match the dimensions expressed here.")),
+      uiOutput("AdvancedSS_Nages")
+
      #  prettyCheckbox(
      #    inputId = "no_hess", label = "Turn off Hessian",
      #    shape = "round", outline = TRUE, status = "info"),    
@@ -707,10 +725,10 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       popify(uiOutput("AdvancedSS_nohess_user"),"Run -nohess option","Turning off the Hessian option skips over asymptotic variance and speeds the model up. Use this option to more quickly explore models. Estimate variance once you are done exploring."),
       popify(uiOutput("AdvancedSS_addcomms_user"),"Custom SS run commands","Click the advanced SS commands link above to get options. One interesting option is -hess_step which attempts to make the model gradient 0. This should be run once a final model is found."),
       popify(uiOutput("AdvancedSS_addcomms_comms_user"),"Custom SS run commands","Click the advanced SS commands link above to get options. One interesting option is -hess_step which attempts to make the model gradient 0. This should be run once a final model is found."),
-      uiOutput("AdvancedSS_noplots_user"),
-      popify(uiOutput("AdvancedSS_noestabs_user"),
-      popify(uiOutput("AdvancedSS_par_user"),"Maximum phase = 0","Setting maximum phase to 0 turns off all parameter estimation and is useful when forecasting catch into the future. Couple with using the ss.par file (see above option)."),
-      popify(uiOutput("AdvancedSS_phase0_user"),
+      popify(uiOutput("AdvancedSS_noplots_user"),"Output plots","Diagnostic and results plots are produced by default. This switch turns those plots off in case you want to speed up the model run."),
+      popify(uiOutput("AdvancedSS_noestabs_user"),"No Executive Summary tables","Executive Summary tables take time to make, but provide summary tables of the model. When exploring models, it is better to turn this off to speed up the model run."),
+      popify(uiOutput("AdvancedSS_par_user"),"Switch to use the ss.par file","The ss.par file contains all parameter values used in the previous model run. It can be handy to run models from the par file to confirm you have reached the best fit model. The par file can also be used to expedite forecasts by turning the maximum phase to zero (see next option) and using the par file."),
+      popify(uiOutput("AdvancedSS_phase0_user"),"Maximum phase = 0","Setting maximum phase to 0 turns off all parameter estimation and is useful when forecasting catch into the future. Couple with using the ss.par file (see above option)."),
       popify(uiOutput("AdvancedSS_datanew_user"),"Switch starter file to use the data_echo.ss_new file.","This file is a copy of the data file used in the last run. It has additional notes for inputs, and can be modified to run new scenarios, if desired."),
       popify(uiOutput("AdvancedSS_controlnew_user"),"Switch starter file to use the control.ss_new file.","This file is a copy of the control file used in the previous run, but starting values are the ending values of the previous model. Like the ss.par file, it can be used to run from where the last model finished, but also provides a convenient way to change other parameter specifications."),
       popify(uiOutput("AdvancedSS_forecastnew_user"),"Overwrite the forecast.ss file with the forecast.ss_new file.","This file is a copy of the forecast file used in the previous run. In the event you want to use this file, this switch will overwite the forecast file content with what is in the forecast.ss_new."),
@@ -759,27 +777,40 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     
     br(),
 
-    h4(strong("Select a folder to copy results")),
-    h5(p(em("Results are copied from the 'Scenarios' folder"))),
-    h5(p(em("Required to access results if using the online version"))),
-    shinyDirButton(
-     id="Modelout_dir",
-     label="Select model folder",
-     title="Choose folder to copy model scenario"
-     ),
+    # h4(strong("Select a folder to copy results")),
+    # h5(p(em("Results are copied from the 'Scenarios' folder"))),
+    # h5(p(em("Required to access results if using the online version"))),
+    # shinyDirButton(
+    #  id="Modelout_dir",
+    #  label="Select model folder",
+    #  title="Choose folder to copy model scenario"
+    #  ),
       )
       ),
 
+  h4(p(strong("Save session inputs before model run"))),
+  h5(p("Worried about losing your inputs from a crashed model? Click the 'save session inputs' button BEFORE running the model to save your inputs.")),
+  h5(p("To recovery those inputs, you can paste the link into another webpage. The SS-DL tool needs to be running to recovery another session. Note you will also need to reload data files to see the saved inputs.")),
+  h5(p("You can also retain the link to share or report inputs. Consider adding a text file with the link into any model run folders for future explorations.")),
+br(),
+  bookmarkButton(label="Save session inputs",
+      width="50%",
+      icon("copy"),
+      style="font-size:120%;border:2px solid;color:#FFFFFF;background:#005595"), 
+br(),
+br(),
       shinyjs::hidden(actionButton("run_SS",strong("Run Model"),
       width="100%",
       icon("circle-play"),
-      style="font-size:120%;border:2px solid;color:#FFFFFF;background:#658D1B")),
+      style="font-size:120%;border:2px solid;color:#FFFFFF;background:#5D9741")),
 
       shinyjs::hidden(actionButton("run_SSS",strong("Run SSS"),
       width="100%",
       icon("circle-play"),
-      style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192")),
-  
+      style="font-size:120%;border:2px solid;color:#FFFFFF; background:#5D9741")),
+    
+    br(),
+    br(),
 #################### 
 ### Other panels ###
 ####################
@@ -852,7 +883,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
   
 
     fluidRow(column(width=5,numericInput("iter", "How many iterations to run?", value=2000,min=1, max=1000000000000, step=1)),
-                column(width=5,numericInput("thin","Thinning (RWM only): # of iterations to keep?", value=1,min=1, max=1000000000, step=1))),
+                column(width=5,numericInput("thin","Thinning (RWM only): # of iterations to keep?", value=10,min=1, max=1000000000, step=10))),
     actionButton("run_adnuts",strong("Run model"),
         width="100%",
         icon("circle-play"),
@@ -1111,16 +1142,16 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
                          )
               ),
             br(),
-            h4("Relative spawning output"),
+            #h4("Relative spawning output"),
             tableOutput("SSout_relSB_table"),
             br(),
-            h4("Fishing intensity"),
+            #h4("Fishing intensity"),
             tableOutput("SSout_F_table"),
             br(),
-            h4("Estimated parameters"),
+            #h4("Estimated parameters"),
             tableOutput("Parameters_table"),
             br(),
-            h4("Time series"),
+            #h4("Time series"),
             tableOutput("SSout_table"),
             value=2),
 
@@ -1198,10 +1229,13 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
           
           tabPanel("Ensemble models",
             plotOutput("Ensemble_plots"),            
+            plotOutput("Ensemble_plots_SO_ts"),            
+            plotOutput("Ensemble_plots_Bratio_ts"),            
             value=7)
           ) 
    )
    )
 )
 )
+}
 

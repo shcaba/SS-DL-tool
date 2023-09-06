@@ -1784,12 +1784,44 @@ output$AdvancedSS_noplots<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_plots_RP<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "plot_RPs", label = "Add RPs to plots?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_plots_RP_inputs<- renderUI({ 
+    if(!is.null(input$plot_RPs)){       
+      if(input$plot_RPs){
+      fluidRow(column(width=12, textInput("plot_RPs_inputs", "Enter relative stock size target and limit reference points", value="0.4,0.25")))        
+      }
+    } 
+  }) 
+
 output$AdvancedSS_noplots_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_plots_tables", label = "Turn off plots",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
+  }) 
+
+output$AdvancedSS_plots_RP_user<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "plot_RPs", label = "Add RPs to plots?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_plots_RP_inputs_user<- renderUI({ 
+    if(!is.null(input$plot_RPs_user)){       
+      if(input$plot_RPs_user){
+      fluidRow(column(width=12, textInput("plot_RPs_inputs", "Enter target and limit reference points. Default is 0.4 and 0.25", value="0.4,0.25")))        
+      }
+    } 
   }) 
 
 output$AdvancedSS_noestabs<- renderUI({ 
@@ -2238,7 +2270,7 @@ L95<-reactive({
 ### LENGTH COMPS PLOTS ###
 ########################## 
 observeEvent(req(!is.null(rv.Lt$data)), {
-      shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions"}))
+      shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions. Sex categories: unknown sex = 0, females = 1 and males = 2."}))
   })
 
 observeEvent(req(!is.null(rv.Lt$data)), {
@@ -2325,11 +2357,11 @@ if(!is.null(rv.Lt$data))
 ### AGE PLOTS ###
 #################
 observeEvent(req(!is.null(rv.Age$data)), {
-    	shinyjs::show(output$marginal_age_comp_plots_label<-renderText({"Marginal age compositions"}))
+    	shinyjs::show(output$marginal_age_comp_plots_label<-renderText({"Marginal age compositions. Sex categories: unknown sex = 0, females = 1 and males = 2."}))
   })
 
 observeEvent(req(!is.null(rv.Age$data)), {
-      shinyjs::show(output$conditional_age_comp_plots_label<-renderText({"Conditional age at length"}))
+      shinyjs::show(output$conditional_age_comp_plots_label<-renderText({"Conditional age at length. Sex categories: unknown sex = 0, females = 1 and males = 2."}))
   })
 
   observeEvent(req(!is.null(rv.Age$data)), {
@@ -4737,7 +4769,8 @@ if(input$use_forecastnew)
       if(is.null(input$no_plots_tables))
         {      
           show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[4],text="Making plots")
-          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
+          RPs_4_plots<-as.numeric(trimws(unlist(strsplit(input$plot_RPs_inputs,","))))
+          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
         }
 
       if(is.null(input$no_tables))
@@ -4751,7 +4784,8 @@ if(input$use_forecastnew)
       {      
         #Make SS plots  
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[4],text="Making plots")
-        SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
+         RPs_4_plots<-as.numeric(trimws(unlist(strsplit(input$plot_RPs_inputs,","))))
+         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
       }
     }
 
@@ -4851,7 +4885,7 @@ if(input$use_forecastnew)
             Model.output<-SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[3],text="Making plots")
-         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
+         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=NA,minbthresh=NA)
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
          try(SSexecutivesummary(Model.output))                 
     }   

@@ -674,6 +674,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       popify(uiOutput("AdvancedSS_addcomms"),"Custom SS run commands","Click the advanced SS commands link above to get options. One interesting option is -hess_step which attempts to make the model gradient 0. This should be run once a final model is found."),
       popify(uiOutput("AdvancedSS_addcomms_comms"),"Custom SS run commands"),
       popify(uiOutput("AdvancedSS_noplots"),"Output plots","Diagnostic and results plots are produced by default. This switch turns those plots off in case you want to speed up the model run."),
+      popify(uiOutput("AdvancedSS_plots_RP"),"Target and limit reference points specification","Reference points are used to interpret the relative stock size plot compared to management objectives"),
+      popify(uiOutput("AdvancedSS_plots_RP_inputs"),"Enter a value between 0 and 1 for both","Enter NA if you do not want them plotted."),
       popify(uiOutput("AdvancedSS_noestabs"),"No Executive Summary tables","Executive Summary tables take time to make, but provide summary tables of the model. When exploring models, it is better to turn this off to speed up the model run."),
       popify(uiOutput("AdvancedSS_par"),"Switch to use the ss.par file","The ss.par file contains all parameter values used in the previous model run. It can be handy to run models from the par file to confirm you have reached the best fit model. The par file can also be used to expedite forecasts by turning the maximum phase to zero (see next option) and using the par file."),
       popify(uiOutput("AdvancedSS_phase0"),"Maximum phase = 0","Setting maximum phase to 0 turns off all parameter estimation and is useful when forecasting catch into the future. Couple with using the ss.par file (see above option)."),
@@ -724,6 +726,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       popify(uiOutput("AdvancedSS_addcomms_user"),"Custom SS run commands","Click the advanced SS commands link above to get options. One interesting option is -hess_step which attempts to make the model gradient 0. This should be run once a final model is found."),
       popify(uiOutput("AdvancedSS_addcomms_comms_user"),"Custom SS run commands","Click the advanced SS commands link above to get options. One interesting option is -hess_step which attempts to make the model gradient 0. This should be run once a final model is found."),
       popify(uiOutput("AdvancedSS_noplots_user"),"Output plots","Diagnostic and results plots are produced by default. This switch turns those plots off in case you want to speed up the model run."),
+      popify(uiOutput("AdvancedSS_plots_RP_user"),"Target and limit reference points specification","Reference points are used to interpret the relative stock size plot compared to management objectives"),
+      popify(uiOutput("AdvancedSS_plots_RP_inputs_user"),"Enter a value between 0 and 1 for both","Enter NA if you do not want them plotted."),
       popify(uiOutput("AdvancedSS_noestabs_user"),"No Executive Summary tables","Executive Summary tables take time to make, but provide summary tables of the model. When exploring models, it is better to turn this off to speed up the model run."),
       popify(uiOutput("AdvancedSS_par_user"),"Switch to use the ss.par file","The ss.par file contains all parameter values used in the previous model run. It can be handy to run models from the par file to confirm you have reached the best fit model. The par file can also be used to expedite forecasts by turning the maximum phase to zero (see next option) and using the par file."),
       popify(uiOutput("AdvancedSS_phase0_user"),"Maximum phase = 0","Setting maximum phase to 0 turns off all parameter estimation and is useful when forecasting catch into the future. Couple with using the ss.par file (see above option)."),
@@ -1083,12 +1087,24 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
             
           tabPanel("Data and Parameters",
               textOutput("catch_plots_label"),
+              tags$head(tags$style("#catch_plots_label{color: black;
+                                 font-size: 16px;
+                                 }")),
               uiOutput("Ctplot_it"),
               textOutput("lt_comp_plots_label"),
+              tags$head(tags$style("#lt_comp_plots_label{color: black;
+                                 font-size: 16px;
+                                 }")),
               uiOutput("Ltplot_it"),
               textOutput("marginal_age_comp_plots_label"),
+              tags$head(tags$style("#marginal_age_comp_plots_label{color: black;
+                                 font-size: 16px;
+                                 }")),
               uiOutput("Ageplot_it_marginal"),
               textOutput("conditional_age_comp_plots_label"),
+              tags$head(tags$style("#conditional_age_comp_plots_label{color: black;
+                                 font-size: 16px;
+                                 }")),
               uiOutput("Ageplot_it_cond"),
               #plotOutput("Ageplot"),
               textOutput("index_plots_label"),
