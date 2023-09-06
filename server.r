@@ -27,6 +27,7 @@ require(shinystan)
 require(gt)
 require(gtExtras)
 require(stringr)
+require(ggnewscale)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -2255,38 +2256,36 @@ if(!is.null(rv.Lt$data))
       #     rv.Lt$data$Fleet[rv.Lt$data$Fleet==xx]<-fleetnames.ct[xx]
       #   }
       #  }
-       rv.Lt$data %>%  
+       Lt.dat.plot<-rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
 		    mutate(Year = factor(year),
-		           name = as.numeric(gsub("[^0-9.-]", "", name)),
-               Lnu=-1,
-               L50_vline=if_else(is.na(L50()),-1,L50()),
-		           Linf_vline=if_else(is.na(Linf()),-1,Linf()))%>%		           
-               #Linf_m_vline=if_else(is.na(Linf_m_in()),-1,Linf_m_in())) %>%
-		    ggplot(aes(name, value, color=Year)) + 
-		    geom_line() + 
+		           name = as.numeric(gsub("[^0-9.-]", "", name)))
+       Lt.dat.plot.Linf<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="Linf")
+       Lt.dat.plot.L50<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="L50")
+       colnames(Lt.dat.plot.L50)<-colnames(Lt.dat.plot.Linf)<-c("year","fleet","sex","name","value","Year","vline","Label")
+       if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==0|Lt.dat.plot.Linf$sex==1]<-Linf()}
+       if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==2]<-Linf_m_in()}
+       if(!is.na(L50()))Lt.dat.plot.L50$vline[Lt.dat.plot.L50$sex==0|Lt.dat.plot.L50$sex==1]<-L50()
+        ggplot(Lt.dat.plot) + 
+		    geom_line(aes(name, value, color=Year)) + 
         #geom_col(position="dodge") + 
-		    geom_vline(xintercept = c(-1,L50()),
-                    linetype="dashed",
+		    geom_vline(data=Lt.dat.plot.L50,
+                    aes(xintercept = vline,linetype="L50"),
                     colour = "darkgreen",
-                    na.rm = TRUE,
-                    show.legend = TRUE)+
-        geom_vline(xintercept = c(-1,Linf()),
+                    na.rm = TRUE)+
+                    scale_linetype_manual(name = NULL, values = 3)+
+        new_scale("linetype") +
+        geom_vline(data=Lt.dat.plot.Linf,
+                    aes(xintercept = vline,linetype="Linf"),
                     colour = "#d26678",
-                    na.rm = TRUE,
-                    show.legend = TRUE)+
-        geom_vline(xintercept = c(-1,Linf_m_in()),
-                    colour = "blue",
-                    na.rm = TRUE,
-                    show.legend = TRUE)+
+                    na.rm = TRUE)+
+                    scale_linetype_manual(name = NULL, values = 1)+
         facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
-#        facet_wrap(sex~year, scales="free_y",ncol=5) + 
-		    #annotate(x=if_else(is.na(Linf()),-1,Linf()), y=+Inf, label= "Linf")+
-        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf",color="#d26678")+
-        annotate("text",x=if_else(is.na(Linf_m_in()),-1,Linf_m_in())*1.05, y=5, label= "Linf",color="blue")+
-        annotate("text",x=if_else(is.na(L50()),-1,L50())*1.1, y=5, label= "L50%",color="darkgreen")+
+#        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf",color="#d26678")+
+#        annotate("text",x=if_else(is.na(Linf_m_in()),-1,Linf_m_in())*1.05, y=5, label= "Linf",color="blue")+
+#        annotate("text",x=if_else(is.na(L50()),-1,L50())*1.1, y=5, label= "L50%",color="darkgreen")+
         xlab("Length bin") + 
 		    ylab("Frequency") + 
 		    scale_fill_viridis_d()+
