@@ -1793,11 +1793,11 @@ output$AdvancedSS_plots_RP<- renderUI({
   }) 
 
 output$AdvancedSS_plots_RP_inputs<- renderUI({ 
-    if(!is.null(input$plot_RPs)){       
-      if(input$plot_RPs){
-      fluidRow(column(width=12, textInput("plot_RPs_inputs", "Enter relative stock size target and limit reference points", value="0.4,0.25")))        
-      }
-    } 
+    #if(!is.null(input$plot_RPs)){       
+     # if(input$plot_RPs){
+      textInput("plot_RPs_inputs", "Plot target and limit reference points", value="0.4,0.25")        
+     # }
+    #} 
   }) 
 
 output$AdvancedSS_noplots_user<- renderUI({ 
@@ -1817,11 +1817,11 @@ output$AdvancedSS_plots_RP_user<- renderUI({
   }) 
 
 output$AdvancedSS_plots_RP_inputs_user<- renderUI({ 
-    if(!is.null(input$plot_RPs_user)){       
-      if(input$plot_RPs_user){
-      fluidRow(column(width=12, textInput("plot_RPs_inputs", "Enter target and limit reference points. Default is 0.4 and 0.25", value="0.4,0.25")))        
-      }
-    } 
+    #if(!is.null(input$plot_RPs_user)){       
+    #  if(input$plot_RPs_user){
+      textInput("plot_RPs_inputs", "Plot target and limit reference points", value="0.4,0.25")        
+     # }
+    #} 
   }) 
 
 output$AdvancedSS_noestabs<- renderUI({ 
@@ -3331,17 +3331,17 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
       ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),use_datlist = TRUE, datlist=data.file)       
     }
 
+   
+# if(input$use_datanew)
+#   {
+#     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
+#   }
 
-if(input$use_datanew)
-  {
-    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
-  }
-
-if(input$use_controlnew)
-  {
-    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
-    ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/control.ss_new"),use_datlist = TRUE, datlist=data.file) 
-  }
+# if(input$use_controlnew)
+#   {
+#     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
+#     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/control.ss_new"),use_datlist = TRUE, datlist=data.file) 
+#   }
 
 		# data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		# ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
@@ -3395,10 +3395,10 @@ if(input$Sel_choice=="Dome-shaped")
   {     
         checkmod<-1  #add object to verify no errors in inputs and model can be run
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
-  if(!input$use_par)
-  {
-    if(all(!input$use_datanew,!input$user_model))
-    {
+  #if(!input$use_par)
+  #{
+    #if(all(!input$use_datanew,!input$user_model))
+    #{
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
@@ -3860,13 +3860,13 @@ if(input$Sel_choice=="Dome-shaped")
     }
 
 		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/datafile.dat"),overwrite=TRUE)			
-  }
+  #}
 		####################### END DATA FILE #####################################
 ##################################################################################
 		####################### START CTL FILE ####################################
 		#Read, edit then write new CONTROL file
-    if(all(!input$use_controlnew,!input$user_model))
-    {
+    #if(all(!input$use_controlnew,!input$user_model))
+    # {
     #Change to 1 platoon 
     if(!is.null(input$GT1)){if(input$GT1){ctl.file$N_platoon<-1}}
     
@@ -4507,15 +4507,14 @@ if(input$Sel_choice=="Dome-shaped")
 			}
 
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)
-  }
-}
+  #}
+#}
 }
 }
 		####################### END CTL FILE ####################################
-if(exists("checkmod")|input$user_model)
-  {
-      starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
-#Use par file
+if(input$user_model)
+{
+  #Use par file
     if(input$use_par)
     {
       starter.file$init_values_src<-1
@@ -4543,21 +4542,30 @@ if(exists("checkmod")|input$user_model)
       starter.file$ctlfile<-"control.ss_new"
     }
 
+if(input$use_forecastnew)
+  {
+    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
+    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+  }
 
 #    if(!input$use_controlnew|is.null(input$use_controlnew))
  #   {
  #     if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
  #   }
 
+}
+
+if(exists("checkmod")|input$user_model)
+  {
+      starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
+
 #Phase 0
     if(input$use_phase0)
     {
       starter.file$last_estimation_phase<-0
     }
-    if(!input$use_par|is.null(input$use_par))
-    {
-      starter.file$last_estimation_phase<-6
-    }
+    #if(!input$use_par|is.null(input$use_par))
+    else{starter.file$last_estimation_phase<-10}
 
 	#Jitter selection 
 				starter.file$jitter_fraction<-0
@@ -4572,8 +4580,8 @@ if(exists("checkmod")|input$user_model)
 
 #Forecast file modfications
 #Reference points
-if(!input$use_forecastnew)
-{
+#if(is.null(input$use_forecastnew)|!input$use_forecastnew)
+#{
 forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss"))
 
 if(input$RP_choices){
@@ -4605,13 +4613,8 @@ if(input$Forecast_choice)
   }
 
 SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
-}
+#}
 
-if(input$use_forecastnew)
-  {
-    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
-    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
-  }
 
 ########
 	#Run Stock Synthesis and plot output
@@ -4740,7 +4743,7 @@ if(input$use_forecastnew)
 #       value = FALSE
 #     )
 #   })
- 				
+ 	 			
     if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")))
       {
       Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
@@ -4763,7 +4766,7 @@ if(input$use_forecastnew)
                Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
              }
          }
-      
+  
       data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new"))    
       #No plots or figures
       if(is.null(input$no_plots_tables))

@@ -1,6 +1,6 @@
 # Starter File
-SS_LO.dat
-SS_LO.ctl
+datafile.dat
+controlfile.ctl
 #lbSSpr_rec.ctl
 0 # 0=use init values in control file; 1=use ss.par
 ##############################################################
