@@ -5032,6 +5032,58 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
                       use_page_size_select = TRUE)
       })
 
+output$Sel_transform_table <- render_gt({
+#browser()
+Est.sel.tranformed<-Model.output$parameters[grep("Size_",Model.output$parameters$Label),c(2,3,8)]
+if(length(grep("peak_",Est.sel.tranformed$Label))>0)
+  {
+    Est.sel.peak<-Est.sel.tranformed$Value[grep("peak_",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("peak_",Est.sel.tranformed$Label)]<-Est.sel.peak
+    Est.sel.tranformed$Label[grep("peak_",Est.sel.tranformed$Label)]<-"Length at Peak Selectivity"
+  }
+
+if(length(grep("ascend_",rownames(Model.output$parameters)))>0)
+  {
+    Est.sel.Sel50<-Est.sel.tranformed$Value[grep("ascend_",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("ascend_",Est.sel.tranformed$Label)]<-Est.sel.peak-sqrt(-exp(Est.sel.Sel50)*log(0.5))
+    Est.sel.tranformed$Label[grep("ascend_",Est.sel.tranformed$Label)]<-"Length at 50% Selectivity"
+  }
+
+if(length(grep("top_logit",rownames(Model.output$parameters)))>0)
+  {
+    Est.sel.Decline1<-Est.sel.tranformed$Value[grep("top_logit",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("top_logit",Est.sel.tranformed$Label)]<-((max(data.file$lbin_vector)-Est.sel.peak-bin.width)/-exp(Est.sel.Decline1))+(Est.sel.peak+bin.width)
+    Est.sel.tranformed$Label[grep("top_logit",Est.sel.tranformed$Label)]<-"Length at 1st declining selectivity"
+  }
+
+if(length(grep("descend",rownames(Model.output$parameters)))>0)
+  {
+    Est.sel.Width<-Est.sel.tranformed$Value[grep("descend",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("descend",Est.sel.tranformed$Label)]<-exp(Est.sel.Width)
+    Est.sel.tranformed$Label[grep("descend",Est.sel.tranformed$Label)]<-"Width of declining selectivity"
+  }
+
+
+if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
+  {
+    Est.sel.Final<-Est.sel.tranformed$Value[grep("end_logit",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("end_logit",Est.sel.tranformed$Label)]<-(1/(1-exp(Est.sel.Final)))-0.000001
+    Est.sel.tranformed$Label[grep("end_logit",Est.sel.tranformed$Label)]<-"Selectivity at max bin size"
+  }
+  
+  Est.sel.tranformed<-mutate_if(Est.sel.tranformed,is.numeric, round, 3) 
+  gt(Est.sel.tranformed)%>%
+    tab_header(
+    title = "Transformed Selectivity Parameters",
+        subtitle = ""
+        ) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = c(Value))) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
+
+})
 } 	
 
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")))

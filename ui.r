@@ -236,6 +236,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
        ),
 
         h4(strong(em("Male"))),
+        h5("Enter male specific values. Otherwise, males are assumed equal to females"),
+        h5(em("If estimating females and wanting to match males to estimated female parameters, use the male offset option and set offsets to 0. This will ensure male values are equal to estimated female males. Otherwise, males will retain the initial female values.")),
         fluidRow(column(width=6,checkboxInput("male_parms_fix","Males specific values?",FALSE)),
                  column(width=6,checkboxInput("male_offset_fix","Males offset from females (log(m/f)?",FALSE))),
     #fluidRow(column(width=7, h3("Males specific values?")),column(width=2,checkboxInput("male_parms","Males specific values?",FALSE,width="150%"))),
@@ -316,6 +318,9 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     ),
  
          h4(strong(em("Male"))),
+         h5("Enter male specific values. Otherwise, males are assumed equal to females"),
+         h5(em("If estimating females and wanting to match males to estimated female parameters, use the male offset option and set offsets to 0. This will ensure male values are equal to estimated female males. Otherwise, males will retain the initial female values.")),
+
      fluidRow(column(width=6,checkboxInput("male_parms_est","Males specific values?",FALSE)),
                column(width=6,checkboxInput("male_offset_est","Males offset from females (log(m/f))?",FALSE))),
     #fluidRow(column(width=7, h3("Males specific values?")),column(width=2,checkboxInput("male_parms","Males specific values?",FALSE,width="150%"))),
@@ -1175,6 +1180,9 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
             br(),
             #h4("Estimated parameters"),
             tableOutput("Parameters_table"),
+            br(),
+            #Selectivity parameters transformed to use in the tool
+            tableOutput("Sel_transform_table"),
             br(),
             #h4("Time series"),
             tableOutput("SSout_table"),
