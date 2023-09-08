@@ -5067,7 +5067,7 @@ if(length(grep("descend",rownames(Model.output$parameters)))>0)
 if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
   {
     Est.sel.Final<-Est.sel.tranformed$Value[grep("end_logit",Est.sel.tranformed$Label)]
-    Est.sel.tranformed$Value[grep("end_logit",Est.sel.tranformed$Label)]<-(1/(1-exp(Est.sel.Final)))-0.000001
+    Est.sel.tranformed$Value[grep("end_logit",Est.sel.tranformed$Label)]<-(1/(1-exp(-Est.sel.Final)))-0.000001
     Est.sel.tranformed$Label[grep("end_logit",Est.sel.tranformed$Label)]<-"Selectivity at max bin size"
   }
   
