@@ -10,8 +10,8 @@ ui<-function(request){
 
 shinyUI(fluidPage(theme = "bootstrap.css",
   useShinyjs(),
-  titlePanel("Welcome to the Stock Synthesis data-limited tool (SS-DL tool)"),
-      h4(p(strong("This tool uses the Stock Synthesis framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
+  titlePanel("Welcome to the Stock Assessment Continuum Tool, powered by Stock Synthesis"),
+      h4(p(strong("(Formerly known as the Stock Synthesis Data-Limited (SS-DL) tool), this tool uses the",tags$a(href="https://github.com/nmfs-stock-synthesis/stock-synthesis", "Stock Synthesis"),"framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
       h5(p("Any suggested changes or requests? Please submit an issue with the recommendation" ,tags$a(href="https://github.com/shcaba/SS-DL-tool/issues", "here"))),
       br(),
 
@@ -806,7 +806,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     #  ),
       )
       ),
-
+shinyjs::hidden(wellPanel(id="SaveSession_panel",
   h4(p(strong("Save session inputs before model run"))),
   h5(p("Worried about losing your inputs from a crashed model? Click the 'save session inputs' button BEFORE running the model to save your inputs.")),
   h5(p("To recovery those inputs, you can paste the link into another webpage. The SS-DL tool needs to be running to recovery another session. Note you will also need to reload data files to see the saved inputs.")),
@@ -818,6 +818,7 @@ br(),
       style="font-size:120%;border:2px solid;color:#FFFFFF;background:#005595"), 
 br(),
 br(),
+)),
       shinyjs::hidden(actionButton("run_SS",strong("Run Model"),
       width="100%",
       icon("circle-play"),

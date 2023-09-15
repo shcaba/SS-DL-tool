@@ -430,6 +430,8 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
         
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")        
         
@@ -492,6 +494,8 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
         
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")        
   
@@ -550,6 +554,8 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
         
+        shinyjs::show("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")        
 
@@ -610,6 +616,8 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
         
+        shinyjs::show("SaveSession_panel")
+
         shinyjs::show("run_SSS")
         shinyjs::hide("run_SS")        
 
@@ -672,6 +680,8 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
    
+        shinyjs::show("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
@@ -735,6 +745,8 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::show("Scenario_panel")
 
         shinyjs::hide("panel_SSS_reps")
+
+        shinyjs::show("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
@@ -803,6 +815,8 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
 
         shinyjs::hide("panel_SSS_reps")
 
+        shinyjs::show("SaveSession_panel")
+        
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
@@ -865,10 +879,13 @@ observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
 
         shinyjs::hide("panel_SSS_reps")
 
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
         shinyjs::show("Modeff_panel")  
+
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -926,6 +943,8 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("Scenario_panel")
 
         shinyjs::hide("panel_SSS_reps")
+
+        shinyjs::hide("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
@@ -989,6 +1008,8 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
 
         shinyjs::hide("panel_SSS_reps")
 
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
@@ -1051,6 +1072,8 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 
         shinyjs::hide("panel_SSS_reps")
 
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
@@ -1112,6 +1135,8 @@ observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
 
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
+
+        shinyjs::hide("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
