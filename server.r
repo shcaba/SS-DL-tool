@@ -2100,10 +2100,16 @@ output$AdvancedSS_Ltbin <- renderUI({
     # } 
   }) 
 
+output$AdvancedSSS_Nages <- renderUI({ 
+      fluidRow(column(width=6, numericInput("Nages_in", "Plus group age",  
+                                              value=Nages(), min=0, max=10000, step=0.5))) 
+  }) 
+
 output$AdvancedSS_Nages <- renderUI({ 
       fluidRow(column(width=6, numericInput("Nages_in", "Plus group age",  
                                               value=Nages(), min=0, max=10000, step=0.5))) 
   }) 
+
 
 output$Profile_multi_values <- renderUI({ 
     #if(!is.null(input$multi_profile)){       
@@ -5058,7 +5064,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       })
 
 output$Sel_transform_table <- render_gt({
-#browser()
+
 Est.sel.tranformed<-Model.output$parameters[grep("Size_",Model.output$parameters$Label),c(2,3,8)]
 if(length(grep("peak_",Est.sel.tranformed$Label))>0)
   {

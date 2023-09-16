@@ -764,8 +764,10 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       uiOutput("AdvancedSS_Ctunits_SSS"),
       uiOutput("AdvancedSS_Ctunitsfleets_SSS"),
     h5(strong("Add additional growth platoons?")),
-      uiOutput("AdvancedSS_GT5_SSS")
-    
+      uiOutput("AdvancedSS_GT5_SSS"),
+      h5(strong(p("Define plus group age"))), 
+      h5("Default value is based on the female natural mortality value or the maximum age found in the age data file."), 
+      uiOutput("AdvancedSSS_Nages")    
       )
      ),
 

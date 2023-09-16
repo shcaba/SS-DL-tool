@@ -4,13 +4,13 @@
 1918 #_styr
 2016 #_endyr
 1 #_nseas
-12 #_months/season
-4 #_N_subseasons(even number, minimum is 2)
+12 #_months_per_seas
+2 #_Nsubseasons
 1 #_spawn_month
-2 #_Ngenders
-60 #_Nages=accumulator age
+2 #_Nsexes
+60 #_Nages
 1 #_N_areas
-2 #_Nfleets (including surveys)
+2 #_Nfleets
 #_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=ignore 
 #_survey_timing: -1=for use of catch-at-age to override the month value associated with a datum 
 #_fleet_area:  area the fleet/survey operates in 
