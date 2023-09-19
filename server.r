@@ -2101,7 +2101,7 @@ output$AdvancedSS_Ltbin <- renderUI({
   }) 
 
 output$AdvancedSSS_Nages <- renderUI({ 
-      fluidRow(column(width=6, numericInput("Nages_in", "Plus group age",  
+      fluidRow(column(width=6, numericInput("Nages_in_sss", "Plus group age",  
                                               value=Nages(), min=0, max=10000, step=0.5))) 
   }) 
 
@@ -2827,7 +2827,7 @@ print(1)
 		#Read, edit then write new DATA file
     data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
-		data.file$Nages<-input$Nages_in #Nages()
+    data.file$Nages<-input$Nages_in_sss #Nages()
 
 	#Catches
 		Catch.data<-rv.Ct$data
@@ -3638,7 +3638,7 @@ if(input$Sel_choice=="Dome-shaped")
 ######################
 #Age composition data#
 ######################
-    Age.comp.data<-rv.Age$data
+		Age.comp.data<-rv.Age$data
     Plus_age<-input$Nages_in
     if (is.null(Age.comp.data)) 
     {
