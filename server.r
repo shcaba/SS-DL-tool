@@ -3332,7 +3332,7 @@ SS.file.update<-observeEvent(input$run_SS,{
   #            progress$set(value = i)
   #            Sys.sleep(0.5)
   #          }
-browser()
+
 if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 #if(which(c(input$use_par,input$use_datanew,input$use_datanew_user,input$use_controlnew,input$use_controlnew_user,input$user_model))!=0)
   {
