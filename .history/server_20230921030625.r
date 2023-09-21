@@ -27,6 +27,7 @@ require(shinystan)
 require(gt)
 require(gtExtras)
 require(stringr)
+require(ggnewscale)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -429,6 +430,8 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
         
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")        
         
@@ -491,6 +494,8 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
         
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")        
   
@@ -549,6 +554,8 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
         
+        shinyjs::show("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")        
 
@@ -609,6 +616,8 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
         
+        shinyjs::show("SaveSession_panel")
+
         shinyjs::show("run_SSS")
         shinyjs::hide("run_SS")        
 
@@ -671,6 +680,8 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("OS_choice")
         shinyjs::show("Scenario_panel")
    
+        shinyjs::show("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
@@ -734,6 +745,8 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::show("Scenario_panel")
 
         shinyjs::hide("panel_SSS_reps")
+
+        shinyjs::show("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
@@ -802,6 +815,8 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
 
         shinyjs::hide("panel_SSS_reps")
 
+        shinyjs::show("SaveSession_panel")
+        
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
@@ -864,10 +879,13 @@ observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
 
         shinyjs::hide("panel_SSS_reps")
 
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
         shinyjs::show("Modeff_panel")  
+
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -925,6 +943,8 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("Scenario_panel")
 
         shinyjs::hide("panel_SSS_reps")
+
+        shinyjs::hide("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
@@ -988,6 +1008,8 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
 
         shinyjs::hide("panel_SSS_reps")
 
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
@@ -1050,6 +1072,8 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 
         shinyjs::hide("panel_SSS_reps")
 
+        shinyjs::hide("SaveSession_panel")
+
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
 
@@ -1111,6 +1135,8 @@ observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
 
         shinyjs::hide("OS_choice")
         shinyjs::hide("Scenario_panel")
+
+        shinyjs::hide("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
         shinyjs::hide("run_SS")
@@ -1783,12 +1809,44 @@ output$AdvancedSS_noplots<- renderUI({
       # } 
   }) 
 
+output$AdvancedSS_plots_RP<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "plot_RPs", label = "Add RPs to plots?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_plots_RP_inputs<- renderUI({ 
+    #if(!is.null(input$plot_RPs)){       
+     # if(input$plot_RPs){
+      textInput("plot_RPs_inputs", "Plot target and limit reference points", value="0.4,0.25")        
+     # }
+    #} 
+  }) 
+
 output$AdvancedSS_noplots_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_plots_tables", label = "Turn off plots",
         shape = "round", outline = TRUE, status = "info"))) 
       # } 
+  }) 
+
+output$AdvancedSS_plots_RP_user<- renderUI({ 
+    # if(input$advance_ss_click){ 
+        fluidRow(column(width=6, prettyCheckbox(
+        inputId = "plot_RPs", label = "Add RPs to plots?",
+        shape = "round", outline = TRUE, status = "info"))) 
+      # } 
+  }) 
+
+output$AdvancedSS_plots_RP_inputs_user<- renderUI({ 
+    #if(!is.null(input$plot_RPs_user)){       
+    #  if(input$plot_RPs_user){
+      textInput("plot_RPs_inputs", "Plot target and limit reference points", value="0.4,0.25")        
+     # }
+    #} 
   }) 
 
 output$AdvancedSS_noestabs<- renderUI({ 
@@ -2042,10 +2100,16 @@ output$AdvancedSS_Ltbin <- renderUI({
     # } 
   }) 
 
+output$AdvancedSSS_Nages <- renderUI({ 
+      fluidRow(column(width=6, numericInput("Nages_in_sss", "Plus group age",  
+                                              value=Nages(), min=0, max=10000, step=0.5))) 
+  }) 
+
 output$AdvancedSS_Nages <- renderUI({ 
       fluidRow(column(width=6, numericInput("Nages_in", "Plus group age",  
                                               value=Nages(), min=0, max=10000, step=0.5))) 
   }) 
+
 
 output$Profile_multi_values <- renderUI({ 
     #if(!is.null(input$multi_profile)){       
@@ -2131,7 +2195,7 @@ Linf<-reactive({
 
 Linf_m_in<-reactive({
     Linf_m_in<-NA
-    if(all(c(is.null(input$Linf_m),is.null(input$Linf_m_fix),is.null(input$Linf_m_mean),is.null(input$Linf_m_mean_sss)))) return(NULL)
+    #if(all(c(is.null(input$Linf_m),is.null(input$Linf_m_fix),is.null(input$Linf_m_mean),is.null(input$Linf_m_mean_sss)))) return(NULL)
     if(any(input$male_parms&!is.na(input$Linf_m))) {Linf_m_in<-input$Linf_m}
     if(any(input$male_parms_fix&!is.na(input$Linf_m_fix))) {Linf_m_in<-input$Linf_m_fix}
     if(any(input$male_parms_est&!is.na(input$Linf_m_mean))) {Linf_m_in<-input$Linf_m_mean}
@@ -2237,7 +2301,7 @@ L95<-reactive({
 ### LENGTH COMPS PLOTS ###
 ########################## 
 observeEvent(req(!is.null(rv.Lt$data)), {
-      shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions"}))
+      shinyjs::show(output$lt_comp_plots_label<-renderText({"Length compositions. Sex categories: unknown sex = 0, females = 1 and males = 2."}))
   })
 
 observeEvent(req(!is.null(rv.Lt$data)), {
@@ -2255,32 +2319,36 @@ if(!is.null(rv.Lt$data))
       #     rv.Lt$data$Fleet[rv.Lt$data$Fleet==xx]<-fleetnames.ct[xx]
       #   }
       #  }
-       rv.Lt$data %>%  
+       Lt.dat.plot<-rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
 		    pivot_longer(c(-year, -fleet, -sex)) %>%  
 		    mutate(Year = factor(year),
-		           name = as.numeric(gsub("[^0-9.-]", "", name)),
-               Lnu=-1,
-               L50_vline=if_else(is.na(L50()),-1,L50()),
-		           Linf_vline=if_else(is.na(Linf()),-1,Linf())) %>%
-		    ggplot(aes(name, value, color=Year)) + 
-		    geom_line() + 
+		           name = as.numeric(gsub("[^0-9.-]", "", name)))
+       Lt.dat.plot.Linf<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="Linf")
+       Lt.dat.plot.L50<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="L50")
+       colnames(Lt.dat.plot.L50)<-colnames(Lt.dat.plot.Linf)<-c("year","fleet","sex","name","value","Year","vline","Label")
+       if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==0|Lt.dat.plot.Linf$sex==1]<-Linf()}
+       if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==2]<-Linf_m_in()}
+       if(!is.na(L50()))Lt.dat.plot.L50$vline[Lt.dat.plot.L50$sex==0|Lt.dat.plot.L50$sex==1]<-L50()
+        ggplot(Lt.dat.plot) + 
+		    geom_line(aes(name, value, color=Year)) + 
         #geom_col(position="dodge") + 
-		    geom_vline(xintercept = c(-1,L50()),
-                    linetype="dashed",
-                    colour = "blue",
-                    na.rm = TRUE,
-                    show.legend = TRUE)+
-        geom_vline(xintercept = c(-1,Linf()),
-                    colour = "black",
-                    na.rm = TRUE,
-                    show.legend = TRUE)+
+		    geom_vline(data=Lt.dat.plot.L50,
+                    aes(xintercept = vline,linetype="L50"),
+                    colour = "darkgreen",
+                    na.rm = TRUE)+
+                    scale_linetype_manual(name = NULL, values = 3)+
+        new_scale("linetype") +
+        geom_vline(data=Lt.dat.plot.Linf,
+                    aes(xintercept = vline,linetype="Linf"),
+                    colour = "#d26678",
+                    na.rm = TRUE)+
+                    scale_linetype_manual(name = NULL, values = 1)+
         facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
-#        facet_wrap(sex~year, scales="free_y",ncol=5) + 
-		    #annotate(x=if_else(is.na(Linf()),-1,Linf()), y=+Inf, label= "Linf")+
-        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf")+
-        annotate("text",x=if_else(is.na(L50()),-1,L50())*1.1, y=5, label= "L50%",color="blue")+
+#        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf",color="#d26678")+
+#        annotate("text",x=if_else(is.na(Linf_m_in()),-1,Linf_m_in())*1.05, y=5, label= "Linf",color="blue")+
+#        annotate("text",x=if_else(is.na(L50()),-1,L50())*1.1, y=5, label= "L50%",color="darkgreen")+
         xlab("Length bin") + 
 		    ylab("Frequency") + 
 		    scale_fill_viridis_d()+
@@ -2320,11 +2388,11 @@ if(!is.null(rv.Lt$data))
 ### AGE PLOTS ###
 #################
 observeEvent(req(!is.null(rv.Age$data)), {
-    	shinyjs::show(output$marginal_age_comp_plots_label<-renderText({"Marginal age compositions"}))
+    	shinyjs::show(output$marginal_age_comp_plots_label<-renderText({"Marginal age compositions. Sex categories: unknown sex = 0, females = 1 and males = 2."}))
   })
 
 observeEvent(req(!is.null(rv.Age$data)), {
-      shinyjs::show(output$conditional_age_comp_plots_label<-renderText({"Conditional age at length"}))
+      shinyjs::show(output$conditional_age_comp_plots_label<-renderText({"Conditional age at length. Sex categories: unknown sex = 0, females = 1 and males = 2."}))
   })
 
   observeEvent(req(!is.null(rv.Age$data)), {
@@ -2759,7 +2827,7 @@ print(1)
 		#Read, edit then write new DATA file
     data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
-		data.file$Nages<-input$Nages_in #Nages()
+    data.file$Nages<-input$Nages_in_sss #Nages()
 
 	#Catches
 		Catch.data<-rv.Ct$data
@@ -3264,7 +3332,7 @@ SS.file.update<-observeEvent(input$run_SS,{
   #            progress$set(value = i)
   #            Sys.sleep(0.5)
   #          }
-
+browser()
 if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 #if(which(c(input$use_par,input$use_datanew,input$use_datanew_user,input$use_controlnew,input$use_controlnew_user,input$user_model))!=0)
   {
@@ -3294,17 +3362,17 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
       ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),use_datlist = TRUE, datlist=data.file)       
     }
 
+   
+# if(input$use_datanew)
+#   {
+#     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
+#   }
 
-if(input$use_datanew)
-  {
-    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
-  }
-
-if(input$use_controlnew)
-  {
-    data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
-    ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/control.ss_new"),use_datlist = TRUE, datlist=data.file) 
-  }
+# if(input$use_controlnew)
+#   {
+#     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")) 
+#     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/control.ss_new"),use_datlist = TRUE, datlist=data.file) 
+#   }
 
 		# data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat")) 
 		# ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file) 
@@ -3358,10 +3426,10 @@ if(input$Sel_choice=="Dome-shaped")
   {     
         checkmod<-1  #add object to verify no errors in inputs and model can be run
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
-  if(!input$use_par)
-  {
-    if(all(!input$use_datanew,!input$user_model))
-    {
+  #if(!input$use_par)
+  #{
+    #if(all(!input$use_datanew,!input$user_model))
+    #{
 		#Read, edit then write new DATA file
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
@@ -3570,7 +3638,7 @@ if(input$Sel_choice=="Dome-shaped")
 ######################
 #Age composition data#
 ######################
-    Age.comp.data<-rv.Age$data
+		Age.comp.data<-rv.Age$data
     Plus_age<-input$Nages_in
     if (is.null(Age.comp.data)) 
     {
@@ -3601,13 +3669,13 @@ if(input$Sel_choice=="Dome-shaped")
       if(input$Ageing_error_choice)
         {
           data.file$ageerror<-data.frame((rv.AgeErr$data))
- 
-       if(ncol(data.frame((rv.AgeErr$data)))-8!=(Plus_age+1))
+
+       if(ncol(data.frame((rv.AgeErr$data)))!=(Plus_age+1))
       {
          sendSweetAlert(
           session = session,
           title = "Ageing error data input warning",
-          text = "The ageing error does not match the max age in the age composition data. Please makes sure these match.",
+          text = "The maximum age in the ageing error matrix does not match the popuation age plus group. Please makes sure these match.",
           type = "error")
          remove_modal_spinner()
       }
@@ -3823,13 +3891,13 @@ if(input$Sel_choice=="Dome-shaped")
     }
 
 		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/datafile.dat"),overwrite=TRUE)			
-  }
+  #}
 		####################### END DATA FILE #####################################
 ##################################################################################
 		####################### START CTL FILE ####################################
 		#Read, edit then write new CONTROL file
-    if(all(!input$use_controlnew,!input$user_model))
-    {
+    #if(all(!input$use_controlnew,!input$user_model))
+    # {
     #Change to 1 platoon 
     if(!is.null(input$GT1)){if(input$GT1){ctl.file$N_platoon<-1}}
     
@@ -4470,15 +4538,14 @@ if(input$Sel_choice=="Dome-shaped")
 			}
 
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)
-  }
-}
+  #}
+#}
 }
 }
 		####################### END CTL FILE ####################################
-if(exists("checkmod")|input$user_model)
-  {
-      starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
-#Use par file
+if(input$user_model)
+{
+  #Use par file
     if(input$use_par)
     {
       starter.file$init_values_src<-1
@@ -4499,27 +4566,37 @@ if(exists("checkmod")|input$user_model)
     {
       if(!input$user_model|is.null(input$use_datanew)){starter.file$datfile<-"datafile.dat"}
     }
-browser()
+
 #Use controlnew file
     if(input$use_controlnew)
     {
       starter.file$ctlfile<-"control.ss_new"
     }
 
-    if(!input$use_controlnew|is.null(input$use_controlnew))
-    {
-      if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
-    }
+if(input$use_forecastnew)
+  {
+    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
+    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+  }
+
+#    if(!input$use_controlnew|is.null(input$use_controlnew))
+ #   {
+ #     if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
+ #   }
+
+}
+
+if(exists("checkmod")|input$user_model)
+  {
+      starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
 
 #Phase 0
     if(input$use_phase0)
     {
       starter.file$last_estimation_phase<-0
     }
-    if(!input$use_par|is.null(input$use_par))
-    {
-      starter.file$last_estimation_phase<-6
-    }
+    #if(!input$use_par|is.null(input$use_par))
+    else{starter.file$last_estimation_phase<-10}
 
 	#Jitter selection 
 				starter.file$jitter_fraction<-0
@@ -4534,8 +4611,8 @@ browser()
 
 #Forecast file modfications
 #Reference points
-if(!input$use_forecastnew)
-{
+#if(is.null(input$use_forecastnew)|!input$use_forecastnew)
+#{
 forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss"))
 
 if(input$RP_choices){
@@ -4567,13 +4644,8 @@ if(input$Forecast_choice)
   }
 
 SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
-}
+#}
 
-if(input$use_forecastnew)
-  {
-    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
-    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
-  }
 
 ########
 	#Run Stock Synthesis and plot output
@@ -4702,7 +4774,7 @@ if(input$use_forecastnew)
 #       value = FALSE
 #     )
 #   })
- 				
+ 	 			
     if(file.exists(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")))
       {
       Model.output<-try(SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
@@ -4725,13 +4797,14 @@ if(input$use_forecastnew)
                Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
              }
          }
-      
+  
       data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new"))    
       #No plots or figures
       if(is.null(input$no_plots_tables))
         {      
           show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[4],text="Making plots")
-          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
+          RPs_4_plots<-as.numeric(trimws(unlist(strsplit(input$plot_RPs_inputs,","))))
+          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
         }
 
       if(is.null(input$no_tables))
@@ -4745,7 +4818,8 @@ if(input$use_forecastnew)
       {      
         #Make SS plots  
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[4],text="Making plots")
-        SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
+         RPs_4_plots<-as.numeric(trimws(unlist(strsplit(input$plot_RPs_inputs,","))))
+         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
       }
     }
 
@@ -4845,7 +4919,7 @@ if(input$use_forecastnew)
             Model.output<-SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[3],text="Making plots")
-         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE)
+         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=NA,minbthresh=NA)
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
          try(SSexecutivesummary(Model.output))                 
     }   
@@ -4989,6 +5063,58 @@ if(input$use_forecastnew)
                       use_page_size_select = TRUE)
       })
 
+output$Sel_transform_table <- render_gt({
+
+Est.sel.tranformed<-Model.output$parameters[grep("Size_",Model.output$parameters$Label),c(2,3,8)]
+if(length(grep("peak_",Est.sel.tranformed$Label))>0)
+  {
+    Est.sel.peak<-Est.sel.tranformed$Value[grep("peak_",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("peak_",Est.sel.tranformed$Label)]<-Est.sel.peak
+    Est.sel.tranformed$Label[grep("peak_",Est.sel.tranformed$Label)]<-"Length at Peak Selectivity"
+  }
+
+if(length(grep("ascend_",rownames(Model.output$parameters)))>0)
+  {
+    Est.sel.Sel50<-Est.sel.tranformed$Value[grep("ascend_",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("ascend_",Est.sel.tranformed$Label)]<-Est.sel.peak-sqrt(-exp(Est.sel.Sel50)*log(0.5))
+    Est.sel.tranformed$Label[grep("ascend_",Est.sel.tranformed$Label)]<-"Length at 50% Selectivity"
+  }
+
+if(length(grep("top_logit",rownames(Model.output$parameters)))>0)
+  {
+    Est.sel.Decline1<-Est.sel.tranformed$Value[grep("top_logit",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("top_logit",Est.sel.tranformed$Label)]<-((max(data.file$lbin_vector)-Est.sel.peak-bin.width)/-exp(Est.sel.Decline1))+(Est.sel.peak+bin.width)
+    Est.sel.tranformed$Label[grep("top_logit",Est.sel.tranformed$Label)]<-"Length at 1st declining selectivity"
+  }
+
+if(length(grep("descend",rownames(Model.output$parameters)))>0)
+  {
+    Est.sel.Width<-Est.sel.tranformed$Value[grep("descend",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("descend",Est.sel.tranformed$Label)]<-exp(Est.sel.Width)
+    Est.sel.tranformed$Label[grep("descend",Est.sel.tranformed$Label)]<-"Width of declining selectivity"
+  }
+
+
+if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
+  {
+    Est.sel.Final<-Est.sel.tranformed$Value[grep("end_logit",Est.sel.tranformed$Label)]
+    Est.sel.tranformed$Value[grep("end_logit",Est.sel.tranformed$Label)]<-(1/(1-exp(-Est.sel.Final)))-0.000001
+    Est.sel.tranformed$Label[grep("end_logit",Est.sel.tranformed$Label)]<-"Selectivity at max bin size"
+  }
+  
+  Est.sel.tranformed<-mutate_if(Est.sel.tranformed,is.numeric, round, 3) 
+  gt(Est.sel.tranformed)%>%
+    tab_header(
+    title = "Transformed Selectivity Parameters",
+        subtitle = ""
+        ) %>%
+        tab_style(style = list(cell_text(weight = "bold")),
+                locations = cells_body(columns = c(Value))) %>%
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
+
+})
 } 	
 
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new")))
@@ -6002,7 +6128,6 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       #  # height = 300,
       #  style='height:60vh'))
       # },deleteFile=FALSE)
-
-
 })
 
+enableBookmarking(store = "server")

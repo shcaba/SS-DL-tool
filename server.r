@@ -3332,7 +3332,7 @@ SS.file.update<-observeEvent(input$run_SS,{
   #            progress$set(value = i)
   #            Sys.sleep(0.5)
   #          }
-
+browser()
 if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 #if(which(c(input$use_par,input$use_datanew,input$use_datanew_user,input$use_controlnew,input$use_controlnew_user,input$user_model))!=0)
   {
@@ -4545,6 +4545,7 @@ if(input$Sel_choice=="Dome-shaped")
 		####################### END CTL FILE ####################################
 if(input$user_model)
 {
+  starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
   #Use par file
     if(input$use_par)
     {
@@ -4583,6 +4584,7 @@ if(input$use_forecastnew)
  #   {
  #     if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
  #   }
+SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
 }
 
