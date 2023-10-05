@@ -5327,8 +5327,7 @@ observeEvent(input$run_Profiles,{
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
               param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))))),
-              use_prior_like = use_prior_like_in,
-              exe=ss3
+              use_prior_like = use_prior_like_in
               )
 
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
