@@ -100,7 +100,7 @@ if(OS.in=="Windows")
   {
     #command <- paste0(navigate," & ", "ss", ss.cmd) 
     #shell(command, invisible=TRUE, translate=TRUE)
-    run(path,exe="ss",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
+    run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
   } 
 if(OS.in=="Mac")  
   {
@@ -3434,6 +3434,7 @@ if(input$Sel_choice=="Dome-shaped")
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-input$Nages_in #Nages()
+    data.file$spawn_month<-input$rec_month 
     catch.fleets.Ct<-catch.fleets.Lt<-catch.fleets.Age<-NA
     if(!is.null(rv.Ct$data)){catch.fleets.Ct<-max(ncol(rv.Ct$data)-1)}
     if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets.Lt<-max(rv.Lt$data[,3])}
@@ -5205,7 +5206,7 @@ if(dir.exists(file.path(modeff.dir,modeff.name))==FALSE)
 if(input$Opt_mod==TRUE)
 {
   show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run initial optimization?"))
-  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="/ss -nox -mcmc 100 -hbf",OS.in=input$OS_choice)
+  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="/ss3 -nox -mcmc 100 -hbf",OS.in=input$OS_choice)
 
   remove_modal_spinner()
 }

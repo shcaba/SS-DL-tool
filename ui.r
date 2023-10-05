@@ -521,8 +521,9 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_prod_fixed",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
-     fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
-      column(width=6,numericInput("lnR0", "Log initial recruitment (ln(R0))", value=7,min=0.01, max=20, step=0.01))),
+     fluidRow(column(width=4,numericInput("h","Beverton-Holt Steepness", value=0.7,min=0.2, max=1, step=0.01)),
+      column(width=4,numericInput("lnR0", "Log initial recruitment", value=7,min=0.01, max=20, step=0.01)),
+      column(width=4,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
    #    ),
       )
     ),  
@@ -537,7 +538,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           numericInput("h_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
        ), 
-     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment (ln(R0))", value=7,min=0, max=20, step=0.01))),
+     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment", value=7,min=0, max=20, step=0.01)),
+           column(width=6,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
   )), 
 
     #      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_ss_prior","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
