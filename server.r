@@ -5317,7 +5317,7 @@ observeEvent(input$run_Profiles,{
        parmnames<-input$myPicker_LP
        parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
-       browser()
+       
        prior_like<-starter.file$prior_like
        use_prior_like_in<-rep(0,length(prof_parms_names))
        if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
