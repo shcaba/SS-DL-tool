@@ -5317,7 +5317,7 @@ observeEvent(input$run_Profiles,{
        parmnames<-input$myPicker_LP
        parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
-       
+       browser()
        prior_like<-starter.file$prior_like
        use_prior_like_in<-rep(0,length(prof_parms_names))
        if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
@@ -5327,12 +5327,14 @@ observeEvent(input$run_Profiles,{
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
               param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))))),
-              use_prior_like = use_prior_like_in
+              use_prior_like = use_prior_like_in,
+              exe=ss3
               )
 
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
                         run = "profile",
-                        profile_details = get))
+                        profile_details = get,
+                        exe="ss3"))
 
 
        try(run_diagnostics(mydir = mydir, model_settings = model_settings))
@@ -5670,7 +5672,8 @@ observeEvent(input$run_MultiProfiles,{
      scenario_in<-basename(pathRetro())
      model_settings = get_settings(settings = list(base_name = scenario_in,
                         run = "retro",
-                        retro_yrs = input$first_retro_year_in:input$final_retro_year_in))
+                        retro_yrs = input$first_retro_year_in:input$final_retro_year_in),
+                        exe="ss3")
      run_diagnostics(mydir = mydir_in, model_settings = model_settings)
     # tryCatch({
     #     run_diagnostics(mydir = mydir_in, model_settings = model_settings)
