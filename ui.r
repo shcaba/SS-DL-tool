@@ -11,7 +11,7 @@ ui<-function(request){
 shinyUI(fluidPage(theme = "bootstrap.css",
   useShinyjs(),
   titlePanel("Welcome to the Stock Assessment Continuum Tool, powered by Stock Synthesis"),
-      h4(p(strong("(Formerly known as the Stock Synthesis Data-Limited (SS-DL) tool), this tool uses the",tags$a(href="https://github.com/nmfs-stock-synthesis/stock-synthesis", "Stock Synthesis"),"framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
+      h4(p(strong("(Formerly known as the Stock Synthesis Data-Limited (SS-DL) tool), this tool uses the",tags$a(href="https://github.com/nmfs-stock-synthesis/ss3-source-code", "Stock Synthesis"),"framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
       h5(p("Any suggested changes or requests? Please submit an issue with the recommendation" ,tags$a(href="https://github.com/shcaba/SS-DL-tool/issues", "here"))),
       br(),
 
