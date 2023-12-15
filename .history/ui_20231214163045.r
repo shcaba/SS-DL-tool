@@ -11,8 +11,9 @@ ui<-function(request){
 shinyUI(fluidPage(theme = "bootstrap.css",
   useShinyjs(),
   titlePanel("Welcome to the Stock Assessment Continuum Tool, powered by Stock Synthesis"),
-      h4(p(strong("(Formerly known as the Stock Synthesis Data-Limited (SS-DL) tool), this tool uses the",tags$a(href="https://github.com/nmfs-stock-synthesis/stock-synthesis", "Stock Synthesis"),"framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
-      h5(p("Any suggested changes or requests? Please submit an issue with the recommendation" ,tags$a(href="https://github.com/shcaba/SS-DL-tool/issues", "here"))),
+      h4(p(strong("(Formerly known as the Stock Synthesis Data-Limited (SS-DL) tool), this tool uses the",tags$a(href="https://github.com/nmfs-stock-synthesis/stock-synthesis", "Stock Synthesis", target="_blank"),"framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
+      h5(p("Any suggested changes or requests? Please submit an issue with the recommendation" ,tags$a(href="https://github.com/shcaba/SS-DL-tool/issues", "here", target="_blank"))),
+      h5(p("Access the latest version of the Stock Synthesis manaul " ,tags$a(href="https://nmfs-ost.github.io/ss3-doc/", "here", target="_blank"))),
       br(),
 
 sidebarLayout(
@@ -210,7 +211,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
        tags$ul(tags$li(h5(p("The most likely parameters to have information from fishery-based lengths are Linf and M.")))),
        h5("Not all parameters need be estimated. Fix parameters by turning the phase negative (e.g., -1)."),
        h5("The concept of phasing allows the user to say when to start parameter estimate, thus spreading out parameter estimation instead of doing all estimation at once. For example, parameters in phase 1 will begin estimation immediately. Parameters in phase 2 will stay at their input value until phase 1 estimation is complete. All parameters in any earlier phases continue to be re-estimated in subsequent phases. Have questions on what phase to put parameters? Click", tags$a(href="javascript:window.open('Phasing_AEP.pdf', '_blank','width=600,height=400')", "here"), "for some suggestions."),
-       h5(p("Natural mortality is an often difficult value to obtain. Consider using",tags$a(href="https://connect.fisheries.noaa.gov/natural-mortality-tool/", "The Natural Mortality Tool"), " (click ctl+left on the link to open the tool) to either obtain natural mortality values or developing a prior for use in estimating natural mortality. The Github repository for it can be found",tags$a(href="https://github.com/shcaba/Natural-Mortality-Tool", "here")," (click ctl+left on the link to open the repo).")),
+       h5(p("Natural mortality is an often difficult value to obtain. Consider using",tags$a(href="https://connect.fisheries.noaa.gov/natural-mortality-tool/", "The Natural Mortality Tool", target="_blank"), " to either obtain natural mortality values or developing a prior for use in estimating natural mortality. The Github repository for it can be found",tags$a(href="https://github.com/shcaba/Natural-Mortality-Tool", "here", target="_blank"),".")),
        br(),
        h5("Load life history values instead of inputting them?"),
        uiOutput("LH_load_file"),       
@@ -521,8 +522,9 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_prod_fixed",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
-     fluidRow(column(width=6,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
-      column(width=6,numericInput("lnR0", "Log initial recruitment (ln(R0))", value=7,min=0.01, max=20, step=0.01))),
+     fluidRow(column(width=4,numericInput("h","Beverton-Holt Steepness", value=0.7,min=0.2, max=1, step=0.01)),
+      column(width=4,numericInput("lnR0", "Log initial recruitment", value=7,min=0.01, max=20, step=0.01)),
+      column(width=4,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
    #    ),
       )
     ),  
@@ -537,7 +539,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           numericInput("h_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
        ), 
-     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment (ln(R0))", value=7,min=0, max=20, step=0.01))),
+     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment", value=7,min=0, max=20, step=0.01)),
+           column(width=6,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
   )), 
 
     #      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_ss_prior","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
@@ -764,8 +767,10 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       uiOutput("AdvancedSS_Ctunits_SSS"),
       uiOutput("AdvancedSS_Ctunitsfleets_SSS"),
     h5(strong("Add additional growth platoons?")),
-      uiOutput("AdvancedSS_GT5_SSS")
-    
+      uiOutput("AdvancedSS_GT5_SSS"),
+      h5(strong(p("Define plus group age"))), 
+      h5("Default value is based on the female natural mortality value or the maximum age found in the age data file."), 
+      uiOutput("AdvancedSSS_Nages")    
       )
      ),
 

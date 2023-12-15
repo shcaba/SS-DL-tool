@@ -13,6 +13,7 @@ shinyUI(fluidPage(theme = "bootstrap.css",
   titlePanel("Welcome to the Stock Assessment Continuum Tool, powered by Stock Synthesis"),
       h4(p(strong("(Formerly known as the Stock Synthesis Data-Limited (SS-DL) tool), this tool uses the",tags$a(href="https://github.com/nmfs-stock-synthesis/stock-synthesis", "Stock Synthesis"),"framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
       h5(p("Any suggested changes or requests? Please submit an issue with the recommendation" ,tags$a(href="https://github.com/shcaba/SS-DL-tool/issues", "here"))),
+      h5(p("Access the latest version of the Stock Synthesis manaul " ,tags$a(href="https://nmfs-ost.github.io/ss3-doc/", "here"))),
       br(),
 
 sidebarLayout(
@@ -521,7 +522,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_prod_fixed",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
-     fluidRow(column(width=4,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
+     fluidRow(column(width=4,numericInput("h","Beverton-Holt Steepness", value=0.7,min=0.2, max=1, step=0.01)),
       column(width=4,numericInput("lnR0", "Log initial recruitment", value=7,min=0.01, max=20, step=0.01)),
       column(width=4,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
    #    ),
