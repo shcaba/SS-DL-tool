@@ -4922,7 +4922,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
             Model.output<-SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[3],text="Making plots")
-         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=NA,minbthresh=NA)
+         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
          try(SSexecutivesummary(Model.output))                 
     }   
