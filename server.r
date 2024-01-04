@@ -4922,7 +4922,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
             Model.output<-SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[3],text="Making plots")
-         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=NA,minbthresh=NA)
+         SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
          try(SSexecutivesummary(Model.output))                 
     }   
@@ -5322,7 +5322,7 @@ observeEvent(input$run_Profiles,{
        use_prior_like_in<-rep(0,length(prof_parms_names))
        if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
        mydir = dirname(pathLP())
-       get = get_settings_profile( parameters =  prof_parms_names,
+       get = get_settings_profile(parameters =  prof_parms_names,
               low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
@@ -5669,10 +5669,12 @@ observeEvent(input$run_MultiProfiles,{
      show_modal_spinner(spin="flower",color=wes_palettes$Royal1[1],text="Running retrospectives")
      mydir_in<-dirname(pathRetro())
      scenario_in<-basename(pathRetro())
-     model_settings = get_settings(settings = list(base_name = scenario_in,
+     model_settings = get_settings(settings = list(
+                        base_name = scenario_in,
                         run = "retro",
-                        retro_yrs = input$first_retro_year_in:input$final_retro_year_in),
+                        retro_yrs = input$first_retro_year_in:input$final_retro_year_in,
                         exe="ss3")
+                        )
      run_diagnostics(mydir = mydir_in, model_settings = model_settings)
     # tryCatch({
     #     run_diagnostics(mydir = mydir_in, model_settings = model_settings)
