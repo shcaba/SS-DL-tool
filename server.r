@@ -3390,7 +3390,7 @@ if(!input$user_model)
       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
       Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
       bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
-      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
+      minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
       #sel.inputs.comps<-length(Sel50)-length(Sel50_phase)-length(Selpeak)-length(Selpeak_phase)
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase))
       Nfleets<-max(ncol(rv.Ct$data)-1,rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3])
@@ -3404,7 +3404,7 @@ if(input$Sel_choice=="Dome-shaped")
       LtPeakFinal_phase<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_phase,","))))
       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
       FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
-      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
+      minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase),length(PeakDesc),length(PeakDesc_phase),length(LtPeakFinal),length(LtPeakFinal_phase),length(FinalSel),length(FinalSel_phase))
     }
 
@@ -4235,7 +4235,7 @@ if(input$Sel_choice=="Dome-shaped")
       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
       Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
       bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
-      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
+      minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
       sel.inputs.comps<-length(Sel50)-length(Sel50_phase)-length(Selpeak)-length(Selpeak_phase)
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase))
 
@@ -4255,7 +4255,7 @@ if(input$Sel_choice=="Dome-shaped")
       
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
-      ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin,Selpeak[1]+minmaxbin)
+      ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin[1],Selpeak[1]+minmaxbin[2])
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
       ctl.file$size_selex_parms[2,3:4]<- 15
       ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
@@ -4290,11 +4290,11 @@ if(input$Sel_choice=="Dome-shaped")
       LtPeakFinal_phase<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_phase,","))))
       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
       FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
-      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
+      minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
 			
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
-      ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin,Selpeak[1]+minmaxbin)
+      ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin[1],Selpeak[1]+minmaxbin[2])
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
 			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width+0.000000001))
 			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
@@ -4324,7 +4324,7 @@ if(input$Sel_choice=="Dome-shaped")
 				  if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){ctl.file$size_selex_types[,2]<-3}
         ctl.file$age_selex_types<-rbind(ctl.file$age_selex_types,ctl.file$age_selex_types[1,])
 				ctl.file$size_selex_parms<-rbind(ctl.file$size_selex_parms,ctl.file$size_selex_parms[1:6,])
-        minmaxbin<-min(Selpeak[i+1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[i+1])
+        minmaxbin<-c(Selpeak[i+1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[i+1])
 
         if(input$Sel_choice=="Logistic")
         {
@@ -4332,7 +4332,7 @@ if(input$Sel_choice=="Dome-shaped")
           ctl.file$size_selex_parms[6*i+3,7]<- Sel50_phase[i+1]
           #ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
           # ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
-          ctl.file$size_selex_parms[6*i+1,1:2]<-c(Selpeak[i+1]-minmaxbin,Selpeak[1]+minmaxbin)
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(Selpeak[i+1]-minmaxbin[1],Selpeak[1]+minmaxbin[2])
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
           ctl.file$size_selex_parms[6*i+2,3:4]<- 15
@@ -4346,7 +4346,7 @@ if(input$Sel_choice=="Dome-shaped")
         if(input$Sel_choice=="Dome-shaped")
         {
           # ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
-          ctl.file$size_selex_parms[6*i+1,1:2]<-c(Selpeak[i+1]-minmaxbin,Selpeak[1]+minmaxbin)
+          ctl.file$size_selex_parms[6*i+1,1:2]<-c(Selpeak[i+1]-minmaxbin[1],Selpeak[1]+minmaxbin[2])
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
           ctl.file$size_selex_parms[6*i+1,7]<- Selpeak_phase[i+1]
           ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width+0.000000001))
