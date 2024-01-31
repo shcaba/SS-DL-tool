@@ -5214,7 +5214,7 @@ if(input$Opt_mod==TRUE)
 #Set mcmc model
 show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
 chains <- parallel::detectCores()-1
-m<-"ss"
+m<-"ss3"
 p<-file.path(modeff.dir,modeff.name)
 #Run MCMC model with either rwm or nuts
  if(input$ModEff_choice=="RWM")
