@@ -105,7 +105,7 @@ if(OS.in=="Windows")
 if(OS.in=="Mac")  
   {
     
-    command <- c(paste("cd", path), "chmod +x ./ss_osx",paste("./ss_osx", ss.cmd)) 
+    command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
     system(paste(command, collapse=";"),invisible=TRUE)
     
     #command <- paste0(path,"/./ss_mac", ss.cmd) 
@@ -113,7 +113,7 @@ if(OS.in=="Mac")
   } 
 if(OS.in=="Linux") 
   {
-    command <- c(paste("cd", path), "chmod +x ./ss_linux",paste("./ss_linux", ss.cmd)) 
+    command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
     system(paste(command, collapse=";"), invisible=TRUE)
   }   
 }  
@@ -4226,7 +4226,7 @@ if(input$Sel_choice=="Dome-shaped")
 					ctl.file$max_bias_adj<-input$BiasC							#Max bias adjustment				
 				}
 			}
-browser()
+
 		#SELECTIVITY
     #Length Selectivity
       if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){ctl.file$size_selex_types[2]<-3} #Change to recognize discard fishery
@@ -4922,6 +4922,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
             Model.output<-SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[3],text="Making plots")
+         RPs_4_plots<-as.numeric(trimws(unlist(strsplit(input$plot_RPs_inputs,","))))
          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
          try(SSexecutivesummary(Model.output))                 
@@ -5214,7 +5215,7 @@ if(input$Opt_mod==TRUE)
 #Set mcmc model
 show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
 chains <- parallel::detectCores()-1
-m<-"ss"
+m<-"ss3"
 p<-file.path(modeff.dir,modeff.name)
 #Run MCMC model with either rwm or nuts
  if(input$ModEff_choice=="RWM")
@@ -5393,7 +5394,12 @@ observeEvent(input$run_MultiProfiles,{
        par.df <- fread(input$file_multi_profile$datapath,check.names=FALSE,data.table=FALSE)
        L <- readLines(input$file_multi_profile$datapath, n = 1)
        if(grepl(";", L)) {par.df <- read.csv2(input$file_multi_profile$datapath,check.names=FALSE)}
-       SS_parm_names<-rownames(ref.model$parameters)[c(23:24,1,3,4:6,13,15:18)]
+       fullctlfile <- file.path(refdir, "control.ss_new")
+       ctl <- readLines(fullctlfile)
+       ctltable <- SS_parlines(ctlfile = fullctlfile)
+       allnames <- ctltable[["Label"]]
+       SS_parm_names <- allnames[c(23:24,1,3,4:6,13,15:18)] 
+       #SS_parm_names<-rownames(ref.model$parameters)[c(23:24,1,3,4:6,13,15:18)]
        parmnames_vec<-c("lnR0","Steepness","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        parmnames<-colnames(par.df)
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
@@ -5428,26 +5434,28 @@ observeEvent(input$run_MultiProfiles,{
         profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = ctlfile.in,
+          oldctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
           extras = "-nohess",
           prior_check=FALSE,
+          exe = "ss3",
           show_in_console = TRUE
         )        
       }
-
+       
       if(input$Hess_multi_like==TRUE)
       {
         profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = ctlfile.in,
+          oldctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
           prior_check=TRUE,
+          exe = "ss3",
           show_in_console = TRUE
         )
       }

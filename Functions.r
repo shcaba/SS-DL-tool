@@ -821,6 +821,10 @@ if (plot.figs[6] == 1) {
 
 }
 
+###############################
+### Multi-parameter profile ###
+###############################
+
 profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lifecycle::deprecated(), 
   newctlfile = "control_modified.ss", linenum = NULL, string = NULL, 
   profilevec = NULL, usepar = FALSE, globalpar = FALSE, parlinenum = NULL, 
@@ -943,7 +947,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
       " profile(..., usepar = TRUE).")
   }
   if (usepar) {
-    file.copy("ss.par", "parfile_original_backup.sso")
+    file.copy(paste(exe,".par"), "parfile_original_backup.sso")
   }
   for (i in whichruns) {
     newrepfile <- paste("Report", i, ".sso", sep = "")
@@ -974,7 +978,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
           par <- readLines("parfile_original_backup.sso")
         }
         else {
-          par <- readLines("ss.par")
+          par <- readLines(paste0(exe,".par"))
         }
         for (ipar in 1:npars) {
           if (!is.null(parstring)) {
@@ -1000,7 +1004,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
         par <- c(par, "#", note)
         message(paste0(note, collapse = "\n"))
         writeLines(par, paste0("ss_input_par", i, ".ss"))
-        writeLines(par, "ss.par")
+        writeLines(par, paste0(exe,".par"))
       }
       if (file.exists(stdfile)) {
         file.remove(stdfile)
@@ -1035,7 +1039,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
           ".sso", sep = ""), overwrite = overwrite)
         file.copy("admodel.hes", paste("admodel", i, 
           ".hes", sep = ""), overwrite = overwrite)
-        file.copy("ss.par", paste("ss.par_", i, ".sso", 
+        file.copy(paste0(exe,".par"), paste(paste0(exe,".par_"), i, ".sso", 
           sep = ""), overwrite = overwrite)
       }
     }
@@ -1053,3 +1057,4 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
     stop("Error: no good Report.sso files created in profile")
   }
 }
+

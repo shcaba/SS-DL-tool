@@ -5429,26 +5429,28 @@ observeEvent(input$run_MultiProfiles,{
         profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = ctlfile.in,
+          oldctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
           extras = "-nohess",
           prior_check=FALSE,
+          exe = "ss3",
           show_in_console = TRUE
         )        
       }
-
+       
       if(input$Hess_multi_like==TRUE)
       {
         profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = ctlfile.in,
+          oldctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
           prior_check=TRUE,
+          exe = "ss3",
           show_in_console = TRUE
         )
       }
@@ -5481,42 +5483,7 @@ observeEvent(input$run_MultiProfiles,{
     colnames(likes_non0_par.min)<-c(par.df[,1],"Label")
     like.comps.plot<-reshape2::melt(likes_non0_par.min,id = "Label")
 
-    #Lengths
-    likes_length<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Length_like",]
-    likes_length_short<-likes_length[,3:ncol(likes_length)]
-    likes_length_non0<-likes_length_non0.min<-data.frame(model=likes_length[,1],likes_length_short[,colSums(likes_length[,3:ncol(likes_length)])!=0])
-    likes_length_non0$model<-likes_length_non0.min$model<-as.numeric(par.df[,1])
-    for(ii in 2:ncol(likes_length_non0))
-    {
-      likes_length_non0.min[,ii]<-likes_length_non0[,ii]-min(likes_length_non0.min[,ii])
-    }
-    likes_length_non0.min.melt<-reshape2::melt(likes_length_non0.min,id.vars="model")
-
-    #Ages
-    likes_age<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Age_like",]
-    likes_age_short<-likes_age[,3:ncol(likes_age)]
-    likes_age_non0<-likes_age_non0.min<-data.frame(model=likes_age[,1],likes_age_short[,colSums(likes_age[,3:ncol(likes_age)])!=0])
-    likes_age_non0$model<-likes_age_non0.min$model<-as.numeric(par.df[,1])
-    for(ii in 2:ncol(likes_age_non0))
-    {
-      likes_age_non0.min[,ii]<-likes_age_non0[,ii]-min(likes_age_non0.min[,ii])
-    }
-    likes_age_non0.min.melt<-reshape2::melt(likes_age_non0.min,id.vars="model")
-
-    #Survey
-    likes_survey<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Surv_like",]
-    likes_survey_short<-likes_survey[,3:ncol(likes_survey)]
-    likes_survey_non0<-likes_survey_non0.min<-data.frame(model=likes_survey[,1],likes_survey_short[,colSums(likes_survey[,3:ncol(likes_survey)])!=0])
-    likes_survey_non0$model<-likes_survey_non0.min$model<-as.numeric(par.df[,1])
-    for(ii in 2:ncol(likes_survey_non0))
-    {
-      likes_survey_non0.min[,ii]<-likes_survey_non0[,ii]-min(likes_survey_non0.min[,ii])
-    }
-    likes_survey_non0.min.melt<-reshape2::melt(likes_survey_non0.min,id.vars="model")
-
-
     #Plots
-    #Components
     LC.plot<-ggplot(like.comps.plot,aes(variable,value,group=Label,color=Label))+
       geom_point(size=5)+
       geom_line(lwd=1.2)+
@@ -5527,8 +5494,21 @@ observeEvent(input$run_MultiProfiles,{
                        breaks =par.df[,1], 
                        labels = paste0(par.df[,1],"\n",par.df[,2]))
     ggsave(paste0(profile_dir,"/","like_component_profile.png"),plot=LC.plot,width=10,height=10,units="in")
-    
+
     #Lengths
+    likes_length<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Length_like",]
+    if(nrow(likes_length)>0)
+    {
+      likes_length_short<-likes_length[,3:ncol(likes_length)]
+      likes_length_non0<-likes_length_non0.min<-data.frame(model=likes_length[,1],likes_length_short[,colSums(likes_length[,3:ncol(likes_length)])!=0])
+      likes_length_non0$model<-likes_length_non0.min$model<-as.numeric(par.df[,1])
+      for(ii in 2:ncol(likes_length_non0))
+      {
+        likes_length_non0.min[,ii]<-likes_length_non0[,ii]-min(likes_length_non0.min[,ii])
+      }
+      likes_length_non0.min.melt<-reshape2::melt(likes_length_non0.min,id.vars="model")
+    
+    #Plots
     LC_lt.plot<-ggplot(likes_length_non0.min.melt,aes(model,value,group=variable,color=variable))+
       geom_point(size=5)+
       geom_line(lwd=1.2)+
@@ -5540,8 +5520,26 @@ observeEvent(input$run_MultiProfiles,{
                        labels = paste0(par.df[,1],"\n",par.df[,2])) 
     ggsave(paste0(profile_dir,"/","length_component_profile.png"),plot=LC_lt.plot,width=10,height=10,units="in")
 
+
+    }
+
+
+browser()
     #Ages
-    LC_age.plot<-ggplot(likes_age_non0.min.melt,aes(model,value,group=variable,color=variable))+
+    likes_age<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Age_like",]
+    if(nrow(likes_age)>0)
+    {
+      likes_age_short<-likes_age[,3:ncol(likes_age)]
+      likes_age_non0<-likes_age_non0.min<-data.frame(model=likes_age[,1],likes_age_short[,colSums(likes_age[,3:ncol(likes_age)])!=0])
+      likes_age_non0$model<-likes_age_non0.min$model<-as.numeric(par.df[,1])
+      for(ii in 2:ncol(likes_age_non0))
+      {
+        likes_age_non0.min[,ii]<-likes_age_non0[,ii]-min(likes_age_non0.min[,ii])
+      }
+        likes_age_non0.min.melt<-reshape2::melt(likes_age_non0.min,id.vars="model")
+    
+    #Plots
+        LC_age.plot<-ggplot(likes_age_non0.min.melt,aes(model,value,group=variable,color=variable))+
       geom_point(size=5)+
       geom_line(lwd=1.2)+
       theme(legend.position = c(0.8, 0.8))+
@@ -5551,8 +5549,22 @@ observeEvent(input$run_MultiProfiles,{
                          breaks =par.df[,1], 
                          labels = paste0(par.df[,1],"\n",par.df[,2])) 
       ggsave(paste0(profile_dir,"/","age_component_profile.png"),plot=LC_age.plot,width=10,height=10,units="in")
+    }
 
     #Survey
+    likes_survey<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Surv_like",]
+    if(nrow(likes_survey)>0)
+    {
+      likes_survey_short<-likes_survey[,3:ncol(likes_survey)]
+      likes_survey_non0<-likes_survey_non0.min<-data.frame(model=likes_survey[,1],likes_survey_short[,colSums(likes_survey[,3:ncol(likes_survey)])!=0])
+      likes_survey_non0$model<-likes_survey_non0.min$model<-as.numeric(par.df[,1])
+      for(ii in 2:ncol(likes_survey_non0))
+      {
+        likes_survey_non0.min[,ii]<-likes_survey_non0[,ii]-min(likes_survey_non0.min[,ii])
+      }
+      likes_survey_non0.min.melt<-reshape2::melt(likes_survey_non0.min,id.vars="model")
+    
+    #Plot
     LC_survey.plot<-ggplot(likes_survey_non0.min.melt,aes(model,value,group=variable,color=variable))+
       geom_point(size=5)+
       geom_line(lwd=1.2)+
@@ -5563,6 +5575,7 @@ observeEvent(input$run_MultiProfiles,{
                          breaks =par.df[,1], 
                          labels = paste0(par.df[,1],"\n",par.df[,2])) 
       ggsave(paste0(profile_dir,"/","survey_component_profile.png"),plot=LC_survey.plot,width=10,height=10,units="in")
+    }
 
 
     #This reactive object is needed to get the plots to work

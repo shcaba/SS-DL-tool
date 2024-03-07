@@ -105,7 +105,7 @@ if(OS.in=="Windows")
 if(OS.in=="Mac")  
   {
     
-    command <- c(paste("cd", path), "chmod +x ./ss_osx",paste("./ss_osx", ss.cmd)) 
+    command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
     system(paste(command, collapse=";"),invisible=TRUE)
     
     #command <- paste0(path,"/./ss_mac", ss.cmd) 
@@ -113,7 +113,7 @@ if(OS.in=="Mac")
   } 
 if(OS.in=="Linux") 
   {
-    command <- c(paste("cd", path), "chmod +x ./ss_linux",paste("./ss_linux", ss.cmd)) 
+    command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
     system(paste(command, collapse=";"), invisible=TRUE)
   }   
 }  
@@ -3390,7 +3390,7 @@ if(!input$user_model)
       Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
       Selpeak_phase<-as.numeric(trimws(unlist(strsplit(input$Selpeak_phase,","))))
       bin.width<-data.file$lbin_vector[2]-data.file$lbin_vector[1]
-      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
+      minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
       #sel.inputs.comps<-length(Sel50)-length(Sel50_phase)-length(Selpeak)-length(Selpeak_phase)
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase))
       Nfleets<-max(ncol(rv.Ct$data)-1,rv.Lt$data[,3],rv.Age$data[,3],rv.Index$data[,3])
@@ -3404,7 +3404,7 @@ if(input$Sel_choice=="Dome-shaped")
       LtPeakFinal_phase<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_phase,","))))
       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
       FinalSel_phase<-as.numeric(trimws(unlist(strsplit(input$FinalSel_phase,","))))
-      minmaxbin<-min(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
+      minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase),length(PeakDesc),length(PeakDesc_phase),length(LtPeakFinal),length(LtPeakFinal_phase),length(FinalSel),length(FinalSel_phase))
     }
 
@@ -4226,7 +4226,7 @@ if(input$Sel_choice=="Dome-shaped")
 					ctl.file$max_bias_adj<-input$BiasC							#Max bias adjustment				
 				}
 			}
-browser()
+
 		#SELECTIVITY
     #Length Selectivity
       if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){ctl.file$size_selex_types[2]<-3} #Change to recognize discard fishery
@@ -4294,7 +4294,7 @@ browser()
 			
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
-      ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin[1],Selpeak[1]+minmaxbin[1])
+      ctl.file$size_selex_parms[1,1:2]<-c(Selpeak[1]-minmaxbin[1],Selpeak[1]+minmaxbin[2])
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
 			ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width+0.000000001))
 			ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
@@ -4922,6 +4922,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
             Model.output<-SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[3],text="Making plots")
+         RPs_4_plots<-as.numeric(trimws(unlist(strsplit(input$plot_RPs_inputs,","))))
          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
          try(SSexecutivesummary(Model.output))                 
@@ -5214,7 +5215,7 @@ if(input$Opt_mod==TRUE)
 #Set mcmc model
 show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
 chains <- parallel::detectCores()-1
-m<-"ss"
+m<-"ss3"
 p<-file.path(modeff.dir,modeff.name)
 #Run MCMC model with either rwm or nuts
  if(input$ModEff_choice=="RWM")
@@ -5437,7 +5438,8 @@ observeEvent(input$run_MultiProfiles,{
           show_in_console = TRUE
         )        
       }
-
+browser()
+       
       if(input$Hess_multi_like==TRUE)
       {
         profile <- profile_multi(

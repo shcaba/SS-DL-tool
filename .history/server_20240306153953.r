@@ -105,7 +105,7 @@ if(OS.in=="Windows")
 if(OS.in=="Mac")  
   {
     
-    command <- c(paste("cd", path), "chmod +x ./ss_osx",paste("./ss_osx", ss.cmd)) 
+    command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
     system(paste(command, collapse=";"),invisible=TRUE)
     
     #command <- paste0(path,"/./ss_mac", ss.cmd) 
@@ -113,7 +113,7 @@ if(OS.in=="Mac")
   } 
 if(OS.in=="Linux") 
   {
-    command <- c(paste("cd", path), "chmod +x ./ss_linux",paste("./ss_linux", ss.cmd)) 
+    command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
     system(paste(command, collapse=";"), invisible=TRUE)
   }   
 }  
@@ -4922,6 +4922,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
             Model.output<-SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
           }
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[3],text="Making plots")
+         RPs_4_plots<-as.numeric(trimws(unlist(strsplit(input$plot_RPs_inputs,","))))
          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
          try(SSexecutivesummary(Model.output))                 
@@ -5428,26 +5429,28 @@ observeEvent(input$run_MultiProfiles,{
         profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = ctlfile.in,
+          oldctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
           extras = "-nohess",
           prior_check=FALSE,
+          exe = "ss3",
           show_in_console = TRUE
         )        
       }
-
+       
       if(input$Hess_multi_like==TRUE)
       {
         profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = ctlfile.in,
+          oldctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
           prior_check=TRUE,
+          exe = "ss3",
           show_in_console = TRUE
         )
       }
