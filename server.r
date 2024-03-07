@@ -5523,8 +5523,6 @@ observeEvent(input$run_MultiProfiles,{
 
     }
 
-
-browser()
     #Ages
     likes_age<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Age_like",]
     if(nrow(likes_age)>0)
