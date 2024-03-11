@@ -2438,7 +2438,7 @@ observeEvent(req(!is.null(rv.Age$data)), {
       # if (is.null(rv.Age$data)) return(NULL)  
       if (nrow(Cond_ages)==0) return(NULL)  
         
-        Cond_ages_plots<-melt(Cond_ages[,c(1,3,4,7,9:ncol(Cond_ages))],id.vars=c("Year","Fleet","Sex","Lbin_hi"))
+        Cond_ages_plots<-reshape2::melt(Cond_ages[,c(1,3,4,7,9:ncol(Cond_ages))],id.vars=c("Year","Fleet","Sex","Lbin_hi"))
         Cond_ages_plots_pos<-subset(Cond_ages_plots,value>0)
 
         ggplot(Cond_ages_plots_pos,aes(x=as.numeric(variable),y=as.numeric(Lbin_hi),color=Year))+
