@@ -13,7 +13,8 @@ shinyUI(fluidPage(theme = "bootstrap.css",
   titlePanel("Welcome to the Stock Assessment Continuum Tool, powered by Stock Synthesis (version 3.30.22.1)"),
       h4(p(strong("(Formerly known as the Stock Synthesis Data-Limited (SS-DL) tool), this tool uses the",tags$a(href="https://github.com/nmfs-stock-synthesis/stock-synthesis", "Stock Synthesis", target="_blank"),"framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
       h5(p("Any suggested changes or requests? Please submit an issue with the recommendation" ,tags$a(href="https://github.com/shcaba/SS-DL-tool/issues", "here", target="_blank"))),
-      h5(p("Access the latest version of the Stock Synthesis manaul " ,tags$a(href="https://nmfs-ost.github.io/ss3-doc/", "here", target="_blank"))),
+      h5(p("Access the latest version of the Stock Synthesis manual " ,tags$a(href="https://nmfs-ost.github.io/ss3-doc/", "here", target="_blank"))),
+      h5(p("Watch a talk on how to use the SAC tool and the concept of the stock assessment continuum " ,tags$a(href="https://www.youtube.com/watch?v=NFJPoFJ9qyo", "here", target="_blank"))),
       br(),
 
 sidebarLayout(
