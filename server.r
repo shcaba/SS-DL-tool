@@ -326,7 +326,7 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
 #Throw an error if fleets are not consecutively represented in all loaded data sets.
 observeEvent(req(any(!is.null(rv.Ct$data),!is.null(rv.Lt$data),!is.null(rv.Age$data),!is.null(rv.Index$data))),{
   ct.flt<-lt.flt<-age.flt<-index.flt<-NA
-  if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)))}
+  if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
   if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
   if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
   if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
@@ -1228,6 +1228,16 @@ output$Model_dims2 <- renderUI({
 # 		}
 # })
 
+output$Wt_fleet_Ct <- renderUI({ 
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}    
+      fluidRow(column(width=10,textInput("Wt_fleet_Ct","Relative catch values",value=paste(rep(1,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))
+	}) 
+
+
 #Load life history values via csv
 output$LH_load_file <- renderUI({ 
     if(!is.null(input$LH_in_file)){       
@@ -1614,52 +1624,92 @@ output$Male_parms_inputs_WL_SSS<- renderUI({
 
 #Selectivity paramters
 output$Sel_parms1 <- renderUI({ 
-    fluidRow(column(width=8, textInput("Sel50", "Length at 50% Selectivity",value="")), 
-            column(width=4, textInput("Sel50_phase", "Est. phase", value="")))     
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}    
+    fluidRow(column(width=8, textInput("Sel50", "Length at 50% Selectivity",value=paste(rep(NA,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            column(width=4, textInput("Sel50_phase", "Est. phase", value=paste(rep(3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))     
 	}) 
  
 output$Sel_parms2<- renderUI({ 
-    	fluidRow(column(width=8, textInput("Selpeak", "Length at Peak Selectvity", value="")), 
-            	 column(width=4, textInput("Selpeak_phase", "Est. phase", value=""))) 
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
+fluidRow(column(width=8, textInput("Selpeak", "Length at Peak Selectvity", value=paste(rep(NA,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            	 column(width=4, textInput("Selpeak_phase", "Est. phase", value=paste(rep(3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
 	}) 
  
 output$Sel_parms3 <- renderUI({ 
-  		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, textInput("PeakDesc", "Length at 1st declining selectivity",value="10000")), 
-            	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value=""))) 
+  		if(input$Sel_choice=="Dome-shaped"){ 	
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
+    	fluidRow(column(width=8, textInput("PeakDesc", "Length at 1st declining selectivity",value=paste(rep("10000",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value=paste(rep(-3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
  		} 
 	}) 
  
 output$Sel_parms4 <- renderUI({ 
  		if(input$Sel_choice=="Dome-shaped"){ 			 
-	    fluidRow(column(width=8, textInput("LtPeakFinal", "Width of declining selectivity",value="0.0001")), 
-	             column(width=4, textInput("LtPeakFinal_phase", "Est. phase",value="")))    			 
+	    ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
+      fluidRow(column(width=8, textInput("LtPeakFinal", "Width of declining selectivity",value=paste(rep("0.0001",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+	             column(width=4, textInput("LtPeakFinal_phase", "Est. phase",value=paste(rep(-3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))    			 
  		} 
 	}) 
  
 output$Sel_parms5 <- renderUI({ 
- 		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value="0.99999")), 
-            	column(width=4, textInput("FinalSel_phase", "Est. phase",value=""))) 
+ 		if(input$Sel_choice=="Dome-shaped"){
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]} 			 
+    	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value=paste(rep("0.99999",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            	column(width=4, textInput("FinalSel_phase", "Est. phase",paste(rep(-3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
  		} 
 	}) 
 
 output$Sel_parms1_sss <- renderUI({ 
-    fluidRow(column(width=6, textInput("Sel50_sss", "Length at 50% Selectivity",value="")), 
-            column(width=6, textInput("Selpeak_sss", "Length at Peak Selectvity", value="")))     
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]} 			 
+    fluidRow(column(width=6, textInput("Sel50_sss", "Length at 50% Selectivity",value=paste(rep(NA,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            column(width=6, textInput("Selpeak_sss", "Length at Peak Selectvity", value=paste(rep(NA,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))     
   }) 
  
  
 output$Sel_parms2_sss <- renderUI({ 
       if(input$Sel_choice_sss=="Dome-shaped"){       
-      fluidRow(column(width=6, textInput("PeakDesc_sss", "Length at 1st declining selectivity",value="10000")), 
-               column(width=6, textInput("LtPeakFinal_sss", "Width of declining selectivity",value="0.0001"))) 
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]} 			 
+      fluidRow(column(width=6, textInput("PeakDesc_sss", "Length at 1st declining selectivity",value=paste(rep("10000",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+               column(width=6, textInput("LtPeakFinal_sss", "Width of declining selectivity",value=paste(rep("0.0001",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
     } 
   }) 
  
 output$Sel_parms3_sss <- renderUI({ 
     if(input$Sel_choice_sss=="Dome-shaped"){       
-      fluidRow(column(width=8, textInput("FinalSel_sss", "Selectivity at max bin size",value="0.99999"))) 
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]} 			 
+      fluidRow(column(width=8, textInput("FinalSel_sss", "Selectivity at max bin size",value=paste(rep("0.99999",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
     } 
   }) 
 			
@@ -2265,6 +2315,20 @@ L95<-reactive({
     L95
   })
 
+lt.bins.sels<-reactive({
+  Lt.dat.sel<-rv.Lt$data
+  lt.bins.freq<-Lt.dat.sel[,6:ncol(Lt.dat.sel)]
+  lt.bins.out<-as.numeric(colnames(lt.bins.freq))
+  Sel_mode.out<-mapply(function(x) lt.bins.out[as.numeric(lt.bins.freq[x,])==max(as.numeric(lt.bins.freq[x,]))][1],x=1:nrow(lt.bins.freq))
+  Sel_init.out<-mapply(function(x) lt.bins.out[as.numeric(lt.bins.freq[x,])>0][1],x=1:nrow(lt.bins.freq))
+  lt.bins.sel50<-lt.bins.sel95<-Lt.dat.sel[,1:5]
+  lt.bins.sel50$Sel<-(Sel_init.out+Sel_mode.out)/2
+  lt.bins.sel50$SelType<-"Sel50"
+  lt.bins.sel95$Sel<-Sel_mode.out
+  lt.bins.sel95$SelType<-"Sel95"
+  lt.bins.sels<-rbind(lt.bins.sel50,lt.bins.sel95)
+  lt.bins.sels
+ })
 
 #############
 ### PLOTS ###
@@ -2305,10 +2369,13 @@ observeEvent(req(!is.null(rv.Lt$data)), {
   })
 
 observeEvent(req(!is.null(rv.Lt$data)), {
+      shinyjs::show(output$lt_comp_sel_plots_label<-renderText({"Suggested selectivity starting values based on length compositions by year. Lines are loess smoothers. Sel95 is based on the model of the composition; Sel50 is based on the midpoint of the mode and first size of recorded lengths. Changes in values over time could be indicative of changes in selectivity, recruitment events, sampling representativeness, or other factors, and should be thought through when specifying selectivity for each fleet. These plots are informative to the behavior of the ascending limb of selectivity. More infomration is needed to specify the possibility of a descending limb (and thus form of the selectivity)."}))
+  })
+
+observeEvent(req(!is.null(rv.Lt$data)), {
 output$Ltplot_it<-renderUI({
 if(!is.null(rv.Lt$data))
 {  
-  
   output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
 		  #  if(!is.null(rv.Ct$data))
@@ -2357,7 +2424,23 @@ if(!is.null(rv.Lt$data))
       plotOutput("Ltplot")
     }
   })
-	})
+	    output$Ltplot_it_sel<-renderUI({
+    if(!is.null(rv.Lt$data))
+    {  
+        output$LtSelplot<-renderPlot({ 
+        if (is.null(rv.Lt$data)) return(NULL) 
+        ggplot(lt.bins.sels())+ 
+          geom_point(aes(Year,Sel,col=SelType))+
+          guides(color = guide_legend(title = " ")) +
+          geom_smooth(method=loess,se=FALSE,aes(Year,Sel,col=SelType))+
+          facet_grid(~Fleet, scales="free_y",labeller = label_both)+
+            xlab("Year") + 
+            ylab("Size (cm)") + 
+            scale_fill_viridis_d()
+      })
+    }
+      })
+  })
 
 # observeEvent(req(!is.null(input$file1)), {
 # 		output$Ltplot<-renderPlot({

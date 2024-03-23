@@ -98,7 +98,7 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         h5(em("The relative catch contribution needs specification with multiple length-only fleets")),
         h5(em("Example: Two fleets, with fleet 2 catching 2 times the amount as fleet 1, the entry would be 1,2.")),
         h5(em("Each entry will be relative to the highest value.")),
-        fluidRow(column(width=10,textInput("Wt_fleet_Ct","Relative catch values",value=""))),
+        uiOutput("Wt_fleet_Ct"),
       )
     ),
     
@@ -992,7 +992,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
     h4(strong("Retrospective comparisons and plots")),
     h5(em("Retrospecitive modelling means sequentially removing one year of data up to a specified number of years (e.g., -10 years).")),
     h5(em("To make these comparisons, choose first the directory containing models, then the models to compare.")),
-    h5(em("A time series plot of comparisons are shown in the main panel to the right for the follwing model outputs:")),  
+    h5(em("A time series plot of comparisons are shown in the main panel to the right for the following model outputs:")),  
     tags$ul(tags$li(h5(p(em("Spawning output"))))),
     tags$ul(tags$li(h5(p(em("Relative spawning output"))))),
     tags$ul(tags$li(h5(p(em("Recruitment"))))),
@@ -1120,6 +1120,11 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
                                  font-size: 16px;
                                  }")),
               uiOutput("Ltplot_it"),
+              textOutput("lt_comp_sel_plots_label"),
+              tags$head(tags$style("#lt_comp_sel_plots_label{color: black;
+                                 font-size: 16px;
+                                 }")),
+              uiOutput("Ltplot_it_sel"),
               textOutput("marginal_age_comp_plots_label"),
               tags$head(tags$style("#marginal_age_comp_plots_label{color: black;
                                  font-size: 16px;
