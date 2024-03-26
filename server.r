@@ -5426,22 +5426,23 @@ observeEvent(input$run_Profiles,{
        parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        
-       prior_like<-starter.file$prior_like
-       use_prior_like_in<-rep(0,length(prof_parms_names))
-       if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
+      #  prior_like<-starter.file$prior_like
+      #  use_prior_like_in<-rep(0,length(prof_parms_names))
+      #  if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
        mydir = dirname(pathLP())
        get = get_settings_profile(parameters =  prof_parms_names,
               low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
-              param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))))),
-              use_prior_like = use_prior_like_in
+              param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,","))))))
+              #use_prior_like = use_prior_like_in
               )
 
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
                         run = "profile",
                         profile_details = get,
-                        exe="ss3"))
+                        exe="ss3",
+                        prior_check = FALSE))
 
 
        try(run_diagnostics(mydir = mydir, model_settings = model_settings))
