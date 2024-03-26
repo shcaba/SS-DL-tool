@@ -9,7 +9,7 @@ require(data.table)
 require(tidyr)
 require(rlist)
 require(viridis)
-require(sss)
+#require(sss)
 require(shinyWidgets)
 require(shinyFiles)
 require(HandyCode)
@@ -28,6 +28,7 @@ require(gt)
 require(gtExtras)
 require(stringr)
 require(ggnewscale)
+
 #require(geomtextpath)
 
 #require(paletteer)
@@ -36,6 +37,7 @@ require(ggnewscale)
 #devtools::load_all("C:/Users/Jason.Cope/Documents/Github/nwfscDiag")
 
 source('Functions.r',local = FALSE)
+source('SSS.r',local = FALSE)
 
 theme_report <- function(base_size = 11) {
 
@@ -1622,6 +1624,10 @@ output$Male_parms_inputs_WL_SSS<- renderUI({
     	}
 	})
 
+output$status_year<- renderUI({
+fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=input$endyr,min=1, max=3000, step=1)))
+})
+
 #Selectivity paramters
 output$Sel_parms1 <- renderUI({ 
       ct.flt<-lt.flt<-age.flt<-index.flt<-NA
@@ -1755,7 +1761,7 @@ output$Rec_options5 <- renderUI({
 
 output$Rec_options6 <- renderUI({ 
     if(input$rec_choice){ 
-          fluidRow(column(width=6, selectInput("RecDevChoice","Recruit deviation option",c("1: Devs sum to zero","2: Simple deviations","3: deviation vector","4: option 3 plus penalties"),selected="1: Devs sum to zero"))) 
+          fluidRow(column(width=6, selectInput("RecDevChoice","Recruit deviation option",c("1: Devs sum to zero","2: Simple deviations","3: deviation vector","4: option 3 plus penalties"),selected="3: deviation vector"))) 
     	} 
 	})  
 
@@ -3244,7 +3250,9 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
     sss.prior.name<-c("no prior","symmetric beta","beta","normal","truncated normal","lognormal","truncated lognormal","uniform")
     sss.prior.type<-c(-1,1,2,0,10,3,30,4)
+    #browser()
     Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$Depl_mean_sss,input$Depl_SD_sss)
+    
     h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_mean_sss,input$h_SD_sss)
     if(!input$male_offset_SSS)
     {
@@ -3271,7 +3279,22 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     }
       show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
 
+
 #Run SSS
+        if(is.na(input$Depl_mean_sss)|input$Depl_mean_sss<0)
+      {
+      #Throw warning if not enough selectivity inputs
+         sendSweetAlert(
+          session = session,
+          title = "Stock Status input missing",
+          text = "Please check to see if you have provided an input for relatives stock status and that it is > 0.",
+          type = "error")
+         remove_modal_spinner()
+         #shiny::stopApp()
+      }
+
+else
+  {
   SSS.out<-SSS(paste0("Scenarios/",input$Scenario_name),
       file.name=c("sss_example.dat","sss_example.ctl"),
       reps=input$SSS_reps,
@@ -3374,6 +3397,7 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
     })  
   }
     remove_modal_spinner()
+  }
 })
 
 ###############

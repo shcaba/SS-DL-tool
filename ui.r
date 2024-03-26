@@ -484,7 +484,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_stock_status",
     h4(strong("Relative stock status")),
       #wellPanel(
-         fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=NA,min=1000, max=3000, step=1))),
+         uiOutput("status_year"),
+#         fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=NA,min=1000, max=3000, step=1))),
          dropdownButton(
           selectInput("Depl_prior_sss","Prior type for relative stock status",c("beta","lognormal","truncated normal","uniform","no prior")),
           numericInput("Depl_mean_sss", "Mean", value=NA,min=0.001, max=1, step=0.001),
