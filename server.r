@@ -28,7 +28,8 @@ require(gt)
 require(gtExtras)
 require(stringr)
 require(ggnewscale)
-
+require(future)
+require(parallel)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -4990,7 +4991,12 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       {
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[1],text="Run jitters")
          #file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.exe"),paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),overwrite = FALSE)
-         jits<-jitter(
+         if(input$jitter_parallel)
+         {
+          ncores <- parallel::detectCores() - 1
+          future::plan(future::multisession, workers = ncores)
+         }
+         jits<-r4ss::jitter(
                       dir=paste0(getwd(),"/Scenarios/",input$Scenario_name),
                       Njitter=input$Njitter,
                       printlikes = TRUE,
@@ -5000,8 +5006,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
                       extras = "-nohess"
                       )
          
-         profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
-         profilesummary <- SSsummarize(profilemodels)
+         profilemodels <- r4ss::SSgetoutput(dirvec=paste0(getwd(),"Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
+         profilesummary <- r4ss::SSsummarize(profilemodels)
          minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)],na.rm=TRUE)
          #Find best fit model
          index.minlikes<-c(1:length(minlikes))[minlikes]

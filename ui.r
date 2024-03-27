@@ -642,14 +642,17 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
    ), 
     #Jitter inputs
 #    shinyjs::hidden(wellPanel(id="panel_SS_jitter1",
-    shinyjs::hidden(wellPanel(id="panel_SS_jitter",
+     shinyjs::hidden(wellPanel(id="panel_SS_jitter",
      fluidRow(column(width=10,checkboxInput("jitter_choice","Jitter starting values?",FALSE))),
               uiOutput("Jitter_value"),
               h5("Jittering refers to changing the input starting values."),
               h5("Jittering provides a quick way to adjust starting values for two main purposes:"),
                 tags$ul(tags$li(h5(p("Start the model at different values to assist model convergence.")))),
                 tags$ul(tags$li(h5(p("Validate global versus local model convergence. This requires running many models at different jittered starting values to make sure a lower minimized likelihood value is not found. If a lower likelihood value is found, that would be considered the best fit model.")))),
-              h5("Run just 1 jitter value to find a converged model. Then run multiple jittered models to confrim that model is the best fit model."),
+              h5("Run just 1 jitter value to find a converged model. Then run multiple jittered models to confirm that model is the best fit model."),
+      fluidRow(column(width=10,checkboxInput("jitter_parallel","Run jitters in parallel?",FALSE))),
+              h5("Runs jitters in parallel. Works well if running many jitters. It can run if your machine has only a couple cores, but works best if you have access to a machine or virtual machine with more cores."),
+              h5("See ",a("r4ss::jitter()", href = "https://github.com/r4ss/r4ss/blob/main/R/jitter.R", target="_blank")," for more information or type `?r4ss::jitter()` in your R console")
           )
       ),
 

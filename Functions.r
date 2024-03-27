@@ -829,7 +829,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
   newctlfile = "control_modified.ss", linenum = NULL, string = NULL, 
   profilevec = NULL, usepar = FALSE, globalpar = FALSE, parlinenum = NULL, 
   parstring = NULL, saveoutput = TRUE, overwrite = TRUE, whichruns = NULL, 
-  prior_check = TRUE, read_like = TRUE, exe = "ss", verbose = TRUE, 
+  prior_check = TRUE, read_like = TRUE, exe = "ss3", verbose = TRUE, 
   ...) 
 {
   orig_wd <- getwd()
@@ -1012,7 +1012,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
       if (file.exists("Report.sso")) {
         file.remove("Report.sso")
       }
-      run(dir = dir, verbose = verbose, exe = exe, ...)
+      r4ss::run(dir = dir, verbose = verbose, exe = exe, ...)
       converged[i] <- file.exists(stdfile)
       onegood <- FALSE
       if (read_like && file.exists("Report.sso") & file.info("Report.sso")$size > 
