@@ -104,7 +104,6 @@ if(OS.in=="Windows")
     #command <- paste0(navigate," & ", "ss", ss.cmd) 
     #shell(command, invisible=TRUE, translate=TRUE)
     r4ss::run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
-    exe <- "ss3"
   } 
 if(OS.in=="Mac")  
   {
