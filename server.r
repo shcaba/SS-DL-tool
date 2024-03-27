@@ -144,12 +144,11 @@ rc <- function(n,alpha=1){
   rich.vector <- apply(rgb.m, 1, function(v) rgb(v[1], v[2], v[3], alpha=alpha))
 }
 
-
 doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
 #UPDATED: - input e and f on 0 to 1 scal and transfrom to logit scale
 #         - changed bin width in peak2 calculation
 #         - updated index of sel when j2 < length(x)
-#   - renamed input parameters, cannot have same names as the logitstic function
+#   - renamed input parameters, cannot have same names as the logistic function
 #         - function not handling f < -1000 correctly
           x<-seq(1,Selpeak+Selpeak,1)
           bin_width <- x[2] - x[1]
@@ -4988,6 +4987,10 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     }
     
   #Run multiple jitters
+    if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
+    if(input$OS_choice=="Mac"){os_exe <- "ss3_osx"} 
+    if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
+      
     if(input$jitter_choice)
     {
       if(input$Njitter>0)
@@ -5068,7 +5071,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
          #R-run to get new best fit model
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[2],text="Re-run best model post-jitters")
-         file.copy(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
+         file.copy(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss3.par_",(index.minlikes[1]-1),".sso"),paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss3.par"),overwrite = TRUE)
          #file.rename(paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),paste0("Scenarios/",input$Scenario_name,"/ss.exe"),overwrite = FALSE)
              starter.file$init_values_src<-1
              starter.file$jitter_fraction<-0
@@ -5365,7 +5368,7 @@ if(dir.exists(file.path(modeff.dir,modeff.name))==FALSE)
 if(input$Opt_mod==TRUE)
 {
   show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run initial optimization?"))
-  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="/ss3 -nox -mcmc 100 -hbf",OS.in=input$OS_choice)
+  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="-nox -mcmc 100 -hbf",OS.in=input$OS_choice)
 
   remove_modal_spinner()
 }
@@ -5493,7 +5496,7 @@ observeEvent(input$run_Profiles,{
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
                         run = "profile",
                         profile_details = get,
-                        exe="ss3",
+                        exe=os_exe,
                         prior_check = FALSE))
 
 
@@ -5595,7 +5598,7 @@ observeEvent(input$run_MultiProfiles,{
           profilevec = par.df,
           extras = "-nohess",
           prior_check=FALSE,
-          exe = "ss3",
+          exe = os_exe,
           show_in_console = TRUE
         )        
       }
@@ -5610,7 +5613,7 @@ observeEvent(input$run_MultiProfiles,{
           string = prof_parms_names,
           profilevec = par.df,
           prior_check=TRUE,
-          exe = "ss3",
+          exe = os_exe,
           show_in_console = TRUE
         )
       }
