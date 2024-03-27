@@ -5009,7 +5009,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
                       jitter_fraction=input$jitter_fraction,
                       init_values_src=0,
                       verbose=FALSE,
-                      exe = exe,
+                      exe = os_exe,
                       extras = "-nohess"
                       )
          
