@@ -14,6 +14,6 @@ library(devtools)
 devtools::install_github("shcaba/SSS", build_vignettes = TRUE)
 
 install.packages("remotes")
-remotes::install_github("r4ss/r4ss")
+remotes::install_github("r4ss/r4ss", ref = "try_fix_jitter_dir_issue")
 remotes::install_github("chantelwetzel-noaa/HandyCode")
 remotes::install_github("nwfsc-assess/nwfscDiag")
