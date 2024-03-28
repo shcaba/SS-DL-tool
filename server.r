@@ -102,7 +102,7 @@ if(OS.in=="Windows")
   {
     #command <- paste0(navigate," & ", "ss", ss.cmd) 
     #shell(command, invisible=TRUE, translate=TRUE)
-    run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
+    r4ss::run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
   } 
 if(OS.in=="Mac")  
   {
@@ -1815,7 +1815,7 @@ output$AdvancedSS_nohess<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_hess", label = "Turn off variance estimation (speeds up runs)",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -1823,7 +1823,7 @@ output$AdvancedSS_nohess_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_hess_user", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
   
@@ -1885,7 +1885,7 @@ output$AdvancedSS_noplots_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_plots_tables", label = "Turn off plots",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -1909,7 +1909,7 @@ output$AdvancedSS_noestabs<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_tables", label = "No exectutive summary tables",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -2327,12 +2327,15 @@ lt.bins.sels<-reactive({
   lt.bins.out<-as.numeric(colnames(lt.bins.freq))
   Sel_mode.out<-mapply(function(x) lt.bins.out[as.numeric(lt.bins.freq[x,])==max(as.numeric(lt.bins.freq[x,]))][1],x=1:nrow(lt.bins.freq))
   Sel_init.out<-mapply(function(x) lt.bins.out[as.numeric(lt.bins.freq[x,])>0][1],x=1:nrow(lt.bins.freq))
-  lt.bins.sel50<-lt.bins.sel95<-Lt.dat.sel[,1:5]
+  Sel_max.out<-mapply(function(x) max(lt.bins.out[lt.bins.freq[x,]>0]),x=1:nrow(lt.bins.freq))
+  lt.bins.sel50<-lt.bins.sel95<-lt.bins.selmax<-Lt.dat.sel[,1:5]
   lt.bins.sel50$Sel<-(Sel_init.out+Sel_mode.out)/2
   lt.bins.sel50$SelType<-"Sel50"
   lt.bins.sel95$Sel<-Sel_mode.out
   lt.bins.sel95$SelType<-"Sel95"
-  lt.bins.sels<-rbind(lt.bins.sel50,lt.bins.sel95)
+  lt.bins.selmax$Sel<-Sel_max.out
+  lt.bins.selmax$SelType<-"Last Bin>0"
+  lt.bins.sels<-rbind(lt.bins.sel50,lt.bins.sel95,lt.bins.selmax)
   lt.bins.sels
  })
 
@@ -2392,6 +2395,7 @@ if(!is.null(rv.Lt$data))
       #     rv.Lt$data$Fleet[rv.Lt$data$Fleet==xx]<-fleetnames.ct[xx]
       #   }
       #  }
+       
        Lt.dat.plot<-rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
@@ -2433,16 +2437,49 @@ if(!is.null(rv.Lt$data))
 	    output$Ltplot_it_sel<-renderUI({
     if(!is.null(rv.Lt$data))
     {  
-        output$LtSelplot<-renderPlot({ 
-        if (is.null(rv.Lt$data)) return(NULL) 
-        ggplot(lt.bins.sels())+ 
+       lt.bins.sels.in<-lt.bins.sels()
+       lt.bins.sels.in$L50<--10
+       lt.bins.sels.in$Linf<--10
+       output$LtSelplot<-renderPlot({ 
+        if (is.null(rv.Lt$data)) return(NULL)
+
+          LtSelplot.out<-ggplot(lt.bins.sels.in)+ 
           geom_point(aes(Year,Sel,col=SelType))+
           guides(color = guide_legend(title = " ")) +
-          geom_smooth(method=loess,se=FALSE,aes(Year,Sel,col=SelType))+
-          facet_grid(~Fleet, scales="free_y",labeller = label_both)+
+          geom_smooth(method=loess,se=FALSE,aes(Year,Sel,col=SelType))+		    
+         facet_grid(~Fleet, scales="free_y",labeller = label_both)+
             xlab("Year") + 
             ylab("Size (cm)") + 
-            scale_fill_viridis_d()
+            scale_fill_viridis_d()+
+            ylim(min(lt.bins.sels.in$Sel),NA)
+ 
+#        if(!is.na(Linf())){
+#         #browser()
+#         lt.bins.sels.in$Linf[lt.bins.sels.in$Sex==0|lt.bins.sels.in$Sex==1]<-Linf()
+#         lt.bins.sels.in$Linf[lt.bins.sels.in$Sex==2]<-Linf_m_in()
+#         LtSelplot.out<-geom_hline(data=lt.bins.sels.in,
+#                     aes(yintercept = Linf),
+#                     colour = "darkgreen",
+#                     na.rm = TRUE)
+#  #                   scale_linetype_manual(name = NULL, values = 3)
+#         }
+#         if(!is.na(L50()))
+#         {
+#           lt.bins.sels.in$L50[lt.bins.sels.in$Sex==0|lt.bins.sels.in$Sex==1]<-L50()
+#         geom_hline(data=lt.bins.sels.in,
+#                     aes(yintercept = L50),
+#                     colour = "#d26678",
+#                     na.rm = TRUE)
+#                     #scale_linetype_manual(name = NULL, values = 1)
+#         }
+ 
+#        new_scale("linetype") +
+        
+ 
+          #   if(!is.na(L50())){LtSelplot.out<-LtSelplot.out+geom_hline(yintercept = L50(),
+          #           colour = "darkgreen",lty=1,linetype="dashed")+
+          #           annotate("text", x = min(lt.bins.sels()$Year)+1, y = L50(), label = "Lmat50", hjust = 1)}
+           return(LtSelplot.out)
       })
     }
       })
