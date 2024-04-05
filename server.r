@@ -2733,11 +2733,14 @@ output$Selplot <- renderPlot({
 
     if(input$Sel_choice=="Logistic")
     {
+
       if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))),
         all(input$Sel50!=""),
         all(!is.null(input$Sel50)),
+        all(!str_detect(input$Sel50,"NA")),
         all(input$Selpeak!=""),
-        all(!is.null(input$Selpeak))))
+        all(!is.null(input$Selpeak)),
+        all(!str_detect(input$Selpeak,"NA"))))
       {
        Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
        Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
