@@ -104,14 +104,12 @@ if(OS.in=="Windows")
     #command <- paste0(navigate," & ", "ss", ss.cmd) 
     #shell(command, invisible=TRUE, translate=TRUE)
     r4ss::run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
-    exe <- "ss3"
   } 
 if(OS.in=="Mac")  
   {
     
     command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
     system(paste(command, collapse=";"),invisible=TRUE)
-    exe <- "ss3_osx"
     
     #command <- paste0(path,"/./ss_mac", ss.cmd) 
     #system(command, invisible=TRUE)
@@ -120,7 +118,6 @@ if(OS.in=="Linux")
   {
     command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
     system(paste(command, collapse=";"), invisible=TRUE)
-    exe = "ss3_linux"
   }   
 }  
 
@@ -4999,7 +4996,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
          #file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.exe"),paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),overwrite = FALSE)
          if(input$jitter_parallel)
          {
-          ncores <- parallel::detectCores() - 1
+          ncores <- parallelly::availableCores(omit = 1)
           future::plan(future::multisession, workers = ncores)
          }
          jits<-r4ss::jitter(
