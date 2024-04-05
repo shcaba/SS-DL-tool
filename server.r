@@ -5372,19 +5372,19 @@ if(input$Opt_mod==TRUE)
 
 #Set mcmc model
 show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
-chains <- parallel::detectCores()-1
-m<-"ss3"
+chains <- parallelly::availableCores(omit = 1)
+m<-os_exe
 p<-file.path(modeff.dir,modeff.name)
 #Run MCMC model with either rwm or nuts
  if(input$ModEff_choice=="RWM")
    {
-     fit_model<- sample_rwm(model=m, path=p, iter=input$iter, warmup=0.25*input$iter,
+     fit_model<- adnuts::sample_rwm(model=m, path=p, iter=input$iter, warmup=0.25*input$iter,
                        chains=chains, thin=input$thin, duration=NULL)
    }
 
   if (input$ModEff_choice=="Nuts") 
   {
-    fit_model <- sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
+    fit_model <- adnuts::sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
           chains=chains, cores=4,control=list(metric='mle', max_treedepth=5),mceval=TRUE)
   }
 
@@ -5845,7 +5845,7 @@ observeEvent(input$run_MultiProfiles,{
                         base_name = scenario_in,
                         run = "retro",
                         retro_yrs = input$first_retro_year_in:input$final_retro_year_in,
-                        exe="ss3")
+                        exe = os_exe)
                         )
      run_diagnostics(mydir = mydir_in, model_settings = model_settings)
     # tryCatch({
