@@ -5445,6 +5445,7 @@ save(fit_model,file=paste0(p,"/fit_model.RData"))
       shinyDirChoose(input, "LP_dir", roots=roots,session=session, filetypes=c('', 'txt'))
         return(parseDirPath(roots, input$LP_dir))
       })
+  output$LikeProfPath <- renderText({pathLP()})
 
   observeEvent(as.numeric(input$tabs)==4,{      
   pathLP.dir <-pathLP()
@@ -5489,7 +5490,11 @@ observeEvent(input$run_Profiles,{
               param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,","))))))
               #use_prior_like = use_prior_like_in
               )
-
+       
+       if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
+       if(input$OS_choice=="Mac"){os_exe <- "ss3_osx"} 
+       if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
+       
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
                         run = "profile",
                         profile_details = get,
@@ -5583,7 +5588,10 @@ observeEvent(input$run_MultiProfiles,{
 #       step_size_in <- as.numeric(trimws(unlist(strsplit(input$Prof_step,","))))
 #       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
 #       colnames(par.df)<-prof_parms_names
-
+      if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
+      if(input$OS_choice=="Mac"){os_exe <- "ss3_osx"} 
+      if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
+       
       if(input$Hess_multi_like==FALSE)
       {
         profile <- profile_multi(
@@ -5836,7 +5844,9 @@ observeEvent(input$run_MultiProfiles,{
 
 
   observeEvent(input$run_Retro_comps,{
-      
+    if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
+    if(input$OS_choice=="Mac"){os_exe <- "ss3_osx"} 
+    if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
    #if(input$run_Retro_comps){           
      show_modal_spinner(spin="flower",color=wes_palettes$Royal1[1],text="Running retrospectives")
      mydir_in<-dirname(pathRetro())
