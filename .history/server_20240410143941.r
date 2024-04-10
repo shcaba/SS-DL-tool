@@ -9,7 +9,7 @@ require(data.table)
 require(tidyr)
 require(rlist)
 require(viridis)
-require(sss)
+#require(sss)
 require(shinyWidgets)
 require(shinyFiles)
 require(HandyCode)
@@ -28,6 +28,7 @@ require(gt)
 require(gtExtras)
 require(stringr)
 require(ggnewscale)
+
 #require(geomtextpath)
 
 #require(paletteer)
@@ -36,6 +37,7 @@ require(ggnewscale)
 #devtools::load_all("C:/Users/Jason.Cope/Documents/Github/nwfscDiag")
 
 source('Functions.r',local = FALSE)
+source('SSS.r',local = FALSE)
 
 theme_report <- function(base_size = 11) {
 
@@ -100,7 +102,7 @@ if(OS.in=="Windows")
   {
     #command <- paste0(navigate," & ", "ss", ss.cmd) 
     #shell(command, invisible=TRUE, translate=TRUE)
-    run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
+    r4ss::run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
   } 
 if(OS.in=="Mac")  
   {
@@ -326,7 +328,7 @@ doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
 #Throw an error if fleets are not consecutively represented in all loaded data sets.
 observeEvent(req(any(!is.null(rv.Ct$data),!is.null(rv.Lt$data),!is.null(rv.Age$data),!is.null(rv.Index$data))),{
   ct.flt<-lt.flt<-age.flt<-index.flt<-NA
-  if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)))}
+  if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
   if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
   if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
   if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
@@ -1228,6 +1230,16 @@ output$Model_dims2 <- renderUI({
 # 		}
 # })
 
+output$Wt_fleet_Ct <- renderUI({ 
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}    
+      fluidRow(column(width=10,textInput("Wt_fleet_Ct","Relative catch values",value=paste(rep(1,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))
+	}) 
+
+
 #Load life history values via csv
 output$LH_load_file <- renderUI({ 
     if(!is.null(input$LH_in_file)){       
@@ -1612,54 +1624,98 @@ output$Male_parms_inputs_WL_SSS<- renderUI({
     	}
 	})
 
+output$status_year<- renderUI({
+fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=input$endyr,min=1, max=3000, step=1)))
+})
+
 #Selectivity paramters
 output$Sel_parms1 <- renderUI({ 
-    fluidRow(column(width=8, textInput("Sel50", "Length at 50% Selectivity",value="")), 
-            column(width=4, textInput("Sel50_phase", "Est. phase", value="")))     
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}    
+    fluidRow(column(width=8, textInput("Sel50", "Length at 50% Selectivity",value=paste(rep(NA,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            column(width=4, textInput("Sel50_phase", "Est. phase", value=paste(rep(3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))     
 	}) 
  
 output$Sel_parms2<- renderUI({ 
-    	fluidRow(column(width=8, textInput("Selpeak", "Length at Peak Selectvity", value="")), 
-            	 column(width=4, textInput("Selpeak_phase", "Est. phase", value=""))) 
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
+fluidRow(column(width=8, textInput("Selpeak", "Length at Peak Selectvity", value=paste(rep(NA,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            	 column(width=4, textInput("Selpeak_phase", "Est. phase", value=paste(rep(3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
 	}) 
  
 output$Sel_parms3 <- renderUI({ 
-  		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, textInput("PeakDesc", "Length at 1st declining selectivity",value="10000")), 
-            	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value=""))) 
+  		if(input$Sel_choice=="Dome-shaped"){ 	
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
+    	fluidRow(column(width=8, textInput("PeakDesc", "Length at 1st declining selectivity",value=paste(rep("10000",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            	 column(width=4, textInput("PeakDesc_phase", "Est. phase",value=paste(rep(-3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
  		} 
 	}) 
  
 output$Sel_parms4 <- renderUI({ 
  		if(input$Sel_choice=="Dome-shaped"){ 			 
-	    fluidRow(column(width=8, textInput("LtPeakFinal", "Width of declining selectivity",value="0.0001")), 
-	             column(width=4, textInput("LtPeakFinal_phase", "Est. phase",value="")))    			 
+	    ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}
+      fluidRow(column(width=8, textInput("LtPeakFinal", "Width of declining selectivity",value=paste(rep("0.0001",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+	             column(width=4, textInput("LtPeakFinal_phase", "Est. phase",value=paste(rep(-3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))    			 
  		} 
 	}) 
  
 output$Sel_parms5 <- renderUI({ 
- 		if(input$Sel_choice=="Dome-shaped"){ 			 
-    	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value="0.99999")), 
-            	column(width=4, textInput("FinalSel_phase", "Est. phase",value=""))) 
+ 		if(input$Sel_choice=="Dome-shaped"){
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]} 			 
+    	fluidRow(column(width=8, textInput("FinalSel", "Selectivity at max bin size",value=paste(rep("0.99999",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            	column(width=4, textInput("FinalSel_phase", "Est. phase",paste(rep(-3,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
  		} 
 	}) 
 
 output$Sel_parms1_sss <- renderUI({ 
-    fluidRow(column(width=6, textInput("Sel50_sss", "Length at 50% Selectivity",value="")), 
-            column(width=6, textInput("Selpeak_sss", "Length at Peak Selectvity", value="")))     
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]} 			 
+    fluidRow(column(width=6, textInput("Sel50_sss", "Length at 50% Selectivity",value=paste(rep(NA,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+            column(width=6, textInput("Selpeak_sss", "Length at Peak Selectvity", value=paste(rep(NA,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))     
   }) 
  
  
 output$Sel_parms2_sss <- renderUI({ 
       if(input$Sel_choice_sss=="Dome-shaped"){       
-      fluidRow(column(width=6, textInput("PeakDesc_sss", "Length at 1st declining selectivity",value="10000")), 
-               column(width=6, textInput("LtPeakFinal_sss", "Width of declining selectivity",value="0.0001"))) 
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]} 			 
+      fluidRow(column(width=6, textInput("PeakDesc_sss", "Length at 1st declining selectivity",value=paste(rep("10000",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))), 
+               column(width=6, textInput("LtPeakFinal_sss", "Width of declining selectivity",value=paste(rep("0.0001",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
     } 
   }) 
  
 output$Sel_parms3_sss <- renderUI({ 
     if(input$Sel_choice_sss=="Dome-shaped"){       
-      fluidRow(column(width=8, textInput("FinalSel_sss", "Selectivity at max bin size",value="0.99999"))) 
+      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
+      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
+      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
+      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
+      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]} 			 
+      fluidRow(column(width=8, textInput("FinalSel_sss", "Selectivity at max bin size",value=paste(rep("0.99999",length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=",")))) 
     } 
   }) 
 			
@@ -1705,7 +1761,7 @@ output$Rec_options5 <- renderUI({
 
 output$Rec_options6 <- renderUI({ 
     if(input$rec_choice){ 
-          fluidRow(column(width=6, selectInput("RecDevChoice","Recruit deviation option",c("1: Devs sum to zero","2: Simple deviations","3: deviation vector","4: option 3 plus penalties"),selected="1: Devs sum to zero"))) 
+          fluidRow(column(width=6, selectInput("RecDevChoice","Recruit deviation option",c("1: Devs sum to zero","2: Simple deviations","3: deviation vector","4: option 3 plus penalties"),selected="3: deviation vector"))) 
     	} 
 	})  
 
@@ -1759,7 +1815,7 @@ output$AdvancedSS_nohess<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_hess", label = "Turn off variance estimation (speeds up runs)",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -1767,7 +1823,7 @@ output$AdvancedSS_nohess_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_hess_user", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
   
@@ -1853,7 +1909,7 @@ output$AdvancedSS_noestabs<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_tables", label = "No exectutive summary tables",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -1861,7 +1917,7 @@ output$AdvancedSS_noestabs_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_tables", label = "No exectutive summary tables",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -2265,6 +2321,23 @@ L95<-reactive({
     L95
   })
 
+lt.bins.sels<-reactive({
+  Lt.dat.sel<-rv.Lt$data
+  lt.bins.freq<-Lt.dat.sel[,6:ncol(Lt.dat.sel)]
+  lt.bins.out<-as.numeric(colnames(lt.bins.freq))
+  Sel_mode.out<-mapply(function(x) lt.bins.out[as.numeric(lt.bins.freq[x,])==max(as.numeric(lt.bins.freq[x,]))][1],x=1:nrow(lt.bins.freq))
+  Sel_init.out<-mapply(function(x) lt.bins.out[as.numeric(lt.bins.freq[x,])>0][1],x=1:nrow(lt.bins.freq))
+  Sel_max.out<-mapply(function(x) max(lt.bins.out[lt.bins.freq[x,]>0]),x=1:nrow(lt.bins.freq))
+  lt.bins.sel50<-lt.bins.sel95<-lt.bins.selmax<-Lt.dat.sel[,1:5]
+  lt.bins.sel50$Sel<-(Sel_init.out+Sel_mode.out)/2
+  lt.bins.sel50$SelType<-"Sel50"
+  lt.bins.sel95$Sel<-Sel_mode.out
+  lt.bins.sel95$SelType<-"Sel95"
+  lt.bins.selmax$Sel<-Sel_max.out
+  lt.bins.selmax$SelType<-"Last Bin>0"
+  lt.bins.sels<-rbind(lt.bins.sel50,lt.bins.sel95,lt.bins.selmax)
+  lt.bins.sels
+ })
 
 #############
 ### PLOTS ###
@@ -2305,10 +2378,13 @@ observeEvent(req(!is.null(rv.Lt$data)), {
   })
 
 observeEvent(req(!is.null(rv.Lt$data)), {
+      shinyjs::show(output$lt_comp_sel_plots_label<-renderText({"Suggested selectivity starting values based on length compositions by year. Lines are loess smoothers. Sel95 is based on the model of the composition; Sel50 is based on the midpoint of the mode and first size of recorded lengths. Changes in values over time could be indicative of changes in selectivity, recruitment events, sampling representativeness, or other factors, and should be thought through when specifying selectivity for each fleet. These plots are informative to the behavior of the ascending limb of selectivity. More infomration is needed to specify the possibility of a descending limb (and thus form of the selectivity)."}))
+  })
+
+observeEvent(req(!is.null(rv.Lt$data)), {
 output$Ltplot_it<-renderUI({
 if(!is.null(rv.Lt$data))
 {  
-  
   output$Ltplot<-renderPlot({ 
 		  if (is.null(rv.Lt$data)) return(NULL) 
 		  #  if(!is.null(rv.Ct$data))
@@ -2319,6 +2395,7 @@ if(!is.null(rv.Lt$data))
       #     rv.Lt$data$Fleet[rv.Lt$data$Fleet==xx]<-fleetnames.ct[xx]
       #   }
       #  }
+       
        Lt.dat.plot<-rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
@@ -2357,7 +2434,56 @@ if(!is.null(rv.Lt$data))
       plotOutput("Ltplot")
     }
   })
-	})
+	    output$Ltplot_it_sel<-renderUI({
+    if(!is.null(rv.Lt$data))
+    {  
+       lt.bins.sels.in<-lt.bins.sels()
+       lt.bins.sels.in$L50<--10
+       lt.bins.sels.in$Linf<--10
+       output$LtSelplot<-renderPlot({ 
+        if (is.null(rv.Lt$data)) return(NULL)
+
+          LtSelplot.out<-ggplot(lt.bins.sels.in)+ 
+          geom_point(aes(Year,Sel,col=SelType))+
+          guides(color = guide_legend(title = " ")) +
+          geom_smooth(method=loess,se=FALSE,aes(Year,Sel,col=SelType))+		    
+         facet_grid(~Fleet, scales="free_y",labeller = label_both)+
+            xlab("Year") + 
+            ylab("Size (cm)") + 
+            scale_fill_viridis_d()+
+            ylim(min(lt.bins.sels.in$Sel),NA)
+ 
+#        if(!is.na(Linf())){
+#         #browser()
+#         lt.bins.sels.in$Linf[lt.bins.sels.in$Sex==0|lt.bins.sels.in$Sex==1]<-Linf()
+#         lt.bins.sels.in$Linf[lt.bins.sels.in$Sex==2]<-Linf_m_in()
+#         LtSelplot.out<-geom_hline(data=lt.bins.sels.in,
+#                     aes(yintercept = Linf),
+#                     colour = "darkgreen",
+#                     na.rm = TRUE)
+#  #                   scale_linetype_manual(name = NULL, values = 3)
+#         }
+#         if(!is.na(L50()))
+#         {
+#           lt.bins.sels.in$L50[lt.bins.sels.in$Sex==0|lt.bins.sels.in$Sex==1]<-L50()
+#         geom_hline(data=lt.bins.sels.in,
+#                     aes(yintercept = L50),
+#                     colour = "#d26678",
+#                     na.rm = TRUE)
+#                     #scale_linetype_manual(name = NULL, values = 1)
+#         }
+ 
+#        new_scale("linetype") +
+        
+ 
+          #   if(!is.na(L50())){LtSelplot.out<-LtSelplot.out+geom_hline(yintercept = L50(),
+          #           colour = "darkgreen",lty=1,linetype="dashed")+
+          #           annotate("text", x = min(lt.bins.sels()$Year)+1, y = L50(), label = "Lmat50", hjust = 1)}
+           return(LtSelplot.out)
+      })
+    }
+      })
+  })
 
 # observeEvent(req(!is.null(input$file1)), {
 # 		output$Ltplot<-renderPlot({
@@ -2438,7 +2564,7 @@ observeEvent(req(!is.null(rv.Age$data)), {
       # if (is.null(rv.Age$data)) return(NULL)  
       if (nrow(Cond_ages)==0) return(NULL)  
         
-        Cond_ages_plots<-melt(Cond_ages[,c(1,3,4,7,9:ncol(Cond_ages))],id.vars=c("Year","Fleet","Sex","Lbin_hi"))
+        Cond_ages_plots<-reshape2::melt(Cond_ages[,c(1,3,4,7,9:ncol(Cond_ages))],id.vars=c("Year","Fleet","Sex","Lbin_hi"))
         Cond_ages_plots_pos<-subset(Cond_ages_plots,value>0)
 
         ggplot(Cond_ages_plots_pos,aes(x=as.numeric(variable),y=as.numeric(Lbin_hi),color=Year))+
@@ -2607,11 +2733,14 @@ output$Selplot <- renderPlot({
 
     if(input$Sel_choice=="Logistic")
     {
+
       if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))),
         all(input$Sel50!=""),
         all(!is.null(input$Sel50)),
+        all(!str_detect(input$Sel50,"NA")),
         all(input$Selpeak!=""),
-        all(!is.null(input$Selpeak))))
+        all(!is.null(input$Selpeak)),
+        all(!str_detect(input$Selpeak,"NA"))))
       {
        Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
        Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
@@ -3161,7 +3290,9 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
     sss.prior.name<-c("no prior","symmetric beta","beta","normal","truncated normal","lognormal","truncated lognormal","uniform")
     sss.prior.type<-c(-1,1,2,0,10,3,30,4)
+    #browser()
     Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$Depl_mean_sss,input$Depl_SD_sss)
+    
     h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_mean_sss,input$h_SD_sss)
     if(!input$male_offset_SSS)
     {
@@ -3188,7 +3319,22 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     }
       show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
 
+
 #Run SSS
+        if(is.na(input$Depl_mean_sss)|input$Depl_mean_sss<0)
+      {
+      #Throw warning if not enough selectivity inputs
+         sendSweetAlert(
+          session = session,
+          title = "Stock Status input missing",
+          text = "Please check to see if you have provided an input for relatives stock status and that it is > 0.",
+          type = "error")
+         remove_modal_spinner()
+         #shiny::stopApp()
+      }
+
+else
+  {
   SSS.out<-SSS(paste0("Scenarios/",input$Scenario_name),
       file.name=c("sss_example.dat","sss_example.ctl"),
       reps=input$SSS_reps,
@@ -3291,6 +3437,7 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
     })  
   }
     remove_modal_spinner()
+  }
 })
 
 ###############
@@ -5294,7 +5441,7 @@ save(fit_model,file=paste0(p,"/fit_model.RData"))
       pickerInput(
       inputId = "myPicker_LP",
       label = "Choose parameters to profile over",
-      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)"),
+      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male"),
       options = list(
         `actions-box` = TRUE,
         size = 12,
@@ -5314,27 +5461,29 @@ observeEvent(input$run_Profiles,{
        rep.parms.names<-rownames(rep.parms$parameters)
        # SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","CV_young_Fem_GP_1","CV_old_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1","CV_young_Mal_GP_1","CV_old_Mal_GP_1")
        #SS_parm_names<-c(rownames(ctl.file$SR_parms)[2], rownames(ctl.file$SR_parms)[1],rownames(ctl.file$MG_parms)[1],rownames(ctl.file$MG_parms)[3],rownames(ctl.file$MG_parms)[4],rownames(ctl.file$MG_parms)[5],rownames(ctl.file$MG_parms)[6],rownames(ctl.file$MG_parms)[13],rownames(ctl.file$MG_parms)[15],rownames(ctl.file$MG_parms)[16],rownames(ctl.file$MG_parms)[17],rownames(ctl.file$MG_parms)[18])
-       SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18],"LnQ_base_Acoustic_Visual(6)")
+       #SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18],"LnQ_base_Acoustic_Visual(6)")
+       SS_parm_names<-c(rep.parms.names[grep("steep",rep.parms.names)], rep.parms.names[grep("R0",rep.parms.names)],rep.parms.names[grep("NatM",rep.parms.names)][1],rep.parms.names[grep("L_at_Amax_Fem",rep.parms.names)],rep.parms.names[grep("K_Fem",rep.parms.names)],rep.parms.names[grep("CV_young_Fem",rep.parms.names)],rep.parms.names[grep("CV_old_Fem",rep.parms.names)],rep.parms.names[grep("NatM",rep.parms.names)][2],rep.parms.names[grep("L_at_Amax_Mal",rep.parms.names)],rep.parms.names[grep("K_Mal",rep.parms.names)],rep.parms.names[grep("CV_young_Mal",rep.parms.names)],rep.parms.names[grep("CV_old_Mal",rep.parms.names)])
        parmnames<-input$myPicker_LP
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)")
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        
-       prior_like<-starter.file$prior_like
-       use_prior_like_in<-rep(0,length(prof_parms_names))
-       if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
+      #  prior_like<-starter.file$prior_like
+      #  use_prior_like_in<-rep(0,length(prof_parms_names))
+      #  if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
        mydir = dirname(pathLP())
        get = get_settings_profile(parameters =  prof_parms_names,
               low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
-              param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))))),
-              use_prior_like = use_prior_like_in
+              param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,","))))))
+              #use_prior_like = use_prior_like_in
               )
 
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
                         run = "profile",
                         profile_details = get,
-                        exe="ss3"))
+                        exe="ss3",
+                        prior_check = FALSE))
 
 
        try(run_diagnostics(mydir = mydir, model_settings = model_settings))
@@ -5394,12 +5543,7 @@ observeEvent(input$run_MultiProfiles,{
        par.df <- fread(input$file_multi_profile$datapath,check.names=FALSE,data.table=FALSE)
        L <- readLines(input$file_multi_profile$datapath, n = 1)
        if(grepl(";", L)) {par.df <- read.csv2(input$file_multi_profile$datapath,check.names=FALSE)}
-       fullctlfile <- file.path(refdir, ctlfile)
-       ctl <- readLines(fullctlfile)
-       ctltable <- SS_parlines(ctlfile = fullctlfile)
-       allnames <- ctltable[["Label"]]
-       SS_parm_names <- allnames[c(23:24,1,3,4:6,13,15:18)] 
-       #SS_parm_names<-rownames(ref.model$parameters)[c(23:24,1,3,4:6,13,15:18)]
+       SS_parm_names<-rownames(ref.model$parameters)[c(23:24,1,3,4:6,13,15:18)]
        parmnames_vec<-c("lnR0","Steepness","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        parmnames<-colnames(par.df)
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
@@ -5428,13 +5572,13 @@ observeEvent(input$run_MultiProfiles,{
 #       step_size_in <- as.numeric(trimws(unlist(strsplit(input$Prof_step,","))))
 #       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
 #       colnames(par.df)<-prof_parms_names
-browser()
+
       if(input$Hess_multi_like==FALSE)
       {
         profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = ctlfile.in,
+          oldctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
@@ -5450,7 +5594,7 @@ browser()
         profile <- profile_multi(
           dir = profile_dir, # directory
           #globalpar = TRUE,
-          oldctlfile = ctlfile.in,
+          oldctlfile = "control.ss_new",
           newctlfile = "control_modified.ss",
           string = prof_parms_names,
           profilevec = par.df,
@@ -5488,42 +5632,7 @@ browser()
     colnames(likes_non0_par.min)<-c(par.df[,1],"Label")
     like.comps.plot<-reshape2::melt(likes_non0_par.min,id = "Label")
 
-    #Lengths
-    likes_length<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Length_like",]
-    likes_length_short<-likes_length[,3:ncol(likes_length)]
-    likes_length_non0<-likes_length_non0.min<-data.frame(model=likes_length[,1],likes_length_short[,colSums(likes_length[,3:ncol(likes_length)])!=0])
-    likes_length_non0$model<-likes_length_non0.min$model<-as.numeric(par.df[,1])
-    for(ii in 2:ncol(likes_length_non0))
-    {
-      likes_length_non0.min[,ii]<-likes_length_non0[,ii]-min(likes_length_non0.min[,ii])
-    }
-    likes_length_non0.min.melt<-reshape2::melt(likes_length_non0.min,id.vars="model")
-
-    #Ages
-    likes_age<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Age_like",]
-    likes_age_short<-likes_age[,3:ncol(likes_age)]
-    likes_age_non0<-likes_age_non0.min<-data.frame(model=likes_age[,1],likes_age_short[,colSums(likes_age[,3:ncol(likes_age)])!=0])
-    likes_age_non0$model<-likes_age_non0.min$model<-as.numeric(par.df[,1])
-    for(ii in 2:ncol(likes_age_non0))
-    {
-      likes_age_non0.min[,ii]<-likes_age_non0[,ii]-min(likes_age_non0.min[,ii])
-    }
-    likes_age_non0.min.melt<-reshape2::melt(likes_age_non0.min,id.vars="model")
-
-    #Survey
-    likes_survey<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Surv_like",]
-    likes_survey_short<-likes_survey[,3:ncol(likes_survey)]
-    likes_survey_non0<-likes_survey_non0.min<-data.frame(model=likes_survey[,1],likes_survey_short[,colSums(likes_survey[,3:ncol(likes_survey)])!=0])
-    likes_survey_non0$model<-likes_survey_non0.min$model<-as.numeric(par.df[,1])
-    for(ii in 2:ncol(likes_survey_non0))
-    {
-      likes_survey_non0.min[,ii]<-likes_survey_non0[,ii]-min(likes_survey_non0.min[,ii])
-    }
-    likes_survey_non0.min.melt<-reshape2::melt(likes_survey_non0.min,id.vars="model")
-
-
     #Plots
-    #Components
     LC.plot<-ggplot(like.comps.plot,aes(variable,value,group=Label,color=Label))+
       geom_point(size=5)+
       geom_line(lwd=1.2)+
@@ -5534,8 +5643,21 @@ browser()
                        breaks =par.df[,1], 
                        labels = paste0(par.df[,1],"\n",par.df[,2]))
     ggsave(paste0(profile_dir,"/","like_component_profile.png"),plot=LC.plot,width=10,height=10,units="in")
-    
+
     #Lengths
+    likes_length<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Length_like",]
+    if(nrow(likes_length)>0)
+    {
+      likes_length_short<-likes_length[,3:ncol(likes_length)]
+      likes_length_non0<-likes_length_non0.min<-data.frame(model=likes_length[,1],likes_length_short[,colSums(likes_length[,3:ncol(likes_length)])!=0])
+      likes_length_non0$model<-likes_length_non0.min$model<-as.numeric(par.df[,1])
+      for(ii in 2:ncol(likes_length_non0))
+      {
+        likes_length_non0.min[,ii]<-likes_length_non0[,ii]-min(likes_length_non0.min[,ii])
+      }
+      likes_length_non0.min.melt<-reshape2::melt(likes_length_non0.min,id.vars="model")
+    
+    #Plots
     LC_lt.plot<-ggplot(likes_length_non0.min.melt,aes(model,value,group=variable,color=variable))+
       geom_point(size=5)+
       geom_line(lwd=1.2)+
@@ -5547,8 +5669,24 @@ browser()
                        labels = paste0(par.df[,1],"\n",par.df[,2])) 
     ggsave(paste0(profile_dir,"/","length_component_profile.png"),plot=LC_lt.plot,width=10,height=10,units="in")
 
+
+    }
+
     #Ages
-    LC_age.plot<-ggplot(likes_age_non0.min.melt,aes(model,value,group=variable,color=variable))+
+    likes_age<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Age_like",]
+    if(nrow(likes_age)>0)
+    {
+      likes_age_short<-likes_age[,3:ncol(likes_age)]
+      likes_age_non0<-likes_age_non0.min<-data.frame(model=likes_age[,1],likes_age_short[,colSums(likes_age[,3:ncol(likes_age)])!=0])
+      likes_age_non0$model<-likes_age_non0.min$model<-as.numeric(par.df[,1])
+      for(ii in 2:ncol(likes_age_non0))
+      {
+        likes_age_non0.min[,ii]<-likes_age_non0[,ii]-min(likes_age_non0.min[,ii])
+      }
+        likes_age_non0.min.melt<-reshape2::melt(likes_age_non0.min,id.vars="model")
+    
+    #Plots
+        LC_age.plot<-ggplot(likes_age_non0.min.melt,aes(model,value,group=variable,color=variable))+
       geom_point(size=5)+
       geom_line(lwd=1.2)+
       theme(legend.position = c(0.8, 0.8))+
@@ -5558,8 +5696,22 @@ browser()
                          breaks =par.df[,1], 
                          labels = paste0(par.df[,1],"\n",par.df[,2])) 
       ggsave(paste0(profile_dir,"/","age_component_profile.png"),plot=LC_age.plot,width=10,height=10,units="in")
+    }
 
     #Survey
+    likes_survey<-profilesummary$likelihoods_by_fleet[profilesummary$likelihoods_by_fleet$Label=="Surv_like",]
+    if(nrow(likes_survey)>0)
+    {
+      likes_survey_short<-likes_survey[,3:ncol(likes_survey)]
+      likes_survey_non0<-likes_survey_non0.min<-data.frame(model=likes_survey[,1],likes_survey_short[,colSums(likes_survey[,3:ncol(likes_survey)])!=0])
+      likes_survey_non0$model<-likes_survey_non0.min$model<-as.numeric(par.df[,1])
+      for(ii in 2:ncol(likes_survey_non0))
+      {
+        likes_survey_non0.min[,ii]<-likes_survey_non0[,ii]-min(likes_survey_non0.min[,ii])
+      }
+      likes_survey_non0.min.melt<-reshape2::melt(likes_survey_non0.min,id.vars="model")
+    
+    #Plot
     LC_survey.plot<-ggplot(likes_survey_non0.min.melt,aes(model,value,group=variable,color=variable))+
       geom_point(size=5)+
       geom_line(lwd=1.2)+
@@ -5570,6 +5722,7 @@ browser()
                          breaks =par.df[,1], 
                          labels = paste0(par.df[,1],"\n",par.df[,2])) 
       ggsave(paste0(profile_dir,"/","survey_component_profile.png"),plot=LC_survey.plot,width=10,height=10,units="in")
+    }
 
 
     #This reactive object is needed to get the plots to work

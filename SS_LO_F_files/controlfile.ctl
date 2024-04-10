@@ -150,7 +150,7 @@
 #Fishing Mortality info 
 0.1 # F ballpark value in units of annual_F
 -1999 # F ballpark year (neg value to disable)
-2 # F_Method:  1=Pope; 2=instan. F; 3=hybrid (hybrid is recommended)
+2 # F_Method:  1=Pope midseason rate; 2=F as parameter; 3=F as hybrid; 4=fleet-specific parm/hybrid (#4 is superset of #2 and #3 and is recommended)
 4 # max F or harvest rate, depends on F_Method
 # no additional F input needed for Fmethod 1
 # if Fmethod=2; read overall start F value; overall phase; N detailed inputs to read

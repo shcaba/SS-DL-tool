@@ -1885,7 +1885,7 @@ output$AdvancedSS_noplots_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_plots_tables", label = "Turn off plots",
-        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
+        shape = "round", outline = TRUE, status = "info"))) 
       # } 
   }) 
 
@@ -1917,7 +1917,7 @@ output$AdvancedSS_noestabs_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_tables", label = "No exectutive summary tables",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
