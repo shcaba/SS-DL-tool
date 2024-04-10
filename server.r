@@ -30,6 +30,7 @@ require(stringr)
 require(ggnewscale)
 require(future)
 require(parallel)
+require(parallelly)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -5492,9 +5493,9 @@ observeEvent(input$run_Profiles,{
               #use_prior_like = use_prior_like_in
               )
        
-       if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
-       if(input$OS_choice=="Mac"){os_exe <- "ss3_osx"} 
-       if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
+       if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+       if(substr(R.version[["os"]], 1, 6) == "darwin"){os_exe <- "ss3_osx"} 
+       if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
        
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
                         run = "profile",
@@ -5589,9 +5590,9 @@ observeEvent(input$run_MultiProfiles,{
 #       step_size_in <- as.numeric(trimws(unlist(strsplit(input$Prof_step,","))))
 #       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
 #       colnames(par.df)<-prof_parms_names
-      if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
-      if(input$OS_choice=="Mac"){os_exe <- "ss3_osx"} 
-      if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
+      if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+      if(substr(R.version[["os"]], 1, 6) == "darwin"){os_exe <- "ss3_osx"} 
+      if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
        
       if(input$Hess_multi_like==FALSE)
       {
@@ -5845,9 +5846,9 @@ observeEvent(input$run_MultiProfiles,{
 
 
   observeEvent(input$run_Retro_comps,{
-    if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
-    if(input$OS_choice=="Mac"){os_exe <- "ss3_osx"} 
-    if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
+    if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin"){os_exe <- "ss3_osx"} 
+    if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
    #if(input$run_Retro_comps){           
      show_modal_spinner(spin="flower",color=wes_palettes$Royal1[1],text="Running retrospectives")
      mydir_in<-dirname(pathRetro())
