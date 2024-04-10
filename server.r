@@ -5841,11 +5841,14 @@ observeEvent(input$run_MultiProfiles,{
 ###############################
 ####### Retrospectives ########
 ###############################
-      shinyDirChoose(input,"Retro_dir", roots=roots,session=session, filetypes=c('', 'txt'))
+  shinyDirChoose(input,"Retro_dir", roots=roots,session=session, filetypes=c('', 'txt'))
   pathRetro <- reactive({
         return(parseDirPath(roots, input$Retro_dir))
       })
 
+  observeEvent(input$Retro_dir,{
+  output$RetroPath <- renderText({paste0("Selected model folder:\n", pathRetro())})
+  })
 
   observeEvent(input$run_Retro_comps,{
     if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
@@ -5906,6 +5909,10 @@ observeEvent(input$run_MultiProfiles,{
   shinyDirChoose(input, "Sensi_dir", roots=roots,session=session, filetypes=c('', 'txt'))
      return(parseDirPath(roots, input$Sensi_dir))
    })
+
+  observeEvent(input$Sensi_dir,{
+  output$SensiPath <- renderText({paste0("Selected model scenario folder:\n", pathSensi())})
+  })
 
   observeEvent(as.numeric(input$tabs)==6,{
   output$Sensi_model_Ref<-renderUI({
@@ -6094,10 +6101,15 @@ Sensi_plot_horiz(model.summaries=modsummary.sensi,
 ### Ensemble modelling ###
 ##########################
 
-  pathEnsemble <- reactive({
+pathEnsemble <- reactive({
       shinyDirChoose(input, "Ensemble_dir", roots=roots, filetypes=c('', 'txt'))
       return(parseDirPath(roots, input$Ensemble_dir))
-    })
+  })
+
+observeEvent(input$Ensemble_dir,{
+  output$EnsemblePath <- renderText({paste0("Selected model scenario folder:\n", pathEnsemble())})
+  })
+
 #Used to have as.numeric(input$tabs)==4
  observeEvent(as.numeric(input$tabs)==7,{      
   output$Ensemble_model_picks<-renderUI({

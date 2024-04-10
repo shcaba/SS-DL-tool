@@ -1015,6 +1015,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
       title="Choose folder containing model scenarios"
       ),
     br(),
+    h5(strong(textOutput("RetroPath", inline = TRUE))),
     br(),
     #h4(strong("Comparison plot label")),
     h5(strong("Define what years to perform retrospective analysis. Input as a negative integer (e.g., -1 mean remove one year of data)")),
@@ -1051,6 +1052,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
       title="Choose folder containing model scenarios"
       ),
     br(),
+    h5(strong(textOutput("SensiPath", inline = TRUE))),
     br(),
     #h4(strong("Comparison plot label")),
     uiOutput("Sensi_model_Ref"),
@@ -1097,6 +1099,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
       title="Choose folder containing models to combine"
       ),
     br(),
+    h5(strong(textOutput("EnsemblePath", inline = TRUE))),
     br(),
     #h4(strong("Ensemble label")),
     fluidRow(column(width=8,textInput("Ensemble_file", strong("Label ensemble model file"), value="Ensemble 1"))),
