@@ -949,8 +949,8 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
      label="Select scenario",
      title="Choose folder containing model scenarios"
      ),
-    textOutput("LikeProfPath"),
     br(),
+    h5(strong(textOutput("LikeProfPath", inline = TRUE))),
     br(),
     h4(("Individual likelihood profiles- each parameter run independently.")),  
     h5(em("If choosing multiple parameters to individually profile over, entries should be done in order of the parameters shown and separated by a comma (e.g., 0.1, 0.3).")),  
