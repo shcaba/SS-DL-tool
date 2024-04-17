@@ -542,7 +542,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
        ), 
      fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment", value=7,min=0, max=20, step=0.01)),
-           column(width=6,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
+           column(width=6,numericInput("rec_month_est", "Recruitment month", value=1,min=1, max=12, step=0.01))),
   )), 
 
     #      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_ss_prior","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),

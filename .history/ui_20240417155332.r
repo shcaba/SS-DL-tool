@@ -13,7 +13,8 @@ shinyUI(fluidPage(theme = "bootstrap.css",
   titlePanel("Welcome to the Stock Assessment Continuum Tool, powered by Stock Synthesis (version 3.30.22.1)"),
       h4(p(strong("(Formerly known as the Stock Synthesis Data-Limited (SS-DL) tool), this tool uses the",tags$a(href="https://github.com/nmfs-stock-synthesis/stock-synthesis", "Stock Synthesis", target="_blank"),"framework to implement a ",tags$a(href="javascript:window.open('SS-DL-approaches.html', '_blank','width=600,height=400')", "variety of types"), "of models."))),
       h5(p("Any suggested changes or requests? Please submit an issue with the recommendation" ,tags$a(href="https://github.com/shcaba/SS-DL-tool/issues", "here", target="_blank"))),
-      h5(p("Access the latest version of the Stock Synthesis manaul " ,tags$a(href="https://nmfs-ost.github.io/ss3-doc/", "here", target="_blank"))),
+      h5(p("Access the latest version of the Stock Synthesis manual " ,tags$a(href="https://nmfs-ost.github.io/ss3-doc/", "here", target="_blank"))),
+      h5(p("Watch a talk on how to use the SAC tool and the concept of the stock assessment continuum " ,tags$a(href="https://www.youtube.com/watch?v=NFJPoFJ9qyo", "here", target="_blank"))),
       br(),
 
 sidebarLayout(
@@ -97,7 +98,7 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         h5(em("The relative catch contribution needs specification with multiple length-only fleets")),
         h5(em("Example: Two fleets, with fleet 2 catching 2 times the amount as fleet 1, the entry would be 1,2.")),
         h5(em("Each entry will be relative to the highest value.")),
-        fluidRow(column(width=10,textInput("Wt_fleet_Ct","Relative catch values",value=""))),
+        uiOutput("Wt_fleet_Ct"),
       )
     ),
     
@@ -483,7 +484,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_stock_status",
     h4(strong("Relative stock status")),
       #wellPanel(
-         fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=NA,min=1000, max=3000, step=1))),
+         uiOutput("status_year"),
+#         fluidRow(column(width=6,numericInput("status_year", "Relative stock status year", value=NA,min=1000, max=3000, step=1))),
          dropdownButton(
           selectInput("Depl_prior_sss","Prior type for relative stock status",c("beta","lognormal","truncated normal","uniform","no prior")),
           numericInput("Depl_mean_sss", "Mean", value=NA,min=0.001, max=1, step=0.001),
@@ -540,7 +542,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
        ), 
      fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment", value=7,min=0, max=20, step=0.01)),
-           column(width=6,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
+           column(width=6,numericInput("rec_month_est", "Recruitment month", value=1,min=1, max=12, step=0.01))),
   )), 
 
     #      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_ss_prior","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
@@ -836,6 +838,10 @@ br(),
     
     br(),
     br(),
+    br(),
+    br(),
+    br(),
+    br(),
 #################### 
 ### Other panels ###
 ####################
@@ -991,7 +997,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
     h4(strong("Retrospective comparisons and plots")),
     h5(em("Retrospecitive modelling means sequentially removing one year of data up to a specified number of years (e.g., -10 years).")),
     h5(em("To make these comparisons, choose first the directory containing models, then the models to compare.")),
-    h5(em("A time series plot of comparisons are shown in the main panel to the right for the follwing model outputs:")),  
+    h5(em("A time series plot of comparisons are shown in the main panel to the right for the following model outputs:")),  
     tags$ul(tags$li(h5(p(em("Spawning output"))))),
     tags$ul(tags$li(h5(p(em("Relative spawning output"))))),
     tags$ul(tags$li(h5(p(em("Recruitment"))))),
@@ -1119,6 +1125,11 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
                                  font-size: 16px;
                                  }")),
               uiOutput("Ltplot_it"),
+              textOutput("lt_comp_sel_plots_label"),
+              tags$head(tags$style("#lt_comp_sel_plots_label{color: black;
+                                 font-size: 16px;
+                                 }")),
+              uiOutput("Ltplot_it_sel"),
               textOutput("marginal_age_comp_plots_label"),
               tags$head(tags$style("#marginal_age_comp_plots_label{color: black;
                                  font-size: 16px;

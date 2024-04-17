@@ -3581,7 +3581,8 @@ if(input$Sel_choice=="Dome-shaped")
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-input$Nages_in #Nages()
-    data.file$spawn_month<-input$rec_month 
+    if(input$est_parms==F){data.file$spawn_month<-input$rec_month}
+    if(input$est_parms==T){data.file$spawn_month<-input$rec_month_est}
     catch.fleets.Ct<-catch.fleets.Lt<-catch.fleets.Age<-NA
     if(!is.null(rv.Ct$data)){catch.fleets.Ct<-max(ncol(rv.Ct$data)-1)}
     if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets.Lt<-max(rv.Lt$data[,3])}
