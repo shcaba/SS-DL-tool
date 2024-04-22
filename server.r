@@ -118,7 +118,7 @@ if(OS.in=="Mac" && R.version[["arch"]]=="x86_64")
 if(OS.in=="Mac" && R.version[["arch"]]=="aarch64")  
   {
     
-    command <- c(paste("cd", path), "chmod +x ./ss3_osx_m2",paste("./ss3_osx_m2", ss.cmd)) 
+    command <- c(paste("cd", path), "chmod +x ./ss3_osx_arm64",paste("./ss3_osx_arm64", ss.cmd)) 
     system(paste(command, collapse=";"),invisible=TRUE)
   } 
 if(OS.in=="Linux") 
@@ -4993,7 +4993,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
   #Run multiple jitters
     if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
     if(input$OS_choice=="Mac" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"}
-    if(input$OS_choice=="Mac" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_m2"}
+    if(input$OS_choice=="Mac" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"}
     if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
       
     if(input$jitter_choice)
@@ -5504,7 +5504,7 @@ observeEvent(input$run_Profiles,{
        
        if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
        if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
-       if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_m2"} 
+       if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"} 
        if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
        
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
@@ -5602,7 +5602,7 @@ observeEvent(input$run_MultiProfiles,{
 #       colnames(par.df)<-prof_parms_names
       if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
       if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
-      if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_m2"}
+      if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"}
       if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
        
       if(input$Hess_multi_like==FALSE)
@@ -5862,7 +5862,7 @@ observeEvent(input$run_MultiProfiles,{
   observeEvent(input$run_Retro_comps,{
     if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
     if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
-    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_m2"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"} 
     if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
    #if(input$run_Retro_comps){           
      show_modal_spinner(spin="flower",color=wes_palettes$Royal1[1],text="Running retrospectives")
