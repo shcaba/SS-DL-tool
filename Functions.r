@@ -1,3 +1,131 @@
+VBGF<-function(Linf, k, t0, ages){ 
+   Linf * (1 - exp(-k * (ages - t0))) 
+  } 
+
+
+VBGF.age<-function(Linf,k,t0,lt){ 
+    t0 - (log(1 - (lt / Linf)) / k) 
+  } 
+  
+
+RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
+  navigate <- paste("cd ", path, sep="") 
+if(OS.in=="Windows") 
+  {
+    #command <- paste0(navigate," & ", "ss", ss.cmd) 
+    #shell(command, invisible=TRUE, translate=TRUE)
+    r4ss::run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
+  } 
+if(OS.in=="Mac" && R.version[["arch"]]=="x86_64")  
+  {
+    
+    command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
+    system(paste(command, collapse=";"),invisible=TRUE)
+    
+    #command <- paste0(path,"/./ss_mac", ss.cmd) 
+    #system(command, invisible=TRUE)
+  } 
+if(OS.in=="Mac" && R.version[["arch"]]=="aarch64")  
+  {
+    
+    command <- c(paste("cd", path), "chmod +x ./ss3_osx_arm64",paste("./ss3_osx_arm64", ss.cmd)) 
+    system(paste(command, collapse=";"),invisible=TRUE)
+  } 
+if(OS.in=="Linux") 
+  {
+    command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
+    system(paste(command, collapse=";"), invisible=TRUE)
+  }   
+}  
+
+pngfun <- function(wd, file,w=7,h=7,pt=12){
+  file <- file.path(wd, file)
+  cat('writing PNG to',file,'\n')
+  png(filename=file,
+      width=w,height=h,
+      units='in',res=300,pointsize=pt)
+}
+
+rc <- function(n,alpha=1){
+  # a subset of rich.colors by Arni Magnusson from the gregmisc package
+  # a.k.a. rich.colors.short, but put directly in this function
+  # to try to diagnose problem with transparency on one computer
+  x <- seq(0, 1, length = n)
+  r <- 1/(1 + exp(20 - 35 * x))
+  g <- pmin(pmax(0, -0.8 + 6 * x - 5 * x^2), 1)
+  b <- dnorm(x, 0.25, 0.15)/max(dnorm(x, 0.25, 0.15))
+  rgb.m <- matrix(c(r, g, b), ncol = 3)
+  rich.vector <- apply(rgb.m, 1, function(v) rgb(v[1], v[2], v[3], alpha=alpha))
+}
+
+doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
+#UPDATED: - input e and f on 0 to 1 scal and transfrom to logit scale
+#         - changed bin width in peak2 calculation
+#         - updated index of sel when j2 < length(x)
+#   - renamed input parameters, cannot have same names as the logistic function
+#         - function not handling f < -1000 correctly
+          x<-seq(1,Selpeak+Selpeak,1)
+          bin_width <- x[2] - x[1]
+          
+          a<- Selpeak
+          b<- -log((max(x)-Selpeak-bin_width)/(PeakDesc-Selpeak-bin_width))
+          c<- log(-((Sel50-Selpeak)^2/log(0.5)))
+          d<- log(LtPeakFinal)
+          e<- -15
+          f<- -log((1/(FinalSel+0.000000001)-1))
+          
+      sel <- rep(NA, length(x))
+      startbin <- 1
+      peak <- a
+      upselex <- exp(c)
+      downselex <- exp(d)
+      final <- f
+      if (e < -1000) {
+          j1 <- -1001 - round(e)
+          sel[1:j1] <- 1e-06
+      }
+      if (e >= -1000) {
+          j1 <- startbin - 1
+          if (e > -999) {
+            point1 <- 1/(1 + exp(-e))
+            t1min <- exp(-(x[startbin] - peak)^2/upselex)
+          }
+      }
+      if (f < -1000)
+          j2 <- -1000 - round(f)
+      if (f >= -1000)
+          j2 <- length(x)
+      peak2 <- peak + bin_width + (0.99 * x[j2] - peak - bin_width)/(1 +
+          exp(-b))
+      if (f > -999) {
+          point2 <- 1/(1 + exp(-final))
+          t2min <- exp(-(x[j2] - peak2)^2/downselex)
+      }
+      t1 <- x - peak
+      t2 <- x - peak2
+      join1 <- 1/(1 + exp(-(20/(1 + abs(t1))) * t1))
+      join2 <- 1/(1 + exp(-(20/(1 + abs(t2))) * t2))
+      if (e > -999)
+          asc <- point1 + (1 - point1) * (exp(-t1^2/upselex) -
+            t1min)/(1 - t1min)
+      if (e <= -999)
+          asc <- exp(-t1^2/upselex)
+      if (f > -999)
+          dsc <- 1 + (point2 - 1) * (exp(-t2^2/downselex) -
+            1)/(t2min - 1)
+      if (f <= -999)
+          dsc <- exp(-(t2)^2/downselex)
+      idx.seq <- (j1 + 1):j2
+      sel[idx.seq] <- asc[idx.seq] * (1 - join1[idx.seq]) + join1[idx.seq] * (1 -
+          join2[idx.seq] + dsc[idx.seq] * join2[idx.seq])
+      if (startbin > 1 && e >= -1000) {
+          sel[1:startbin] <- (x[1:startbin]/x[startbin])^2 *
+            sel[startbin]
+      }
+      if (j2 < length(x))
+          sel[(j2 + 1):length(x)] <- sel[j2]
+      return(cbind(x,sel))
+}
 
 gg_color_hue <- function(n) 
   {

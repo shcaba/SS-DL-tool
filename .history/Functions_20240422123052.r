@@ -1,3 +1,131 @@
+VBGF<-function(Linf, k, t0, ages){ 
+   Linf * (1 - exp(-k * (ages - t0))) 
+  } 
+
+
+VBGF.age<-function(Linf,k,t0,lt){ 
+    t0 - (log(1 - (lt / Linf)) / k) 
+  } 
+  
+
+RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
+  navigate <- paste("cd ", path, sep="") 
+if(OS.in=="Windows") 
+  {
+    #command <- paste0(navigate," & ", "ss", ss.cmd) 
+    #shell(command, invisible=TRUE, translate=TRUE)
+    r4ss::run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
+  } 
+if(OS.in=="Mac" && R.version[["arch"]]=="x86_64")  
+  {
+    
+    command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
+    system(paste(command, collapse=";"),invisible=TRUE)
+    
+    #command <- paste0(path,"/./ss_mac", ss.cmd) 
+    #system(command, invisible=TRUE)
+  } 
+if(OS.in=="Mac" && R.version[["arch"]]=="aarch64")  
+  {
+    
+    command <- c(paste("cd", path), "chmod +x ./ss3_osx_arm64",paste("./ss3_osx_arm64", ss.cmd)) 
+    system(paste(command, collapse=";"),invisible=TRUE)
+  } 
+if(OS.in=="Linux") 
+  {
+    command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
+    system(paste(command, collapse=";"), invisible=TRUE)
+  }   
+}  
+
+pngfun <- function(wd, file,w=7,h=7,pt=12){
+  file <- file.path(wd, file)
+  cat('writing PNG to',file,'\n')
+  png(filename=file,
+      width=w,height=h,
+      units='in',res=300,pointsize=pt)
+}
+
+rc <- function(n,alpha=1){
+  # a subset of rich.colors by Arni Magnusson from the gregmisc package
+  # a.k.a. rich.colors.short, but put directly in this function
+  # to try to diagnose problem with transparency on one computer
+  x <- seq(0, 1, length = n)
+  r <- 1/(1 + exp(20 - 35 * x))
+  g <- pmin(pmax(0, -0.8 + 6 * x - 5 * x^2), 1)
+  b <- dnorm(x, 0.25, 0.15)/max(dnorm(x, 0.25, 0.15))
+  rgb.m <- matrix(c(r, g, b), ncol = 3)
+  rich.vector <- apply(rgb.m, 1, function(v) rgb(v[1], v[2], v[3], alpha=alpha))
+}
+
+doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
+#UPDATED: - input e and f on 0 to 1 scal and transfrom to logit scale
+#         - changed bin width in peak2 calculation
+#         - updated index of sel when j2 < length(x)
+#   - renamed input parameters, cannot have same names as the logistic function
+#         - function not handling f < -1000 correctly
+          x<-seq(1,Selpeak+Selpeak,1)
+          bin_width <- x[2] - x[1]
+          
+          a<- Selpeak
+          b<- -log((max(x)-Selpeak-bin_width)/(PeakDesc-Selpeak-bin_width))
+          c<- log(-((Sel50-Selpeak)^2/log(0.5)))
+          d<- log(LtPeakFinal)
+          e<- -15
+          f<- -log((1/(FinalSel+0.000000001)-1))
+          
+      sel <- rep(NA, length(x))
+      startbin <- 1
+      peak <- a
+      upselex <- exp(c)
+      downselex <- exp(d)
+      final <- f
+      if (e < -1000) {
+          j1 <- -1001 - round(e)
+          sel[1:j1] <- 1e-06
+      }
+      if (e >= -1000) {
+          j1 <- startbin - 1
+          if (e > -999) {
+            point1 <- 1/(1 + exp(-e))
+            t1min <- exp(-(x[startbin] - peak)^2/upselex)
+          }
+      }
+      if (f < -1000)
+          j2 <- -1000 - round(f)
+      if (f >= -1000)
+          j2 <- length(x)
+      peak2 <- peak + bin_width + (0.99 * x[j2] - peak - bin_width)/(1 +
+          exp(-b))
+      if (f > -999) {
+          point2 <- 1/(1 + exp(-final))
+          t2min <- exp(-(x[j2] - peak2)^2/downselex)
+      }
+      t1 <- x - peak
+      t2 <- x - peak2
+      join1 <- 1/(1 + exp(-(20/(1 + abs(t1))) * t1))
+      join2 <- 1/(1 + exp(-(20/(1 + abs(t2))) * t2))
+      if (e > -999)
+          asc <- point1 + (1 - point1) * (exp(-t1^2/upselex) -
+            t1min)/(1 - t1min)
+      if (e <= -999)
+          asc <- exp(-t1^2/upselex)
+      if (f > -999)
+          dsc <- 1 + (point2 - 1) * (exp(-t2^2/downselex) -
+            1)/(t2min - 1)
+      if (f <= -999)
+          dsc <- exp(-(t2)^2/downselex)
+      idx.seq <- (j1 + 1):j2
+      sel[idx.seq] <- asc[idx.seq] * (1 - join1[idx.seq]) + join1[idx.seq] * (1 -
+          join2[idx.seq] + dsc[idx.seq] * join2[idx.seq])
+      if (startbin > 1 && e >= -1000) {
+          sel[1:startbin] <- (x[1:startbin]/x[startbin])^2 *
+            sel[startbin]
+      }
+      if (j2 < length(x))
+          sel[(j2 + 1):length(x)] <- sel[j2]
+      return(cbind(x,sel))
+}
 
 gg_color_hue <- function(n) 
   {
@@ -63,39 +191,58 @@ gg_color_hue <- function(n) {
   grDevices::hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
+#Create all likelihood names
+mod.like.names<-unique(model.summaries$likelihoods_by_fleet$Label)
+build.like.tab<-colnames(model.summaries$likelihoods_by_fleet)
+Fleet.likes<-model.summaries$likelihoods_by_fleet
+mod_sums.temp1<-Fleet.likes[1,]
+mod_sums.temp1[,1:length(mod_sums.temp1)]<-NA
+for(t in 1:model.summaries$n)
+  {
+    mod.labs.in<-subset(Fleet.likes,model==t)$Label
+    add.labs<-mod.like.names[!mod.like.names%in%mod.labs.in]
+    if(length(add.labs)>0)
+    {
+      mod.likes<-mod_sums.temp1%>% slice(rep(1:n(), each = length(add.labs)))    
+      mod.likes[,1]<-t
+      mod.likes[,2]<-add.labs
+      Fleet.likes<-rbind(Fleet.likes,mod.likes)
+    }
+  }
+
 # num.likes<-sum(likelihood.out)*2+2
-num.likes <- dim(model.summaries$likelihoods_by_fleet)[1] # determine how many likelihoods components
+num.likes <- dim(Fleet.likes)[1] # determine how many likelihoods components
 
 if (missing(mod.names)) {
   mod.names <- paste("model ", 1:model.summaries$n)
 }
 
 # grab the survey likelihoods
-if (likelihood.out[1] == 1) {
-  syrvlambda_index <- c(1:num.likes)[model.summaries$likelihoods_by_fleet$Label == "Surv_lambda"]
-  survey.lambda <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[syrvlambda_index, ][-1:-2]), "Survey_lambda")
-  syrvlike_index <- c(1:num.likes)[model.summaries$likelihoods_by_fleet$Label == "Surv_like"]
-  survey.like <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[syrvlike_index, ][-1:-2]), "Survey_likelihood")
+if (likelihood.out[1] == 1 & any(mod.like.names=="Surv_like")) {
+  syrvlambda_index <- c(1:num.likes)[Fleet.likes$Label == "Surv_lambda"]
+  survey.lambda <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[syrvlambda_index, ][-1:-2]), "Survey_lambda")
+  syrvlike_index <- c(1:num.likes)[Fleet.likes$Label == "Surv_like"]
+  survey.like <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[syrvlike_index, ][-1:-2]), "Survey_likelihood")
 } else {
   survey.lambda <- survey.like <- data.frame(t(rep(NA, model.summaries$n + 2)))
 }
 
 # length likelihoods
-if (likelihood.out[2] == 1) {
-  Ltlambda_index <- c(1:num.likes)[model.summaries$likelihoods_by_fleet$Label == "Length_lambda"]
-  Lt.lambda <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[Ltlambda_index, ][-1:-2]), "Lt_lambda")
-  Ltlike_index <- c(1:num.likes)[model.summaries$likelihoods_by_fleet$Label == "Length_like"]
-  Lt.like <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[Ltlike_index, ][-1:-2]), "Lt_likelihood")
+if (likelihood.out[2] == 1 & any(mod.like.names=="Length_like")) {
+  Ltlambda_index <- c(1:num.likes)[Fleet.likes$Label == "Length_lambda"]
+  Lt.lambda <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Ltlambda_index, ][-1:-2]), "Lt_lambda")
+  Ltlike_index <- c(1:num.likes)[Fleet.likes$Label == "Length_like"]
+  Lt.like <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Ltlike_index, ][-1:-2]), "Lt_likelihood")
 } else {
   Lt.lambda <- Lt.like <- data.frame(t(rep(NA, model.summaries$n + 2)))
 }
 
 # age likelihood
-if (likelihood.out[3] == 1) {
-  Agelambda_index <- c(1:num.likes)[model.summaries$likelihoods_by_fleet$Label == "Age_lambda"]
-  Age.lambda <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[Agelambda_index, ][-1:-2]), "Age_lambda")
-  Agelike_index <- c(1:num.likes)[model.summaries$likelihoods_by_fleet$Label == "Age_like"]
-  Age.like <- data.frame(rownames(t(model.summaries$likelihoods_by_fleet))[-1:-2], t(model.summaries$likelihoods_by_fleet[Agelike_index, ][-1:-2]), "Age_likelihood")
+if (likelihood.out[3] == 1 & any(mod.like.names=="Age_like")) {
+  Agelambda_index <- c(1:num.likes)[Fleet.likes$Label == "Age_lambda"]
+  Age.lambda <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Agelambda_index, ][-1:-2]), "Age_lambda")
+  Agelike_index <- c(1:num.likes)[Fleet.likes$Label == "Age_like"]
+  Age.like <- data.frame(rownames(t(Fleet.likes))[-1:-2], t(Fleet.likes[Agelike_index, ][-1:-2]), "Age_likelihood")
 } else {
   Age.lambda <- Age.like <- data.frame(t(rep(NA, model.summaries$n + 2)))
 }
@@ -139,7 +286,6 @@ if (any(model.summaries$nsexes == 2)) {
   )
 } # end two-sex check
 
-browser()
 dev.quants.labs <- data.frame(c("SB0", paste0("SSB_", current.year), 
     paste0("Bratio_", current.year), "MSY_SPR", "F_SPR"), 
     dev.quants, "Derived quantities")
@@ -219,7 +365,7 @@ SPRtarg.lab<-paste0('SPR',model.summaries[["sprtargs"]][1]*100,"%")
     geom_rect(aes(ymin = 1, ymax = model.summaries$n + 1, xmin = -CI_DQs_RE[3], xmax = CI_DQs_RE[3]), fill = NA, color = four.colors[3]) +
     geom_rect(aes(ymin = 1, ymax = model.summaries$n + 1, xmin = -CI_DQs_RE[4], xmax = CI_DQs_RE[4]), fill = NA, color = four.colors[4]) +
     geom_rect(aes(ymin = 1, ymax = model.summaries$n + 1, xmin = -CI_DQs_RE[5], xmax = CI_DQs_RE[5]), fill = NA, color = four.colors[5]) +
-    geom_vline(xintercept = c(TRP, LRP, 0), lty = c(2, 2, 1), color = c("darkgreen", "darkred", "gray")) +
+    geom_vline(xintercept = c(TRP + 0.03, LRP - 0.03, 0), lty = c(2, 2, 1), color = c("darkgreen", "darkred", "gray")) +
     scale_y_continuous(breaks = 2:(model.summaries$n), labels = unique(Dev.quants.ggplot$Model_name)) +
     # scale_y_continuous(limits=ylims.in[1:2])+
     coord_cartesian(xlim = ylims.in[1:2]) +
@@ -256,7 +402,7 @@ SPRtarg.lab<-paste0('SPR',model.summaries[["sprtargs"]][1]*100,"%")
     ) +
     labs(y = "", x = "Relative change") +
     annotate("text", y = anno.x, x = anno.y, label = anno.lab, size = 5, col = 'grey10') +
-    annotate("text", x = c(0, 0), y = c(logTRP + 0.03, logLRP - 0.03), label = c("TRP", "LRP"), size = c(2, 2), color = c("darkgreen", "darkred")) +
+    annotate("text", x = c(0, 0), y = c(TRP + 0.03, LRP - 0.03), label = c("TRP", "LRP"), size = c(2, 2), color = c("darkgreen", "darkred")) +
     #annotate("text", y = c((model.summaries$n + 2), (model.summaries$n + 2)), 
       #x = c(TRP + 0.08, LRP - 0.08), label = c("TRP", "LRP"), size = c(5, 5), color = c("darkgreen", "darkred")) +
     geom_hline(yintercept = c(sensi.type.breaks), lty = lty.in)
@@ -803,11 +949,15 @@ if (plot.figs[6] == 1) {
 
 }
 
+###############################
+### Multi-parameter profile ###
+###############################
+
 profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lifecycle::deprecated(), 
   newctlfile = "control_modified.ss", linenum = NULL, string = NULL, 
   profilevec = NULL, usepar = FALSE, globalpar = FALSE, parlinenum = NULL, 
   parstring = NULL, saveoutput = TRUE, overwrite = TRUE, whichruns = NULL, 
-  prior_check = TRUE, read_like = TRUE, exe = "ss", verbose = TRUE, 
+  prior_check = TRUE, read_like = TRUE, exe = "ss3", verbose = TRUE, 
   ...) 
 {
   orig_wd <- getwd()
@@ -818,6 +968,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
     oldctlfile <- masterctlfile
   }
   check_exe(exe = exe, dir = dir, verbose = verbose)
+  exe_par <- gsub("_.*","",exe)
   if (is.null(linenum) & is.null(string)) {
     stop("You should input either 'linenum' or 'string' (but not both)")
   }
@@ -925,7 +1076,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
       " profile(..., usepar = TRUE).")
   }
   if (usepar) {
-    file.copy("ss.par", "parfile_original_backup.sso")
+    file.copy(paste(exe_par,".par"), "parfile_original_backup.sso")
   }
   for (i in whichruns) {
     newrepfile <- paste("Report", i, ".sso", sep = "")
@@ -956,7 +1107,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
           par <- readLines("parfile_original_backup.sso")
         }
         else {
-          par <- readLines("ss.par")
+          par <- readLines(paste0(exe_par,".par"))
         }
         for (ipar in 1:npars) {
           if (!is.null(parstring)) {
@@ -982,7 +1133,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
         par <- c(par, "#", note)
         message(paste0(note, collapse = "\n"))
         writeLines(par, paste0("ss_input_par", i, ".ss"))
-        writeLines(par, "ss.par")
+        writeLines(par, paste0(exe_par,".par"))
       }
       if (file.exists(stdfile)) {
         file.remove(stdfile)
@@ -990,7 +1141,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
       if (file.exists("Report.sso")) {
         file.remove("Report.sso")
       }
-      run(dir = dir, verbose = verbose, exe = exe, ...)
+      r4ss::run(dir = dir, verbose = verbose, exe = exe, ...)
       converged[i] <- file.exists(stdfile)
       onegood <- FALSE
       if (read_like && file.exists("Report.sso") & file.info("Report.sso")$size > 
@@ -1017,7 +1168,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
           ".sso", sep = ""), overwrite = overwrite)
         file.copy("admodel.hes", paste("admodel", i, 
           ".hes", sep = ""), overwrite = overwrite)
-        file.copy("ss.par", paste("ss.par_", i, ".sso", 
+        file.copy(paste0(exe_par,".par"), paste(paste0(exe_par,".par_"), i, ".sso", 
           sep = ""), overwrite = overwrite)
       }
     }
@@ -1035,3 +1186,4 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
     stop("Error: no good Report.sso files created in profile")
   }
 }
+

@@ -1231,7 +1231,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
             plotOutput("pairs_fast"),
             value=12),
 
-          tabPanel("Jitter exploration",
+          tabPanel("Jitter outputs",
             plotOutput("Jitterplot"),
             h4("Blue values indicate minimum likelihood values; red indicate values higher than the minimum."),  
             h4("Any iteration with a blue value can be used as the new best-fit (reference) model."), 

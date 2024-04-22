@@ -60,13 +60,13 @@ SSS<-function(filepath,
   require(r4ss)
   require(tmvtnorm)
 
-  # VBGF<-function(Linf, k, t0, ages){ 
-  #  Linf * (1 - exp(-k * (ages - t0))) 
-  # } 
+  VBGF<-function(Linf, k, t0, ages){ 
+   Linf * (1 - exp(-k * (ages - t0))) 
+  } 
   
-  # VBGF.age<-function(Linf,k,t0,lt){ 
-  #   t0 - (log(1 - (lt / Linf)) / k) 
-  # } 
+  VBGF.age<-function(Linf,k,t0,lt){ 
+    t0 - (log(1 - (lt / Linf)) / k) 
+  } 
 
 # RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
 #   navigate <- paste("cd ", path, sep="") 
