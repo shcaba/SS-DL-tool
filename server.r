@@ -28,7 +28,9 @@ require(gt)
 require(gtExtras)
 require(stringr)
 require(ggnewscale)
-
+require(future)
+require(parallel)
+require(parallelly)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -104,7 +106,7 @@ if(OS.in=="Windows")
     #shell(command, invisible=TRUE, translate=TRUE)
     r4ss::run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
   } 
-if(OS.in=="Mac")  
+if(OS.in=="Mac" && R.version[["arch"]]=="x86_64")  
   {
     
     command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
@@ -112,6 +114,12 @@ if(OS.in=="Mac")
     
     #command <- paste0(path,"/./ss_mac", ss.cmd) 
     #system(command, invisible=TRUE)
+  } 
+if(OS.in=="Mac" && R.version[["arch"]]=="aarch64")  
+  {
+    
+    command <- c(paste("cd", path), "chmod +x ./ss3_osx_arm64",paste("./ss3_osx_arm64", ss.cmd)) 
+    system(paste(command, collapse=";"),invisible=TRUE)
   } 
 if(OS.in=="Linux") 
   {
@@ -140,12 +148,11 @@ rc <- function(n,alpha=1){
   rich.vector <- apply(rgb.m, 1, function(v) rgb(v[1], v[2], v[3], alpha=alpha))
 }
 
-
 doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
 #UPDATED: - input e and f on 0 to 1 scal and transfrom to logit scale
 #         - changed bin width in peak2 calculation
 #         - updated index of sel when j2 < length(x)
-#   - renamed input parameters, cannot have same names as the logitstic function
+#   - renamed input parameters, cannot have same names as the logistic function
 #         - function not handling f < -1000 correctly
           x<-seq(1,Selpeak+Selpeak,1)
           bin_width <- x[2] - x[1]
@@ -4984,24 +4991,35 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     }
     
   #Run multiple jitters
+    if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
+    if(input$OS_choice=="Mac" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"}
+    if(input$OS_choice=="Mac" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"}
+    if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
+      
     if(input$jitter_choice)
     {
       if(input$Njitter>0)
       {
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[1],text="Run jitters")
          #file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.exe"),paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),overwrite = FALSE)
-         jits<-jitter(
+         if(input$jitter_parallel)
+         {
+          ncores <- parallelly::availableCores(omit = 1)
+          future::plan(future::multisession, workers = ncores)
+         }
+         jits<-r4ss::jitter(
                       dir=paste0(getwd(),"/Scenarios/",input$Scenario_name),
                       Njitter=input$Njitter,
                       printlikes = TRUE,
                       jitter_fraction=input$jitter_fraction,
                       init_values_src=0,
                       verbose=FALSE,
+                      exe = os_exe,
                       extras = "-nohess"
                       )
          
-         profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
-         profilesummary <- SSsummarize(profilemodels)
+         profilemodels <- r4ss::SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
+         profilesummary <- r4ss::SSsummarize(profilemodels)
          minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)],na.rm=TRUE)
          #Find best fit model
          index.minlikes<-c(1:length(minlikes))[minlikes]
@@ -5010,11 +5028,11 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
          
          #Make plot and save to folder
            main.dir<-getwd()
-           if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/Jitter Results")))
+           if(!file.exists(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/Jitter Results")))
           {
-              dir.create(paste0("Scenarios/",input$Scenario_name,"/Jitter Results"))
+              dir.create(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/Jitter Results"))
           }
-           setwd(paste0("Scenarios/",input$Scenario_name,"/Jitter Results"))
+           setwd(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/Jitter Results"))
            png("jitterplot.png")
          jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
          points(c(1:length(jitter.likes))[jitter.likes>ref.like],jitter.likes[jitter.likes>ref.like],type="p",col="black",bg="red",pch=21,cex=1.25)
@@ -5058,7 +5076,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
          #R-run to get new best fit model
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[2],text="Re-run best model post-jitters")
-         file.copy(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
+         file.copy(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss3.par_",(index.minlikes[1]-1),".sso"),paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss3.par"),overwrite = TRUE)
          #file.rename(paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),paste0("Scenarios/",input$Scenario_name,"/ss.exe"),overwrite = FALSE)
              starter.file$init_values_src<-1
              starter.file$jitter_fraction<-0
@@ -5355,26 +5373,26 @@ if(dir.exists(file.path(modeff.dir,modeff.name))==FALSE)
 if(input$Opt_mod==TRUE)
 {
   show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run initial optimization?"))
-  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="/ss3 -nox -mcmc 100 -hbf",OS.in=input$OS_choice)
+  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="-nox -mcmc 100 -hbf",OS.in=input$OS_choice)
 
   remove_modal_spinner()
 }
 
 #Set mcmc model
 show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
-chains <- parallel::detectCores()-1
-m<-"ss3"
+chains <- parallelly::availableCores(omit = 1)
+m<-os_exe
 p<-file.path(modeff.dir,modeff.name)
 #Run MCMC model with either rwm or nuts
  if(input$ModEff_choice=="RWM")
    {
-     fit_model<- sample_rwm(model=m, path=p, iter=input$iter, warmup=0.25*input$iter,
+     fit_model<- adnuts::sample_rwm(model=m, path=p, iter=input$iter, warmup=0.25*input$iter,
                        chains=chains, thin=input$thin, duration=NULL)
    }
 
   if (input$ModEff_choice=="Nuts") 
   {
-    fit_model <- sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
+    fit_model <- adnuts::sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
           chains=chains, cores=4,control=list(metric='mle', max_treedepth=5),mceval=TRUE)
   }
 
@@ -5435,6 +5453,10 @@ save(fit_model,file=paste0(p,"/fit_model.RData"))
       shinyDirChoose(input, "LP_dir", roots=roots,session=session, filetypes=c('', 'txt'))
         return(parseDirPath(roots, input$LP_dir))
       })
+  
+  observeEvent(input$LP_dir,{
+  output$LikeProfPath <- renderText({paste0("Selected scenario folder:\n", pathLP())})
+  })
 
   observeEvent(as.numeric(input$tabs)==4,{      
   pathLP.dir <-pathLP()
@@ -5479,11 +5501,16 @@ observeEvent(input$run_Profiles,{
               param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,","))))))
               #use_prior_like = use_prior_like_in
               )
-
+       
+       if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+       if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
+       if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"} 
+       if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
+       
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
                         run = "profile",
                         profile_details = get,
-                        exe="ss3",
+                        exe=os_exe,
                         prior_check = FALSE))
 
 
@@ -5573,7 +5600,11 @@ observeEvent(input$run_MultiProfiles,{
 #       step_size_in <- as.numeric(trimws(unlist(strsplit(input$Prof_step,","))))
 #       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
 #       colnames(par.df)<-prof_parms_names
-
+      if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+      if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
+      if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"}
+      if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
+       
       if(input$Hess_multi_like==FALSE)
       {
         profile <- profile_multi(
@@ -5585,7 +5616,7 @@ observeEvent(input$run_MultiProfiles,{
           profilevec = par.df,
           extras = "-nohess",
           prior_check=FALSE,
-          exe = "ss3",
+          exe = os_exe,
           show_in_console = TRUE
         )        
       }
@@ -5600,7 +5631,7 @@ observeEvent(input$run_MultiProfiles,{
           string = prof_parms_names,
           profilevec = par.df,
           prior_check=TRUE,
-          exe = "ss3",
+          exe = os_exe,
           show_in_console = TRUE
         )
       }
@@ -5819,14 +5850,20 @@ observeEvent(input$run_MultiProfiles,{
 ###############################
 ####### Retrospectives ########
 ###############################
-      shinyDirChoose(input,"Retro_dir", roots=roots,session=session, filetypes=c('', 'txt'))
+  shinyDirChoose(input,"Retro_dir", roots=roots,session=session, filetypes=c('', 'txt'))
   pathRetro <- reactive({
         return(parseDirPath(roots, input$Retro_dir))
       })
 
+  observeEvent(input$Retro_dir,{
+  output$RetroPath <- renderText({paste0("Selected model folder:\n", pathRetro())})
+  })
 
   observeEvent(input$run_Retro_comps,{
-      
+    if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"} 
+    if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
    #if(input$run_Retro_comps){           
      show_modal_spinner(spin="flower",color=wes_palettes$Royal1[1],text="Running retrospectives")
      mydir_in<-dirname(pathRetro())
@@ -5835,7 +5872,7 @@ observeEvent(input$run_MultiProfiles,{
                         base_name = scenario_in,
                         run = "retro",
                         retro_yrs = input$first_retro_year_in:input$final_retro_year_in,
-                        exe="ss3")
+                        exe = os_exe)
                         )
      run_diagnostics(mydir = mydir_in, model_settings = model_settings)
     # tryCatch({
@@ -5882,6 +5919,10 @@ observeEvent(input$run_MultiProfiles,{
   shinyDirChoose(input, "Sensi_dir", roots=roots,session=session, filetypes=c('', 'txt'))
      return(parseDirPath(roots, input$Sensi_dir))
    })
+
+  observeEvent(input$Sensi_dir,{
+  output$SensiPath <- renderText({paste0("Selected model scenario folder:\n", pathSensi())})
+  })
 
   observeEvent(as.numeric(input$tabs)==6,{
   output$Sensi_model_Ref<-renderUI({
@@ -6070,10 +6111,15 @@ Sensi_plot_horiz(model.summaries=modsummary.sensi,
 ### Ensemble modelling ###
 ##########################
 
-  pathEnsemble <- reactive({
+pathEnsemble <- reactive({
       shinyDirChoose(input, "Ensemble_dir", roots=roots, filetypes=c('', 'txt'))
       return(parseDirPath(roots, input$Ensemble_dir))
-    })
+  })
+
+observeEvent(input$Ensemble_dir,{
+  output$EnsemblePath <- renderText({paste0("Selected model scenario folder:\n", pathEnsemble())})
+  })
+
 #Used to have as.numeric(input$tabs)==4
  observeEvent(as.numeric(input$tabs)==7,{      
   output$Ensemble_model_picks<-renderUI({

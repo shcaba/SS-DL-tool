@@ -829,7 +829,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
   newctlfile = "control_modified.ss", linenum = NULL, string = NULL, 
   profilevec = NULL, usepar = FALSE, globalpar = FALSE, parlinenum = NULL, 
   parstring = NULL, saveoutput = TRUE, overwrite = TRUE, whichruns = NULL, 
-  prior_check = TRUE, read_like = TRUE, exe = "ss", verbose = TRUE, 
+  prior_check = TRUE, read_like = TRUE, exe = "ss3", verbose = TRUE, 
   ...) 
 {
   orig_wd <- getwd()
@@ -840,6 +840,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
     oldctlfile <- masterctlfile
   }
   check_exe(exe = exe, dir = dir, verbose = verbose)
+  exe_par <- gsub("_.*","",exe)
   if (is.null(linenum) & is.null(string)) {
     stop("You should input either 'linenum' or 'string' (but not both)")
   }
@@ -947,7 +948,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
       " profile(..., usepar = TRUE).")
   }
   if (usepar) {
-    file.copy(paste(exe,".par"), "parfile_original_backup.sso")
+    file.copy(paste(exe_par,".par"), "parfile_original_backup.sso")
   }
   for (i in whichruns) {
     newrepfile <- paste("Report", i, ".sso", sep = "")
@@ -978,7 +979,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
           par <- readLines("parfile_original_backup.sso")
         }
         else {
-          par <- readLines(paste0(exe,".par"))
+          par <- readLines(paste0(exe_par,".par"))
         }
         for (ipar in 1:npars) {
           if (!is.null(parstring)) {
@@ -1004,7 +1005,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
         par <- c(par, "#", note)
         message(paste0(note, collapse = "\n"))
         writeLines(par, paste0("ss_input_par", i, ".ss"))
-        writeLines(par, paste0(exe,".par"))
+        writeLines(par, paste0(exe_par,".par"))
       }
       if (file.exists(stdfile)) {
         file.remove(stdfile)
@@ -1012,7 +1013,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
       if (file.exists("Report.sso")) {
         file.remove("Report.sso")
       }
-      run(dir = dir, verbose = verbose, exe = exe, ...)
+      r4ss::run(dir = dir, verbose = verbose, exe = exe, ...)
       converged[i] <- file.exists(stdfile)
       onegood <- FALSE
       if (read_like && file.exists("Report.sso") & file.info("Report.sso")$size > 
@@ -1039,7 +1040,7 @@ profile_multi<-function (dir, oldctlfile = "control.ss_new", masterctlfile = lif
           ".sso", sep = ""), overwrite = overwrite)
         file.copy("admodel.hes", paste("admodel", i, 
           ".hes", sep = ""), overwrite = overwrite)
-        file.copy(paste0(exe,".par"), paste(paste0(exe,".par_"), i, ".sso", 
+        file.copy(paste0(exe_par,".par"), paste(paste0(exe_par,".par_"), i, ".sso", 
           sep = ""), overwrite = overwrite)
       }
     }
