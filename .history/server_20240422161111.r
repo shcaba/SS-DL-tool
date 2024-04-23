@@ -2581,7 +2581,8 @@ if(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.
 
 output$Dep_plot_it<-renderUI({
 if(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)){
-if (is.na(input$Depl_mean_sss)) return(NULL) 
+brpwser()
+if (any(is.null(input$Depl_mean_sss),is.null(input$Depl_SD_sss))) return(NULL) 
 output$Depletion_plot <- renderPlot({ 
       if(!is.na(input$status_year)&!is.na(input$Depl_mean_sss))
         {     
@@ -2609,9 +2610,7 @@ output$Depletion_plot <- renderPlot({
 
 output$Selplot <- renderPlot({ 
 
-if(!is.null(input$Sel50)&!is.null(input$Selpeak))
-    {
-        if(input$Sel_choice=="Logistic"&any(any(input$Sel50[1]=="",is.null(input$Sel50)),any(input$Selpeak[1]=="",is.null(input$Selpeak)))) return(NULL) 
+    if(input$Sel_choice=="Logistic"&any(any(input$Sel50[1]=="",is.null(input$Sel50)),any(input$Selpeak[1]=="",is.null(input$Selpeak)))) return(NULL) 
 
     if(input$Sel_choice=="Logistic")
     {
@@ -2716,15 +2715,14 @@ if(!is.null(input$Sel50)&!is.null(input$Selpeak))
           scale_color_viridis_d() 
       }      
     }
-  }
     if(!is.null(get0("selplot.out"))){return(selplot.out)}
     else(return(NULL))
     }) 
 
 output$Selplot_SSS <- renderPlot({ 
-    if(!is.null(input$Sel50_sss)&!is.null(input$Selpeak_sss))
-    {
-    if(input$Sel_choice_sss=="Logistic"&any(any(any(is.na(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))),input$Sel50_sss[1]=="",is.null(input$Sel50_sss)),any(any(is.na(as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,",")))))),input$Selpeak_sss[1]=="",is.null(input$Selpeak_sss)))) return(NULL) 
+
+    if(input$Sel_choice_sss=="Logistic"&any(any(input$Sel50_sss[1]=="",is.null(input$Sel50_sss)),any(input$Selpeak_sss[1]=="",is.null(input$Selpeak_sss)))) return(NULL) 
+
     if(input$Sel_choice_sss=="Logistic")
     {
       if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))),
@@ -2734,6 +2732,7 @@ output$Selplot_SSS <- renderPlot({
         all(input$Selpeak_sss!=""),
         all(!is.null(input$Selpeak_sss)),
         all(!str_detect(input$Selpeak_sss,"NA"))))
+ 
       {
        Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50_sss,","))))
        Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))
@@ -2758,7 +2757,6 @@ output$Selplot_SSS <- renderPlot({
           scale_color_viridis_d() 
       }
     }
-  
 
   if(input$Sel_choice_sss=="Dome-shaped")
     {
@@ -2794,7 +2792,6 @@ output$Selplot_SSS <- renderPlot({
           xlab("Selectivity") +  
           scale_color_viridis_d() 
       }      
-    }
     }
     if(!is.null(get0("selplot.out"))){return(selplot.out)}
     else(return(NULL))

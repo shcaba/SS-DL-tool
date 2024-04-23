@@ -2725,6 +2725,7 @@ output$Selplot_SSS <- renderPlot({
     if(!is.null(input$Sel50_sss)&!is.null(input$Selpeak_sss))
     {
     if(input$Sel_choice_sss=="Logistic"&any(any(any(is.na(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))),input$Sel50_sss[1]=="",is.null(input$Sel50_sss)),any(any(is.na(as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,",")))))),input$Selpeak_sss[1]=="",is.null(input$Selpeak_sss)))) return(NULL) 
+    browser()
     if(input$Sel_choice_sss=="Logistic")
     {
       if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))),
