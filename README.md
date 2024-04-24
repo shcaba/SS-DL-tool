@@ -6,11 +6,11 @@ For more information on how to use the tool and on the concept of the stock asse
 
 # Installing libraries 
 ```R
-packages<-c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr",
-"tidyr","Rcpp","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy",
-"truncnorm","ggpubr","flextable","officer","gridExtra","wesanderson",
-"data.table","adnuts","shinystan","shinyBS","gt","gtExtras","stringr","ggnewscale","msm","EnvStats","tmvtnorm",
-"future","parallel","parallelly","fs","tools")
+packages<-c("devtools","shiny","shinyjs","ggplot2","reshape2","dplyr","tidyr",
+"Rcpp","rlist","viridis","shinyWidgets","shinyFiles","plyr","shinybusy",
+"truncnorm","ggpubr","flextable","officer","gridExtra","wesanderson","data.table",
+"adnuts","shinystan","shinyBS","gt","gtExtras","stringr","ggnewscale","msm",
+"EnvStats","tmvtnorm","future","parallel","parallelly","fs","tools")
 
 installed_packages <- packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
