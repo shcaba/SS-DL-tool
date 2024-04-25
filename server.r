@@ -95,24 +95,24 @@ saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
   session$doBookmark()
   bookmarkInputPath <- file.path(dirname(bookmarkPath), bookmarkURL, "input.rds")
  
-  if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")))) {
-    dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")), recursive = TRUE)
+  if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")))) {
+    dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")), recursive = TRUE)
   }
  
-  file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds"), overwrite=TRUE)
+  file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds"), overwrite=TRUE)
 
   #save files that are being used for model run
   if(!is.null(rv.Lt$data)){
-    file.copy(from = input$file1$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input$file1$name), overwrite=TRUE)
+    file.copy(from = input$file1$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file1$name), overwrite=TRUE)
   }
   if(!is.null(rv.Ct$data)){
-    file.copy(from = input$file2$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input$file2$name), overwrite=TRUE)
+    file.copy(from = input$file2$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file2$name), overwrite=TRUE)
   }
   if(!is.null(rv.Age$data)){
-    file.copy(from = input$file3$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input$file3$name), overwrite=TRUE)
+    file.copy(from = input$file3$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file3$name), overwrite=TRUE)
   }
   if(!is.null(rv.Index$data)){
-    file.copy(from = input$file4$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input$file4$name), overwrite=TRUE)
+    file.copy(from = input$file4$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file4$name), overwrite=TRUE)
   }
  
   dir_delete(bookmarkPath) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
@@ -2877,13 +2877,13 @@ print(1)
 
       # session$doBookmark()
       # bookmarkInputPath <- file.path(dirname(bookmarkFilePath()), latestBookmarkURL(), "input.rds")
-      # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")))) {
-      #   dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")), recursive = TRUE)
+      # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")))) {
+      #   dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")), recursive = TRUE)
       # }
-      # file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds"), overwrite=TRUE)
+      # file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds"), overwrite=TRUE)
       # for(i in 1:4){
       #   if(!is.null(input[[paste0("file",i)]])){
-      #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
+      #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
       #   }
       # }
       
@@ -3449,14 +3449,14 @@ saveInputs(input, bookmarkFilePath(), latestBookmarkURL(), session)
   # session$doBookmark()
   # bookmarkInputPath <- file.path(dirname(bookmarkFilePath()), latestBookmarkURL(), "input.rds")
   
-  # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")))) {
-  #   dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")), recursive = TRUE)
+  # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")))) {
+  #   dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")), recursive = TRUE)
   # }
   
-  # file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds"), overwrite=TRUE)
+  # file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds"), overwrite=TRUE)
   # for(i in 1:4){
   #   if(!is.null(input[[paste0("file",i)]])){
-  #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
+  #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
   #   }
   # }
   

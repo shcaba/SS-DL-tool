@@ -28,7 +28,11 @@ require(gt)
 require(gtExtras)
 require(stringr)
 require(ggnewscale)
-
+require(future)
+require(parallel)
+require(parallelly)
+require(fs)
+require(tools)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -59,6 +63,7 @@ theme_report <- function(base_size = 11) {
 }
 theme_set(theme_report())
 
+
 shinyServer(function(input, output,session) {
   useShinyjs()
 
@@ -86,130 +91,32 @@ theme_set(theme_report())
 #################
 ### FUNCTIONS ###
 #################
-VBGF<-function(Linf, k, t0, ages){ 
-   Linf * (1 - exp(-k * (ages - t0))) 
-  } 
+saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
+  session$doBookmark()
+  bookmarkInputPath <- file.path(dirname(bookmarkPath), bookmarkURL, "input.rds")
+ 
+  if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")))) {
+    dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")), recursive = TRUE)
+  }
+ 
+  file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds"), overwrite=TRUE)
 
-
-VBGF.age<-function(Linf,k,t0,lt){ 
-    t0 - (log(1 - (lt / Linf)) / k) 
-  } 
-  
-
-RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
-  navigate <- paste("cd ", path, sep="") 
-if(OS.in=="Windows") 
-  {
-    #command <- paste0(navigate," & ", "ss", ss.cmd) 
-    #shell(command, invisible=TRUE, translate=TRUE)
-    run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
-  } 
-if(OS.in=="Mac")  
-  {
-    
-    command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
-    system(paste(command, collapse=";"),invisible=TRUE)
-    
-    #command <- paste0(path,"/./ss_mac", ss.cmd) 
-    #system(command, invisible=TRUE)
-  } 
-if(OS.in=="Linux") 
-  {
-    command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
-    system(paste(command, collapse=";"), invisible=TRUE)
-  }   
-}  
-
-pngfun <- function(wd, file,w=7,h=7,pt=12){
-  file <- file.path(wd, file)
-  cat('writing PNG to',file,'\n')
-  png(filename=file,
-      width=w,height=h,
-      units='in',res=300,pointsize=pt)
+  #save files that are being used for model run
+  if(!is.null(rv.Lt$data)){
+    file.copy(from = input$file1$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file1$name), overwrite=TRUE)
+  }
+  if(!is.null(rv.Ct$data)){
+    file.copy(from = input$file2$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file2$name), overwrite=TRUE)
+  }
+  if(!is.null(rv.Age$data)){
+    file.copy(from = input$file3$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file3$name), overwrite=TRUE)
+  }
+  if(!is.null(rv.Index$data)){
+    file.copy(from = input$file4$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file4$name), overwrite=TRUE)
+  }
+ 
+  dir_delete(bookmarkPath) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
 }
-
-rc <- function(n,alpha=1){
-  # a subset of rich.colors by Arni Magnusson from the gregmisc package
-  # a.k.a. rich.colors.short, but put directly in this function
-  # to try to diagnose problem with transparency on one computer
-  x <- seq(0, 1, length = n)
-  r <- 1/(1 + exp(20 - 35 * x))
-  g <- pmin(pmax(0, -0.8 + 6 * x - 5 * x^2), 1)
-  b <- dnorm(x, 0.25, 0.15)/max(dnorm(x, 0.25, 0.15))
-  rgb.m <- matrix(c(r, g, b), ncol = 3)
-  rich.vector <- apply(rgb.m, 1, function(v) rgb(v[1], v[2], v[3], alpha=alpha))
-}
-
-
-doubleNorm24.sel <- function(Sel50,Selpeak,PeakDesc,LtPeakFinal,FinalSel) {
-#UPDATED: - input e and f on 0 to 1 scal and transfrom to logit scale
-#         - changed bin width in peak2 calculation
-#         - updated index of sel when j2 < length(x)
-#   - renamed input parameters, cannot have same names as the logitstic function
-#         - function not handling f < -1000 correctly
-          x<-seq(1,Selpeak+Selpeak,1)
-          bin_width <- x[2] - x[1]
-          
-          a<- Selpeak
-          b<- -log((max(x)-Selpeak-bin_width)/(PeakDesc-Selpeak-bin_width))
-          c<- log(-((Sel50-Selpeak)^2/log(0.5)))
-          d<- log(LtPeakFinal)
-          e<- -15
-          f<- -log((1/(FinalSel+0.000000001)-1))
-          
-      sel <- rep(NA, length(x))
-      startbin <- 1
-      peak <- a
-      upselex <- exp(c)
-      downselex <- exp(d)
-      final <- f
-      if (e < -1000) {
-          j1 <- -1001 - round(e)
-          sel[1:j1] <- 1e-06
-      }
-      if (e >= -1000) {
-          j1 <- startbin - 1
-          if (e > -999) {
-            point1 <- 1/(1 + exp(-e))
-            t1min <- exp(-(x[startbin] - peak)^2/upselex)
-          }
-      }
-      if (f < -1000)
-          j2 <- -1000 - round(f)
-      if (f >= -1000)
-          j2 <- length(x)
-      peak2 <- peak + bin_width + (0.99 * x[j2] - peak - bin_width)/(1 +
-          exp(-b))
-      if (f > -999) {
-          point2 <- 1/(1 + exp(-final))
-          t2min <- exp(-(x[j2] - peak2)^2/downselex)
-      }
-      t1 <- x - peak
-      t2 <- x - peak2
-      join1 <- 1/(1 + exp(-(20/(1 + abs(t1))) * t1))
-      join2 <- 1/(1 + exp(-(20/(1 + abs(t2))) * t2))
-      if (e > -999)
-          asc <- point1 + (1 - point1) * (exp(-t1^2/upselex) -
-            t1min)/(1 - t1min)
-      if (e <= -999)
-          asc <- exp(-t1^2/upselex)
-      if (f > -999)
-          dsc <- 1 + (point2 - 1) * (exp(-t2^2/downselex) -
-            1)/(t2min - 1)
-      if (f <= -999)
-          dsc <- exp(-(t2)^2/downselex)
-      idx.seq <- (j1 + 1):j2
-      sel[idx.seq] <- asc[idx.seq] * (1 - join1[idx.seq]) + join1[idx.seq] * (1 -
-          join2[idx.seq] + dsc[idx.seq] * join2[idx.seq])
-      if (startbin > 1 && e >= -1000) {
-          sel[1:startbin] <- (x[1:startbin]/x[startbin])^2 *
-            sel[startbin]
-      }
-      if (j2 < length(x))
-          sel[(j2 + 1):length(x)] <- sel[j2]
-      return(cbind(x,sel))
-}
-
 
 ########## Clear data files and plots ############
   rv.Lt <- reactiveValues(data = NULL,clear = FALSE)
@@ -377,11 +284,10 @@ onclick("est_LHparms",id="panel_SS_est")
 
 observe({
 shinyjs::show("Data_panel")
+shinyjs::show("Bookmark_panel")
 hideTab(inputId = "tabs", target = "11")
-#shinyjs::hide("OS_choice")
-#shinyjs::hide("run_SS")
-#shinyjs::hide("run_SSS")
   })
+
 
 #To get the ObserveEvent to work, each statement in req needs to be unique.
 #This explains the workaround of ((as.numeric(input$tabs)*x)/x)<4, where x is the unique type of assessment being run
@@ -389,6 +295,7 @@ hideTab(inputId = "tabs", target = "11")
 
 #Switch back to data from different tabs
 observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -453,6 +360,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 
 #Reset when all things are clicked off
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -513,6 +421,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
 
 #User chosen model
 observeEvent(req(!is.null(input$user_model)&input$user_model), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -575,6 +484,7 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
 
 #SSS panels
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -637,8 +547,9 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 
 #SS-LO panels
 observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
-        shinyjs::show("Existing_files")
+        shinyjs::hide("Existing_files")
         shinyjs::show("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
         if(length(unique(rv.Lt$data[,3]))>1|length(unique(rv.Age$data[,3]))>1){shinyjs::show("panel_ct_wt_LO")}
@@ -704,8 +615,9 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 
 #SS-CL fixed parameters
 observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
-        shinyjs::show("Existing_files")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
         else (shinyjs::hide("panel_data_wt_lt"))
@@ -773,8 +685,9 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
 
 #SS-CL with parameter estimates
 observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
-        shinyjs::show("Existing_files")
+        shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
         if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
         else (shinyjs::hide("panel_data_wt_lt"))
@@ -838,6 +751,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
 
 #Model Efficiency
 observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -903,6 +817,7 @@ observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
 
 #Profiles
 observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -967,6 +882,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
 
 #Retrospecitves
 observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -1031,6 +947,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
 
 #Sensitivities
 observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -1095,6 +1012,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 
 #Ensembles
 observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -1815,7 +1733,7 @@ output$AdvancedSS_nohess<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_hess", label = "Turn off variance estimation (speeds up runs)",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -1823,7 +1741,7 @@ output$AdvancedSS_nohess_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_hess_user", label = "Turn off Hessian (speeds up runs, but no variance estimation)",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
   
@@ -1909,7 +1827,7 @@ output$AdvancedSS_noestabs<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_tables", label = "No exectutive summary tables",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -1917,7 +1835,7 @@ output$AdvancedSS_noestabs_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_tables", label = "No exectutive summary tables",
-        shape = "round", outline = TRUE, status = "info"))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -2327,12 +2245,15 @@ lt.bins.sels<-reactive({
   lt.bins.out<-as.numeric(colnames(lt.bins.freq))
   Sel_mode.out<-mapply(function(x) lt.bins.out[as.numeric(lt.bins.freq[x,])==max(as.numeric(lt.bins.freq[x,]))][1],x=1:nrow(lt.bins.freq))
   Sel_init.out<-mapply(function(x) lt.bins.out[as.numeric(lt.bins.freq[x,])>0][1],x=1:nrow(lt.bins.freq))
-  lt.bins.sel50<-lt.bins.sel95<-Lt.dat.sel[,1:5]
+  Sel_max.out<-mapply(function(x) max(lt.bins.out[lt.bins.freq[x,]>0]),x=1:nrow(lt.bins.freq))
+  lt.bins.sel50<-lt.bins.sel95<-lt.bins.selmax<-Lt.dat.sel[,1:5]
   lt.bins.sel50$Sel<-(Sel_init.out+Sel_mode.out)/2
   lt.bins.sel50$SelType<-"Sel50"
   lt.bins.sel95$Sel<-Sel_mode.out
   lt.bins.sel95$SelType<-"Sel95"
-  lt.bins.sels<-rbind(lt.bins.sel50,lt.bins.sel95)
+  lt.bins.selmax$Sel<-Sel_max.out
+  lt.bins.selmax$SelType<-"Last Bin>0"
+  lt.bins.sels<-rbind(lt.bins.sel50,lt.bins.sel95,lt.bins.selmax)
   lt.bins.sels
  })
 
@@ -2392,6 +2313,7 @@ if(!is.null(rv.Lt$data))
       #     rv.Lt$data$Fleet[rv.Lt$data$Fleet==xx]<-fleetnames.ct[xx]
       #   }
       #  }
+       
        Lt.dat.plot<-rv.Lt$data %>%  
 		    rename_all(tolower) %>%  
 		    dplyr::select(-nsamps) %>%  
@@ -2433,16 +2355,49 @@ if(!is.null(rv.Lt$data))
 	    output$Ltplot_it_sel<-renderUI({
     if(!is.null(rv.Lt$data))
     {  
-        output$LtSelplot<-renderPlot({ 
-        if (is.null(rv.Lt$data)) return(NULL) 
-        ggplot(lt.bins.sels())+ 
+       lt.bins.sels.in<-lt.bins.sels()
+       lt.bins.sels.in$L50<--10
+       lt.bins.sels.in$Linf<--10
+       output$LtSelplot<-renderPlot({ 
+        if (is.null(rv.Lt$data)) return(NULL)
+
+          LtSelplot.out<-ggplot(lt.bins.sels.in)+ 
           geom_point(aes(Year,Sel,col=SelType))+
           guides(color = guide_legend(title = " ")) +
-          geom_smooth(method=loess,se=FALSE,aes(Year,Sel,col=SelType))+
-          facet_grid(~Fleet, scales="free_y",labeller = label_both)+
+          geom_smooth(method=loess,se=FALSE,aes(Year,Sel,col=SelType))+		    
+         facet_grid(~Fleet, scales="free_y",labeller = label_both)+
             xlab("Year") + 
             ylab("Size (cm)") + 
-            scale_fill_viridis_d()
+            scale_fill_viridis_d()+
+            ylim(min(lt.bins.sels.in$Sel),NA)
+ 
+#        if(!is.na(Linf())){
+#         #browser()
+#         lt.bins.sels.in$Linf[lt.bins.sels.in$Sex==0|lt.bins.sels.in$Sex==1]<-Linf()
+#         lt.bins.sels.in$Linf[lt.bins.sels.in$Sex==2]<-Linf_m_in()
+#         LtSelplot.out<-geom_hline(data=lt.bins.sels.in,
+#                     aes(yintercept = Linf),
+#                     colour = "darkgreen",
+#                     na.rm = TRUE)
+#  #                   scale_linetype_manual(name = NULL, values = 3)
+#         }
+#         if(!is.na(L50()))
+#         {
+#           lt.bins.sels.in$L50[lt.bins.sels.in$Sex==0|lt.bins.sels.in$Sex==1]<-L50()
+#         geom_hline(data=lt.bins.sels.in,
+#                     aes(yintercept = L50),
+#                     colour = "#d26678",
+#                     na.rm = TRUE)
+#                     #scale_linetype_manual(name = NULL, values = 1)
+#         }
+ 
+#        new_scale("linetype") +
+        
+ 
+          #   if(!is.na(L50())){LtSelplot.out<-LtSelplot.out+geom_hline(yintercept = L50(),
+          #           colour = "darkgreen",lty=1,linetype="dashed")+
+          #           annotate("text", x = min(lt.bins.sels()$Year)+1, y = L50(), label = "Lmat50", hjust = 1)}
+           return(LtSelplot.out)
       })
     }
       })
@@ -2665,6 +2620,7 @@ if(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.
 
 output$Dep_plot_it<-renderUI({
 if(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)){
+if (is.na(input$Depl_mean_sss)) return(NULL) 
 output$Depletion_plot <- renderPlot({ 
       if(!is.na(input$status_year)&!is.na(input$Depl_mean_sss))
         {     
@@ -2692,15 +2648,20 @@ output$Depletion_plot <- renderPlot({
 
 output$Selplot <- renderPlot({ 
 
-    if(input$Sel_choice=="Logistic"&any(any(input$Sel50[1]=="",is.null(input$Sel50)),any(input$Selpeak[1]=="",is.null(input$Selpeak)))) return(NULL) 
+if(!is.null(input$Sel50)&!is.null(input$Selpeak))
+    {
+        if(input$Sel_choice=="Logistic"&any(any(input$Sel50[1]=="",is.null(input$Sel50)),any(input$Selpeak[1]=="",is.null(input$Selpeak)))) return(NULL) 
 
     if(input$Sel_choice=="Logistic")
     {
+
       if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))),
         all(input$Sel50!=""),
         all(!is.null(input$Sel50)),
+        all(!str_detect(input$Sel50,"NA")),
         all(input$Selpeak!=""),
-        all(!is.null(input$Selpeak))))
+        all(!is.null(input$Selpeak)),
+        all(!str_detect(input$Selpeak,"NA"))))
       {
        Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50,","))))
        Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak,","))))
@@ -2794,21 +2755,24 @@ output$Selplot <- renderPlot({
           scale_color_viridis_d() 
       }      
     }
+  }
     if(!is.null(get0("selplot.out"))){return(selplot.out)}
     else(return(NULL))
     }) 
 
 output$Selplot_SSS <- renderPlot({ 
-
-    if(input$Sel_choice_sss=="Logistic"&any(any(input$Sel50_sss[1]=="",is.null(input$Sel50_sss)),any(input$Selpeak_sss[1]=="",is.null(input$Selpeak_sss)))) return(NULL) 
-
+    if(!is.null(input$Sel50_sss)&!is.null(input$Selpeak_sss))
+    {
+    if(input$Sel_choice_sss=="Logistic"&any(any(any(is.na(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))),input$Sel50_sss[1]=="",is.null(input$Sel50_sss)),any(any(is.na(as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,",")))))),input$Selpeak_sss[1]=="",is.null(input$Selpeak_sss)))) return(NULL) 
     if(input$Sel_choice_sss=="Logistic")
     {
       if(all(length(as.numeric(trimws(unlist(strsplit(input$Sel50_sss,",")))))==length(as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))),
         all(input$Sel50_sss!=""),
+        all(!str_detect(input$Sel50_sss,"NA")),
         all(!is.null(input$Sel50_sss)),
         all(input$Selpeak_sss!=""),
-        all(!is.null(input$Selpeak_sss))))
+        all(!is.null(input$Selpeak_sss)),
+        all(!str_detect(input$Selpeak_sss,"NA"))))
       {
        Sel50<-as.numeric(trimws(unlist(strsplit(input$Sel50_sss,","))))
        Selpeak<-as.numeric(trimws(unlist(strsplit(input$Selpeak_sss,","))))
@@ -2833,6 +2797,7 @@ output$Selplot_SSS <- renderPlot({
           scale_color_viridis_d() 
       }
     }
+  
 
   if(input$Sel_choice_sss=="Dome-shaped")
     {
@@ -2868,6 +2833,7 @@ output$Selplot_SSS <- renderPlot({
           xlab("Selectivity") +  
           scale_color_viridis_d() 
       }      
+    }
     }
     if(!is.null(get0("selplot.out"))){return(selplot.out)}
     else(return(NULL))
@@ -2905,6 +2871,24 @@ print(1)
 	  			file.copy(paste0("SSS_files/sssexample_BH"),paste0("Scenarios"),recursive=TRUE,overwrite=TRUE)
 				file.rename(paste0("Scenarios/sssexample_BH"), paste0("Scenarios/",input$Scenario_name))
 			}
+      
+      #BOOKMARKING: copy inputs rds and uploaded csvs into scenarios folder
+      saveInputs(input, bookmarkFilePath(), latestBookmarkURL(), session)
+
+      # session$doBookmark()
+      # bookmarkInputPath <- file.path(dirname(bookmarkFilePath()), latestBookmarkURL(), "input.rds")
+      # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")))) {
+      #   dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")), recursive = TRUE)
+      # }
+      # file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds"), overwrite=TRUE)
+      # for(i in 1:4){
+      #   if(!is.null(input[[paste0("file",i)]])){
+      #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
+      #   }
+      # }
+      
+      # dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
+
 	  	#if()
 #	  		{
 #	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
@@ -3459,6 +3443,25 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
         }
   }
 
+#BOOKMARKING: copy inputs rds and uploaded csvs into scenarios folder
+saveInputs(input, bookmarkFilePath(), latestBookmarkURL(), session)
+
+  # session$doBookmark()
+  # bookmarkInputPath <- file.path(dirname(bookmarkFilePath()), latestBookmarkURL(), "input.rds")
+  
+  # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")))) {
+  #   dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")), recursive = TRUE)
+  # }
+  
+  # file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds"), overwrite=TRUE)
+  # for(i in 1:4){
+  #   if(!is.null(input[[paste0("file",i)]])){
+  #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
+  #   }
+  # }
+  
+  # dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
+
 # if(!input$use_customfile)
 #   {
 #   }
@@ -3541,7 +3544,8 @@ if(input$Sel_choice=="Dome-shaped")
 		data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
 		data.file$Nages<-input$Nages_in #Nages()
-    data.file$spawn_month<-input$rec_month 
+    if(input$est_parms==F){data.file$spawn_month<-input$rec_month}
+    if(input$est_parms==T){data.file$spawn_month<-input$rec_month_est}
     catch.fleets.Ct<-catch.fleets.Lt<-catch.fleets.Age<-NA
     if(!is.null(rv.Ct$data)){catch.fleets.Ct<-max(ncol(rv.Ct$data)-1)}
     if(all(!is.null(rv.Lt$data),is.null(rv.Ct$data))){catch.fleets.Lt<-max(rv.Lt$data[,3])}
@@ -4943,24 +4947,35 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     }
     
   #Run multiple jitters
+    if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
+    if(input$OS_choice=="Mac" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"}
+    if(input$OS_choice=="Mac" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"}
+    if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
+      
     if(input$jitter_choice)
     {
       if(input$Njitter>0)
       {
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[1],text="Run jitters")
          #file.copy(paste0("Scenarios/",input$Scenario_name,"/ss.exe"),paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),overwrite = FALSE)
-         jits<-jitter(
+         if(input$jitter_parallel)
+         {
+          ncores <- parallelly::availableCores(omit = 1)
+          future::plan(future::multisession, workers = ncores)
+         }
+         jits<-r4ss::jitter(
                       dir=paste0(getwd(),"/Scenarios/",input$Scenario_name),
                       Njitter=input$Njitter,
                       printlikes = TRUE,
                       jitter_fraction=input$jitter_fraction,
                       init_values_src=0,
                       verbose=FALSE,
+                      exe = os_exe,
                       extras = "-nohess"
                       )
          
-         profilemodels <- SSgetoutput(dirvec=paste0("Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
-         profilesummary <- SSsummarize(profilemodels)
+         profilemodels <- r4ss::SSgetoutput(dirvec=paste0(getwd(),"/Scenarios/",input$Scenario_name), keyvec=0:input$Njitter, getcovar=FALSE)
+         profilesummary <- r4ss::SSsummarize(profilemodels)
          minlikes<-profilesummary$likelihoods[1,-length(profilesummary$likelihoods)]==min(profilesummary$likelihoods[1,-length(profilesummary$likelihoods)],na.rm=TRUE)
          #Find best fit model
          index.minlikes<-c(1:length(minlikes))[minlikes]
@@ -4969,11 +4984,11 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
          
          #Make plot and save to folder
            main.dir<-getwd()
-           if(!file.exists(paste0("Scenarios/",input$Scenario_name,"/Jitter Results")))
+           if(!file.exists(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/Jitter Results")))
           {
-              dir.create(paste0("Scenarios/",input$Scenario_name,"/Jitter Results"))
+              dir.create(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/Jitter Results"))
           }
-           setwd(paste0("Scenarios/",input$Scenario_name,"/Jitter Results"))
+           setwd(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/Jitter Results"))
            png("jitterplot.png")
          jitterplot<-plot(c(1:length(jitter.likes)),jitter.likes,type="p",col="black",bg="blue",pch=21,xlab="Jitter run",ylab="-log likelihood value",cex=1.25)
          points(c(1:length(jitter.likes))[jitter.likes>ref.like],jitter.likes[jitter.likes>ref.like],type="p",col="black",bg="red",pch=21,cex=1.25)
@@ -5017,7 +5032,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
          #R-run to get new best fit model
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[2],text="Re-run best model post-jitters")
-         file.copy(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par_",(index.minlikes[1]-1),".sso"),paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss.par"),overwrite = TRUE)
+         file.copy(paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss3.par_",(index.minlikes[1]-1),".sso"),paste0(main.dir,"/Scenarios/",input$Scenario_name,"/ss3.par"),overwrite = TRUE)
          #file.rename(paste0("Scenarios/",input$Scenario_name,"/ss_copy.exe"),paste0("Scenarios/",input$Scenario_name,"/ss.exe"),overwrite = FALSE)
              starter.file$init_values_src<-1
              starter.file$jitter_fraction<-0
@@ -5314,26 +5329,26 @@ if(dir.exists(file.path(modeff.dir,modeff.name))==FALSE)
 if(input$Opt_mod==TRUE)
 {
   show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run initial optimization?"))
-  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="/ss3 -nox -mcmc 100 -hbf",OS.in=input$OS_choice)
+  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="-nox -mcmc 100 -hbf",OS.in=input$OS_choice)
 
   remove_modal_spinner()
 }
 
 #Set mcmc model
 show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
-chains <- parallel::detectCores()-1
-m<-"ss3"
+chains <- parallelly::availableCores(omit = 1)
+m<-os_exe
 p<-file.path(modeff.dir,modeff.name)
 #Run MCMC model with either rwm or nuts
  if(input$ModEff_choice=="RWM")
    {
-     fit_model<- sample_rwm(model=m, path=p, iter=input$iter, warmup=0.25*input$iter,
+     fit_model<- adnuts::sample_rwm(model=m, path=p, iter=input$iter, warmup=0.25*input$iter,
                        chains=chains, thin=input$thin, duration=NULL)
    }
 
   if (input$ModEff_choice=="Nuts") 
   {
-    fit_model <- sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
+    fit_model <- adnuts::sample_nuts(model=m, path=p,  iter=input$iter, warmup=0.25*input$iter, 
           chains=chains, cores=4,control=list(metric='mle', max_treedepth=5),mceval=TRUE)
   }
 
@@ -5394,6 +5409,10 @@ save(fit_model,file=paste0(p,"/fit_model.RData"))
       shinyDirChoose(input, "LP_dir", roots=roots,session=session, filetypes=c('', 'txt'))
         return(parseDirPath(roots, input$LP_dir))
       })
+  
+  observeEvent(input$LP_dir,{
+  output$LikeProfPath <- renderText({paste0("Selected scenario folder:\n", pathLP())})
+  })
 
   observeEvent(as.numeric(input$tabs)==4,{      
   pathLP.dir <-pathLP()
@@ -5401,7 +5420,7 @@ save(fit_model,file=paste0(p,"/fit_model.RData"))
       pickerInput(
       inputId = "myPicker_LP",
       label = "Choose parameters to profile over",
-      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)"),
+      choices = c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male"),
       options = list(
         `actions-box` = TRUE,
         size = 12,
@@ -5421,27 +5440,34 @@ observeEvent(input$run_Profiles,{
        rep.parms.names<-rownames(rep.parms$parameters)
        # SS_parm_names<-c("SR_BH_steep", "SR_LN(R0)","NatM_p_1_Fem_GP_1","L_at_Amax_Fem_GP_1","VonBert_K_Fem_GP_1","CV_young_Fem_GP_1","CV_old_Fem_GP_1","NatM_p_1_Mal_GP_1","L_at_Amax_Mal_GP_1","VonBert_K_Mal_GP_1","CV_young_Mal_GP_1","CV_old_Mal_GP_1")
        #SS_parm_names<-c(rownames(ctl.file$SR_parms)[2], rownames(ctl.file$SR_parms)[1],rownames(ctl.file$MG_parms)[1],rownames(ctl.file$MG_parms)[3],rownames(ctl.file$MG_parms)[4],rownames(ctl.file$MG_parms)[5],rownames(ctl.file$MG_parms)[6],rownames(ctl.file$MG_parms)[13],rownames(ctl.file$MG_parms)[15],rownames(ctl.file$MG_parms)[16],rownames(ctl.file$MG_parms)[17],rownames(ctl.file$MG_parms)[18])
-       SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18],"LnQ_base_Acoustic_Visual(6)")
+       #SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18],"LnQ_base_Acoustic_Visual(6)")
+       SS_parm_names<-c(rep.parms.names[grep("steep",rep.parms.names)], rep.parms.names[grep("R0",rep.parms.names)],rep.parms.names[grep("NatM",rep.parms.names)][1],rep.parms.names[grep("L_at_Amax_Fem",rep.parms.names)],rep.parms.names[grep("K_Fem",rep.parms.names)],rep.parms.names[grep("CV_young_Fem",rep.parms.names)],rep.parms.names[grep("CV_old_Fem",rep.parms.names)],rep.parms.names[grep("NatM",rep.parms.names)][2],rep.parms.names[grep("L_at_Amax_Mal",rep.parms.names)],rep.parms.names[grep("K_Mal",rep.parms.names)],rep.parms.names[grep("CV_young_Mal",rep.parms.names)],rep.parms.names[grep("CV_old_Mal",rep.parms.names)])
        parmnames<-input$myPicker_LP
-       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male","LnQ_base_Acoustic_Visual(6)")
+       parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        
-       prior_like<-starter.file$prior_like
-       use_prior_like_in<-rep(0,length(prof_parms_names))
-       if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
+      #  prior_like<-starter.file$prior_like
+      #  use_prior_like_in<-rep(0,length(prof_parms_names))
+      #  if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
        mydir = dirname(pathLP())
        get = get_settings_profile(parameters =  prof_parms_names,
               low =  as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))),
               high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val,",")))),
               step_size = as.numeric(trimws(unlist(strsplit(input$Prof_step,",")))),
-              param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,",")))))),
-              use_prior_like = use_prior_like_in
+              param_space = rep('real',length(as.numeric(trimws(unlist(strsplit(input$Prof_Low_val,","))))))
+              #use_prior_like = use_prior_like_in
               )
-
+       
+       if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+       if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
+       if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"} 
+       if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
+       
        model_settings = get_settings(settings = list(base_name = basename(pathLP()),
                         run = "profile",
                         profile_details = get,
-                        exe="ss3"))
+                        exe=os_exe,
+                        prior_check = FALSE))
 
 
        try(run_diagnostics(mydir = mydir, model_settings = model_settings))
@@ -5530,7 +5556,11 @@ observeEvent(input$run_MultiProfiles,{
 #       step_size_in <- as.numeric(trimws(unlist(strsplit(input$Prof_step,","))))
 #       par.df<-data.frame(mapply(function(x) seq(low[x],high[x],step_size[x]),x=1:length(low)))
 #       colnames(par.df)<-prof_parms_names
-
+      if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+      if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
+      if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"}
+      if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
+       
       if(input$Hess_multi_like==FALSE)
       {
         profile <- profile_multi(
@@ -5542,7 +5572,7 @@ observeEvent(input$run_MultiProfiles,{
           profilevec = par.df,
           extras = "-nohess",
           prior_check=FALSE,
-          exe = "ss3",
+          exe = os_exe,
           show_in_console = TRUE
         )        
       }
@@ -5557,7 +5587,7 @@ observeEvent(input$run_MultiProfiles,{
           string = prof_parms_names,
           profilevec = par.df,
           prior_check=TRUE,
-          exe = "ss3",
+          exe = os_exe,
           show_in_console = TRUE
         )
       }
@@ -5776,14 +5806,20 @@ observeEvent(input$run_MultiProfiles,{
 ###############################
 ####### Retrospectives ########
 ###############################
-      shinyDirChoose(input,"Retro_dir", roots=roots,session=session, filetypes=c('', 'txt'))
+  shinyDirChoose(input,"Retro_dir", roots=roots,session=session, filetypes=c('', 'txt'))
   pathRetro <- reactive({
         return(parseDirPath(roots, input$Retro_dir))
       })
 
+  observeEvent(input$Retro_dir,{
+  output$RetroPath <- renderText({paste0("Selected model folder:\n", pathRetro())})
+  })
 
   observeEvent(input$run_Retro_comps,{
-      
+    if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"} 
+    if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
    #if(input$run_Retro_comps){           
      show_modal_spinner(spin="flower",color=wes_palettes$Royal1[1],text="Running retrospectives")
      mydir_in<-dirname(pathRetro())
@@ -5792,7 +5828,7 @@ observeEvent(input$run_MultiProfiles,{
                         base_name = scenario_in,
                         run = "retro",
                         retro_yrs = input$first_retro_year_in:input$final_retro_year_in,
-                        exe="ss3")
+                        exe = os_exe)
                         )
      run_diagnostics(mydir = mydir_in, model_settings = model_settings)
     # tryCatch({
@@ -5839,6 +5875,10 @@ observeEvent(input$run_MultiProfiles,{
   shinyDirChoose(input, "Sensi_dir", roots=roots,session=session, filetypes=c('', 'txt'))
      return(parseDirPath(roots, input$Sensi_dir))
    })
+
+  observeEvent(input$Sensi_dir,{
+  output$SensiPath <- renderText({paste0("Selected model scenario folder:\n", pathSensi())})
+  })
 
   observeEvent(as.numeric(input$tabs)==6,{
   output$Sensi_model_Ref<-renderUI({
@@ -6027,10 +6067,15 @@ Sensi_plot_horiz(model.summaries=modsummary.sensi,
 ### Ensemble modelling ###
 ##########################
 
-  pathEnsemble <- reactive({
+pathEnsemble <- reactive({
       shinyDirChoose(input, "Ensemble_dir", roots=roots, filetypes=c('', 'txt'))
       return(parseDirPath(roots, input$Ensemble_dir))
-    })
+  })
+
+observeEvent(input$Ensemble_dir,{
+  output$EnsemblePath <- renderText({paste0("Selected model scenario folder:\n", pathEnsemble())})
+  })
+
 #Used to have as.numeric(input$tabs)==4
  observeEvent(as.numeric(input$tabs)==7,{      
   output$Ensemble_model_picks<-renderUI({
@@ -6236,6 +6281,56 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
     remove_modal_spinner()       
 #       return(Ensemble.outputs)
     })
+  
+  observeEvent(input$loadInputs, {
+      sessionName <- file_path_sans_ext(input$loadInputs$name)
+      sessionName <- str_replace_all(sessionName, "[^[:alnum:]]", "")
+      #use doBookmark to get the file location of bookmarks
+      session$doBookmark()
+      targetPath <- file.path(dirname(bookmarkFilePath()), sessionName, "input.rds")
+      dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to grab the filepath
+
+      if(!dir.exists(dirname(targetPath))) {
+        dir.create(dirname(targetPath), recursive = TRUE)
+      }
+
+      file.copy(
+        from = input$loadInputs$datapath,
+        to = targetPath,
+        overwrite = TRUE
+      )
+
+      restoreURL <- paste0(session$clientData$url_protocol, "//", session$clientData$url_hostname, ":", session$clientData$url_port, session$clientData$url_pathname, "?_state_id_=", sessionName)
+
+      # redirect user to restoreURL
+      runjs(sprintf("window.location = '%s';", restoreURL))
+
+    })
+
+    latestBookmarkURL <- reactiveVal()
+    bookmarkFilePath <- reactiveVal()
+    
+    onBookmark(function(state) {
+      bookmarkFilePath(state$dir) #don't use dirname here as we need the specific folder name for deletion
+    })
+
+    onBookmarked(
+      fun = function(url) {
+        latestBookmarkURL(parseQueryString(url))
+      }
+    )
+    
+    setBookmarkExclude(c("file1","file2","file3","file4", "run_SS", "run_SSS"))
+
+    onRestored(function(state) {
+      showNotification(paste("Restored session:", basename(state$dir)), duration = 10, type = "message")
+      showModal(modalDialog(
+        title = "Inputs Loaded",
+        paste("Restored session:", basename(state$dir))
+      ))
+    })
+
+  
   #})
 
 #observeEvent(req(input$run_Ensemble&exists("Ensemble.outputs()")),{
@@ -6256,4 +6351,4 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       # },deleteFile=FALSE)
 })
 
-enableBookmarking(store = "server")
+#enableBookmarking(store = "server")
