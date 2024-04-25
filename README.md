@@ -1,8 +1,10 @@
 
 # The Stock Assessment Continuum Tool (previously Stock Synthesis Data-Limited Tool)
 
-The Stock Assessment Continuum Tool was developed by Dr. Jason Cope (NWFSC - NOAA) and uses Stock Synthesis (SS3) (Methot and Wetzel 2013) to implement a variety of assessment configurations. This tool was initially built to implement several standard data-limited assessment methods within the SS3 modeling framework. Now, it has been expanded to be able to implement more complex and data-rich configurations. The tool builds Stock Synthesis input files for provided data and life history information. Under a unified framework, additional data and SS3 options can be added as it becomes available, either within the tool itself, if that feature would be useful to the wider community of stock assessment scientists, or options can be changed directly in the Stock Synthesis input files (example input files used by the tool found [here](https://github.com/shcaba/SS-DL-tool/tree/master/SSS_files/sssexample_BH)). It produces full plots and tables for each model run via the [{r4ss}](https://github.com/r4ss/r4ss) package and additional screen output for straightforward interpretation. The [Stock Synthesis team](https://github.com/nmfs-stock-synthesis) endorses this tool as a way to help users provide input data and model settings rather than changing the SS3 text-based input files directly. Eidi Kikuchi and Dr. Luis Gustavo Cardoso have assisted with the following user guide. 
+The Stock Assessment Continuum Tool was developed by Dr. Jason Cope (NWFSC - NOAA) and uses Stock Synthesis (SS3) (Methot and Wetzel 2013) to implement a variety of assessment configurations. This tool was initially built to implement several standard data-limited assessment methods within the SS3 modeling framework. Now, it has been expanded to be able to implement more complex and data-rich configurations. The tool builds Stock Synthesis input files for provided data and life history information. Under a unified framework, additional data and SS3 options can be added as it becomes available, either within the tool itself, if that feature would be useful to the wider community of stock assessment scientists, or options can be changed directly in the Stock Synthesis input files (example input files used by the tool found [here](https://github.com/shcaba/SS-DL-tool/tree/master/SSS_files/sssexample_BH)). It produces full plots and tables for each model run via the [{r4ss}](https://github.com/r4ss/r4ss) package and additional screen output for straightforward interpretation. The [Stock Synthesis team](https://github.com/nmfs-stock-synthesis) endorses this tool as a way to help users provide input data and model settings rather than changing the SS3 text-based input files directly.  
 For more information on how to use the tool and on the concept of the stock assessment continuum, please see this [video](https://www.youtube.com/watch?v=NFJPoFJ9qyo).
+
+THANK YOU to the following people who have contributed signigicantly to this application:  Luis Gustavo Cardoso, Eidi Kikuchi, Elizabeth Perl, Brian Snouffer, and Ben Williams. 
 
 # Installing libraries 
 ```R
@@ -39,11 +41,12 @@ Some users run into issues with the intial installation.
 The most common issues (and solutions) are 
 
 1. Libraries do not properly install.  
-SOLUTIONS: 
+
+**SOLUTIONS:** 
   - If you open the ui.r and server.r in RStudio, required libraries that are uninstalled should show up at the top of the text editor
   - If you run the app for the first time, look at the R console to make sure all libraries loaded properly. If some don't, you will need to install those libraries.
   - Pay particular attention to the libraries that are installed from GitHub. Those may not always install or update properly, so double check their presence. Some agencies do not allow the use of GitHub, thus they are unable to install from GitHub. If this is the case, you may be able to access the tar.gz file from the website noted in the installation error message. You can then use the install function to call that file to load the library. 
-  - There are some libraries that may be installed, but need to be updated. If you have any other instances of R open, you will need to close all instances before updating libraries. I highly encourage keeping all libraries relatively up to date. I also encourage updating R every few months to a couple times a year.
+  - There are some libraries that may be installed, but need to be updated. If you have any other instances of R open, you will need to close all instances before updating libraries. I highly encourage keeping all libraries relatively up to date. I also encourage updating R every few months to a couple times a year. Some librararies may refuse to update (e.g., curl). If this is the case, uninstall the library and reinstall it, then restart R. Always restart R once a library is either installed or updated to make sure the most recent version is being used.
   - The app may open, but when you try a model run, it crashes. There still may be some libraries that have not been installed. Look at and around the error message in the R console to see if it refers to a missing library. 
 
 2. Model folder locations
@@ -90,6 +93,22 @@ I recommend using the "`Run External`" option within the "`Run App`" button
 
 ![Imagem3b](https://github.com/shcaba/SS-DL-tool/blob/master/images/Imagem3b.png)
 
+# Model inputs and outputs
+
+## Model input
+The SAC tool allows for a variety of model specification depending on the data that are available. Model inputs can be based on 
+- Manual input.
+- Using a .rds file. The .rds file is produced by each model (input.rds) in the "Scenario_input" file, and it is a bookmark of all values from the given model scenario. This can be read into the tool in the "Upload bookmarked inputs" window at the top of the side panel, just above the data inputs. It can be named anything as long as the extension is .rds (i.e., it does not have to be named input.rds). You will find examples of these files for a variety of model specifications using the example data files in the "Bookmark inputs" folder within the "Example data files" folder.
+- Use an existing SS3 model. Clicking this button assumes inputs have been modified by the user directly in the SS3 files. This allows running any SS3 model outside of relying on the app GUI to input model specifications, though there remain some additional options to add to the model if desired.
+
+## Model output
+Each model folder contains 
+- All of the created SS3 files associated with the model. The "Report.sso" file is particularly useful when considering model results.
+- The "Scenario_input" folder that contains the bookmarked model specifications (input.rds file) and a copy of the data files used.
+- An optional "plots" folder that includes all of r4ss diagnostic and results plots from the model (HIGHL RECOMMENDED)
+- An option "tables" folder that includes a variety of summary tables. It is recommended to run this when you have a final model in order to save processing time.
+
+# Running different model types
 # Length-only models
 
 These are akin to LBSPR (Hordyk et al. 2015) and LIME (Rudd and Thorson 2017). Both styles of length-only models can be performed in this tool (determined by the estimation of recruitment), and include a choice between estimating F (this attempts to estimate F based on the length compositions) or constant catch approaches (for stock status only; the estimated F values will not be useful on an absolute scale). These length-only models are still in development, but have been applied many times and provide a solid option for situations with only length, whether a snapshot (1 year) or repeated samples (many years). 
