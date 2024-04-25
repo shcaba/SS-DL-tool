@@ -99,11 +99,11 @@ I recommend using the "`Run External`" option within the "`Run App`" button
 The SAC tool allows for a variety of model specification depending on the data that are available. Model inputs can be based on 
 - Manual input.
 - Using a .rds file. The .rds file is produced by each model (input.rds) in the "Scenario_input" file, and it is a bookmark of all values from the given model scenario. This can be read into the tool in the "Upload bookmarked inputs" window at the top of the side panel, just above the data inputs. It can be named anything as long as the extension is .rds (i.e., it does not have to be named input.rds). You will find examples of these files for a variety of model specifications using the example data files in the "Bookmark inputs" folder within the "Example data files" folder.
-  - CO.rds: Catch-only model
-  - LO.rds: Length-only model
-  - LO_recs_badj.red: Length-only with bias-adjusted recruitment estimation
-  - CL.rds: Catch and length model
-  - CL_estLH.rds: Catch and length model using the estimate life history set-up
+  - **CO.rds**: Catch-only model
+  - **LO.rds**: Length-only model
+  - **LO_recs_badj.rds**: Length-only with bias-adjusted recruitment estimation
+  - **CL.rds**: Catch and length model
+  - **CL_estLH.rds**: Catch and length model using the estimate life history set-up
 - Use an existing SS3 model. Clicking this button assumes inputs have been modified by the user directly in the SS3 files. This allows running any SS3 model outside of relying on the app GUI to input model specifications, though there remain some additional options to add to the model if desired.
 
 ## Model output
