@@ -31,6 +31,8 @@ require(ggnewscale)
 require(future)
 require(parallel)
 require(parallelly)
+require(fs)
+require(tools)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -61,6 +63,7 @@ theme_report <- function(base_size = 11) {
 }
 theme_set(theme_report())
 
+
 shinyServer(function(input, output,session) {
   useShinyjs()
 
@@ -88,7 +91,32 @@ theme_set(theme_report())
 #################
 ### FUNCTIONS ###
 #################
+saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
+  session$doBookmark()
+  bookmarkInputPath <- file.path(dirname(bookmarkPath), bookmarkURL, "input.rds")
+ 
+  if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")))) {
+    dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")), recursive = TRUE)
+  }
+ 
+  file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds"), overwrite=TRUE)
 
+  #save files that are being used for model run
+  if(!is.null(rv.Lt$data)){
+    file.copy(from = input$file1$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input$file1$name), overwrite=TRUE)
+  }
+  if(!is.null(rv.Ct$data)){
+    file.copy(from = input$file2$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input$file2$name), overwrite=TRUE)
+  }
+  if(!is.null(rv.Age$data)){
+    file.copy(from = input$file3$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input$file3$name), overwrite=TRUE)
+  }
+  if(!is.null(rv.Index$data)){
+    file.copy(from = input$file4$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input$file4$name), overwrite=TRUE)
+  }
+ 
+  dir_delete(bookmarkPath) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
+}
 
 ########## Clear data files and plots ############
   rv.Lt <- reactiveValues(data = NULL,clear = FALSE)
@@ -256,11 +284,10 @@ onclick("est_LHparms",id="panel_SS_est")
 
 observe({
 shinyjs::show("Data_panel")
+shinyjs::show("Bookmark_panel")
 hideTab(inputId = "tabs", target = "11")
-#shinyjs::hide("OS_choice")
-#shinyjs::hide("run_SS")
-#shinyjs::hide("run_SSS")
   })
+
 
 #To get the ObserveEvent to work, each statement in req needs to be unique.
 #This explains the workaround of ((as.numeric(input$tabs)*x)/x)<4, where x is the unique type of assessment being run
@@ -268,6 +295,7 @@ hideTab(inputId = "tabs", target = "11")
 
 #Switch back to data from different tabs
 observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -332,6 +360,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 
 #Reset when all things are clicked off
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -392,6 +421,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
 
 #User chosen model
 observeEvent(req(!is.null(input$user_model)&input$user_model), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::show("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -454,6 +484,7 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
 
 #SSS panels
 observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(rv.Ct$data)&is.null(rv.Age$data)&is.null(rv.Index$data)&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -516,6 +547,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 
 #SS-LO panels
 observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.Age$data)),is.null(rv.Ct$data))&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::show("panel_Ct_F_LO")
@@ -583,6 +615,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 
 #SS-CL fixed parameters
 observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -652,6 +685,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
 
 #SS-CL with parameter estimates
 observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data)),all(!is.null(rv.Index$data),!is.null(rv.Ct$data))))&any(is.null(input$user_model),!input$user_model)), {
+        shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -717,6 +751,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
 
 #Model Efficiency
 observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -782,6 +817,7 @@ observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
 
 #Profiles
 observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -846,6 +882,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
 
 #Retrospecitves
 observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -910,6 +947,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
 
 #Sensitivities
 observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -974,6 +1012,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
 
 #Ensembles
 observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
+        shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
         shinyjs::hide("panel_Ct_F_LO")
@@ -2832,6 +2871,24 @@ print(1)
 	  			file.copy(paste0("SSS_files/sssexample_BH"),paste0("Scenarios"),recursive=TRUE,overwrite=TRUE)
 				file.rename(paste0("Scenarios/sssexample_BH"), paste0("Scenarios/",input$Scenario_name))
 			}
+      
+      #BOOKMARKING: copy inputs rds and uploaded csvs into scenarios folder
+      saveInputs(input, bookmarkFilePath(), latestBookmarkURL(), session)
+
+      # session$doBookmark()
+      # bookmarkInputPath <- file.path(dirname(bookmarkFilePath()), latestBookmarkURL(), "input.rds")
+      # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")))) {
+      #   dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")), recursive = TRUE)
+      # }
+      # file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds"), overwrite=TRUE)
+      # for(i in 1:4){
+      #   if(!is.null(input[[paste0("file",i)]])){
+      #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
+      #   }
+      # }
+      
+      # dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
+
 	  	#if()
 #	  		{
 #	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
@@ -3385,6 +3442,25 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
 		    file.rename(paste0("Scenarios/SS_LB_files"), paste0("Scenarios/",input$Scenario_name))
         }
   }
+
+#BOOKMARKING: copy inputs rds and uploaded csvs into scenarios folder
+saveInputs(input, bookmarkFilePath(), latestBookmarkURL(), session)
+
+  # session$doBookmark()
+  # bookmarkInputPath <- file.path(dirname(bookmarkFilePath()), latestBookmarkURL(), "input.rds")
+  
+  # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")))) {
+  #   dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds")), recursive = TRUE)
+  # }
+  
+  # file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", "input.rds"), overwrite=TRUE)
+  # for(i in 1:4){
+  #   if(!is.null(input[[paste0("file",i)]])){
+  #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Run_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
+  #   }
+  # }
+  
+  # dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
 
 # if(!input$use_customfile)
 #   {
@@ -6205,6 +6281,56 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
     remove_modal_spinner()       
 #       return(Ensemble.outputs)
     })
+  
+  observeEvent(input$loadInputs, {
+      sessionName <- file_path_sans_ext(input$loadInputs$name)
+      sessionName <- str_replace_all(sessionName, "[^[:alnum:]]", "")
+      #use doBookmark to get the file location of bookmarks
+      session$doBookmark()
+      targetPath <- file.path(dirname(bookmarkFilePath()), sessionName, "input.rds")
+      dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to grab the filepath
+
+      if(!dir.exists(dirname(targetPath))) {
+        dir.create(dirname(targetPath), recursive = TRUE)
+      }
+
+      file.copy(
+        from = input$loadInputs$datapath,
+        to = targetPath,
+        overwrite = TRUE
+      )
+
+      restoreURL <- paste0(session$clientData$url_protocol, "//", session$clientData$url_hostname, ":", session$clientData$url_port, session$clientData$url_pathname, "?_state_id_=", sessionName)
+
+      # redirect user to restoreURL
+      runjs(sprintf("window.location = '%s';", restoreURL))
+
+    })
+
+    latestBookmarkURL <- reactiveVal()
+    bookmarkFilePath <- reactiveVal()
+    
+    onBookmark(function(state) {
+      bookmarkFilePath(state$dir) #don't use dirname here as we need the specific folder name for deletion
+    })
+
+    onBookmarked(
+      fun = function(url) {
+        latestBookmarkURL(parseQueryString(url))
+      }
+    )
+    
+    setBookmarkExclude(c("file1","file2","file3","file4", "run_SS", "run_SSS"))
+
+    onRestored(function(state) {
+      showNotification(paste("Restored session:", basename(state$dir)), duration = 10, type = "message")
+      showModal(modalDialog(
+        title = "Inputs Loaded",
+        paste("Restored session:", basename(state$dir))
+      ))
+    })
+
+  
   #})
 
 #observeEvent(req(input$run_Ensemble&exists("Ensemble.outputs()")),{
