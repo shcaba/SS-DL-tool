@@ -33,6 +33,7 @@ require(parallel)
 require(parallelly)
 require(fs)
 require(tools)
+#require(SSMSE)
 #require(geomtextpath)
 
 #require(paletteer)
@@ -2372,7 +2373,7 @@ if(!is.null(rv.Lt$data))
             ylim(min(lt.bins.sels.in$Sel),NA)
  
 #        if(!is.na(Linf())){
-#         #browser()
+#         
 #         lt.bins.sels.in$Linf[lt.bins.sels.in$Sex==0|lt.bins.sels.in$Sex==1]<-Linf()
 #         lt.bins.sels.in$Linf[lt.bins.sels.in$Sex==2]<-Linf_m_in()
 #         LtSelplot.out<-geom_hline(data=lt.bins.sels.in,
@@ -2549,15 +2550,17 @@ observeEvent(req(!is.null(rv.Age$data)), {
 #####################
 ### Plot M by age ###
 #####################
-output$Mplot<-renderPlot({ 
-			mf.in = M_f_in()+0.000000000000001 
-			mm.in = M_f_in()+0.000000000000001
-#      if(input$male_parms|input$male_parms_fix)
-			if(input$male_parms|input$male_parms_SSS|input$male_parms_fix|input$male_parms_est)
+output$Mplot<-renderPlot({
+      mf.in = M_f_in()+0.000000000000001 
+			mm.in = M_f_in()+0.000000000000001 
+ #      if(input$male_parms|input$male_parms_fix)
+			#if(input$male_parms|input$male_parms_SSS|input$male_parms_fix|input$male_parms_est)
+      if(!is.null(M_m_in()))
         { 
 			     mm.in = M_m_in()+0.000000000000001
 			  }		 
       if(any(is.na(c(mf.in, mm.in)))|any(is.null(c(mf.in, mm.in)))) return(NULL) 
+      #if(any(is.na(c(mf.in, mm.in)))|any(is.null(c(mf.in, mm.in)))|all(is.null(rv.Ct$data),is.null(rv.Lt$data),is.null(rv.Age$data),is.null(rv.Index$data))) return(NULL) 
       Female_M = data.frame(Ages = 0:Nages(), PopN = exp(-mf.in * 0:Nages()), Sex="Female") 
 			Male_M = data.frame(Ages = 0:Nages(), PopN=exp(-mm.in * 0:Nages()), Sex="Male") 
 			M_sexes <- rbind(Female_M, Male_M) 
@@ -2579,8 +2582,9 @@ output$VBGFplot<-renderPlot({
 	  f_L50 = L50() 
 	  f_L95 = L95() 
 	  maxage = Nages() 
-	
-  if(any(input$male_parms,input$male_parms_SSS,input$male_parms_fix,input$male_parms_est))
+#browser()
+  #if(any(input$male_parms,input$male_parms_SSS,input$male_parms_fix,input$male_parms_est))
+  if(all(is.numeric(Linf_m_in()),is.numeric(k_vbgf_m_in()),is.numeric(t0_vbgf_m_in())))
       { 
           m_Linf = Linf_m_in() 
 			   	m_k = k_vbgf_m_in() 
@@ -3234,7 +3238,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 
     sss.prior.name<-c("no prior","symmetric beta","beta","normal","truncated normal","lognormal","truncated lognormal","uniform")
     sss.prior.type<-c(-1,1,2,0,10,3,30,4)
-    #browser()
+    
     Dep.in_sss<-c(sss.prior.type[sss.prior.name==input$Depl_prior_sss],input$Depl_mean_sss,input$Depl_SD_sss)
     
     h.in_sss<-c(sss.prior.type[sss.prior.name==input$h_prior_sss],input$h_mean_sss,input$h_SD_sss)
