@@ -119,6 +119,7 @@ saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
   dir_delete(bookmarkPath) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
 }
 
+
 ########## Clear data files and plots ############
   rv.Lt <- reactiveValues(data = NULL,clear = FALSE)
   rv.Age <- reactiveValues(data = NULL,clear = FALSE)
@@ -278,8 +279,8 @@ observeEvent(req(any(!is.null(rv.Ct$data),!is.null(rv.Lt$data),!is.null(rv.Age$d
   #     shinyjs::reset('file2')
   # })
 
-#####################################################
 
+#####################################################
 onclick("est_LHparms",id="panel_SS_est")
 
 
@@ -4814,13 +4815,13 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     if(is.null(input$no_hess)){
       cmd.in<-""
       if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
 
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
         {
       cmd.in<-" -nohess"
       if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
         }
     }
 
@@ -4830,13 +4831,13 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       {
       cmd.in<-" -nohess"
       if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
       }
       if(!input$no_hess)
       {
       cmd.in<-""
       if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
       }
     }
     }
@@ -4850,13 +4851,13 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     if(is.null(input$no_hess)){
       cmd.in<-""
       if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
 
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
         {
       cmd.in<-" -nohess"
       if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
         }
     }
 
@@ -4866,13 +4867,13 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       {
       cmd.in<-" -nohess"
       if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
       }
       if(!input$no_hess)
       {
       cmd.in<-""
       if(!is.null(input$add_comms)){if(input$add_comms==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
       }
     }
   }
@@ -4882,13 +4883,13 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     if(is.null(input$no_hess_user)){
       cmd.in<-""
       if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
 
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
         {
       cmd.in<-" -nohess"
       if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
         }
     }
 
@@ -4898,13 +4899,13 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       {
       cmd.in<-" -nohess"
       if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
       }
       if(!input$no_hess_user)
       {
       cmd.in<-""
       if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
-      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in,OS.in=input$OS_choice)
+      RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
       }
     }
   }
@@ -4986,10 +4987,10 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     }
     
   #Run multiple jitters
-    if(input$OS_choice=="Windows"){os_exe <- "ss3"} 
-    if(input$OS_choice=="Mac" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"}
-    if(input$OS_choice=="Mac" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"}
-    if(input$OS_choice=="Linux"){os_exe <- "ss3_linux"}
+    if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"} 
+    if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
       
     if(input$jitter_choice)
     {
@@ -5076,7 +5077,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
              starter.file$init_values_src<-1
              starter.file$jitter_fraction<-0
          SS_writestarter(starter.file,paste0(main.dir,"/Scenarios/",input$Scenario_name),overwrite=TRUE)
-         RUN.SS(paste0(main.dir,"/Scenarios/",input$Scenario_name),ss.cmd="",OS.in=input$OS_choice)
+         RUN.SS(paste0(main.dir,"/Scenarios/",input$Scenario_name),ss.cmd="")
          Model.output<-try(SS_output(paste0(main.dir,"/Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE))
           if(class(Model.output)=="try-error")
           {
@@ -5368,7 +5369,7 @@ if(dir.exists(file.path(modeff.dir,modeff.name))==FALSE)
 if(input$Opt_mod==TRUE)
 {
   show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run initial optimization?"))
-  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="-nox -mcmc 100 -hbf",OS.in=input$OS_choice)
+  RUN.SS(file.path(modeff.dir,modeff.name),ss.cmd="-nox -mcmc 100 -hbf")
 
   remove_modal_spinner()
 }
