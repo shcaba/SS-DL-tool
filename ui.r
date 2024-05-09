@@ -1143,11 +1143,6 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
                                  font-size: 16px;
                                  }")),
               uiOutput("Ltplot_it"),
-              textOutput("lt_comp_sel_plots_label"),
-              tags$head(tags$style("#lt_comp_sel_plots_label{color: black;
-                                 font-size: 16px;
-                                 }")),
-              uiOutput("Ltplot_it_sel"),
               textOutput("marginal_age_comp_plots_label"),
               tags$head(tags$style("#marginal_age_comp_plots_label{color: black;
                                  font-size: 16px;
@@ -1169,6 +1164,11 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
             uiOutput("Dep_plot_title"),
             uiOutput("Dep_plot_it"),
             #linebreaks(30),
+              textOutput("lt_comp_sel_plots_label"),
+              tags$head(tags$style("#lt_comp_sel_plots_label{color: black;
+                                 font-size: 16px;
+                                 }")),
+              uiOutput("Ltplot_it_sel"),
             h4("Selectivity"),
             plotOutput("Selplot"),
             plotOutput("Selplot_SSS"),

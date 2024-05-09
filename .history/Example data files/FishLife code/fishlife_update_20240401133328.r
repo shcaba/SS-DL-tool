@@ -10,11 +10,6 @@
 #' species <- c("Gadus morhua", "Centropristis striata", "Paralichthys dentatus")
 #' fishlife(species)
 #' @export
-#' 
-# install.packages("remotes")
-# remotes::install_github("James-Thorson/FishLife")
-# library(FishLife)
-
 fishlife <- function(species){
 
   # Setup container

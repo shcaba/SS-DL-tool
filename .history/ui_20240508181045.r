@@ -16,10 +16,21 @@ shinyUI(fluidPage(theme = "bootstrap.css",
       h5(p("Access the latest version of the Stock Synthesis manual " ,tags$a(href="https://nmfs-ost.github.io/ss3-doc/", "here", target="_blank"))),
       h5(p("Watch a talk on how to use the SAC tool and the concept of the stock assessment continuum " ,tags$a(href="https://www.youtube.com/watch?v=NFJPoFJ9qyo", "here", target="_blank"))),
       br(),
+    # box(title = "Import Input Parameters", width = 12, status = "primary", solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE,
+     # ),
+      br(),
 
 sidebarLayout(
    sidebarPanel(
     style = "position:fixed;width:30%;height: 90vh; overflow-y: scroll;",
+shinyjs::hidden(wellPanel(id="Bookmark_panel",
+          h4(strong("Upload bookmarked inputs")),
+          fluidRow(
+            column(12, h4("Upload a saved input rds file:")),
+            column(12, fileInput("loadInputs", NULL)),
+            column(12, h6("File namess should only inlcude letters and numbers, otherwise an upload error may occur. If you see 'Error: Invalid state id', rename the file and try again."))
+          ))),
+
 shinyjs::hidden(wellPanel(id="Data_panel",
   h4(strong("Choose data file")),
  fluidRow(column(width=12,fileInput('file2', 'Catch time series',
@@ -542,7 +553,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
        ), 
      fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment", value=7,min=0, max=20, step=0.01)),
-           column(width=6,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
+           column(width=6,numericInput("rec_month_est", "Recruitment month", value=1,min=1, max=12, step=0.01))),
   )), 
 
     #      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_ss_prior","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
@@ -642,14 +653,17 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
    ), 
     #Jitter inputs
 #    shinyjs::hidden(wellPanel(id="panel_SS_jitter1",
-    shinyjs::hidden(wellPanel(id="panel_SS_jitter",
+     shinyjs::hidden(wellPanel(id="panel_SS_jitter",
      fluidRow(column(width=10,checkboxInput("jitter_choice","Jitter starting values?",FALSE))),
               uiOutput("Jitter_value"),
               h5("Jittering refers to changing the input starting values."),
               h5("Jittering provides a quick way to adjust starting values for two main purposes:"),
                 tags$ul(tags$li(h5(p("Start the model at different values to assist model convergence.")))),
                 tags$ul(tags$li(h5(p("Validate global versus local model convergence. This requires running many models at different jittered starting values to make sure a lower minimized likelihood value is not found. If a lower likelihood value is found, that would be considered the best fit model.")))),
-              h5("Run just 1 jitter value to find a converged model. Then run multiple jittered models to confrim that model is the best fit model."),
+              h5("Run just 1 jitter value to find a converged model. Then run multiple jittered models to confirm that model is the best fit model."),
+      fluidRow(column(width=10,checkboxInput("jitter_parallel","Run jitters in parallel?",FALSE))),
+              h5("Runs jitters in parallel. Works well if running many jitters. It can run if your machine has only a couple cores, but works best if you have access to a machine or virtual machine with more cores."),
+              h5("See ",a("r4ss::jitter()", href = "https://github.com/r4ss/r4ss/blob/main/R/jitter.R", target="_blank")," for more information or type `?r4ss::jitter()` in your R console")
           )
       ),
 
@@ -813,19 +827,19 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     #  ),
       )
       ),
-shinyjs::hidden(wellPanel(id="SaveSession_panel",
-  h4(p(strong("Save session inputs before model run"))),
-  h5(p("Worried about losing your inputs from a crashed model? Click the 'save session inputs' button BEFORE running the model to save your inputs.")),
-  h5(p("To recovery those inputs, you can paste the link into another webpage. The SS-DL tool needs to be running to recovery another session. Note you will also need to reload data files to see the saved inputs.")),
-  h5(p("You can also retain the link to share or report inputs. Consider adding a text file with the link into any model run folders for future explorations.")),
-br(),
-  bookmarkButton(label="Save session inputs",
-      width="50%",
-      icon("copy"),
-      style="font-size:120%;border:2px solid;color:#FFFFFF;background:#005595"), 
-br(),
-br(),
-)),
+# shinyjs::hidden(wellPanel(id="SaveSession_panel",
+#   h4(p(strong("Save session inputs before model run"))),
+#   h5(p("Worried about losing your inputs from a crashed model? Click the 'save session inputs' button BEFORE running the model to save your inputs.")),
+#   h5(p("To recovery those inputs, you can paste the link into another webpage. The SS-DL tool needs to be running to recovery another session. Note you will also need to reload data files to see the saved inputs.")),
+#   h5(p("You can also retain the link to share or report inputs. Consider adding a text file with the link into any model run folders for future explorations.")),
+# br(),
+#   bookmarkButton(label="Save session inputs",
+#       width="50%",
+#       icon("copy"),
+#       style="font-size:120%;border:2px solid;color:#FFFFFF;background:#005595"), 
+# br(),
+# br(),
+# )),
       shinyjs::hidden(actionButton("run_SS",strong("Run Model"),
       width="100%",
       icon("circle-play"),
@@ -836,8 +850,6 @@ br(),
       icon("circle-play"),
       style="font-size:120%;border:2px solid;color:#FFFFFF; background:#5D9741")),
     
-    br(),
-    br(),
 #################### 
 ### Other panels ###
 ####################
@@ -943,6 +955,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
      title="Choose folder containing model scenarios"
      ),
     br(),
+    h5(strong(textOutput("LikeProfPath", inline = TRUE))),
     br(),
     h4(("Individual likelihood profiles- each parameter run independently.")),  
     h5(em("If choosing multiple parameters to individually profile over, entries should be done in order of the parameters shown and separated by a comma (e.g., 0.1, 0.3).")),  
@@ -1007,6 +1020,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
       title="Choose folder containing model scenarios"
       ),
     br(),
+    h5(strong(textOutput("RetroPath", inline = TRUE))),
     br(),
     #h4(strong("Comparison plot label")),
     h5(strong("Define what years to perform retrospective analysis. Input as a negative integer (e.g., -1 mean remove one year of data)")),
@@ -1043,6 +1057,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
       title="Choose folder containing model scenarios"
       ),
     br(),
+    h5(strong(textOutput("SensiPath", inline = TRUE))),
     br(),
     #h4(strong("Comparison plot label")),
     uiOutput("Sensi_model_Ref"),
@@ -1089,6 +1104,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
       title="Choose folder containing models to combine"
       ),
     br(),
+    h5(strong(textOutput("EnsemblePath", inline = TRUE))),
     br(),
     #h4(strong("Ensemble label")),
     fluidRow(column(width=8,textInput("Ensemble_file", strong("Label ensemble model file"), value="Ensemble 1"))),
@@ -1099,6 +1115,12 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
         icon("circle-play"),
         style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192"),  
   )),
+    br(),
+    br(),
+    br(),
+    br(),
+    br(),
+    br(),
 
   ),
 
@@ -1121,11 +1143,6 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
                                  font-size: 16px;
                                  }")),
               uiOutput("Ltplot_it"),
-              textOutput("lt_comp_sel_plots_label"),
-              tags$head(tags$style("#lt_comp_sel_plots_label{color: black;
-                                 font-size: 16px;
-                                 }")),
-              uiOutput("Ltplot_it_sel"),
               textOutput("marginal_age_comp_plots_label"),
               tags$head(tags$style("#marginal_age_comp_plots_label{color: black;
                                  font-size: 16px;
@@ -1147,6 +1164,11 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
             uiOutput("Dep_plot_title"),
             uiOutput("Dep_plot_it"),
             #linebreaks(30),
+              textOutput("lt_comp_sel_plots_label"),
+              tags$head(tags$style("#lt_comp_sel_plots_label{color: black;
+                                 font-size: 16px;
+                                 }")),
+              uiOutput("Ltplot_it_sel"),
             h4("Selectivity"),
             plotOutput("Selplot"),
             plotOutput("Selplot_SSS"),
@@ -1220,7 +1242,7 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
             plotOutput("pairs_fast"),
             value=12),
 
-          tabPanel("Jitter exploration",
+          tabPanel("Jitter outputs",
             plotOutput("Jitterplot"),
             h4("Blue values indicate minimum likelihood values; red indicate values higher than the minimum."),  
             h4("Any iteration with a blue value can be used as the new best-fit (reference) model."), 
