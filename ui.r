@@ -112,7 +112,16 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         uiOutput("Wt_fleet_Ct"),
       )
     ),
-    
+
+    shinyjs::hidden(wellPanel(id="panel_eqct",
+        h4(strong("Add equilibrium catch for each fleet?")),
+        h5(em("Catches data file assume 0 equilibrium catch. Enter equilibrium catch for each fleet separated by a comma.")),
+        h5(em("This approach can also be used to determine a specific stock status from which to start the entered catch time series.")),
+        h5(em("It may take trial and error of different equilibrium catches to achieve the desired entry stock status.")),
+        uiOutput("Eq_Ct_fleet"),
+      )
+    ),
+
     shinyjs::hidden(wellPanel(id="panel_data_wt_lt",
         h4(strong("Data-weighting")),
         h5(em("Data weighting balances information content of biological data with model structure")),

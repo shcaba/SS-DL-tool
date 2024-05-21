@@ -3,6 +3,7 @@
 
 # Ignore node_modules folder
 Scenarios
+shiny_bookmarks
 
 # Ignore files related to API keys
 .env

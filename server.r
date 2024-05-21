@@ -299,6 +299,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::show("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -364,6 +365,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
         shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::show("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -425,6 +427,7 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::show("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -488,6 +491,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::hide("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -551,6 +555,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::hide("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::show("panel_Ct_F_LO")
         shinyjs::show("panel_data_wt_lt")
         if(length(unique(rv.Lt$data[,3]))>1|length(unique(rv.Age$data[,3]))>1){shinyjs::show("panel_ct_wt_LO")}
@@ -619,6 +624,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::hide("Existing_files")
+        shinyjs::show("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
         else (shinyjs::hide("panel_data_wt_lt"))
@@ -682,6 +688,7 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
        # showTab(inputId = "tabs", target = "4")
        # showTab(inputId = "tabs", target = "5")
        # showTab(inputId = "tabs", target = "6")
+        shinyjs::hide("panel_SSLO_LH")
    })
 
 #SS-CL with parameter estimates
@@ -689,6 +696,7 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
         shinyjs::show("Bookmark_panel")
         shinyjs::show("Data_panel")
         shinyjs::hide("Existing_files")
+        shinyjs::show("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         if(any(!is.null(rv.Lt$data),!is.null(rv.Age$data))){shinyjs::show("panel_data_wt_lt")}
         else (shinyjs::hide("panel_data_wt_lt"))
@@ -755,6 +763,7 @@ observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
         shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -821,6 +830,7 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -886,6 +896,7 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -951,6 +962,7 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -1016,6 +1028,7 @@ observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
         shinyjs::hide("Bookmark_panel")
         shinyjs::hide("Data_panel")
         shinyjs::hide("Existing_files")
+        shinyjs::hide("panel_eqct")
         shinyjs::hide("panel_Ct_F_LO")
         shinyjs::hide("panel_data_wt_lt")
         shinyjs::hide("panel_ct_wt_LO")
@@ -1149,13 +1162,8 @@ output$Model_dims2 <- renderUI({
 # 		}
 # })
 
-output$Wt_fleet_Ct <- renderUI({ 
-      ct.flt<-lt.flt<-age.flt<-index.flt<-NA
-      if(!is.null(rv.Ct$data)){ct.flt<-c(1:(ncol(rv.Ct$data)-1))}
-      if(!is.null(rv.Lt$data)){lt.flt<-rv.Lt$data[,3]}
-      if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
-      if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}    
-      fluidRow(column(width=10,textInput("Wt_fleet_Ct","Relative catch values",value=paste(rep(1,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))
+output$Eq_Ct_fleet <- renderUI({
+      fluidRow(column(width=10,textInput("Eq_Ct_fleet","Equilibrium catch by fleet",value=paste(rep(0,ncol(rv.Ct$data)-1),collapse=","))))
 	}) 
 
 
@@ -2582,7 +2590,7 @@ output$VBGFplot<-renderPlot({
 	  f_L50 = L50() 
 	  f_L95 = L95() 
 	  maxage = Nages() 
-#browser()
+
   #if(any(input$male_parms,input$male_parms_SSS,input$male_parms_fix,input$male_parms_est))
   if(all(is.numeric(Linf_m_in()),is.numeric(k_vbgf_m_in()),is.numeric(t0_vbgf_m_in())))
       { 
@@ -3615,7 +3623,10 @@ if(input$Sel_choice=="Dome-shaped")
 		}
 		data.file$catch<-list.rbind(catch_temp)
 		colnames(data.file$catch)<-catch.cols
-		}
+		#Add user equilibirium catch
+    data.file$catch$catch[data.file$catch$year==-999]<-as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,",")))) 
+    data.file$catch$catch[data.file$catch$year==-999&data.file$catch$catch==0]<-0.00000000000000000001
+    }
 
 
 #Index data
@@ -4496,6 +4507,7 @@ if(input$Sel_choice=="Dome-shaped")
 			rownames(ctl.file$size_selex_parms)<-size_selex_parms_rownames
 		}
 
+
     #Remove surveys from initial F lines and add q and xtra variance lines
     if(!is.null(rv.Index$data)|data.file$Nfleets>catch.fleets)
       {
@@ -4505,6 +4517,8 @@ if(input$Sel_choice=="Dome-shaped")
             ctl.file$init_F<-ctl.file$init_F[-noncatch.fleets,]
 #            ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
           }
+ 
+        #q set-up
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
         q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,0,0,1)))
         if(input$Indexvar){q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,1,0,1)))}
@@ -4649,8 +4663,13 @@ if(input$Sel_choice=="Dome-shaped")
         ctl.file$N_lambdas<-data.file$Nfleets*2
         #ctl.file$lambdas[1,4]<-1
 				# ctl.file$lambdas[2,4]<-0
-				ctl.file$init_F[,3]<-0.00000000000000000001
-				ctl.file$init_F[,7]<--1
+				# browser()
+        ctl.file$init_F$INIT<-0.00000000000000000001
+				ctl.file$init_F$PHASE<--1
+        #Turn on if equilibrium catch > 0
+        ctl.file$init_F$INIT[as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,","))))>0.0000000000001]<-0.01
+        ctl.file$init_F$PHASE[as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,","))))>0.0000000000001]<-1
+
 			}
 
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)
