@@ -100,7 +100,7 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         h5(em("Fishing rate can also be directly estimated from the length composition with no assumption in catches (similar to the LIME approach).")),
         h5(em("This approach is a more variable reponse to estimating stock status, and is best used with continuous years of contemporary data. Recruitment can also be estimated.")),
         h5(em("Recruitment can also be estimated in both approaches.")),
-        fluidRow(column(width=10,selectInput("Ct_F_LO_select","Approach",c("Choose an option","Constant Catch","Estimate F")))),
+        fluidRow(column(width=10,selectInput("Ct_F_LO_select","Approach",c("Constant Catch","Estimate F")))),
       )
     ),
     
@@ -536,7 +536,9 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_LO_prod",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
-     fluidRow(column(width=6,numericInput("h_LO","Steepness", value=0.7,min=0.2, max=1, step=0.01))),
+     fluidRow(column(width=6,selectInput("SR_choice_LO","Stock-recruit type",c("Beverton-Holt","Ricker","B-H flat-top")))),
+     fluidRow(column(width=6,numericInput("h_LO","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
+     column(width=6,numericInput("rec_month_LO", "Recruitment month", value=1,min=1, max=12, step=0.01))),
    #    ),
       )
     ),  
@@ -544,7 +546,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_prod_fixed",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
-     fluidRow(column(width=4,numericInput("h","Beverton-Holt Steepness", value=0.7,min=0.2, max=1, step=0.01)),
+     fluidRow(column(width=6,selectInput("SR_choice_fixed","Stock-recruit type",c("Beverton-Holt","Ricker","B-H flat-top")))),
+     fluidRow(column(width=4,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
       column(width=4,numericInput("lnR0", "Log initial recruitment", value=7,min=0.01, max=20, step=0.01)),
       column(width=4,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
    #    ),
@@ -554,15 +557,16 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_prod_est",
     h4(strong("Stock-recruitment parameters")),
      # wellPanel(
-       dropdownButton(
+       fluidRow(column(width=6,selectInput("SR_choice_est","Stock-recruit type",c("Beverton-Holt","Ricker","B-H flat-top")))), 
+     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment", value=7,min=0, max=20, step=0.01)),
+           column(width=6,numericInput("rec_month_est", "Recruitment month", value=1,min=1, max=12, step=0.01))),
+     dropdownButton(
           selectInput("h_ss_prior","Prior type for steepness",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("h_mean_ss", "Mean", value=0.7,min=0.2, max=1, step=0.001),
           numericInput("h_SD_ss", "SD", value=0.15,min=0, max=10000, step=0.001),
           numericInput("h_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
-       ), 
-     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment", value=7,min=0, max=20, step=0.01)),
-           column(width=6,numericInput("rec_month_est", "Recruitment month", value=1,min=1, max=12, step=0.01))),
+       ),
   )), 
 
     #      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_ss_prior","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),

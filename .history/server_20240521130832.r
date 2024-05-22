@@ -1169,7 +1169,6 @@ output$Wt_fleet_Ct <- renderUI({
       if(!is.null(rv.Age$data)){age.flt<-rv.Age$data[,3]}
       if(!is.null(rv.Index$data)){index.flt<-rv.Index$data[,3]}    
       fluidRow(column(width=10,textInput("Wt_fleet_Ct","Relative catch values",value=paste(rep(1,length(unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))[unique(na.omit(c(ct.flt,lt.flt,age.flt,index.flt)))>0])),collapse=","))))
-})
 
 output$Eq_Ct_fleet <- renderUI({
       fluidRow(column(width=10,textInput("Eq_Ct_fleet","Equilibrium catch by fleet",value=paste(rep(0,ncol(rv.Ct$data)-1),collapse=","))))
@@ -4095,9 +4094,7 @@ if(input$Sel_choice=="Dome-shaped")
       }
         if(input$Ct_F_LO_select=="Estimate F"){ctl.file$SR_parms[1,7]=-1}  #lnR0
         if(input$Ct_F_LO_select=="Constant Catch"){ctl.file$SR_parms[1,7]=1}  #lnR0
-        
-        ctl.file$SR_function<-c(3,2)[c("Beverton-Holt","Ricker")==input$SR_choice_LO]
-        ctl.file$SR_parms[2,3:4]<-input$h_LO     #steepness
+        ctl.file$SR_parms[2,3:4]<-input$h_LO     #steepnesc
 
     }
 

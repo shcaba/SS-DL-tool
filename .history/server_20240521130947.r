@@ -4095,9 +4095,7 @@ if(input$Sel_choice=="Dome-shaped")
       }
         if(input$Ct_F_LO_select=="Estimate F"){ctl.file$SR_parms[1,7]=-1}  #lnR0
         if(input$Ct_F_LO_select=="Constant Catch"){ctl.file$SR_parms[1,7]=1}  #lnR0
-        
-        ctl.file$SR_function<-c(3,2)[c("Beverton-Holt","Ricker")==input$SR_choice_LO]
-        ctl.file$SR_parms[2,3:4]<-input$h_LO     #steepness
+        ctl.file$SR_parms[2,3:4]<-input$h_LO     #steepnesc
 
     }
 
