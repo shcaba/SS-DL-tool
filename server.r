@@ -67,8 +67,144 @@ theme_set(theme_report())
 
 shinyServer(function(input, output,session) {
   useShinyjs()
+  ########## Clear data files and plots ############
+  rv.Lt <- reactiveValues(data = NULL,clear = FALSE)
+  rv.Age <- reactiveValues(data = NULL,clear = FALSE)
+  rv.Ct <- reactiveValues(data = NULL,clear = FALSE)
+  rv.Index <- reactiveValues(data = NULL,clear = FALSE)
+  rv.AgeErr <- reactiveValues(data = NULL,clear = FALSE)
+  
+  
+  volumes <- c(wd='.',getVolumes()())
+  
+  # Choose bookmarked inputs
+  shinyFileChoose(input, id = 'loadInputs', root=volumes, filetypes=c('', 'rds'))
+  
+  observeEvent(req(!is.integer(input$loadInputs)),{
+    inputName <- as.character(unlist(parseFilePaths(volumes, input$loadInputs)[,"name"]))
+    inputDatapath <- as.character(unlist(parseFilePaths(volumes, input$loadInputs)[,"datapath"]))
+    
+    sessionName <- file_path_sans_ext(inputName)
+    # sessionName <- file_path_sans_ext(input$loadInputs$name)
+    # sessionName <- file_path_sans_ext(inputs_name())
+    sessionName <- str_replace_all(sessionName, "[^[:alnum:]]", "")
+    #use doBookmark to get the file location of bookmarks
+    session$doBookmark()
+    targetPath <- file.path(dirname(bookmarkFilePath()), sessionName, "input.rds")
+    dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to grab the filepath
+    
+    if(!dir.exists(dirname(targetPath))) {
+      dir.create(dirname(targetPath), recursive = TRUE)
+    }
+    
+    file.copy(
+      from = inputDatapath,
+      # from = unlist(parseFilePaths(volumes, input$loadInputs)[,"datapath"]),
+      # from = input$loadInputs$datapath,
+      # from = inputs_path(),
+      to = targetPath,
+      overwrite = TRUE
+    )
+    
+    restoreURL <- paste0(session$clientData$url_protocol, "//", session$clientData$url_hostname, ":", session$clientData$url_port, session$clientData$url_pathname, "?_state_id_=", sessionName)
+    
+    # redirect user to restoreURL
+    runjs(sprintf("window.location = '%s';", restoreURL))
+  })
+    
+  # Choose catch files
+  shinyFileChoose(input, id = 'file2', root=volumes, filetypes=c('', 'csv'))
+  catch_path <- reactive(unlist(parseFilePaths(volumes, input$file2)[,"datapath"]))
+  observeEvent(req(!is.integer(input$file2)),{
+    rv.Ct$data <- fread(catch_path(), check.names=FALSE, data.table=FALSE) 
+  })
+  observeEvent(input$file2, {
+    rv.Ct$clear <- FALSE
+  }, priority = 1000)
+  observeEvent(input$reset_ct, {
+    rv.Ct$data <- NULL
+    rv.Ct$clear <- TRUE
+    reset('file2')
+  }, priority = 1000)
+  
+  output$catch_filename <- shiny::renderText({
+    if(is.integer(input$file2) | rv.Ct$clear == TRUE){
+      "Please select catch file"
+    } else {
+      paste0("Selected catch file:\n", catch_path())
+    }
+  })
+  
+  # Choose length files
+  shinyFileChoose(input, id = 'file1', root=volumes, filetypes=c('', 'csv'))
+  length_path <- reactive(unlist(parseFilePaths(volumes, input$file1)[,"datapath"]))
+  observeEvent(req(!is.integer(input$file1)),{
+    rv.Lt$data <- fread(length_path(), check.names=FALSE, data.table=FALSE) 
+  })
+  observeEvent(input$file1, {
+    rv.Lt$clear <- FALSE
+  }, priority = 1000)
+  observeEvent(input$reset_lt, {
+    rv.Lt$data <- NULL
+    rv.Lt$clear <- TRUE
+    reset('file1')
+  }, priority = 1000)
+  
+  output$length_filename <- shiny::renderText({
+    if(is.integer(input$file1) | rv.Lt$clear == TRUE){
+      "Please select length composition file"
+    } else {
+      paste0("Selected length composition file:\n", length_path())
+    }
+  })
+  
+  # Choose age files
+  shinyFileChoose(input, id = 'file3', root=volumes, filetypes=c('', 'csv'))
+  age_path <- reactive(unlist(parseFilePaths(volumes, input$file3)[,"datapath"]))
+  observeEvent(req(!is.integer(input$file3)),{
+    rv.Age$data <- fread(age_path(), check.names=FALSE, data.table=FALSE) 
+  })
+  observeEvent(input$file3, {
+    rv.Age$clear <- FALSE
+  }, priority = 1000)
+  observeEvent(input$reset_age, {
+    rv.Age$data <- NULL
+    rv.Age$clear <- TRUE
+    reset('file3')
+  }, priority = 1000)
+  
+  output$age_filename <- shiny::renderText({
+    if(is.integer(input$file3) | rv.Age$clear == TRUE){
+      "Please select age composition file"
+    } else {
+      paste0("Selected age composition file:\n", age_path())
+    }
+  })
+  
+  # Choose index files
+  shinyFileChoose(input, id = 'file4', root=volumes, filetypes=c('', 'csv'))
+  index_path <- reactive(unlist(parseFilePaths(volumes, input$file4)[,"datapath"]))
+  observeEvent(req(!is.integer(input$file4)),{
+    rv.Index$data <- fread(index_path(), check.names=FALSE, data.table=FALSE) 
+  })
+  observeEvent(input$file4, {
+    rv.Index$clear <- FALSE
+  }, priority = 1000)
+  observeEvent(input$reset_index, {
+    rv.Index$data <- NULL
+    rv.Index$clear <- TRUE
+    reset('file4')
+  }, priority = 1000)
+  
+  output$index_filename <- shiny::renderText({
+    if(is.integer(input$file4) | rv.Index$clear == TRUE){
+      "Please select abundance index file"
+    } else {
+      paste0("Selected abundance index file:\n", index_path())
+    }
+  })
 
- 
+  
 theme_report <- function(base_size = 11) { 
  
   half_line <- base_size/2 
@@ -93,6 +229,7 @@ theme_set(theme_report())
 ### FUNCTIONS ###
 #################
 saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
+  volumes <- getVolumes()()
   session$doBookmark()
   bookmarkInputPath <- file.path(dirname(bookmarkPath), bookmarkURL, "input.rds")
  
@@ -104,135 +241,61 @@ saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
 
   #save files that are being used for model run
   if(!is.null(rv.Lt$data)){
-    file.copy(from = input$file1$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file1$name), overwrite=TRUE)
+    file.copy(from = unlist(parseFilePaths(volumes, input$file1)[,"datapath"]),  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", unlist(parseFilePaths(volumes, input$file1)[,"name"])), overwrite=TRUE)
   }
   if(!is.null(rv.Ct$data)){
-    file.copy(from = input$file2$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file2$name), overwrite=TRUE)
+    file.copy(from = unlist(parseFilePaths(volumes, input$file2)[,"datapath"]),  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", unlist(parseFilePaths(volumes, input$file2)[,"name"])), overwrite=TRUE)
   }
   if(!is.null(rv.Age$data)){
-    file.copy(from = input$file3$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file3$name), overwrite=TRUE)
+    file.copy(from = unlist(parseFilePaths(volumes, input$file3)[,"datapath"]),  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", unlist(parseFilePaths(volumes, input$file3)[,"name"])), overwrite=TRUE)
   }
   if(!is.null(rv.Index$data)){
-    file.copy(from = input$file4$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file4$name), overwrite=TRUE)
+    file.copy(from = unlist(parseFilePaths(volumes, input$file4)[,"datapath"]),  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", unlist(parseFilePaths(volumes, input$file4)[,"name"])), overwrite=TRUE)
   }
  
   dir_delete(bookmarkPath) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
 }
 
-
-########## Clear data files and plots ############
-  rv.Lt <- reactiveValues(data = NULL,clear = FALSE)
-  rv.Age <- reactiveValues(data = NULL,clear = FALSE)
-  rv.Ct <- reactiveValues(data = NULL,clear = FALSE)
-  rv.Index <- reactiveValues(data = NULL,clear = FALSE)
-  rv.AgeErr <- reactiveValues(data = NULL,clear = FALSE)
     
 
 ########
 #Reset catches
-  observe({
-    req(input$file2)
-    req(!rv.Ct$clear)
-    rv.Ct$data <- fread(input$file2$datapath,check.names=FALSE,data.table=FALSE)
-    #L <- readLines(input$file2$datapath, n = 1)
-    #if(grepl(";", L)) {rv.Ct$data <- read.csv2(input$file2$datapath,check.names=FALSE)}
-  })
-
-  observeEvent(input$file2, {
-    rv.Ct$clear <- FALSE
-  }, priority = 1000)
-
-  observeEvent(input$reset_ct, {
-    rv.Ct$data <- NULL
-    rv.Ct$clear <- TRUE
-    reset('file2')
-  }, priority = 1000)
+  # observe({
+  #   req(input$file2)
+  #   req(!rv.Ct$clear)
+  #   rv.Ct$data <- fread(input$file2$datapath,check.names=FALSE,data.table=FALSE)
+  #   #L <- readLines(input$file2$datapath, n = 1)
+  #   #if(grepl(";", L)) {rv.Ct$data <- read.csv2(input$file2$datapath,check.names=FALSE)}
+  # })
 
 #Reset lengths
-  observe({
-    req(input$file1)
-    req(!rv.Lt$clear)
-    rv.Lt$data <- fread(input$file1$datapath,check.names=FALSE,data.table=FALSE)
-    #L <- readLines(input$file1$datapath, n = 1)
-    #rv.Lt$data <- read.csv(input$file1$datapath,check.names=FALSE)
-    #if(grepl(";", L)) {rv.Lt$data <- read.csv2(input$file1$datapath,check.names=FALSE)}
-  })
-
-  observeEvent(input$file1, {
-    rv.Lt$clear <- FALSE
-  }, priority = 1000)
-
-  observeEvent(input$reset_lt, {
-    rv.Lt$data <- NULL
-    rv.Lt$clear <- TRUE
-    reset('file1')
-  }, priority = 1000)
+  # observe({
+  #   req(input$file1)
+  # req(!rv.Lt$clear)
+    # rv.Lt$data <- fread(input$file1$datapath,check.names=FALSE,data.table=FALSE)
+    # L <- readLines(input$file1$datapath, n = 1)
+    # rv.Lt$data <- read.csv(input$file1$datapath,check.names=FALSE)
+    # if(grepl(";", L)) {rv.Lt$data <- read.csv2(input$file1$datapath,check.names=FALSE)}
+  # })
 
 #Reset ages
-  observe({
-    req(input$file3)
-    req(!rv.Age$clear)
-    rv.Age$data <- fread(input$file3$datapath,check.names=FALSE,data.table=FALSE)
-    #L <- readLines(input$file3$datapath, n = 1)
-    #if(grepl(";", L)) {rv.Age$data <- read.csv2(input$file3$datapath,check.names=FALSE)}
-  })
-
-  observeEvent(input$file3, {
-    rv.Age$clear <- FALSE
-  }, priority = 1000)
-
-  observeEvent(input$reset_age, {
-    rv.Age$data <- NULL
-    rv.Age$clear <- TRUE
-    reset('file3')
-  }, priority = 1000)
-
-#Reset ageing error
-  observe({
-    req(input$file33)
-    req(!rv.AgeErr$clear)
-    rv.AgeErr$data <- fread(input$file33$datapath,check.names=FALSE,header=FALSE,data.table=FALSE)
-    #L <- readLines(input$file33$datapath, n = 1)
-    #if(grepl(";", L)) {rv.AgeErr$data <- read.csv2(input$file33$datapath,check.names=FALSE,header=FALSE)}
-  })
-
-  observeEvent(input$file33, {
-    rv.AgeErr$clear <- FALSE
-     if(!input$Ageing_error_choice){
-    rv.AgeErr$data <- NULL
-    rv.AgeErr$clear <- TRUE
-    reset('file33')}
-  }, priority = 1000)
-
-# #  if(!is.null(input$Ageing_error_choice)){       
-#   observeEvent(input$file33, {
-#     if(!input$Ageing_error_choice){
-#     rv.AgeErr$data <- NULL
-#     rv.AgeErr$clear <- TRUE
-#     reset('file33') #}
-#   }, priority = 1000)
- # }
-
+  # observe({
+  #   req(input$file3)
+  #   req(!rv.Age$clear)
+  #   rv.Age$data <- fread(input$file3$datapath,check.names=FALSE,data.table=FALSE)
+  #   #L <- readLines(input$file3$datapath, n = 1)
+  #   #if(grepl(";", L)) {rv.Age$data <- read.csv2(input$file3$datapath,check.names=FALSE)}
+  # })
 
 #Reset index
-  observe({
-    req(input$file4)
-    req(!rv.Index$clear)
-    rv.Index$data <- fread(input$file4$datapath,check.names=FALSE,data.table=FALSE)
-    #L <- readLines(input$file4$datapath, n = 1)
-    #rv.Index$data <- read.csv(input$file4$datapath,check.names=FALSE)
-    #if(grepl(";", L)) {rv.Index$data <- read.csv2(input$file4$datapath,check.names=FALSE,header=FALSE)}
-  })
-
-  observeEvent(input$file4, {
-    rv.Index$clear <- FALSE
-  }, priority = 1000)
-
-  observeEvent(input$reset_index, {
-    rv.Index$data <- NULL
-    rv.Index$clear <- TRUE
-    reset('file4')
-  }, priority = 1000)
+  # observe({
+  #   req(input$file4)
+  #   req(!rv.Index$clear)
+  #   rv.Index$data <- fread(input$file4$datapath,check.names=FALSE,data.table=FALSE)
+  #   #L <- readLines(input$file4$datapath, n = 1)
+  #   #rv.Index$data <- read.csv(input$file4$datapath,check.names=FALSE)
+  #   #if(grepl(";", L)) {rv.Index$data <- read.csv2(input$file4$datapath,check.names=FALSE,header=FALSE)}
+  # })
 
 #Throw an error if fleets are not consecutively represented in all loaded data sets.
 observeEvent(req(any(!is.null(rv.Ct$data),!is.null(rv.Lt$data),!is.null(rv.Age$data),!is.null(rv.Index$data))),{
@@ -6321,57 +6384,65 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
     remove_modal_spinner()       
 #       return(Ensemble.outputs)
     })
+
+  # volumes <- getVolumes()()
   
-  observeEvent(input$loadInputs, {
-      sessionName <- file_path_sans_ext(input$loadInputs$name)
-      sessionName <- str_replace_all(sessionName, "[^[:alnum:]]", "")
-      #use doBookmark to get the file location of bookmarks
-      session$doBookmark()
-      targetPath <- file.path(dirname(bookmarkFilePath()), sessionName, "input.rds")
-      dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to grab the filepath
-
-      if(!dir.exists(dirname(targetPath))) {
-        dir.create(dirname(targetPath), recursive = TRUE)
-      }
-
-      file.copy(
-        from = input$loadInputs$datapath,
-        to = targetPath,
-        overwrite = TRUE
-      )
-
-      restoreURL <- paste0(session$clientData$url_protocol, "//", session$clientData$url_hostname, ":", session$clientData$url_port, session$clientData$url_pathname, "?_state_id_=", sessionName)
-
-      # redirect user to restoreURL
-      runjs(sprintf("window.location = '%s';", restoreURL))
-
-    })
-
-    latestBookmarkURL <- reactiveVal()
-    bookmarkFilePath <- reactiveVal()
-    
-    onBookmark(function(state) {
-      bookmarkFilePath(state$dir) #don't use dirname here as we need the specific folder name for deletion
-    })
-
-    onBookmarked(
-      fun = function(url) {
-        latestBookmarkURL(parseQueryString(url))
-      }
-    )
-    
-    setBookmarkExclude(c("file1","file2","file3","file4", "run_SS", "run_SSS"))
-
-    onRestored(function(state) {
-      showNotification(paste("Restored session:", basename(state$dir)), duration = 10, type = "message")
-      showModal(modalDialog(
-        title = "Inputs Loaded",
-        paste("Restored session:", basename(state$dir))
-      ))
-    })
+  # observeEvent(req(input$loadInputs),{
+  #     volumes <- getVolumes()()
+  #     sessionName <- file_path_sans_ext(unlist(parseFilePaths(volumes, input$loadInputs)[,"name"]))
+  #     # sessionName <- file_path_sans_ext(input$loadInputs$name)
+  #     # sessionName <- file_path_sans_ext(inputs_name())
+  #     sessionName <- str_replace_all(sessionName, "[^[:alnum:]]", "")
+  #     #use doBookmark to get the file location of bookmarks
+  #     session$doBookmark()
+  #     targetPath <- file.path(dirname(bookmarkFilePath()), sessionName, "input.rds")
+  #     dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to grab the filepath
+  # 
+  #     if(!dir.exists(dirname(targetPath))) {
+  #       dir.create(dirname(targetPath), recursive = TRUE)
+  #     }
+  # 
+  #     file.copy(
+  #       from = unlist(parseFilePaths(volumes, input$loadInputs)[,"datapath"]),
+  #       # from = input$loadInputs$datapath,
+  #       # from = inputs_path(),
+  #       to = targetPath,
+  #       overwrite = TRUE
+  #     )
+  # 
+  #     restoreURL <- paste0(session$clientData$url_protocol, "//", session$clientData$url_hostname, ":", session$clientData$url_port, session$clientData$url_pathname, "?_state_id_=", sessionName)
+  # 
+  #     # redirect user to restoreURL
+  #     runjs(sprintf("window.location = '%s';", restoreURL))
+  # })
 
   
-  #})
+  latestBookmarkURL <- reactiveVal()
+  bookmarkFilePath <- reactiveVal()
+    
+  onBookmark(function(state) {
+    bookmarkFilePath(state$dir) #don't use dirname here as we need the specific folder name for deletion
+  })
+
+  onBookmarked(
+     fun = function(url) {
+      latestBookmarkURL(parseQueryString(url))
+    }
+  )
+    
+  setBookmarkExclude(c("file1","file2","file3","file4", "run_SS", "run_SSS"))
+
+  onRestored(function(state) {
+    showNotification(paste("Restored session:", basename(state$dir)), duration = 10, type = "message")
+    showModal(modalDialog(
+      title = "Inputs Loaded",
+      paste("Restored session:", basename(state$dir))
+    ))
+  })
+    
+})
+  
+  # })
 
 #observeEvent(req(input$run_Ensemble&exists("Ensemble.outputs()")),{
  #   
@@ -6389,6 +6460,5 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       #  # height = 300,
       #  style='height:60vh'))
       # },deleteFile=FALSE)
-})
 
 #enableBookmarking(store = "server")
