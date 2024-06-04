@@ -28,58 +28,79 @@ shinyjs::hidden(wellPanel(id="Bookmark_panel",
           h4(strong("Upload bookmarked inputs")),
           fluidRow(
             column(12, h4("Upload a saved input rds file:")),
-            column(12, fileInput("loadInputs", NULL)),
-            column(12, h6("File namess should only inlcude letters and numbers, otherwise an upload error may occur. If you see 'Error: Invalid state id', rename the file and try again."))
+            # column(12, fileInput("loadInputs", NULL)),
+            column(12, shinyFilesButton("loadInputs", label = "Input file", title = "Input file", multiple = FALSE)),
+            column(12, h6("File names should only inlcude letters and numbers, otherwise an upload error may occur. If you see 'Error: Invalid state id', rename the file and try again."))
           ))),
 
 shinyjs::hidden(wellPanel(id="Data_panel",
                           h4(strong("Choose data file")),
-                          fluidRow(column(width=12,fileInput('file2', 'Catch time series',
-                                                             accept = c(
-                                                               'text/csv',
-                                                               'text/comma-separated-values',
-                                                               'text/tab-separated-values',
-                                                               'text/plain',
-                                                               '.csv'
-                                                             )
-                          ))),
-                          
-                          fluidRow(column(width=12,fileInput('file1', 'Length composition',
-                                                             accept = c(
-                                                               'text/csv',
-                                                               'text/comma-separated-values',
-                                                               'text/tab-separated-values',
-                                                               'text/plain',
-                                                               '.csv'
-                                                             )
-                          ))),
-                          
-                          fluidRow(column(width=12,fileInput('file3', 'Age composition',
-                                                             accept = c(
-                                                               'text/csv',
-                                                               'text/comma-separated-values',
-                                                               'text/tab-separated-values',
-                                                               'text/plain',
-                                                               '.csv'
-                                                             )
-                          ))),
-                          
-                          
+                          fluidRow(column(width=12, shinyFilesButton('file2',
+                                                                     label="Catch time series",
+                                                                     title="Catch time series", multiple=FALSE))),
+                          verbatimTextOutput("catch_filename"),
+                          fluidRow(column(width=12, shinyFilesButton('file1',
+                                                                     label="Length composition",
+                                                                     title="Length composition", multiple=FALSE))),
+                          verbatimTextOutput("length_filename"),
+                          fluidRow(column(width=12, shinyFilesButton('file3',
+                                                                     label="Age composition",
+                                                                     title="Age composition", multiple=FALSE))),
+                          verbatimTextOutput("age_filename"),
+                          fluidRow(column(width=12, shinyFilesButton('file4',
+                                                                     label="Abundance index",
+                                                                     title="Abundance index", multiple=FALSE))),
+                          verbatimTextOutput("index_filename"),
+                          # fluidRow(column(width=12, shinyFilesButton('file3', 
+                          #                                            label="Age composition", 
+                          #                                            title="Choose age composition file", multiple=FALSE))),
+                          # verbatimTextOutput("ageFile"),
+                          # fluidRow(column(width=12, shinyFilesButton('file4', 
+                          #                                            label="Abundance index", 
+                          #                                            title="Choose abundance index file", multiple=FALSE))),
+                          # verbatimTextOutput("abundancFile"),
+                          # fluidRow(column(width=12,fileInput('file2', 'Catch time series',
+                          #                                    accept = c(
+                          #                                      'text/csv',
+                          #                                      'text/comma-separated-values',
+                          #                                      'text/tab-separated-values',
+                          #                                      'text/plain',
+                          #                                      '.csv'
+                          #                                    )
+                          # ))),
+                          # fluidRow(column(width=12,fileInput('file1', 'Length composition',
+                          #                                    accept = c(
+                          #                                      'text/csv',
+                          #                                      'text/comma-separated-values',
+                          #                                      'text/tab-separated-values',
+                          #                                      'text/plain',
+                          #                                      '.csv'
+                          #                                    )
+                          # ))),
+                          # fluidRow(column(width=12,fileInput('file3', 'Age composition',
+                          #                                    accept = c(
+                          #                                      'text/csv',
+                          #                                      'text/comma-separated-values',
+                          #                                      'text/tab-separated-values',
+                          #                                      'text/plain',
+                          #                                      '.csv'
+                          #                                    )
+                          # ))),
                           #Mute for now, pull back in when index methods are ready
-                          fileInput('file4', 'Abundance index',
-                                    accept = c(
-                                      'text/csv',
-                                      'text/comma-separated-values',
-                                      'text/tab-separated-values',
-                                      'text/plain',
-                                      '.csv'
-                                    )
-                          ),
+                          # fileInput('file4', 'Abundance index',
+                          #           accept = c(
+                          #             'text/csv',
+                          #             'text/comma-separated-values',
+                          #             'text/tab-separated-values',
+                          #             'text/plain',
+                          #             '.csv'
+                          #           )
+                          # ),
                           h4(strong("Clear data files")),
                              fluidRow(column(width=3,actionButton("reset_ct", "Catches")),
                                       column(width=3,actionButton("reset_lt", "Length")),
                                       column(width=3,actionButton("reset_age", "Ages")),
-                                      column(width=3,actionButton("reset_index", "Index"))), 
+                                      column(width=3,actionButton("reset_index", "Index"))),
                         )
                       ),
 
@@ -737,7 +758,7 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
   
       #popify(uiOutput("AdvancedSS_Sex3"),"Sex=3 option for lengths","This switch changes the per sex length compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the length compositions by sex."),
       #popify(uiOutput("AdvancedSS_AgeSex3"),"Sex=3 option for ages","This switch changes the per sex age compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the age compositions by sex."),
-      popify(uiOutput("AdvancedSS_ageerror"),"Ageing error matrices.","Add as many custom ageing error matrices as needed. See the folders Example data files --> ageing error matrices for examples of the ageing error input."),
+      popify(uiOutput("AdvancedSS_ageerror")," error matrices.","Add as many custom ageing error matrices as needed. See the folders Example data files --> ageing error matrices for examples of the ageing error input."),
       uiOutput("AdvancedSS_ageerror_in"),
       fluidRow(style = "padding-right:50px;padding-left:50px;padding-top:-1000px; padding-bottom:0px;",h6("Software to calculate ageing error matrices from multiple age reads is available ",tags$a(href="https://github.com/pfmc-assessments/nwfscAgeingError", "here", target="_blank"),".")),
       #uiOutput("AdvancedSS_retro_choice"),
