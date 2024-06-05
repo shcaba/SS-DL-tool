@@ -2,7 +2,7 @@
 .DS_store
 
 # Ignore node_modules folder
-Scenarios
+# Scenarios
 shiny_bookmarks
 
 # Ignore files related to API keys
