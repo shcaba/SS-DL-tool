@@ -75,7 +75,7 @@ shinyServer(function(input, output,session) {
   rv.AgeErr <- reactiveValues(data = NULL,clear = FALSE)
   
   
-  volumes <- c(wd='.',getVolumes()())
+  volumes <- c(wd='.', parentdir='..', getVolumes()())
   
   # Choose bookmarked inputs
   shinyFileChoose(input, id = 'loadInputs', root=volumes, filetypes=c('', 'rds'))
@@ -5370,7 +5370,7 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
 ### Likelihood profiles, Sensitivities, and Ensemble models ###
 ###############################################################
 
-  roots <- getVolumes()()  
+  roots <- c(wd='.', parentdir='..', getVolumes()()) 
 
 
   #CODE TO ALLOW USERS TO SAVE OUTPUT SOMEWHERE OTHER THAN SCENARIOS FOLDER 
