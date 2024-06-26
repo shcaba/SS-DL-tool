@@ -48,6 +48,20 @@ The most common issues (and solutions) are
   - Pay particular attention to the libraries that are installed from GitHub. Those may not always install or update properly, so double check their presence. Some agencies do not allow the use of GitHub, thus they are unable to install from GitHub. If this is the case, you may be able to access the tar.gz file from the website noted in the installation error message. You can then use the install function to call that file to load the library. 
   - There are some libraries that may be installed, but need to be updated. If you have any other instances of R open, you will need to close all instances before updating libraries. I highly encourage keeping all libraries relatively up to date. I also encourage updating R every few months to a couple times a year. Some librararies may refuse to update (e.g., curl). If this is the case, uninstall the library and reinstall it, then restart R. Always restart R once a library is either installed or updated to make sure the most recent version is being used.
   - The app may open, but when you try a model run, it crashes. There still may be some libraries that have not been installed. Look at and around the error message in the R console to see if it refers to a missing library. 
+  - Some machines do not allow libraries to be installed using install_github. To overcome this issue, please try the following steps:
+    - Go to your personal GitHub account. In the upper-right corner, click your profile photo and then click Settings. In the left sidebar, click Developer settings. After that, in the left sidebar, click Personal Access Tokens and then click Generate new token. Don't forget to save the new token that was generated.
+    - After the PAT token has been set, run the following lines in RStudio:
+
+    ```R
+    install.packages("gitcreds")
+    library(gitcreds)
+    gitcreds_set()
+    ```
+    - In the console, three choices will popup:
+      1: Keep these credentials
+      2: Replace these credentials
+      3: See the password/token
+      Select number 2 to replace the token (credentials) 
 
 2. Model folder locations
   - Downloading the SAC tool repo should place it somewhere on your local machine. If you have put this folder on the cloud, it will not run. Make sure the app folder is located in an accessible/writeable portion of your local machine.
