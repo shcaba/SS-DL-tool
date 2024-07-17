@@ -15,7 +15,7 @@ identifiers:
     description: GitHub repository
 repository-code: 'https://github.com/shcaba/SS-DL-tool'
 version: 1.1.0
-date-released: 2024-07-04
+data-released: 2024-07-04
 abstract: >
   The Stock Assessment Continuum Tool was developed by Dr.
   Jason Cope (NWFSC - NOAA) and uses Stock Synthesis (SS3)
