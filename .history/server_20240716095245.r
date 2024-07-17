@@ -3147,6 +3147,7 @@ print(1)
 
     #Add other fleets
     if((data.file$Nfleets-1)>1){
+      browser()
       for(i in 1:(data.file$Nfleets-2))
       {
         #ctl.file$init_F<-rbind(ctl.file$init_F,ctl.file$init_F[1,])

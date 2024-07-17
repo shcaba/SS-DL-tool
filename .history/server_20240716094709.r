@@ -3139,7 +3139,7 @@ print(1)
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
-      ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width+0.000000001))
+      ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/((PeakDesc[1]-Selpeak[1]-bin.width)+0.000000001))
       ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
       ctl.file$size_selex_parms[4,3:4]<- log(LtPeakFinal[1])
       ctl.file$size_selex_parms[6,3:4]<- -log((1/(FinalSel[1]+0.000000001)-1))
@@ -3147,6 +3147,7 @@ print(1)
 
     #Add other fleets
     if((data.file$Nfleets-1)>1){
+      browser()
       for(i in 1:(data.file$Nfleets-2))
       {
         #ctl.file$init_F<-rbind(ctl.file$init_F,ctl.file$init_F[1,])
@@ -3169,8 +3170,7 @@ print(1)
         {
           ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
-#          if(PeakDesc[i+1]-Selpeak[i+1]-bin.width<=0 & PeakDesc[i+1]-Selpeak[i+1]-bin.width>-2){Sel2_denom<-+0.000000001}
-          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width+0.000000001))
+          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/((PeakDesc[i+1]-Selpeak[i+1]-bin.width)+0.000000001))
           ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
           ctl.file$size_selex_parms[6*i+4,3:4]<- log(LtPeakFinal[i+1])
           ctl.file$size_selex_parms[6*i+6,3:4]<- -log((1/(FinalSel[i+1]+0.000000001)-1))

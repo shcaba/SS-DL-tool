@@ -1,0 +1,48 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Stock Assessment Continuum Tool
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: 'Jason '
+    family-names: Cope
+    email: jason.cope@noaa.gov
+    affiliation: National Marine Fisheries Service
+    orcid: 'https://orcid.org/0000-0001-7812-6728'
+    name-particle: M.
+identifiers:
+  - type: url
+    value: 'https://github.com/shcaba/SS-DL-tool'
+    description: GitHub repository
+repository-code: 'https://github.com/shcaba/SS-DL-tool'
+abstract: >
+  The Stock Assessment Continuum Tool was developed by Dr.
+  Jason Cope (NWFSC - NOAA) and uses Stock Synthesis (SS3)
+  (Methot and Wetzel 2013) to implement a variety of
+  assessment configurations. This tool was initially built
+  to implement several standard data-limited assessment
+  methods within the SS3 modeling framework. Now, it has
+  been expanded to be able to implement more complex and
+  data-rich configurations. The tool builds Stock Synthesis
+  input files for provided data and life history
+  information. Under a unified framework, additional data
+  and SS3 options can be added as it becomes available,
+  either within the tool itself, if that feature would be
+  useful to the wider community of stock assessment
+  scientists, or options can be changed directly in the
+  Stock Synthesis input files (example input files used by
+  the tool found here). It produces full plots and tables
+  for each model run via the r4ss package and additional
+  screen output for straightforward interpretation. The
+  Stock Synthesis team endorses this tool as a way to help
+  users provide input data and model settings rather than
+  changing the SS3 text-based input files directly.
+keywords:
+  - data-limited
+  - stock assessment
+  - uncertainty analysis
+  - ensemble models
