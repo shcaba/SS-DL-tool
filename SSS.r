@@ -166,6 +166,7 @@ SSS<-function(filepath,
     
     if(length(Dep.in)==3)
     {
+      if(Dep.in[1]<0){Dep.draw<-Dep.in[2]}
       if(Dep.in[1]==2){Dep.draw<-round(1-rbeta.ab(1,1-Dep.in[2],Dep.in[3],0.05,0.95),2)}
       if(Dep.in[1]==3){Dep.draw<-round(rlnorm(1,log(Dep.in[2]),Dep.in[3]),2)}
       if(Dep.in[1]==4){Dep.draw<-round(runif(1,Dep.in[2],Dep.in[3]),2)}
@@ -186,13 +187,14 @@ SSS<-function(filepath,
           M.draw<-0
           while(M.draw<=0)
           {
+          if(M.in[1]<0){M.draw<-M.in[2]}
           if(M.in[1]==0){M.draw<-round(rnorm(1,M.in[2],M.in[3]),3)}
           if(M.in[1]==3){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           if(M.in[1]==4){M.draw<-round(runif(1,M.in[2],M.in[3]),3)}
           Input.draws[i,3]<-M.draw
           }
         }
-      else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
+      #else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
 
       if(sexes==T)
       {
@@ -201,6 +203,7 @@ SSS<-function(filepath,
           M.draw.M<--1
           while(M.draw.M<0)
           {
+          if(M.in[4]<0){M.draw.M<-M.in[5]}
           if(M.in[4]==0){M.draw.M<-round(rnorm(1,M.in[5],M.in[6]),3)}
           if(M.in[4]==3){M.draw.M<-round(rlnorm(1,log(M.in[5]),M.in[6]),3)}
           if(M.in[4]==4){M.draw.M<-round(runif(1,M.in[5],M.in[6]),3)}
@@ -299,17 +302,19 @@ SSS<-function(filepath,
       #Draw Ms
         if(M.in[1]>=0 & length(M.in)==6)
         {
+          if(M.in[1]<0){M.draw<-M.in[2]}
           if(M.in[1]==0){M.draw<-round(rnorm(1,M.in[2],M.in[3]),3)}
           if(M.in[1]==3){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           if(M.in[1]==4){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           Input.draws[i,3]<-M.draw
         }
-        else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
+        #else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
         #Male draws
         if(sexes==T)
           {
             if(length(M.in)==6)
             {
+              if(M.in[4]<0){M.draw.M<-M.in[5]}
               if(M.in[4]==0){M.draw.M<-round(rnorm(1,M.in[5],M.in[6]),3)}
               if(M.in[4]==3){M.draw.M<-round(rlnorm(1,log(M.in[5]),M.in[6]),3)}
               if(M.in[4]==4){M.draw.M<-round(runif(1,M.in[5],M.in[6]),3)}
@@ -388,17 +393,19 @@ SSS<-function(filepath,
       #Draw Ms
         if(M.in[1]>=0 & length(M.in)==6)
         {
+          if(M.in[1]<0){M.draw<-M.in[2]}
           if(M.in[1]==0){M.draw<-round(rnorm(1,M.in[2],M.in[3]),3)}
           if(M.in[1]==3){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           if(M.in[1]==4){M.draw<-round(runif(1,M.in[2],M.in[3]),3)}
           Input.draws[i,3]<-M.draw
         }
-        else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
+        #else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
         #Male draws
         if(sexes==T)
           {
             if(length(M.in)==6)
             {
+              if(M.in[4]<0){M.draw.M<-M.in[5]}
               if(M.in[4]==0){M.draw.M<-round(rnorm(1,M.in[5],M.in[6]),3)}
               if(M.in[4]==3){M.draw.M<-round(rlnorm(1,log(M.in[5]),M.in[6]),3)}
               if(M.in[4]==4){M.draw.M<-round(runif(1,M.in[5],M.in[6]),3)}

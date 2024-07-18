@@ -60,37 +60,37 @@ SSS<-function(filepath,
   require(r4ss)
   require(tmvtnorm)
 
-  VBGF<-function(Linf, k, t0, ages){ 
-   Linf * (1 - exp(-k * (ages - t0))) 
-  } 
+  # VBGF<-function(Linf, k, t0, ages){ 
+  #  Linf * (1 - exp(-k * (ages - t0))) 
+  # } 
   
-  VBGF.age<-function(Linf,k,t0,lt){ 
-    t0 - (log(1 - (lt / Linf)) / k) 
-  } 
+  # VBGF.age<-function(Linf,k,t0,lt){ 
+  #   t0 - (log(1 - (lt / Linf)) / k) 
+  # } 
 
-RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
-  navigate <- paste("cd ", path, sep="") 
-if(OS.in=="Windows") 
-  {
-    #command <- paste0(navigate," & ", "ss", ss.cmd) 
-    #shell(command, invisible=TRUE, translate=TRUE)
-    run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE)
-  } 
-if(OS.in=="Mac")  
-  {
+# RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
+#   navigate <- paste("cd ", path, sep="") 
+# if(OS.in=="Windows") 
+#   {
+#     #command <- paste0(navigate," & ", "ss", ss.cmd) 
+#     #shell(command, invisible=TRUE, translate=TRUE)
+#     run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE)
+#   } 
+# if(OS.in=="Mac")  
+#   {
     
-    command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
-    system(paste(command, collapse=";"),invisible=TRUE)
+#     command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
+#     system(paste(command, collapse=";"),invisible=TRUE)
     
-    #command <- paste0(path,"/./ss_mac", ss.cmd) 
-    #system(command, invisible=TRUE)
-  } 
-if(OS.in=="Linux") 
-  {
-    command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
-    system(paste(command, collapse=";"), invisible=TRUE)
-  }   
-}  
+#     #command <- paste0(path,"/./ss_mac", ss.cmd) 
+#     #system(command, invisible=TRUE)
+#   } 
+# if(OS.in=="Linux") 
+#   {
+#     command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
+#     system(paste(command, collapse=";"), invisible=TRUE)
+#   }   
+# }  
 
   set.seed(seed.in)
   start.time<-Sys.time()
@@ -166,6 +166,7 @@ if(OS.in=="Linux")
     
     if(length(Dep.in)==3)
     {
+      if(Dep.in[1]<0){Dep.draw<-Dep.in[2]}
       if(Dep.in[1]==2){Dep.draw<-round(1-rbeta.ab(1,1-Dep.in[2],Dep.in[3],0.05,0.95),2)}
       if(Dep.in[1]==3){Dep.draw<-round(rlnorm(1,log(Dep.in[2]),Dep.in[3]),2)}
       if(Dep.in[1]==4){Dep.draw<-round(runif(1,Dep.in[2],Dep.in[3]),2)}
@@ -186,6 +187,7 @@ if(OS.in=="Linux")
           M.draw<-0
           while(M.draw<=0)
           {
+          if(M.in[1]<0){M.draw<-M.in[2]}
           if(M.in[1]==0){M.draw<-round(rnorm(1,M.in[2],M.in[3]),3)}
           if(M.in[1]==3){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           if(M.in[1]==4){M.draw<-round(runif(1,M.in[2],M.in[3]),3)}
@@ -201,6 +203,7 @@ if(OS.in=="Linux")
           M.draw.M<--1
           while(M.draw.M<0)
           {
+          if(M.in[4]<0){M.draw.M<-M.in[5]}
           if(M.in[4]==0){M.draw.M<-round(rnorm(1,M.in[5],M.in[6]),3)}
           if(M.in[4]==3){M.draw.M<-round(rlnorm(1,log(M.in[5]),M.in[6]),3)}
           if(M.in[4]==4){M.draw.M<-round(runif(1,M.in[5],M.in[6]),3)}
@@ -299,6 +302,7 @@ if(OS.in=="Linux")
       #Draw Ms
         if(M.in[1]>=0 & length(M.in)==6)
         {
+          if(M.in[1]<0){M.draw<-M.in[2]}
           if(M.in[1]==0){M.draw<-round(rnorm(1,M.in[2],M.in[3]),3)}
           if(M.in[1]==3){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           if(M.in[1]==4){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
@@ -310,6 +314,7 @@ if(OS.in=="Linux")
           {
             if(length(M.in)==6)
             {
+              if(M.in[4]<0){M.draw.M<-M.in[5]}
               if(M.in[4]==0){M.draw.M<-round(rnorm(1,M.in[5],M.in[6]),3)}
               if(M.in[4]==3){M.draw.M<-round(rlnorm(1,log(M.in[5]),M.in[6]),3)}
               if(M.in[4]==4){M.draw.M<-round(runif(1,M.in[5],M.in[6]),3)}
@@ -388,6 +393,7 @@ if(OS.in=="Linux")
       #Draw Ms
         if(M.in[1]>=0 & length(M.in)==6)
         {
+          if(M.in[1]<0){M.draw<-M.in[2]}
           if(M.in[1]==0){M.draw<-round(rnorm(1,M.in[2],M.in[3]),3)}
           if(M.in[1]==3){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           if(M.in[1]==4){M.draw<-round(runif(1,M.in[2],M.in[3]),3)}
@@ -399,6 +405,7 @@ if(OS.in=="Linux")
           {
             if(length(M.in)==6)
             {
+              if(M.in[4]<0){M.draw.M<-M.in[5]}
               if(M.in[4]==0){M.draw.M<-round(rnorm(1,M.in[5],M.in[6]),3)}
               if(M.in[4]==3){M.draw.M<-round(rlnorm(1,log(M.in[5]),M.in[6]),3)}
               if(M.in[4]==4){M.draw.M<-round(runif(1,M.in[5],M.in[6]),3)}
@@ -665,12 +672,13 @@ if(OS.in=="Linux")
     		SB.out[i,]<-SSS.output.list[[i]]$timeseries$SpawnBio
     		TB.out[i,]<-SSS.output.list[[i]]$timeseries$Bio_all
     		SumAge.out[i,]<-SSS.output.list[[i]]$timeseries$Bio_smry
-            Dep.series.out[i,]<-SSS.output.list[[i]]$sprseries$Deplete
+        Dep.series.out[i,]<-SSS.output.list[[i]]$sprseries$Deplete
     		#SPR.out[i,]<-1-as.numeric(strsplit(rep.new[grep(paste("SPRratio_",sb.years[iii]+1,sep=""),rep.new)], " ")[[1]][3])
  	  
     nforecasts<- SSS.output.list[[i]]$nforecastyears
     OFL.out[[i]]<-SSS.output.list[[i]]$derived_quants[paste0("OFLCatch_", c((ts_yrs[2]+1):(ts_yrs[2]+nforecasts))), "Value"]
     ABC.out[[i]]<-SSS.output.list[[i]]$derived_quants[paste0("ForeCatch_", c((ts_yrs[2]+1):(ts_yrs[2]+nforecasts))), "Value"]
+    
   
     #Dep.series.out<-SB.out/SB.out[,1]
     #Quant.out[i,1]<-as.numeric(strsplit(rep.new[grep("NatM_p_1_Fem_GP_1",rep.new)], " ")[[1]][3])
@@ -815,7 +823,7 @@ if(OS.in=="Linux")
         TB.out[i,]<-SSS.output.list[[i]]$timeseries$Bio_all
         SumAge.out[i,]<-SSS.output.list[[i]]$timeseries$Bio_smry
         Dep.series.out[i,]<-SSS.output.list[[i]]$sprseries$Deplete
- 
+
         #Dep.series.out<-SB.out/SB.out[,1]
         Quant.out[i,1]<-SSS.output.list[[i]]$parameters[1,3]
         Quant.out[i,2]<-SSS.output.list[[i]]$parameters[2,3]
