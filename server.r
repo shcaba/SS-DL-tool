@@ -3112,7 +3112,9 @@ print(1)
     if(input$h_ss_prior=="lognormal"){ctl.file$SR_parms[2,3:4]<-c(input$h_mean_ss,log(h_mean_ss))}
     else{ctl.file$SR_parms[2,3:4]<-input$h_mean_ss}        
     #}
-    
+    ctl.file$MainRdevYrFirst<-input$styr	#Start year of recruitment estimation
+		ctl.file$MainRdevYrLast<-input$endyr		#Last year of recruitment estimation
+		
     #
       ctl.file$Q_options[1]<-data.file$Nfleets
     #Selectivity
@@ -3284,7 +3286,6 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_m_prior_sss],input$t0_m_mean_sss,input$t0_m_SD_sss)
     }
       show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
-
 
 #Run SSS
         if(is.na(input$Depl_mean_sss)|input$Depl_mean_sss<0)
