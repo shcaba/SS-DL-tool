@@ -8,34 +8,20 @@ VBGF.age<-function(Linf,k,t0,lt){
   } 
   
 
-RUN.SS<-function(path,ss.cmd=" -nohess -nox",OS.in="Windows"){ 
-  navigate <- paste("cd ", path, sep="") 
-if(OS.in=="Windows") 
-  {
-    #command <- paste0(navigate," & ", "ss", ss.cmd) 
-    #shell(command, invisible=TRUE, translate=TRUE)
-    r4ss::run(path,exe="ss3",extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
-  } 
-if(OS.in=="Mac" && R.version[["arch"]]=="x86_64")  
-  {
-    
-    command <- c(paste("cd", path), "chmod +x ./ss3_osx",paste("./ss3_osx", ss.cmd)) 
+RUN.SS<-function(path,ss.cmd=" -nohess -nox"){ 
+  navigate <- paste("cd ", path, sep="")
+  if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+  if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
+  if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"} 
+  if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
+  
+  if(os_exe=="ss3") 
+    {
+      r4ss::run(path,exe=os_exe,extras=ss.cmd,skipfinished=FALSE,show_in_console = TRUE)
+    } else {
+    command <- c(paste("cd", path), paste0("chmod +x ./", os_exe), paste0("./", os_exe, " ", ss.cmd)) 
     system(paste(command, collapse=";"),invisible=TRUE)
-    
-    #command <- paste0(path,"/./ss_mac", ss.cmd) 
-    #system(command, invisible=TRUE)
-  } 
-if(OS.in=="Mac" && R.version[["arch"]]=="aarch64")  
-  {
-    
-    command <- c(paste("cd", path), "chmod +x ./ss3_osx_arm64",paste("./ss3_osx_arm64", ss.cmd)) 
-    system(paste(command, collapse=";"),invisible=TRUE)
-  } 
-if(OS.in=="Linux") 
-  {
-    command <- c(paste("cd", path), "chmod +x ./ss3_linux",paste("./ss3_linux", ss.cmd)) 
-    system(paste(command, collapse=";"), invisible=TRUE)
-  }   
+    }
 }  
 
 pngfun <- function(wd, file,w=7,h=7,pt=12){
