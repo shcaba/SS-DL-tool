@@ -2386,12 +2386,12 @@ if(!is.null(rv.Lt$data))
        Lt.dat.plot.Linf<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="Linf")
        Lt.dat.plot.L50<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="L50")
        Lt.dat.plot.LAmax<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="LtAmax")
-       colnames(Lt.dat.plot.L50)<-colnames(Lt.dat.plot.Linf)<-colnames(Lt.dat.plot.LAmax)<-c("year","fleet","sex","name","value","Year","vline","Label")
+       colnames(Lt.dat.plot.L50)<-colnames(Lt.dat.plot.Linf)<-c("year","fleet","sex","name","value","Year","vline","Label")
        if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==0|Lt.dat.plot.Linf$sex==1]<-Linf()}
        if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==2]<-Linf_m_in()}
        if(!is.na(L50()))Lt.dat.plot.L50$vline[Lt.dat.plot.L50$sex==0|Lt.dat.plot.L50$sex==1]<-L50()
        if(!is.na(LatAmax()))Lt.dat.plot.LAmax$vline[Lt.dat.plot.LAmax$sex==0|Lt.dat.plot.L50$sex==1]<-LatAmax()
-         
+       if(!is.na(LatAmax()))print(LatAmax())  
         ggplot(Lt.dat.plot) + 
 		    geom_line(aes(name, value, color=Year)) + 
         #geom_col(position="dodge") + 
@@ -2411,7 +2411,7 @@ if(!is.null(rv.Lt$data))
                     aes(xintercept = vline,linetype="LatAmax"),
                     colour = "black",
                     na.rm = TRUE)+
-                    scale_linetype_manual(name = NULL, values = 2)+
+                    scale_linetype_manual(name = NULL, values = 1)+
         facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf",color="#d26678")+
 #        annotate("text",x=if_else(is.na(Linf_m_in()),-1,Linf_m_in())*1.05, y=5, label= "Linf",color="blue")+

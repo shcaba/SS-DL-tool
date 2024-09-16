@@ -2391,7 +2391,7 @@ if(!is.null(rv.Lt$data))
        if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==2]<-Linf_m_in()}
        if(!is.na(L50()))Lt.dat.plot.L50$vline[Lt.dat.plot.L50$sex==0|Lt.dat.plot.L50$sex==1]<-L50()
        if(!is.na(LatAmax()))Lt.dat.plot.LAmax$vline[Lt.dat.plot.LAmax$sex==0|Lt.dat.plot.L50$sex==1]<-LatAmax()
-         
+       if(!is.na(LatAmax()))print(LatAmax())  
         ggplot(Lt.dat.plot) + 
 		    geom_line(aes(name, value, color=Year)) + 
         #geom_col(position="dodge") + 

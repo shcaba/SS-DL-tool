@@ -2295,13 +2295,6 @@ L95<-reactive({
     L95
   })
 
-LatAmax<-reactive({
-    LatAmax<-NA
-    if(all(c(is.null(M_f_in()),is.null(Linf()),is.null(k_vbgf()),is.null(t0_vbgf)))) return(NULL)
-    if(all(c(!is.na(M_f_in()),!is.na(Linf()),!is.na(k_vbgf()),!is.na(t0_vbgf())))) {LatAmax<-VBGF(Linf(),k_vbgf(),t0_vbgf(),5.4/M_f_in())}
-    LatAmax
-  })
-
 lt.bins.sels<-reactive({
   Lt.dat.sel<-rv.Lt$data
   lt.bins.freq<-Lt.dat.sel[,6:ncol(Lt.dat.sel)]
@@ -2385,13 +2378,10 @@ if(!is.null(rv.Lt$data))
 		           name = as.numeric(gsub("[^0-9.-]", "", name)))
        Lt.dat.plot.Linf<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="Linf")
        Lt.dat.plot.L50<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="L50")
-       Lt.dat.plot.LAmax<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="LtAmax")
-       colnames(Lt.dat.plot.L50)<-colnames(Lt.dat.plot.Linf)<-colnames(Lt.dat.plot.LAmax)<-c("year","fleet","sex","name","value","Year","vline","Label")
+       colnames(Lt.dat.plot.L50)<-colnames(Lt.dat.plot.Linf)<-c("year","fleet","sex","name","value","Year","vline","Label")
        if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==0|Lt.dat.plot.Linf$sex==1]<-Linf()}
        if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==2]<-Linf_m_in()}
        if(!is.na(L50()))Lt.dat.plot.L50$vline[Lt.dat.plot.L50$sex==0|Lt.dat.plot.L50$sex==1]<-L50()
-       if(!is.na(LatAmax()))Lt.dat.plot.LAmax$vline[Lt.dat.plot.LAmax$sex==0|Lt.dat.plot.L50$sex==1]<-LatAmax()
-         
         ggplot(Lt.dat.plot) + 
 		    geom_line(aes(name, value, color=Year)) + 
         #geom_col(position="dodge") + 
@@ -2406,12 +2396,6 @@ if(!is.null(rv.Lt$data))
                     colour = "#d26678",
                     na.rm = TRUE)+
                     scale_linetype_manual(name = NULL, values = 1)+
-        new_scale("linetype") +
-        geom_vline(data=Lt.dat.plot.LAmax,
-                    aes(xintercept = vline,linetype="LatAmax"),
-                    colour = "black",
-                    na.rm = TRUE)+
-                    scale_linetype_manual(name = NULL, values = 2)+
         facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf",color="#d26678")+
 #        annotate("text",x=if_else(is.na(Linf_m_in()),-1,Linf_m_in())*1.05, y=5, label= "Linf",color="blue")+

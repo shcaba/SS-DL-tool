@@ -27,8 +27,8 @@ shinyjs::hidden(wellPanel(id="Bookmark_panel",
           h4(strong("Upload bookmarked inputs")),
           fluidRow(
             column(12, h4("Upload a saved input rds file:")),
-            column(12, h6("File namess should only inlcude letters and numbers, otherwise an upload error may occur. If you see 'Error: Invalid state id', rename the file and try again.")),
-            column(12, fileInput("loadInputs", NULL))
+            column(12, fileInput("loadInputs", NULL)),
+            column(12, h6("File namess should only inlcude letters and numbers, otherwise an upload error may occur. If you see 'Error: Invalid state id', rename the file and try again."))
           ))),
 
 shinyjs::hidden(wellPanel(id="Data_panel",
@@ -100,7 +100,7 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         h5(em("Fishing rate can also be directly estimated from the length composition with no assumption in catches (similar to the LIME approach).")),
         h5(em("This approach is a more variable reponse to estimating stock status, and is best used with continuous years of contemporary data. Recruitment can also be estimated.")),
         h5(em("Recruitment can also be estimated in both approaches.")),
-        fluidRow(column(width=10,selectInput("Ct_F_LO_select","Approach",c("Choose an option","Constant Catch","Estimate F")))),
+        fluidRow(column(width=10,selectInput("Ct_F_LO_select","Approach",c("Constant Catch","Estimate F")))),
       )
     ),
     
@@ -112,7 +112,16 @@ shinyjs::hidden(wellPanel(id="Existing_files",
         uiOutput("Wt_fleet_Ct"),
       )
     ),
-    
+
+    shinyjs::hidden(wellPanel(id="panel_eqct",
+        h4(strong("Add equilibrium catch for each fleet?")),
+        h5(em("Catches data file assume 0 equilibrium catch. Enter equilibrium catch for each fleet separated by a comma.")),
+        h5(em("This approach can also be used to determine a specific stock status from which to start the entered catch time series.")),
+        h5(em("It may take trial and error of different equilibrium catches to achieve the desired entry stock status.")),
+        uiOutput("Eq_Ct_fleet"),
+      )
+    ),
+
     shinyjs::hidden(wellPanel(id="panel_data_wt_lt",
         h4(strong("Data-weighting")),
         h5(em("Data weighting balances information content of biological data with model structure")),
@@ -240,6 +249,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
                 column(width=6,textInput("CV_lt_f_fix","CV at length (young then old)", value="0.1,0.1"))),    
         fluidRow(column(width=6,numericInput("L50_f_fix", "Length at 50% maturity", value=NA,min=0, max=10000, step=0.001)),
                 column(width=6,numericInput("L95_f_fix","Length at 95% maturity", value=NA,min=0, max=10000, step=0.001))),    
+        ),
+        wellPanel(id="panel_SS_fixed_ltwtfec",
         h5("Length-weight relationship W=aL^b. Weight is in kg and length in cm."),
         fluidRow(column(width=6,numericInput("WLa_f_fix", "a in W=aL^b", value=0.00001,min=0, max=10000, step=0.000000001)),
                 column(width=6,numericInput("WLb_f_fix","b in W=aL^b", value=3,min=0, max=10000, step=0.0001))),    
@@ -527,7 +538,9 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_LO_prod",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
-     fluidRow(column(width=6,numericInput("h_LO","Steepness", value=0.7,min=0.2, max=1, step=0.01))),
+     fluidRow(column(width=6,selectInput("SR_choice_LO","Stock-recruit type",c("Beverton-Holt","Ricker","B-H flat-top")))),
+     fluidRow(column(width=6,numericInput("h_LO","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
+     column(width=6,numericInput("rec_month_LO", "Recruitment month", value=1,min=1, max=12, step=0.01))),
    #    ),
       )
     ),  
@@ -535,7 +548,8 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_prod_fixed",
     h4(strong("Stock-recruitment parameters")),
    #   wellPanel(
-     fluidRow(column(width=4,numericInput("h","Beverton-Holt Steepness", value=0.7,min=0.2, max=1, step=0.01)),
+     fluidRow(column(width=6,selectInput("SR_choice_fixed","Stock-recruit type",c("Beverton-Holt","Ricker","B-H flat-top")))),
+     fluidRow(column(width=4,numericInput("h","Steepness", value=0.7,min=0.2, max=1, step=0.01)),
       column(width=4,numericInput("lnR0", "Log initial recruitment", value=7,min=0.01, max=20, step=0.01)),
       column(width=4,numericInput("rec_month", "Recruitment month", value=1,min=1, max=12, step=0.01))),
    #    ),
@@ -545,15 +559,16 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     shinyjs::hidden(wellPanel(id="panel_SS_prod_est",
     h4(strong("Stock-recruitment parameters")),
      # wellPanel(
-       dropdownButton(
+       fluidRow(column(width=6,selectInput("SR_choice_est","Stock-recruit type",c("Beverton-Holt","Ricker","B-H flat-top")))), 
+     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment", value=7,min=0, max=20, step=0.01)),
+           column(width=6,numericInput("rec_month_est", "Recruitment month", value=1,min=1, max=12, step=0.01))),
+     dropdownButton(
           selectInput("h_ss_prior","Prior type for steepness",c("no prior","symmetric beta", "beta","lognormal","gamma","normal")),
           numericInput("h_mean_ss", "Mean", value=0.7,min=0.2, max=1, step=0.001),
           numericInput("h_SD_ss", "SD", value=0.15,min=0, max=10000, step=0.001),
           numericInput("h_phase", "Phase", value=-1,min=-999, max=10, step=0.001),
           circle = FALSE, status = "danger", icon = icon("recycle"), width = "300px",label="Steepness"
-       ), 
-     fluidRow(column(width=6,numericInput("lnR0_est", "Log initial recruitment", value=7,min=0, max=20, step=0.01)),
-           column(width=6,numericInput("rec_month_est", "Recruitment month", value=1,min=1, max=12, step=0.01))),
+       ),
   )), 
 
     #      fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("h_ss_prior","Steepness",c("beta","symmetric beta","truncated normal","trunc lognormal","uniform"))),
@@ -850,12 +865,6 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
       icon("circle-play"),
       style="font-size:120%;border:2px solid;color:#FFFFFF; background:#5D9741")),
     
-    br(),
-    br(),
-    br(),
-    br(),
-    br(),
-    br(),
 #################### 
 ### Other panels ###
 ####################
@@ -1121,6 +1130,12 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
         icon("circle-play"),
         style="font-size:120%;border:2px solid;color:#FFFFFF; background:#236192"),  
   )),
+    br(),
+    br(),
+    br(),
+    br(),
+    br(),
+    br(),
 
   ),
 
@@ -1143,11 +1158,6 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
                                  font-size: 16px;
                                  }")),
               uiOutput("Ltplot_it"),
-              textOutput("lt_comp_sel_plots_label"),
-              tags$head(tags$style("#lt_comp_sel_plots_label{color: black;
-                                 font-size: 16px;
-                                 }")),
-              uiOutput("Ltplot_it_sel"),
               textOutput("marginal_age_comp_plots_label"),
               tags$head(tags$style("#marginal_age_comp_plots_label{color: black;
                                  font-size: 16px;
@@ -1169,6 +1179,11 @@ h5(strong("This cannot be done while the SS-DL tool is open, so either use anoth
             uiOutput("Dep_plot_title"),
             uiOutput("Dep_plot_it"),
             #linebreaks(30),
+              textOutput("lt_comp_sel_plots_label"),
+              tags$head(tags$style("#lt_comp_sel_plots_label{color: black;
+                                 font-size: 16px;
+                                 }")),
+              uiOutput("Ltplot_it_sel"),
             h4("Selectivity"),
             plotOutput("Selplot"),
             plotOutput("Selplot_SSS"),
