@@ -310,6 +310,9 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -376,6 +379,9 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -438,6 +444,9 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -502,6 +511,9 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -568,8 +580,13 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
+        shinyjs::hide("Male_parms_est")
+        shinyjs::hide("Male_parms_est_noWL")
 
         shinyjs::hide("panel_SS_stock_status") 
 
@@ -636,6 +653,9 @@ observeEvent(req(((as.numeric(input$tabs)*3)/3)<4&all(any(input$est_parms==FALSE
         shinyjs::show("panel_SS_LH_fixed_est_tog")
         shinyjs::show("panel_SS_LH_fixed")
         shinyjs::show("panel_SS_fixed")
+        shinyjs::show("panel_SS_fixed_ltwtfec")
+        shinyjs::show("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -708,6 +728,9 @@ observeEvent(req(((as.numeric(input$tabs)*4)/4)<4&all(input$est_parms==TRUE,any(
         shinyjs::show("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::show("panel_SS_LH_est")
         shinyjs::show("panel_SS_est")
 
@@ -774,6 +797,9 @@ observeEvent(req((as.numeric(input$tabs)*12/12)==12), {
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -841,6 +867,9 @@ observeEvent(req((as.numeric(input$tabs)*4/4)==4), {
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -907,6 +936,9 @@ observeEvent(req((as.numeric(input$tabs)*5/5)==5), {
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -973,6 +1005,9 @@ observeEvent(req((as.numeric(input$tabs)*6/6)==6), {
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -1039,6 +1074,9 @@ observeEvent(req((as.numeric(input$tabs)*7/7)==7), {
         shinyjs::hide("panel_SS_LH_fixed_est_tog")
         shinyjs::hide("panel_SS_LH_fixed")
         shinyjs::hide("panel_SS_fixed")
+        shinyjs::hide("panel_SS_fixed_ltwtfec")
+        shinyjs::hide("Male_parms_fix")
+        shinyjs::hide("Male_parms_fix_noWL")
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
@@ -2257,6 +2295,13 @@ L95<-reactive({
     L95
   })
 
+LatAmax<-reactive({
+    LatAmax<-NA
+    if(all(c(is.null(M_f_in()),is.null(Linf()),is.null(k_vbgf()),is.null(t0_vbgf)))) return(NULL)
+    if(all(c(!is.na(M_f_in()),!is.na(Linf()),!is.na(k_vbgf()),!is.na(t0_vbgf())))) {LatAmax<-VBGF(Linf(),k_vbgf(),t0_vbgf(),5.4/M_f_in())}
+    LatAmax
+  })
+
 lt.bins.sels<-reactive({
   Lt.dat.sel<-rv.Lt$data
   lt.bins.freq<-Lt.dat.sel[,6:ncol(Lt.dat.sel)]
@@ -2340,10 +2385,13 @@ if(!is.null(rv.Lt$data))
 		           name = as.numeric(gsub("[^0-9.-]", "", name)))
        Lt.dat.plot.Linf<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="Linf")
        Lt.dat.plot.L50<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="L50")
-       colnames(Lt.dat.plot.L50)<-colnames(Lt.dat.plot.Linf)<-c("year","fleet","sex","name","value","Year","vline","Label")
+       Lt.dat.plot.LAmax<-data.frame(year=1,expand.grid(unique(Lt.dat.plot$fleet),unique(Lt.dat.plot$sex)),name=00,value=00,Year=1,vline=-100,Linf.lab="LtAmax")
+       colnames(Lt.dat.plot.L50)<-colnames(Lt.dat.plot.Linf)<-colnames(Lt.dat.plot.LAmax)<-c("year","fleet","sex","name","value","Year","vline","Label")
        if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==0|Lt.dat.plot.Linf$sex==1]<-Linf()}
        if(!is.na(Linf())){Lt.dat.plot.Linf$vline[Lt.dat.plot.Linf$sex==2]<-Linf_m_in()}
        if(!is.na(L50()))Lt.dat.plot.L50$vline[Lt.dat.plot.L50$sex==0|Lt.dat.plot.L50$sex==1]<-L50()
+       if(!is.na(LatAmax()))Lt.dat.plot.LAmax$vline[Lt.dat.plot.LAmax$sex==0|Lt.dat.plot.L50$sex==1]<-LatAmax()
+         
         ggplot(Lt.dat.plot) + 
 		    geom_line(aes(name, value, color=Year)) + 
         #geom_col(position="dodge") + 
@@ -2358,6 +2406,12 @@ if(!is.null(rv.Lt$data))
                     colour = "#d26678",
                     na.rm = TRUE)+
                     scale_linetype_manual(name = NULL, values = 1)+
+        new_scale("linetype") +
+        geom_vline(data=Lt.dat.plot.LAmax,
+                    aes(xintercept = vline,linetype="LatAmax"),
+                    colour = "black",
+                    na.rm = TRUE)+
+                    scale_linetype_manual(name = NULL, values = 2)+
         facet_grid(sex~fleet, scales="free_y",labeller = label_both) + 
 #        annotate("text",x=if_else(is.na(Linf()),-1,Linf())*1.05, y=5, label= "Linf",color="#d26678")+
 #        annotate("text",x=if_else(is.na(Linf_m_in()),-1,Linf_m_in())*1.05, y=5, label= "Linf",color="blue")+
@@ -3112,7 +3166,9 @@ print(1)
     if(input$h_ss_prior=="lognormal"){ctl.file$SR_parms[2,3:4]<-c(input$h_mean_ss,log(h_mean_ss))}
     else{ctl.file$SR_parms[2,3:4]<-input$h_mean_ss}        
     #}
-    
+    ctl.file$MainRdevYrFirst<-input$styr	#Start year of recruitment estimation
+		ctl.file$MainRdevYrLast<-input$endyr		#Last year of recruitment estimation
+		
     #
       ctl.file$Q_options[1]<-data.file$Nfleets
     #Selectivity
@@ -3135,11 +3191,11 @@ print(1)
       PeakDesc<-as.numeric(trimws(unlist(strsplit(input$PeakDesc_sss,","))))
       LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal_sss,","))))
       FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel_sss,","))))
-      browser()
+      
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
       ctl.file$size_selex_parms[1,3:4]<- Selpeak[1]
-      ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width))
+      ctl.file$size_selex_parms[2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[1]-bin.width)/(PeakDesc[1]-Selpeak[1]-bin.width+0.000000001))
       ctl.file$size_selex_parms[3,3:4]<- log(-((Sel50[1]-Selpeak[1])^2/log(0.5)))
       ctl.file$size_selex_parms[4,3:4]<- log(LtPeakFinal[1])
       ctl.file$size_selex_parms[6,3:4]<- -log((1/(FinalSel[1]+0.000000001)-1))
@@ -3169,7 +3225,8 @@ print(1)
         {
           ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
           ctl.file$size_selex_parms[6*i+1,3:4]<- Selpeak[i+1]
-          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width))
+#          if(PeakDesc[i+1]-Selpeak[i+1]-bin.width<=0 & PeakDesc[i+1]-Selpeak[i+1]-bin.width>-2){Sel2_denom<-+0.000000001}
+          ctl.file$size_selex_parms[6*i+2,3:4]<- -log((max(data.file$lbin_vector)-Selpeak[i+1]-bin.width)/(PeakDesc[i+1]-Selpeak[i+1]-bin.width+0.000000001))
           ctl.file$size_selex_parms[6*i+3,3:4]<- log(-((Sel50[i+1]-Selpeak[i+1])^2/log(0.5)))
           ctl.file$size_selex_parms[6*i+4,3:4]<- log(LtPeakFinal[i+1])
           ctl.file$size_selex_parms[6*i+6,3:4]<- -log((1/(FinalSel[i+1]+0.000000001)-1))
@@ -3283,7 +3340,6 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       t0.in_sss<-c(sss.prior.type[sss.prior.name==input$t0_f_prior_sss],input$t0_f_mean_sss,input$t0_f_SD_sss,sss.prior.type[sss.prior.name==input$t0_m_prior_sss],input$t0_m_mean_sss,input$t0_m_SD_sss)
     }
       show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
-
 
 #Run SSS
         if(is.na(input$Depl_mean_sss)|input$Depl_mean_sss<0)
@@ -5330,7 +5386,7 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
 ########################
 
       shinyDirChoose(input,"ModEff_dir", roots=roots,session=session, filetypes=c('', 'txt'))
-  pathRetro <- reactive({
+  pathModeff <- reactive({
         return(parseDirPath(roots, input$ModEff_dir))
       })
 
@@ -5352,14 +5408,16 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
 #       )
 #     })
 #   })
+
  observeEvent(req(input$run_adnuts),{
  modeff.mod.dir<-parseDirPath(roots, input$ModEff_dir) #pathModEff()
  modeff.dir<-dirname(modeff.mod.dir)
  modeff.name<-paste0(basename(modeff.mod.dir),"_",input$ModEff_choice)
 if(dir.exists(file.path(modeff.dir,modeff.name))==FALSE)
 {
- dir.create(file.path(modeff.dir,modeff.name))
- file.copy(list.files(modeff.mod.dir,full.names=TRUE),to=file.path(modeff.dir,modeff.name),recursive=TRUE,overwrite=TRUE)
+  browser()
+  dir.create(file.path(modeff.dir,modeff.name))
+  file.copy(list.files(modeff.mod.dir,full.names=TRUE),to=file.path(modeff.dir,modeff.name),recursive=TRUE,overwrite=TRUE)
 }
 
 #optimize model

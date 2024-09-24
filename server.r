@@ -5386,7 +5386,7 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
 ########################
 
       shinyDirChoose(input,"ModEff_dir", roots=roots,session=session, filetypes=c('', 'txt'))
-  pathRetro <- reactive({
+  pathModeff <- reactive({
         return(parseDirPath(roots, input$ModEff_dir))
       })
 
@@ -5408,15 +5408,19 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
 #       )
 #     })
 #   })
+
  observeEvent(req(input$run_adnuts),{
- modeff.mod.dir<-parseDirPath(roots, input$ModEff_dir) #pathModEff()
+ #browser()
+ #output$RetroPath <- renderText({paste0("Selected model folder:\n", pathRetro())})
+ modeff.mod.dir<-pathModeff() #pathModEff()
+ #modeff.mod.dir<-parseDirPath(roots, input$ModEff_dir) #pathModEff()
  modeff.dir<-dirname(modeff.mod.dir)
  modeff.name<-paste0(basename(modeff.mod.dir),"_",input$ModEff_choice)
-if(dir.exists(file.path(modeff.dir,modeff.name))==FALSE)
-{
- dir.create(file.path(modeff.dir,modeff.name))
- file.copy(list.files(modeff.mod.dir,full.names=TRUE),to=file.path(modeff.dir,modeff.name),recursive=TRUE,overwrite=TRUE)
-}
+#if(dir.exists(file.path(modeff.dir,modeff.name))==FALSE)
+#{
+  dir.create(file.path(modeff.dir,modeff.name))
+  file.copy(list.files(modeff.mod.dir,full.names=TRUE),to=file.path(modeff.dir,modeff.name),recursive=TRUE,overwrite=TRUE)
+#}
 
 #optimize model
 if(input$Opt_mod==TRUE)
@@ -5430,6 +5434,10 @@ if(input$Opt_mod==TRUE)
 #Set mcmc model
 show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text=paste0("Run ",input$ModEff_choice," model"))
 chains <- parallelly::availableCores(omit = 1)
+    if(.Platform[["OS.type"]] == "windows"){os_exe <- "ss3"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="x86_64"){os_exe <- "ss3_osx"} 
+    if(substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]]=="aarch64"){os_exe <- "ss3_osx_arm64"} 
+    if(R.version[["os"]] == "linux-gnu"){os_exe <- "ss3_linux"}
 m<-os_exe
 p<-file.path(modeff.dir,modeff.name)
 #Run MCMC model with either rwm or nuts
