@@ -23,6 +23,7 @@ shinyUI(fluidPage(theme = "bootstrap.css",
 sidebarLayout(
    sidebarPanel(
     style = "position:fixed;width:30%;height: 90vh; overflow-y: scroll;",
+    
 shinyjs::hidden(wellPanel(id="Bookmark_panel",
           h4(strong("Upload bookmarked inputs")),
           fluidRow(
@@ -32,18 +33,40 @@ shinyjs::hidden(wellPanel(id="Bookmark_panel",
           ))),
 
 shinyjs::hidden(wellPanel(id="Data_panel",
-  h4(strong("Choose data file")),
- fluidRow(column(width=12,fileInput('file2', 'Catch time series',
-                           accept = c(
-                             'text/csv',
-                             'text/comma-separated-values',
-                             'text/tab-separated-values',
-                             'text/plain',
-                             '.csv'
-                           )
-  ))),
- 
-  fluidRow(column(width=12,fileInput('file1', 'Length composition',
+                          h4(strong("Choose data file")),
+                          fluidRow(column(width=12,fileInput('file2', 'Catch time series',
+                                                             accept = c(
+                                                               'text/csv',
+                                                               'text/comma-separated-values',
+                                                               'text/tab-separated-values',
+                                                               'text/plain',
+                                                               '.csv'
+                                                             )
+                          ))),
+                          
+                          fluidRow(column(width=12,fileInput('file1', 'Length composition',
+                                                             accept = c(
+                                                               'text/csv',
+                                                               'text/comma-separated-values',
+                                                               'text/tab-separated-values',
+                                                               'text/plain',
+                                                               '.csv'
+                                                             )
+                          ))),
+                          
+                          fluidRow(column(width=12,fileInput('file3', 'Age composition',
+                                                             accept = c(
+                                                               'text/csv',
+                                                               'text/comma-separated-values',
+                                                               'text/tab-separated-values',
+                                                               'text/plain',
+                                                               '.csv'
+                                                             )
+                          ))),
+                          
+                          
+                          #Mute for now, pull back in when index methods are ready
+                          fileInput('file4', 'Abundance index',
                                     accept = c(
                                       'text/csv',
                                       'text/comma-separated-values',
@@ -51,37 +74,14 @@ shinyjs::hidden(wellPanel(id="Data_panel",
                                       'text/plain',
                                       '.csv'
                                     )
-  ))),
- 
-  fluidRow(column(width=12,fileInput('file3', 'Age composition',
-            accept = c(
-              'text/csv',
-              'text/comma-separated-values',
-              'text/tab-separated-values',
-              'text/plain',
-              '.csv'
-            )
-          ))),
-
- 
-  #Mute for now, pull back in when index methods are ready
-  fileInput('file4', 'Abundance index',
-            accept = c(
-              'text/csv',
-              'text/comma-separated-values',
-              'text/tab-separated-values',
-              'text/plain',
-              '.csv'
-            )
-          ),
- 
-  h4(strong("Clear data files")),
-     fluidRow(column(width=3,actionButton("reset_ct", "Catches")),
-              column(width=3,actionButton("reset_lt", "Length")),
-              column(width=3,actionButton("reset_age", "Ages")),
-              column(width=3,actionButton("reset_index", "Index"))), 
-)
-),
+                          ),
+                          h4(strong("Clear data files")),
+                             fluidRow(column(width=3,actionButton("reset_ct", "Catches")),
+                                      column(width=3,actionButton("reset_lt", "Length")),
+                                      column(width=3,actionButton("reset_age", "Ages")),
+                                      column(width=3,actionButton("reset_index", "Index"))), 
+                        )
+                      ),
 
 shinyjs::hidden(wellPanel(id="Existing_files",
  fluidRow(column(width=10,checkboxInput("user_model","Use existing model files?",FALSE))),
@@ -814,13 +814,13 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
         ),
 
     #wellPanel(
-    shinyjs::hidden(awesomeRadio(
-      inputId = "OS_choice",
-      label = "Which OS?", 
-      choices = c("Windows","Mac","Linux"),
-      selected = "Windows",
-      inline=TRUE,
-      status = "warning")),
+    # shinyjs::hidden(awesomeRadio(
+    #   inputId = "OS_choice",
+    #   label = "Which OS?", 
+    #   choices = c("Windows","Mac","Linux"),
+    #   selected = "Windows",
+    #   inline=TRUE,
+    #   status = "warning")),
     #), 
 
     shinyjs::hidden(wellPanel(id="Scenario_panel",
