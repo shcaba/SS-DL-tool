@@ -5545,17 +5545,6 @@ observeEvent(input$run_Profiles,{
        #SS_parm_names<-c(rep.parms.names[24], rep.parms.names[23],rep.parms.names[1],rep.parms.names[3],rep.parms.names[4],rep.parms.names[5],rep.parms.names[6],rep.parms.names[13],rep.parms.names[15],rep.parms.names[16],rep.parms.names[17],rep.parms.names[18],"LnQ_base_Acoustic_Visual(6)")
        SS_parm_names<-c(rep.parms.names[grep("steep",rep.parms.names)], rep.parms.names[grep("R0",rep.parms.names)],rep.parms.names[grep("NatM",rep.parms.names)][1],rep.parms.names[grep("L_at_Amax_Fem",rep.parms.names)],rep.parms.names[grep("K_Fem",rep.parms.names)],rep.parms.names[grep("CV_young_Fem",rep.parms.names)],rep.parms.names[grep("CV_old_Fem",rep.parms.names)],rep.parms.names[grep("NatM",rep.parms.names)][2],rep.parms.names[grep("L_at_Amax_Mal",rep.parms.names)],rep.parms.names[grep("K_Mal",rep.parms.names)],rep.parms.names[grep("CV_young_Mal",rep.parms.names)],rep.parms.names[grep("CV_old_Mal",rep.parms.names)])
        parmnames<-input$myPicker_LP
-         if(is.null(parmnames))
-          {
-            sendSweetAlert(
-                session = session,
-                title = "Missing parameter choices",
-                text = "No parameters have been chosen to profile. Please select at least one.",
-                type = "warning")
-          }
-
-        if(!is.null(parmnames))
-          {
        parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        
@@ -5626,7 +5615,7 @@ observeEvent(input$run_Profiles,{
        # height = 300,
        style='height:60vh'))
       },deleteFile=FALSE)
-        }
+
        remove_modal_spinner()
 })
 

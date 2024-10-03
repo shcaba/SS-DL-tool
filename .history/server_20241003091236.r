@@ -5551,11 +5551,11 @@ observeEvent(input$run_Profiles,{
                 session = session,
                 title = "Missing parameter choices",
                 text = "No parameters have been chosen to profile. Please select at least one.",
-                type = "warning")
+                type = "warning") 
+                remove_modal_spinner()
+                break()     
           }
 
-        if(!is.null(parmnames))
-          {
        parmnames_vec<-c("Steepness","lnR0","Natural mortality female","Linf female","k female", "CV@Lt young female","CV@Lt old female","Natural mortality male","Linf male","k male", "CV@Lt young male", "CV@Lt old male")
        prof_parms_names<-SS_parm_names[parmnames_vec%in%parmnames]
        
@@ -5626,7 +5626,7 @@ observeEvent(input$run_Profiles,{
        # height = 300,
        style='height:60vh'))
       },deleteFile=FALSE)
-        }
+
        remove_modal_spinner()
 })
 
