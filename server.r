@@ -317,7 +317,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
-        shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status")
 
         shinyjs::hide("panel_SSS_prod")
         shinyjs::hide("panel_SS_LO_prod")
@@ -329,7 +329,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 
         shinyjs::hide("panel_SS_recdevs")
 
-        shinyjs::hide("panel_SS_jitter")        
+        shinyjs::hide("panel_SS_jitter")
 
         shinyjs::hide("panel_RPs")
         shinyjs::hide("panel_Forecasts")
@@ -348,9 +348,9 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
-        shinyjs::hide("run_SS")        
+        shinyjs::hide("run_SS")
         
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -386,7 +386,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
-        shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status")
 
         shinyjs::hide("panel_SSS_prod")
         shinyjs::hide("panel_SS_LO_prod")
@@ -398,7 +398,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
 
         shinyjs::hide("panel_SS_recdevs")
 
-        shinyjs::hide("panel_SS_jitter")        
+        shinyjs::hide("panel_SS_jitter")
 
         shinyjs::hide("panel_RPs")
         shinyjs::hide("panel_Forecasts")
@@ -417,9 +417,9 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
         shinyjs::hide("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
-        shinyjs::hide("run_SS")        
+        shinyjs::hide("run_SS")
   
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -451,7 +451,7 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
-        shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status")
 
         shinyjs::hide("panel_SSS_prod")
         shinyjs::hide("panel_SS_LO_prod")
@@ -463,7 +463,7 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
 
         shinyjs::hide("panel_SS_recdevs")
 
-        shinyjs::show("panel_SS_jitter")        
+        shinyjs::show("panel_SS_jitter")
 
         shinyjs::show("panel_RPs")
         shinyjs::show("panel_Forecasts")
@@ -482,9 +482,9 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::show("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
-        shinyjs::show("run_SS")        
+        shinyjs::show("run_SS")
 
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -518,7 +518,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
-        shinyjs::show("panel_SS_stock_status") 
+        shinyjs::show("panel_SS_stock_status")
 
         shinyjs::show("panel_SSS_prod")
         shinyjs::hide("panel_SS_LO_prod")
@@ -530,7 +530,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 
         shinyjs::hide("panel_SS_recdevs")
 
-        shinyjs::hide("panel_SS_jitter")        
+        shinyjs::hide("panel_SS_jitter")
 
         shinyjs::show("panel_RPs")
         shinyjs::show("panel_Forecasts")
@@ -549,9 +549,9 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::show("SaveSession_panel")
 
         shinyjs::show("run_SSS")
-        shinyjs::hide("run_SS")        
+        shinyjs::hide("run_SS")
 
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -589,7 +589,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("Male_parms_est")
         shinyjs::hide("Male_parms_est_noWL")
 
-        shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status")
 
         shinyjs::hide("panel_SSS_prod")
         shinyjs::show("panel_SS_LO_prod")
@@ -601,7 +601,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 
         shinyjs::show("panel_SS_recdevs")
 
-        shinyjs::show("panel_SS_jitter")        
+        shinyjs::show("panel_SS_jitter")
 
         shinyjs::show("panel_RPs")
         shinyjs::show("panel_Forecasts")
@@ -622,7 +622,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -1805,7 +1805,7 @@ output$AdvancedSS_nohess_user<- renderUI({
 output$AdvancedSS_addcomms<- renderUI({ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "add_comms", 
-        label = "Add additional SS run commands",
+        label = "Add additional SS3 run commands",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
@@ -1820,7 +1820,7 @@ output$AdvancedSS_addcomms<- renderUI({
 output$AdvancedSS_addcomms_user<- renderUI({ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "add_comms_user", 
-        label = "Add additional SS run commands",
+        label = "Add additional SS3 run commands",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
@@ -2360,7 +2360,7 @@ observeEvent(req(!is.null(rv.Lt$data)), {
   })
 
 observeEvent(req(!is.null(rv.Lt$data)), {
-      shinyjs::show(output$lt_comp_sel_plots_label<-renderText({"Suggested selectivity starting values based on length compositions by year. Lines are loess smoothers. Sel95 is based on the mode of the composition; Sel50 is based on the midpoint of the mode and first size of recorded lengths. Changes in values over time could be indicative of changes in selectivity, recruitment events, sampling representativeness, or other factors, and should be thought through when specifying selectivity for each fleet. These plots are informative to the behavior of the ascending limb of selectivity. More infomration is needed to specify the possibility of a descending limb (and thus form of the selectivity)."}))
+      shinyjs::show(output$lt_comp_sel_plots_label<-renderText({"Suggested selectivity starting values based on length compositions by year. Lines are loess smoothers. Sel95 is based on the mode of the composition; Sel50 is based on the midpoint of the mode and first size of recorded lengths. Changes in values over time could be indicative of changes in selectivity, recruitment events, sampling representativeness, or other factors, and should be thought through when specifying selectivity for each fleet. These plots are informative to the behavior of the ascending limb of selectivity. More information is needed to specify the possibility of a descending limb (and thus form of the selectivity)."}))
   })
 
 observeEvent(req(!is.null(rv.Lt$data)), {
@@ -4321,7 +4321,7 @@ if(input$Sel_choice=="Dome-shaped")
       {   
         male_vbgf_est<-VBGF(input$Linf_m_mean,input$k_m_mean,input$t0_m_mean,c(input$t0_f_mean:Nages()))
 
-              # ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
+        # ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
         # ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]    #L0
         # ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean   #Linf
         # ctl.file$MG_parms[16,3:4]<-input$k_m_mean      #k
@@ -4863,7 +4863,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
  				    
-#RUN SS MODELS
+#RUN SS3 MODELS
     if(is.null(input$user_model))
     {
     if(is.null(input$no_hess)){
@@ -5034,7 +5034,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
    if(!is.null(input$no_tables)){      
       if(input$no_tables==FALSE)
       {      
-        #Make SS tables
+        #Make SS3 tables
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
         try(SSexecutivesummary(Model.output))   
       }
