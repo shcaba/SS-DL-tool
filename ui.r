@@ -29,7 +29,7 @@ shinyjs::hidden(wellPanel(id="Bookmark_panel",
           fluidRow(
             column(12, h4("Upload a saved input rds file:")),
             column(12, fileInput("loadInputs", NULL)),
-            column(12, h6("File namess should only inlcude letters and numbers, otherwise an upload error may occur. If you see 'Error: Invalid state id', rename the file and try again."))
+            column(12, h6("File names should only include letters and numbers, otherwise an upload error may occur. If you see 'Error: Invalid state id', rename the file and try again."))
           ))),
 
 shinyjs::hidden(wellPanel(id="Data_panel",
