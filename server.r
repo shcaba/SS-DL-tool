@@ -6443,15 +6443,18 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
     )
     
     setBookmarkExclude(c("file1","file2","file3","file4", "run_SS", "run_SSS"))
-
+        
     onRestored(function(state) {
-      showNotification(paste("Restored session:", basename(state$dir)), duration = 10, type = "message")
-      showModal(modalDialog(
-        title = "Inputs Loaded",
-        paste("Restored session:", basename(state$dir))
-      ))
-    })
 
+      output$input_file_text <- renderText({
+        paste0("<span style=\"color:#5D9741\">Restored session from ",basename(state$dir),".rds</span>")
+        })
+    #   showNotification(paste("Restored session:", basename(state$dir)), duration = 10, type = "message")
+    #   showModal(modalDialog(
+    #     title = "Inputs Loaded",
+    #     paste("Restored session:", basename(state$dir))
+    #   ))
+    })
   
   #})
 
