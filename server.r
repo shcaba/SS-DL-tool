@@ -1760,7 +1760,8 @@ output$RP_selection1<- renderUI({
         	                                    value=0.4, min=0, max=1, step=0.001)))    
     	} 
 	}) 
- 
+
+
 output$RP_selection2<- renderUI({ 
     if(input$RP_choices){ 
         fluidRow(column(width=6,selectInput("CR_Ct_F","Control rule type",
@@ -2158,6 +2159,12 @@ output$Profile_multi_values <- renderUI({
     #   }
     # } 
   }) 
+
+output$scenario_description_text <- renderUI({ 
+    if(input$scenario_description){ 
+        fluidRow(column(width=12, textAreaInput("scenario_description_input", strong("Write a description of your scenario in the text box below. This will go in the comment section at the top of your control and data files."), value="")))
+    	}
+	})
 
 #  roots <- getVolumes()()  
 
@@ -2974,6 +2981,7 @@ print(1)
 		data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/sss_example.dat")) 
 		ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
 		#Read, edit then write new DATA file
+    data.file$Comments <- c(data.file$Comments, input$scenario_description_input)
     data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
     data.file$Nages<-input$Nages_in_sss #Nages()
@@ -3047,6 +3055,7 @@ print(1)
 		####################### END DATA FILE #####################################
 
     ####################### START SSS CTL FILE #####################################
+    ctl.file$Comments <- c(ctl.file$Comments, input$scenario_description_input)
     if(!is.null(input$GT5)){if(input$GT5)
       {
         ctl.file$N_platoon<-5
@@ -4083,7 +4092,7 @@ if(input$Sel_choice=="Dome-shaped")
       #data.file$fleetinfo[ct.units,4]<-2 #use this when just specifying which are fleets are numbers
       data.file$fleetinfo[,4]<-ct.units
     }
-
+    data.file$Comments <- c(data.file$Comments, input$scenario_description_input)
 		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/datafile.dat"),overwrite=TRUE)			
   #}
 		####################### END DATA FILE #####################################
@@ -4742,7 +4751,7 @@ if(input$Sel_choice=="Dome-shaped")
         ctl.file$init_F$PHASE[as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,","))))>0.0000000000001]<-1
 
 			}
-
+    ctl.file$Comments <- c(ctl.file$Comments, input$scenario_description_input)
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)
   #}
 #}

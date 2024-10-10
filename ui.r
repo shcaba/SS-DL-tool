@@ -832,6 +832,13 @@ shinyjs::hidden(wellPanel(id="panel_SS_LH_fixed_est_tog",
     
     br(),
 
+    fluidRow(column(width=10,checkboxInput("scenario_description", h5(strong("Add a scenario description?")),FALSE))),
+    uiOutput("scenario_description_text")
+
+    # fluidRow(column(width=8,textInput("Scenario_description", strong("If you wish, write in a description of your scenario"), value=""))),
+    # h5(p(em("The scenario description will be saved in the comment section of the control file and the data file."))),
+
+
     # h4(strong("Select a folder to copy results")),
     # h5(p(em("Results are copied from the 'Scenarios' folder"))),
     # h5(p(em("Required to access results if using the online version"))),
