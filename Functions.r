@@ -380,9 +380,8 @@ Sensi_plot_horiz <- function(model.summaries,
     theme(
       axis.text.y = element_text(size = 14, color = 1),
       axis.text.x = element_text(size = 14, color = 1),
-      legend.text.align = 0,
       axis.title.x = element_text(size = 14),
-      legend.text = element_text(size = 15),
+      legend.text = element_text(size = 15, hjust = 0),
       legend.title = element_text(size = 12),
       panel.grid.minor = element_blank()
     ) +
@@ -434,7 +433,7 @@ Sensi_plot_horiz <- function(model.summaries,
       coord_cartesian(ylim = ylims.in[1:2]) +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        legend.text.align = 0,
+        legend.text = element_text(hjust = 0),
         panel.grid.minor = element_blank()
       ) +
       scale_shape_manual(
@@ -477,7 +476,7 @@ Sensi_plot_horiz <- function(model.summaries,
       scale_x_continuous(breaks = 2:(model.summaries$n), labels = unique(Dev.quants.ggplot$Model_name)) +
       # scale_y_continuous(limits=ylims.in[1:2])+
       coord_cartesian(ylim = ylims.in[1:2]) +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.text.align = 0, panel.grid.minor = element_blank()) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.text = element_text(hjust = 0), panel.grid.minor = element_blank()) +
       scale_shape_manual(
         values = c(15:18, 12),
         name = "",
@@ -539,7 +538,7 @@ Sensi_plot_horiz <- function(model.summaries,
           as.expression(bquote("SB"[.(current.year)]))
         )
       ) +
-      theme(legend.text.align = 0) +
+      theme(legend.text = element_text(hjust = 0)) +
       labs(x = " ", y = " ") +
       annotate("text", x = anno.x, y = anno.y, label = anno.lab, size = header.text) +
       geom_hline(yintercept = 0, lwd = 0.5, color = "gray") +
@@ -556,9 +555,9 @@ Sensi_plot_horiz <- function(model.summaries,
       theme(
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
-        panel.grid.minor = element_blank()
+        panel.grid.minor = element_blank(),
+        legend.text = element_text(hjust = 0)
       ) +
-      theme(legend.text.align = 0) +
       labs(x = " ", y = "Relative change") +
       scale_colour_manual(
         values = four.colors[3],
@@ -580,12 +579,11 @@ Sensi_plot_horiz <- function(model.summaries,
       coord_cartesian(ylim = ylims.in[9:10]) +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        legend.text.align = 0,
+        legend.text = element_text(hjust = 0),
         panel.grid.minor = element_blank(),
         legend.margin = margin(0, 0, 0, 0),
         legend.box.spacing = unit(0, "pt")
       ) +
-      #          legend.text=element_text(size=rel(1)))+
       scale_shape_manual(
         values = c(16, 17),
         name = "",
@@ -597,7 +595,7 @@ Sensi_plot_horiz <- function(model.summaries,
         labels = c(bquote(Yield[.(SPRtarg.lab)]), bquote(F[.(SPRtarg.lab)]))
       ) +
       labs(x = sensi_xlab, y = "") +
-      guides(fill = FALSE) +
+      guides(fill = "none") +
       # annotate("text",x=anno.x,y=anno.y,label=anno.lab)+
       geom_hline(yintercept = 0, lwd = 0.5, color = "gray") +
       geom_vline(xintercept = c(sensi.type.breaks), lty = lty.in)
@@ -636,7 +634,7 @@ Sensi_plot_horiz <- function(model.summaries,
           as.expression(bquote("SB"[.(current.year)]))
         )
       ) +
-      theme(legend.text.align = 0) +
+      theme(legend.text = element_text(hjust = 0)) +
       labs(x = " ", y = " ") +
       annotate("text", x = anno.x, y = anno.y, label = anno.lab, size = header.text) +
       geom_hline(yintercept = 0, lwd = 0.5, color = "gray") +
@@ -652,9 +650,9 @@ Sensi_plot_horiz <- function(model.summaries,
       theme(
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
-        panel.grid.minor = element_blank()
+        panel.grid.minor = element_blank(),
+        legend.text = element_text(hjust = 0)
       ) +
-      theme(legend.text.align = 0) +
       labs(x = " ", y = "Log relative change") +
       scale_colour_manual(
         values = four.colors[3],
@@ -676,12 +674,11 @@ Sensi_plot_horiz <- function(model.summaries,
       coord_cartesian(ylim = ylims.in[9:10]) +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        legend.text.align = 0,
+        legend.text = element_text(hjust = 0),
         panel.grid.minor = element_blank(),
         legend.margin = margin(0, 0, 0, 0),
         legend.box.spacing = unit(0, "pt")
       ) +
-      #          legend.text=element_text(size=7.5))+
       scale_shape_manual(
         values = c(16, 17),
         name = "",
@@ -693,7 +690,7 @@ Sensi_plot_horiz <- function(model.summaries,
         labels = c(bquote(Yield[.(SPRtarg.lab)]), bquote(F[.(SPRtarg.lab)]))
       ) +
       labs(x = sensi_xlab, y = "") +
-      guides(fill = FALSE) +
+      guides(fill = "none") +
       # annotate("text",x=anno.x,y=anno.y,label=anno.lab)+
       geom_hline(yintercept = 0, lwd = 0.5, color = "gray") +
       geom_vline(xintercept = c(sensi.type.breaks), lty = lty.in)
@@ -715,7 +712,7 @@ Sensi_plot_horiz <- function(model.summaries,
       coord_cartesian(ylim = ylims.in[3:4]) +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        legend.text.align = 0,
+        legend.text = element_text(hjust = 0),
         panel.grid.minor = element_blank()
       ) +
       scale_colour_manual(
@@ -739,7 +736,7 @@ Sensi_plot_horiz <- function(model.summaries,
       coord_cartesian(ylim = ylims.in[3:4]) +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        legend.text.align = 0,
+        legend.text = element_text(hjust = 0),
         panel.grid.minor = element_blank()
       ) +
       scale_colour_manual(
@@ -766,7 +763,7 @@ Sensi_plot_horiz <- function(model.summaries,
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
         # panel.grid.minor = element_blank(),
-        legend.text.align = 0
+        legend.text = element_text(hjust = 0)
       ) +
       scale_colour_manual(
         values = four.colors[2],
@@ -790,7 +787,7 @@ Sensi_plot_horiz <- function(model.summaries,
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
         # panel.grid.minor = element_blank(),
-        legend.text.align = 0
+        legend.text = element_text(hjust = 0)
       ) +
       scale_colour_manual(
         values = four.colors[2],
@@ -814,7 +811,7 @@ Sensi_plot_horiz <- function(model.summaries,
       coord_cartesian(ylim = ylims.in[7:8]) +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        legend.text.align = 0,
+        legend.text = element_text(hjust = 0),
         panel.grid.minor = element_blank()
       ) +
       labs(x = " ", y = "Relative change") +
@@ -841,7 +838,7 @@ Sensi_plot_horiz <- function(model.summaries,
       coord_cartesian(ylim = ylims.in[7:8]) +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        legend.text.align = 0,
+        legend.text = element_text(hjust = 0),
         panel.grid.minor = element_blank()
       ) +
       labs(x = " ", y = "Relative change") +
