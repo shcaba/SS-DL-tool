@@ -4743,12 +4743,13 @@ if(input$Sel_choice=="Dome-shaped")
         ctl.file$N_lambdas<-data.file$Nfleets*2
         #ctl.file$lambdas[1,4]<-1
 				# ctl.file$lambdas[2,4]<-0
-				# browser()
+				
         ctl.file$init_F$INIT<-0.00000000000000000001
 				ctl.file$init_F$PHASE<--1
         #Turn on if equilibrium catch > 0
         ctl.file$init_F$INIT[as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,","))))>0.0000000000001]<-0.01
         ctl.file$init_F$PHASE[as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,","))))>0.0000000000001]<-1
+        ctl.file$lambdas[grep("init_equ", rownames(ctl.file$lambdas)),]$value[as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,","))))>0.0000000000001]<-1
 
 			}
     ctl.file$Comments <- c(ctl.file$Comments, input$scenario_description_input)
