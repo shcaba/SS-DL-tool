@@ -196,13 +196,24 @@ saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
     #if(grepl(";", L)) {rv.AgeErr$data <- read.csv2(input$file33$datapath,check.names=FALSE,header=FALSE)}
   })
 
-  observeEvent(input$file33, {
+ observeEvent(input$file33, {
     rv.AgeErr$clear <- FALSE
-     if(!input$Ageing_error_choice){
+  }, priority = 1000)
+
+ observeEvent(input$reset_age_err, {
     rv.AgeErr$data <- NULL
     rv.AgeErr$clear <- TRUE
-    reset('file33')}
+    reset('file33')
   }, priority = 1000)
+
+
+  # observeEvent(input$file33, {
+  #   rv.AgeErr$clear <- FALSE
+  #    if(!input$Ageing_error_choice){
+  #   rv.AgeErr$data <- NULL
+  #   rv.AgeErr$clear <- TRUE
+  #   reset('file33')}
+  # }, priority = 1000)
 
 # #  if(!is.null(input$Ageing_error_choice)){       
 #   observeEvent(input$file33, {
@@ -2034,28 +2045,28 @@ output$AdvancedSS_Indexvar<- renderUI({
       # } 
   }) 
 
-output$AdvancedSS_ageerror<- renderUI({ 
-        fluidRow(column(width=12, prettyCheckbox(
-        inputId = "Ageing_error_choice", label = "Add custom ageing error matrices?",
-        shape = "round", outline = TRUE, status = "info"))) 
-  }) 
+#output$AdvancedSS_ageerror<- renderUI({ 
+ #       fluidRow(column(width=12, prettyCheckbox(
+ #       inputId = "Ageing_error_choice", label = "Add custom ageing error matrices?",
+ #       shape = "round", outline = TRUE, status = "info"))) 
+ # }) 
 
-output$AdvancedSS_ageerror_in <- renderUI({ 
-    if(!is.null(input$Ageing_error_choice)){       
-      if(input$Ageing_error_choice){
-      #h4(strong("Choose data file")),
-      fluidRow(column(width=12,fileInput('file33', 'Ageing error file',
-                           accept = c(
-                             'text/csv',
-                             'text/comma-separated-values',
-                             'text/tab-separated-values',
-                             'text/plain',
-                             '.csv'
-                           )
-       )))        
-      }
-    } 
-  }) 
+#output$AdvancedSS_ageerror_in <- renderUI({ 
+#    if(!is.null(input$Ageing_error_choice)){       
+#      if(input$Ageing_error_choice){
+#      #h4(strong("Choose data file")),
+#      fluidRow(column(width=12,fileInput('file33', 'Ageing error file',
+#                           accept = c(
+#                             'text/csv',
+#                             'text/comma-separated-values',
+#                             'text/tab-separated-values',
+#                             'text/plain',
+#                             '.csv'
+#                           )
+#       )))        
+#      }
+#    } 
+#  }) 
 
 output$AdvancedSS_Ctunits<- renderUI({ 
         fluidRow(column(width=12, prettyCheckbox(
@@ -3868,9 +3879,11 @@ if(input$Sel_choice=="Dome-shaped")
       data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,9:ncol(Age.comp.data)]))
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Plus_age+1)),rep(0.001,(Plus_age+1))),2,(Plus_age+1),byrow=TRUE))
       
-      if(!is.null(input$Ageing_error_choice)){       
-      if(input$Ageing_error_choice)
-        {
+      if(!is.null(rv.AgeErr$data)){       
+      
+      #if(!is.null(input$Ageing_error_choice)){       
+      #if(input$Ageing_error_choice)
+        #{
           data.file$ageerror<-data.frame((rv.AgeErr$data))
 
        if(ncol(data.frame((rv.AgeErr$data)))!=(Plus_age+1))
@@ -3884,7 +3897,7 @@ if(input$Sel_choice=="Dome-shaped")
       }
 
           data.file$N_ageerror_definitions<-nrow(rv.AgeErr$data)/2
-        }
+       # }
       }
 
       #Label object for r4ss

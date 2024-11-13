@@ -196,13 +196,24 @@ saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
     #if(grepl(";", L)) {rv.AgeErr$data <- read.csv2(input$file33$datapath,check.names=FALSE,header=FALSE)}
   })
 
-  observeEvent(input$file33, {
+ observeEvent(input$file33, {
     rv.AgeErr$clear <- FALSE
-     if(!input$Ageing_error_choice){
+  }, priority = 1000)
+
+ observeEvent(input$reset_age_err, {
     rv.AgeErr$data <- NULL
     rv.AgeErr$clear <- TRUE
-    reset('file33')}
+    reset('file33')
   }, priority = 1000)
+
+
+  # observeEvent(input$file33, {
+  #   rv.AgeErr$clear <- FALSE
+  #    if(!input$Ageing_error_choice){
+  #   rv.AgeErr$data <- NULL
+  #   rv.AgeErr$clear <- TRUE
+  #   reset('file33')}
+  # }, priority = 1000)
 
 # #  if(!is.null(input$Ageing_error_choice)){       
 #   observeEvent(input$file33, {
@@ -317,7 +328,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
-        shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status")
 
         shinyjs::hide("panel_SSS_prod")
         shinyjs::hide("panel_SS_LO_prod")
@@ -329,7 +340,7 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
 
         shinyjs::hide("panel_SS_recdevs")
 
-        shinyjs::hide("panel_SS_jitter")        
+        shinyjs::hide("panel_SS_jitter")
 
         shinyjs::hide("panel_RPs")
         shinyjs::hide("panel_Forecasts")
@@ -348,9 +359,9 @@ observeEvent(req(((as.numeric(input$tabs)*99)/99)<4), {
         shinyjs::hide("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
-        shinyjs::hide("run_SS")        
+        shinyjs::hide("run_SS")
         
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -386,7 +397,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
-        shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status")
 
         shinyjs::hide("panel_SSS_prod")
         shinyjs::hide("panel_SS_LO_prod")
@@ -398,7 +409,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
 
         shinyjs::hide("panel_SS_recdevs")
 
-        shinyjs::hide("panel_SS_jitter")        
+        shinyjs::hide("panel_SS_jitter")
 
         shinyjs::hide("panel_RPs")
         shinyjs::hide("panel_Forecasts")
@@ -417,9 +428,9 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&is.null(rv
         shinyjs::hide("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
-        shinyjs::hide("run_SS")        
+        shinyjs::hide("run_SS")
   
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -451,7 +462,7 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
-        shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status")
 
         shinyjs::hide("panel_SSS_prod")
         shinyjs::hide("panel_SS_LO_prod")
@@ -463,7 +474,7 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
 
         shinyjs::hide("panel_SS_recdevs")
 
-        shinyjs::show("panel_SS_jitter")        
+        shinyjs::show("panel_SS_jitter")
 
         shinyjs::show("panel_RPs")
         shinyjs::show("panel_Forecasts")
@@ -482,9 +493,9 @@ observeEvent(req(!is.null(input$user_model)&input$user_model), {
         shinyjs::show("SaveSession_panel")
 
         shinyjs::hide("run_SSS")
-        shinyjs::show("run_SS")        
+        shinyjs::show("run_SS")
 
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -518,7 +529,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::hide("panel_SS_LH_est")
         shinyjs::hide("panel_SS_est")
 
-        shinyjs::show("panel_SS_stock_status") 
+        shinyjs::show("panel_SS_stock_status")
 
         shinyjs::show("panel_SSS_prod")
         shinyjs::hide("panel_SS_LO_prod")
@@ -530,7 +541,7 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
 
         shinyjs::hide("panel_SS_recdevs")
 
-        shinyjs::hide("panel_SS_jitter")        
+        shinyjs::hide("panel_SS_jitter")
 
         shinyjs::show("panel_RPs")
         shinyjs::show("panel_Forecasts")
@@ -549,9 +560,9 @@ observeEvent(req(((as.numeric(input$tabs)*1)/1)<4&is.null(rv.Lt$data)&!is.null(r
         shinyjs::show("SaveSession_panel")
 
         shinyjs::show("run_SSS")
-        shinyjs::hide("run_SS")        
+        shinyjs::hide("run_SS")
 
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -589,7 +600,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("Male_parms_est")
         shinyjs::hide("Male_parms_est_noWL")
 
-        shinyjs::hide("panel_SS_stock_status") 
+        shinyjs::hide("panel_SS_stock_status")
 
         shinyjs::hide("panel_SSS_prod")
         shinyjs::show("panel_SS_LO_prod")
@@ -601,7 +612,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
 
         shinyjs::show("panel_SS_recdevs")
 
-        shinyjs::show("panel_SS_jitter")        
+        shinyjs::show("panel_SS_jitter")
 
         shinyjs::show("panel_RPs")
         shinyjs::show("panel_Forecasts")
@@ -622,7 +633,7 @@ observeEvent(req(((as.numeric(input$tabs)*2)/2)<4&all(!is.null(c(rv.Lt$data,rv.A
         shinyjs::hide("run_SSS")
         shinyjs::show("run_SS")
 
-        shinyjs::hide("Modeff_panel")  
+        shinyjs::hide("Modeff_panel")
         shinyjs::hide("Profile_panel")
         shinyjs::hide("Retro_panel")
         shinyjs::hide("Sensi_Comparison_panel")
@@ -1760,7 +1771,8 @@ output$RP_selection1<- renderUI({
         	                                    value=0.4, min=0, max=1, step=0.001)))    
     	} 
 	}) 
- 
+
+
 output$RP_selection2<- renderUI({ 
     if(input$RP_choices){ 
         fluidRow(column(width=6,selectInput("CR_Ct_F","Control rule type",
@@ -1805,7 +1817,7 @@ output$AdvancedSS_nohess_user<- renderUI({
 output$AdvancedSS_addcomms<- renderUI({ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "add_comms", 
-        label = "Add additional SS run commands",
+        label = "Add additional SS3 run commands",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
@@ -1820,7 +1832,7 @@ output$AdvancedSS_addcomms<- renderUI({
 output$AdvancedSS_addcomms_user<- renderUI({ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "add_comms_user", 
-        label = "Add additional SS run commands",
+        label = "Add additional SS3 run commands",
         shape = "round", outline = TRUE, status = "info"))) 
   }) 
 
@@ -2033,28 +2045,28 @@ output$AdvancedSS_Indexvar<- renderUI({
       # } 
   }) 
 
-output$AdvancedSS_ageerror<- renderUI({ 
-        fluidRow(column(width=12, prettyCheckbox(
-        inputId = "Ageing_error_choice", label = "Add custom ageing error matrices?",
-        shape = "round", outline = TRUE, status = "info"))) 
-  }) 
+#output$AdvancedSS_ageerror<- renderUI({ 
+ #       fluidRow(column(width=12, prettyCheckbox(
+ #       inputId = "Ageing_error_choice", label = "Add custom ageing error matrices?",
+ #       shape = "round", outline = TRUE, status = "info"))) 
+ # }) 
 
-output$AdvancedSS_ageerror_in <- renderUI({ 
-    if(!is.null(input$Ageing_error_choice)){       
-      if(input$Ageing_error_choice){
-      #h4(strong("Choose data file")),
-      fluidRow(column(width=12,fileInput('file33', 'Ageing error file',
-                           accept = c(
-                             'text/csv',
-                             'text/comma-separated-values',
-                             'text/tab-separated-values',
-                             'text/plain',
-                             '.csv'
-                           )
-       )))        
-      }
-    } 
-  }) 
+#output$AdvancedSS_ageerror_in <- renderUI({ 
+#    if(!is.null(input$Ageing_error_choice)){       
+#      if(input$Ageing_error_choice){
+#      #h4(strong("Choose data file")),
+#      fluidRow(column(width=12,fileInput('file33', 'Ageing error file',
+#                           accept = c(
+#                             'text/csv',
+#                             'text/comma-separated-values',
+#                             'text/tab-separated-values',
+#                             'text/plain',
+#                             '.csv'
+#                           )
+#       )))        
+#      }
+#    } 
+#  }) 
 
 output$AdvancedSS_Ctunits<- renderUI({ 
         fluidRow(column(width=12, prettyCheckbox(
@@ -2158,6 +2170,12 @@ output$Profile_multi_values <- renderUI({
     #   }
     # } 
   }) 
+
+output$scenario_description_text <- renderUI({ 
+    if(input$scenario_description){ 
+        fluidRow(column(width=12, textAreaInput("scenario_description_input", strong("Write a description of your scenario in the text box below. This will go in the comment section at the top of your control and data files."), value="")))
+    	}
+	})
 
 #  roots <- getVolumes()()  
 
@@ -2360,7 +2378,7 @@ observeEvent(req(!is.null(rv.Lt$data)), {
   })
 
 observeEvent(req(!is.null(rv.Lt$data)), {
-      shinyjs::show(output$lt_comp_sel_plots_label<-renderText({"Suggested selectivity starting values based on length compositions by year. Lines are loess smoothers. Sel95 is based on the mode of the composition; Sel50 is based on the midpoint of the mode and first size of recorded lengths. Changes in values over time could be indicative of changes in selectivity, recruitment events, sampling representativeness, or other factors, and should be thought through when specifying selectivity for each fleet. These plots are informative to the behavior of the ascending limb of selectivity. More infomration is needed to specify the possibility of a descending limb (and thus form of the selectivity)."}))
+      shinyjs::show(output$lt_comp_sel_plots_label<-renderText({"Suggested selectivity starting values based on length compositions by year. Lines are loess smoothers. Sel95 is based on the mode of the composition; Sel50 is based on the midpoint of the mode and first size of recorded lengths. Changes in values over time could be indicative of changes in selectivity, recruitment events, sampling representativeness, or other factors, and should be thought through when specifying selectivity for each fleet. These plots are informative to the behavior of the ascending limb of selectivity. More information is needed to specify the possibility of a descending limb (and thus form of the selectivity)."}))
   })
 
 observeEvent(req(!is.null(rv.Lt$data)), {
@@ -2974,6 +2992,7 @@ print(1)
 		data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/sss_example.dat")) 
 		ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/sss_example.ctl"),use_datlist = TRUE, datlist=data.file) 
 		#Read, edit then write new DATA file
+    data.file$Comments <- c(data.file$Comments, input$scenario_description_input)
     data.file$styr<-input$styr
 		data.file$endyr<-input$endyr
     data.file$Nages<-input$Nages_in_sss #Nages()
@@ -3047,6 +3066,7 @@ print(1)
 		####################### END DATA FILE #####################################
 
     ####################### START SSS CTL FILE #####################################
+    ctl.file$Comments <- c(ctl.file$Comments, input$scenario_description_input)
     if(!is.null(input$GT5)){if(input$GT5)
       {
         ctl.file$N_platoon<-5
@@ -3859,9 +3879,11 @@ if(input$Sel_choice=="Dome-shaped")
       data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,9:ncol(Age.comp.data)]))
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Plus_age+1)),rep(0.001,(Plus_age+1))),2,(Plus_age+1),byrow=TRUE))
       
-      if(!is.null(input$Ageing_error_choice)){       
-      if(input$Ageing_error_choice)
-        {
+      if(!is.null(rv.AgeErr$data)){       
+      
+      #if(!is.null(input$Ageing_error_choice)){       
+      #if(input$Ageing_error_choice)
+        #{
           data.file$ageerror<-data.frame((rv.AgeErr$data))
 
        if(ncol(data.frame((rv.AgeErr$data)))!=(Plus_age+1))
@@ -3875,7 +3897,7 @@ if(input$Sel_choice=="Dome-shaped")
       }
 
           data.file$N_ageerror_definitions<-nrow(rv.AgeErr$data)/2
-        }
+       # }
       }
 
       #Label object for r4ss
@@ -4083,7 +4105,7 @@ if(input$Sel_choice=="Dome-shaped")
       #data.file$fleetinfo[ct.units,4]<-2 #use this when just specifying which are fleets are numbers
       data.file$fleetinfo[,4]<-ct.units
     }
-
+    data.file$Comments <- c(data.file$Comments, input$scenario_description_input)
 		SS_writedat(data.file,paste0("Scenarios/",input$Scenario_name,"/datafile.dat"),overwrite=TRUE)			
   #}
 		####################### END DATA FILE #####################################
@@ -4321,7 +4343,7 @@ if(input$Sel_choice=="Dome-shaped")
       {   
         male_vbgf_est<-VBGF(input$Linf_m_mean,input$k_m_mean,input$t0_m_mean,c(input$t0_f_mean:Nages()))
 
-              # ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
+        # ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
         # ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]    #L0
         # ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean   #Linf
         # ctl.file$MG_parms[16,3:4]<-input$k_m_mean      #k
@@ -4734,15 +4756,16 @@ if(input$Sel_choice=="Dome-shaped")
         ctl.file$N_lambdas<-data.file$Nfleets*2
         #ctl.file$lambdas[1,4]<-1
 				# ctl.file$lambdas[2,4]<-0
-				# browser()
+				
         ctl.file$init_F$INIT<-0.00000000000000000001
 				ctl.file$init_F$PHASE<--1
         #Turn on if equilibrium catch > 0
         ctl.file$init_F$INIT[as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,","))))>0.0000000000001]<-0.01
         ctl.file$init_F$PHASE[as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,","))))>0.0000000000001]<-1
+        ctl.file$lambdas[grep("init_equ", rownames(ctl.file$lambdas)),]$value[as.numeric(trimws(unlist(strsplit(input$Eq_Ct_fleet,","))))>0.0000000000001]<-1
 
 			}
-
+    ctl.file$Comments <- c(ctl.file$Comments, input$scenario_description_input)
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)
   #}
 #}
@@ -4863,7 +4886,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
  				    
-#RUN SS MODELS
+#RUN SS3 MODELS
     if(is.null(input$user_model))
     {
     if(is.null(input$no_hess)){
@@ -5034,7 +5057,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
    if(!is.null(input$no_tables)){      
       if(input$no_tables==FALSE)
       {      
-        #Make SS tables
+        #Make SS3 tables
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
         try(SSexecutivesummary(Model.output))   
       }
@@ -5585,7 +5608,7 @@ observeEvent(input$run_Profiles,{
 
        try(run_diagnostics(mydir = mydir, model_settings = model_settings))
 
-       file.remove(paste0(dirname(mydir),"/run_diag_warning.txt"))
+       #file.remove(paste0(dirname(mydir),"/run_diag_warning.txt"))
 
        output$LikeProf_plot_modout <- renderImage({
        image.path1<-normalizePath(file.path(paste0(pathLP(),"_profile_",prof_parms_names[1],"/parameter_panel_",prof_parms_names[1],".png")),mustWork=FALSE)
@@ -6436,14 +6459,17 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
     setBookmarkExclude(c("file1","file2","file3","file4", "run_SS", "run_SSS"))
 
     onRestored(function(state) {
-      showNotification(paste("Restored session:", basename(state$dir)), duration = 10, type = "message")
-      showModal(modalDialog(
-        title = "Inputs Loaded",
-        paste("Restored session:", basename(state$dir))
-      ))
+
+      output$input_file_text <- renderText({
+        paste0("<span style=\"color:#5D9741\">Restored session from ",basename(state$dir),".rds</span>")
+        })
+    #   showNotification(paste("Restored session:", basename(state$dir)), duration = 10, type = "message")
+    #   showModal(modalDialog(
+    #     title = "Inputs Loaded",
+    #     paste("Restored session:", basename(state$dir))
+    #   ))
     })
 
-  
   #})
 
 #observeEvent(req(input$run_Ensemble&exists("Ensemble.outputs()")),{
