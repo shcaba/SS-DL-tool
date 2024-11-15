@@ -3615,23 +3615,24 @@ if(input$Sel_choice=="Dome-shaped")
       minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase),length(PeakDesc),length(PeakDesc_phase),length(LtPeakFinal),length(LtPeakFinal_phase),length(FinalSel),length(FinalSel_phase))
     }
-#browser()
+
 #Search for errors in inputs      
       #Throw warning if not enough selectivity inputs
-      #if(!all(Nfleets==sel.inputs.lts))
-      if(!all(Nfleets==sel.inputs.lts)|any(c(is.na(Sel50),is.na(Selpeak))))
+      if(!all(Nfleets==sel.inputs.lts))
+#      if(!all(Nfleets==sel.inputs.lts)|any(c(is.na(Sel50),is.na(Selpeak))))
       {
       #Throw warning if not enough selectivity inputs
          sendSweetAlert(
           session = session,
           title = "Selectivity input warning",
-          text = "Please check to see if you have filled in the selectivity inputs correctly. Especially check selectivity for NA values or missing fleets (both in parameter and phases). A input is needed for all fishing fleets and fishery-independent surveys.",
+          text = "Please check to see if you have provided filled in the inputs correctly. Especially check selectivity for missing fleets (both in parameter and phases). Total fleets includes fishing fleets and surveys.",
           type = "error")
          remove_modal_spinner()
+         stopApp()
       }
 
 
-  if(all(Nfleets==sel.inputs.lts)&!any(c(is.na(Sel50),is.na(Selpeak))))
+  if(all(Nfleets==sel.inputs.lts))
   {     
         checkmod<-1  #add object to verify no errors in inputs and model can be run
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")

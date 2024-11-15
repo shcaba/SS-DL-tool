@@ -65,16 +65,7 @@ ui <- function(request) {
             )
           ))),
 
-       fluidRow(column(width=12,fileInput('file33', 'Ageing error file',
-                           accept = c(
-                             'text/csv',
-                             'text/comma-separated-values',
-                             'text/tab-separated-values',
-                             'text/plain',
-                             '.csv'
-                           )
-              ))),
-
+          
 #popify(uiOutput("AdvancedSS_ageerror"), "Ageing error matrices.", "Add as many custom ageing error matrices as needed. See the folders Example data files --> ageing error matrices for examples of the ageing error input."),
  #         uiOutput("AdvancedSS_ageerror_in"),
           
@@ -89,12 +80,25 @@ ui <- function(request) {
               ".csv"
             )
           ),
+
+       fluidRow(column(width=12,fileInput('file33', span('Optional ageing error file. No file assumes age data are unbiased and precise. Software to calculate ageing error matrices from multiple age reads is available ', tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), "."),
+                           accept = c(
+                             'text/csv',
+                             'text/comma-separated-values',
+                             'text/tab-separated-values',
+                             'text/plain',
+                             '.csv'
+                           )
+              ))),
+#fluidRow(h4("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
+#fluidRow(style = "padding-right:0px;padding-left:25px;padding-top:0px; padding-bottom:0px;", h5("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
+
           h4(strong("Clear data files")),
           fluidRow(
             column(width = 2, actionButton("reset_ct", "Catches")),
             column(width = 2, actionButton("reset_lt", "Length")),
             column(width = 2, actionButton("reset_age", "Ages")),
-            column(width = 3, actionButton("reset_age_err", "Ages Error")),
+            column(width = 3, actionButton("reset_age_err", "Ageing Error")),
             column(width = 2, actionButton("reset_index", "Index"))
           ),
         )),
@@ -784,7 +788,7 @@ ui <- function(request) {
           # popify(uiOutput("AdvancedSS_AgeSex3"),"Sex=3 option for ages","This switch changes the per sex age compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the age compositions by sex."),
           #popify(uiOutput("AdvancedSS_ageerror"), "Ageing error matrices.", "Add as many custom ageing error matrices as needed. See the folders Example data files --> ageing error matrices for examples of the ageing error input."),
           #uiOutput("AdvancedSS_ageerror_in"),
-          fluidRow(style = "padding-right:50px;padding-left:50px;padding-top:-1000px; padding-bottom:0px;", h6("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
+          #fluidRow(style = "padding-right:50px;padding-left:50px;padding-top:-1000px; padding-bottom:0px;", h6("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
           # uiOutput("AdvancedSS_retro_choice"),
           # uiOutput("AdvancedSS_retro_years"),
           br(),

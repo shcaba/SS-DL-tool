@@ -3619,13 +3619,13 @@ if(input$Sel_choice=="Dome-shaped")
 #Search for errors in inputs      
       #Throw warning if not enough selectivity inputs
       #if(!all(Nfleets==sel.inputs.lts))
-      if(!all(Nfleets==sel.inputs.lts)|any(c(is.na(Sel50),is.na(Selpeak))))
+      if(!all(Nfleets==sel.inputs.lts)&any(c(is.na(Sel50),is.na(Selpeak))))
       {
       #Throw warning if not enough selectivity inputs
          sendSweetAlert(
           session = session,
           title = "Selectivity input warning",
-          text = "Please check to see if you have filled in the selectivity inputs correctly. Especially check selectivity for NA values or missing fleets (both in parameter and phases). A input is needed for all fishing fleets and fishery-independent surveys.",
+          text = "Please check to see if you have provided filled in the inputs correctly. Especially check selectivity for missing fleets (both in parameter and phases). Total fleets includes fishing fleets and surveys.",
           type = "error")
          remove_modal_spinner()
       }

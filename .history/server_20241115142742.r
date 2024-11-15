@@ -3625,7 +3625,7 @@ if(input$Sel_choice=="Dome-shaped")
          sendSweetAlert(
           session = session,
           title = "Selectivity input warning",
-          text = "Please check to see if you have filled in the selectivity inputs correctly. Especially check selectivity for NA values or missing fleets (both in parameter and phases). A input is needed for all fishing fleets and fishery-independent surveys.",
+          text = "Please check to see if you have provided filled in the inputs correctly. Especially check selectivity for missing fleets (both in parameter and phases). Total fleets includes fishing fleets and surveys.",
           type = "error")
          remove_modal_spinner()
       }

@@ -3615,23 +3615,22 @@ if(input$Sel_choice=="Dome-shaped")
       minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase),length(PeakDesc),length(PeakDesc_phase),length(LtPeakFinal),length(LtPeakFinal_phase),length(FinalSel),length(FinalSel_phase))
     }
-#browser()
+
 #Search for errors in inputs      
       #Throw warning if not enough selectivity inputs
-      #if(!all(Nfleets==sel.inputs.lts))
       if(!all(Nfleets==sel.inputs.lts)|any(c(is.na(Sel50),is.na(Selpeak))))
       {
       #Throw warning if not enough selectivity inputs
          sendSweetAlert(
           session = session,
           title = "Selectivity input warning",
-          text = "Please check to see if you have filled in the selectivity inputs correctly. Especially check selectivity for NA values or missing fleets (both in parameter and phases). A input is needed for all fishing fleets and fishery-independent surveys.",
+          text = "Please check to see if you have provided filled in the inputs correctly. Especially check selectivity for missing fleets (both in parameter and phases). Total fleets includes fishing fleets and surveys.",
           type = "error")
          remove_modal_spinner()
       }
 
 
-  if(all(Nfleets==sel.inputs.lts)&!any(c(is.na(Sel50),is.na(Selpeak))))
+  if(all(Nfleets==sel.inputs.lts))
   {     
         checkmod<-1  #add object to verify no errors in inputs and model can be run
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
@@ -4462,7 +4461,7 @@ if(input$Sel_choice=="Dome-shaped")
     if(input$Sel_choice=="Logistic")
 		{
 			#Throw warning if not enough selectivity inputs
-      if(!all(data.file$Nfleets==sel.inputs.lts))
+      if(!all(data.file$Nfleets==sel.inputs.lts)|any(c(is.na(Sel50),is.na(Selpeak))))
       {
          sendSweetAlert(
           session = session,
@@ -4493,7 +4492,7 @@ if(input$Sel_choice=="Dome-shaped")
       #Throw warning if not enough selectivity inputs
       sel.inputs.comps<-length(Sel50)-length(Sel50_phase)-length(Selpeak)-length(Selpeak_phase)-length(PeakDesc)-length(PeakDesc_phase)-length(LtPeakFinal)-length(LtPeakFinal_phase)-length(FinalSel)-length(FinalSel_phase)
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase),length(PeakDesc),length(PeakDesc_phase),length(LtPeakFinal),length(LtPeakFinal_phase),length(FinalSel),length(FinalSel_phase))
-      if(!all(data.file$Nfleets==sel.inputs.lts))
+      if(!all(data.file$Nfleets==sel.inputs.lts)|any(c(is.na(Sel50),is.na(Selpeak))))
       {
          sendSweetAlert(
           session = session,
@@ -4767,8 +4766,7 @@ if(input$Sel_choice=="Dome-shaped")
 
 			}
     ctl.file$Comments <- c(ctl.file$Comments, input$scenario_description_input)
-		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)
-#		if(!any(c(is.na(Sel50),is.na(Selpeak)))){SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)}
+		if(!any(c(is.na(Sel50),is.na(Selpeak)))){SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)}
   #}
 #}
 }
@@ -4818,9 +4816,8 @@ if(input$use_forecastnew)
 SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
 }
-#browser()
+
 if(exists("checkmod")|input$user_model)
-#if(any(exists("checkmod"),input$user_model)&!any(c(is.na(Sel50),is.na(Selpeak))))
   {
       starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
 
@@ -4888,9 +4885,9 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     if(input$Data_wt=="Dirichlet-multinomial"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
-    	    
+ 				    
 #RUN SS3 MODELS
-    if(is.null(input$user_model))
+    if(is.null(input$user_model)|!any(c(is.na(Sel50),is.na(Selpeak))))
     {
     if(is.null(input$no_hess)){
       cmd.in<-""
@@ -5371,7 +5368,7 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
         text = "Model did not run or Hessian did not invert. Double check data files for errors and each input for missing values (or for 0 SD for lognormal priors) and/or re-run model using a different model specification (e.g., starting values).",
         type = "warning")
      }
-   
+    remove_modal_spinner()
     
     observeEvent(exists("Model.output"), {
     updateTabsetPanel(session, "tabs",
@@ -5380,7 +5377,6 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
 
     updateCheckboxInput(inputId=input$user_model,value=FALSE)
   }  
-   remove_modal_spinner()
  })
 
 
