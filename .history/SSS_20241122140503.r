@@ -194,7 +194,7 @@ SSS<-function(filepath,
           Input.draws[i,3]<-M.draw
           }
         }
-      else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
+      #else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
 
       if(sexes==T)
       {
@@ -302,17 +302,19 @@ SSS<-function(filepath,
       #Draw Ms
         if(M.in[1]>=0 & length(M.in)==6)
         {
+          if(M.in[1]<0){M.draw<-M.in[2]}
           if(M.in[1]==0){M.draw<-round(rnorm(1,M.in[2],M.in[3]),3)}
           if(M.in[1]==3){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           if(M.in[1]==4){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           Input.draws[i,3]<-M.draw
         }
-        else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
+        #else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
         #Male draws
         if(sexes==T)
           {
             if(length(M.in)==6)
             {
+              if(M.in[4]<0){M.draw.M<-M.in[5]}
               if(M.in[4]==0){M.draw.M<-round(rnorm(1,M.in[5],M.in[6]),3)}
               if(M.in[4]==3){M.draw.M<-round(rlnorm(1,log(M.in[5]),M.in[6]),3)}
               if(M.in[4]==4){M.draw.M<-round(runif(1,M.in[5],M.in[6]),3)}
@@ -391,17 +393,19 @@ SSS<-function(filepath,
       #Draw Ms
         if(M.in[1]>=0 & length(M.in)==6)
         {
+          if(M.in[1]<0){M.draw<-M.in[2]}
           if(M.in[1]==0){M.draw<-round(rnorm(1,M.in[2],M.in[3]),3)}
           if(M.in[1]==3){M.draw<-round(rlnorm(1,log(M.in[2]),M.in[3]),3)}
           if(M.in[1]==4){M.draw<-round(runif(1,M.in[2],M.in[3]),3)}
           Input.draws[i,3]<-M.draw
         }
-        else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
+        #else{Input.draws[i,3]<-M.draw<-M.in[i,1]}
         #Male draws
         if(sexes==T)
           {
             if(length(M.in)==6)
             {
+              if(M.in[4]<0){M.draw.M<-M.in[5]}
               if(M.in[4]==0){M.draw.M<-round(rnorm(1,M.in[5],M.in[6]),3)}
               if(M.in[4]==3){M.draw.M<-round(rlnorm(1,log(M.in[5]),M.in[6]),3)}
               if(M.in[4]==4){M.draw.M<-round(runif(1,M.in[5],M.in[6]),3)}
@@ -608,7 +612,7 @@ SSS<-function(filepath,
 
 
     #Run model
-    RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1",OS.in=OStype)
+    RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1")
     #if(OStype=="Windows"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
     #if(OStype=="OSX_Linux"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="./ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
     
@@ -634,7 +638,7 @@ SSS<-function(filepath,
         # R0.line[c(3,4)]<-R0.explore[xx]
         # ctl.new[grep("R0",ctl.new)]<-paste(R0.line,collapse=" ")
         # write(ctl.new,paste(filepath,"/",file.name[2],sep=""))
-        RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1",OS.in=OStype)
+        RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1")
         # if(OStype=="Windows"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
         # if(OStype=="OSX_Linux"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="./ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
         rep.new<-readLines(paste(filepath,"/Report.sso",sep=""))
@@ -800,7 +804,7 @@ SSS<-function(filepath,
         par_line[1]<-1
         starter.new[grep("ss.par",starter.new)]<-paste(par_line, collapse=" ")
         write(starter.new,paste(filepath,"/starter.ss",sep=""))
-        RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1",OS.in=OStype)
+        RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1")
         # if(OStype=="Windows"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
         # if(OStype=="OSX_Linux"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="./ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
         #RUN.SS(paste(filepath,"/",sep=""), ss.exe="ss",ss.cmd=" -nohess -nox > out.txt 2>&1")

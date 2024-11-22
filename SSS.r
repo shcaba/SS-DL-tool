@@ -610,9 +610,9 @@ SSS<-function(filepath,
     
 
 
-
+#browser()
     #Run model
-    RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1",OS.in=OStype)
+    RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1")
     #if(OStype=="Windows"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
     #if(OStype=="OSX_Linux"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="./ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
     
@@ -638,7 +638,7 @@ SSS<-function(filepath,
         # R0.line[c(3,4)]<-R0.explore[xx]
         # ctl.new[grep("R0",ctl.new)]<-paste(R0.line,collapse=" ")
         # write(ctl.new,paste(filepath,"/",file.name[2],sep=""))
-        RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1",OS.in=OStype)
+        RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1")
         # if(OStype=="Windows"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
         # if(OStype=="OSX_Linux"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="./ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
         rep.new<-readLines(paste(filepath,"/Report.sso",sep=""))
@@ -665,14 +665,14 @@ SSS<-function(filepath,
   {
     SB.out<-TB.out<-SumAge.out<-SPR.out<-as.data.frame(matrix(NA,nrow=reps,ncol=length(SSS.output.list[[i]]$timeseries$SpawnBio)))
     colnames(SB.out)<-colnames(TB.out)<-colnames(SumAge.out)<-colnames(SPR.out)<-sb.years    
-    Dep.series.out<-as.data.frame(matrix(NA,nrow=reps,ncol=length(SSS.output.list[[i]]$sprseries$Deplete)))
-    colnames(Dep.series.out)<-SSS.output.list[[i]]$sprseries$Yr
+    Dep.series.out<-as.data.frame(matrix(NA,nrow=reps,ncol=length(SSS.output.list[[i]]$annual_time_series$Depletion_std)))
+    colnames(Dep.series.out)<-SSS.output.list[[i]]$annual_time_series$year
   }
       
     		SB.out[i,]<-SSS.output.list[[i]]$timeseries$SpawnBio
     		TB.out[i,]<-SSS.output.list[[i]]$timeseries$Bio_all
     		SumAge.out[i,]<-SSS.output.list[[i]]$timeseries$Bio_smry
-        Dep.series.out[i,]<-SSS.output.list[[i]]$sprseries$Deplete
+        Dep.series.out[i,]<-SSS.output.list[[i]]$annual_time_series$Depletion_std
     		#SPR.out[i,]<-1-as.numeric(strsplit(rep.new[grep(paste("SPRratio_",sb.years[iii]+1,sep=""),rep.new)], " ")[[1]][3])
  	  
     nforecasts<- SSS.output.list[[i]]$nforecastyears
@@ -804,7 +804,7 @@ SSS<-function(filepath,
         par_line[1]<-1
         starter.new[grep("ss.par",starter.new)]<-paste(par_line, collapse=" ")
         write(starter.new,paste(filepath,"/starter.ss",sep=""))
-        RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1",OS.in=OStype)
+        RUN.SS(paste(filepath,"/",sep=""),ss.cmd=" -nohess -nox > out.txt 2>&1")
         # if(OStype=="Windows"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
         # if(OStype=="OSX_Linux"){RUN.SS(paste(filepath,"/",sep=""), ss.exe="./ss",ss.cmd=" -nohess -nox > out.txt 2>&1")}
         #RUN.SS(paste(filepath,"/",sep=""), ss.exe="ss",ss.cmd=" -nohess -nox > out.txt 2>&1")
@@ -822,7 +822,7 @@ SSS<-function(filepath,
         SB.out[i,]<-SSS.output.list[[i]]$timeseries$SpawnBio
         TB.out[i,]<-SSS.output.list[[i]]$timeseries$Bio_all
         SumAge.out[i,]<-SSS.output.list[[i]]$timeseries$Bio_smry
-        Dep.series.out[i,]<-SSS.output.list[[i]]$sprseries$Deplete
+        Dep.series.out[i,]<-SSS.output.list[[i]]$annual_time_series$Depletion_std
 
         #Dep.series.out<-SB.out/SB.out[,1]
         Quant.out[i,1]<-SSS.output.list[[i]]$parameters[1,3]
