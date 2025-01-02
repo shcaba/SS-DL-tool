@@ -3306,7 +3306,7 @@ if(input$Forecast_choice)
     if(length(buffer.in)>1)
       {
         forecast.file$Flimitfraction<--1
-        buffer.datafr<-data.frame(Year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),Fraction=buffer.in)
+        buffer.datafr<-data.frame(year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),fraction=buffer.in)
         rownames(buffer.datafr)<-paste0("#_Flimitfraction_m",1:input$forecast_num)
         forecast.file$Flimitfraction_m<-buffer.datafr      
       }
@@ -3721,7 +3721,7 @@ if(input$Sel_choice=="Dome-shaped")
     if (!is.null(rv.Index$data)) {
     Index.data<-rv.Index$data
     data.file$N_cpue<-unique(rv.Index$data[,3])
-    data.file$CPUE<-data.frame(year=rv.Index$data[,1],seas=rv.Index$data[,2],index=rv.Index$data[,3],obs=rv.Index$data[,4],se_log=rv.Index$data[,5])
+    data.file$CPUE<-data.frame(year=rv.Index$data[,1],month=rv.Index$data[,2],index=rv.Index$data[,3],obs=rv.Index$data[,4],se_log=rv.Index$data[,5])
     }
 
 
@@ -3906,7 +3906,7 @@ if(input$Sel_choice=="Dome-shaped")
       rownames(data.file$ageerror)<-c(1:nrow(data.file$ageerror))
       # data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       # colnames(data.file$ageerror)<-paste0("age",1:Nages())         
-      age.data.names<-c(c("Yr","Month","Fleet","Sex","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
+      age.data.names<-c(c("year","month","fleet","sex","part","ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
       age.data.females<-age.data.males<-age.data.unknowns<-age.data.sex3<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
       colnames(Age.comp.data)[1:8]<-c("Year","Month","Fleet","Sex","AgeErr","Lbin_low","Lbin_hi","Nsamps")
     #female ages
@@ -4871,7 +4871,7 @@ if(input$Forecast_choice)
     if(length(buffer.in)>1)
       {
         forecast.file$Flimitfraction<--1
-        buffer.datafr<-data.frame(Year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),Fraction=buffer.in)
+        buffer.datafr<-data.frame(year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),fraction=buffer.in)
         #rownames(buffer.datafr)<-paste0("#_Flimitfraction_m",1:input$forecast_num)
         forecast.file$Flimitfraction_m<-buffer.datafr      
       }
