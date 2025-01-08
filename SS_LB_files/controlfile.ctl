@@ -13,7 +13,7 @@
 5 #_N_platoons_Within_GrowthPattern 
 0.7 #_Platoon_within/between_stdev_ratio (no read if N_platoons=1)
 #_Cond sd_ratio_rd < 0: platoon_sd_ratio parameter required after movement params.
- 0.031 0.237 0.464 0.237 0.031 #vector_platoon_dist_(-1_in_first_val_gives_normal_approx)
+-1 0.25 0.5 0.25 0.125 #vector_platoon_dist_(-1_in_first_val_gives_normal_approx)
 #
 4 # recr_dist_method for parameters:  2=main effects for GP, Area, Settle timing; 3=each Settle entity; 4=none (only when N_GP*Nsettle*pop==1)
 1 # not yet implemented; Future usage: Spawner-Recruitment: 1=global; 2=by area
@@ -119,7 +119,7 @@
 0  # 0/1 to use steepness in initial equ recruitment calculation
 0  #  future feature:  0/1 to make realized sigmaR a function of SR curvature
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn #  parm_name
-        0.0001            20       7.09997             8            99             0          1          0          0          0          0          0          0          0 # SR_LN(R0)
+        0.0001            20             8             8            99             0          1          0          0          0          0          0          0          0 # SR_LN(R0)
            0.2             1           0.8           0.8          0.24             3         -1          0          0          0          0          0          0          0 # SR_BH_steep
              0             2           0.7           0.7            99             0         -6          0          0          0          0          0          0          0 # SR_sigmaR
             -5             5             0             0            99             0        -99          0          0          0          0          0          0          0 # SR_regime
@@ -162,7 +162,7 @@
 #_initial_F_parms; for each fleet x season that has init_catch; nest season in fleet; count = 1
 #_for unconstrained init_F, use an arbitrary initial catch and set lambda=0 for its logL
 #_ LO HI INIT PRIOR PR_SD  PR_type  PHASE
- 0 10 2.36381e-09 1 999 0 1 # InitF_seas_1_flt_1Fishery
+ 0 10 0.1 1 999 0 1 # InitF_seas_1_flt_1Fishery
 #
 # F rates by fleet x season
 #_year:  1980 1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020
@@ -228,9 +228,9 @@
 #
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name
 # 1   Fishery LenSelex
-            10            91       31.1217            36            99             0          1          0          0          0          0          0          0          0  #  Size_DblN_peak_Fishery(1)
+            10            91       30.7974            36            99             0          1          0          0          0          0          0          0          0  #  Size_DblN_peak_Fishery(1)
            -15            15            15            15            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_top_logit_Fishery(1)
-            -4            12       5.15574             3            99             0          1          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_Fishery(1)
+            -4            12       5.15329             3            99             0          1          0          0          0          0          0          0          0  #  Size_DblN_ascend_se_Fishery(1)
            -15             6            15             4            99             0         -3          0          0          0          0          0          0          0  #  Size_DblN_descend_se_Fishery(1)
           -999            15           -15           -10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_start_logit_Fishery(1)
            -15            20            15            10            99             0         -2          0          0          0          0          0          0          0  #  Size_DblN_end_logit_Fishery(1)
