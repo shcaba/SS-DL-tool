@@ -4778,44 +4778,55 @@ if(input$user_model)
 {
   starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
   #Use par file
-    if(input$use_par)
-    {
-      starter.file$init_values_src<-1
-    }
-    if(!input$use_par|is.null(input$use_par))
-    {
-      starter.file$init_values_src<-0
-    }
-
-
-#Use datanew file
-    if(input$use_datanew)
-    {
-      starter.file$datfile<-"data_echo.ss_new"
-    }
-
-    if(!input$use_datanew|is.null(input$use_datanew))
-    {
-      if(!input$user_model|is.null(input$use_datanew)){starter.file$datfile<-"datafile.dat"}
-    }
-
-#Use controlnew file
-    if(input$use_controlnew)
-    {
-      starter.file$ctlfile<-"control.ss_new"
-    }
-
-if(input$use_forecastnew)
+  if(input$use_par)
   {
-    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
-    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+    starter.file$init_values_src<-1
   }
+  if(!input$use_par|is.null(input$use_par))
+  {
+    starter.file$init_values_src<-0
+  }
+  
+  #Use datanew file
+  if(input$use_datanew)
+  {
+    starter.file$datfile<-"data_echo.ss_new"
+  }
+  
+  if(!input$use_datanew|is.null(input$use_datanew))
+  {
+    if(!input$user_model|is.null(input$use_datanew)){starter.file$datfile<-"datafile.dat"}
+  }
+  
+  #Use controlnew file
+  if(input$use_controlnew)
+  {
+    starter.file$ctlfile<-"control.ss_new"
+  }
+
+  # Add description to data and control file if user chooses to do so
+  if(input$scenario_description == TRUE)
+  {
+    data.file_user<-SS_readdat(file.path("Scenarios", input$Scenario_name, starter.file$datfile)) 
+    data.file_user$Comments <- c(data.file_user$Comments, input$scenario_description_input)
+    SS_writedat(data.file_user, file.path("Scenarios", input$Scenario_name, starter.file$datfile), overwrite=TRUE)
+    
+    ctl.file_user<-SS_readctl(file.path("Scenarios", input$Scenario_name, starter.file$ctlfile)) 
+    ctl.file_user$Comments <- c(ctl.file_user$Comments, input$scenario_description_input)
+    SS_writectl(ctl.file_user, file.path("Scenarios", input$Scenario_name, starter.file$ctlfile), overwrite=TRUE)
+  }  
+  
+  if(input$use_forecastnew)
+    {
+      forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
+      SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+    }
 
 #    if(!input$use_controlnew|is.null(input$use_controlnew))
  #   {
  #     if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
  #   }
-SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
+  SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
 }
 #browser()
