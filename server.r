@@ -5288,16 +5288,21 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
  			})
 		#Time series output
  		output$SSout_table <- render_gt({
-        Output_table<-Model.output$sprseries[,c(1,3,4,23,24,7,8,9,10,12,13,25,53,54)]
+ 		    Output_table <- Model.output$sprseries |>
+ 		      dplyr::select(Yr, `SSBfished/R`, SPR, YPR) |>
+ 		      dplyr::left_join(Model.output$annual_time_series, by = c("Yr" = "year")) |>
+ 		      dplyr::select(Yr, Bio_all_an, Bio_Smry_an, SSB, recruits, `SSBfished/R`, SPR, SPR_std, YPR, Depletion_std, F_std, tot_exploit, sum_fleet_F,`F=Z-M`)
+ 		  
         Output_table<-mutate_if(Output_table,is.numeric, round, 2)  
-       gt(Output_table)%>%
+        
+       gt(Output_table) |>
         tab_header(
         title = "Time Series of Derived Model Outputs",
         subtitle = ""
-        ) %>%
-        data_color(columns = c(4,7,10,12), method = "auto", palette = "viridis",reverse=TRUE) %>%
+        ) |>
+        data_color(columns = c(4,7,10,12), method = "auto", palette = "viridis", reverse=TRUE) |>
         tab_style(style = list(cell_text(weight = "bold")),
-                locations = cells_body(columns = c(Deplete))) %>%
+                locations = cells_body(columns = c(Depletion_std))) |>
         opt_interactive(use_search = TRUE,
                       use_highlight = TRUE,
                       use_page_size_select = TRUE)
