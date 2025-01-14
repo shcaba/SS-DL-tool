@@ -188,7 +188,7 @@ saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
   }, priority = 1000)
 
 #Reset ageing error
-  observe(input$reset_age_err{
+  observe({
     req(input$file33)
     req(!rv.AgeErr$clear)
     rv.AgeErr$data <- fread(input$file33$datapath,check.names=FALSE,header=FALSE,data.table=FALSE)
@@ -196,13 +196,24 @@ saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
     #if(grepl(";", L)) {rv.AgeErr$data <- read.csv2(input$file33$datapath,check.names=FALSE,header=FALSE)}
   })
 
-  observeEvent(input$file33, {
+ observeEvent(input$file33, {
     rv.AgeErr$clear <- FALSE
-     if(!input$Ageing_error_choice){
+  }, priority = 1000)
+
+ observeEvent(input$reset_age_err, {
     rv.AgeErr$data <- NULL
     rv.AgeErr$clear <- TRUE
-    reset('file33')}
+    reset('file33')
   }, priority = 1000)
+
+
+  # observeEvent(input$file33, {
+  #   rv.AgeErr$clear <- FALSE
+  #    if(!input$Ageing_error_choice){
+  #   rv.AgeErr$data <- NULL
+  #   rv.AgeErr$clear <- TRUE
+  #   reset('file33')}
+  # }, priority = 1000)
 
 # #  if(!is.null(input$Ageing_error_choice)){       
 #   observeEvent(input$file33, {
@@ -3295,7 +3306,7 @@ if(input$Forecast_choice)
     if(length(buffer.in)>1)
       {
         forecast.file$Flimitfraction<--1
-        buffer.datafr<-data.frame(Year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),Fraction=buffer.in)
+        buffer.datafr<-data.frame(year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),fraction=buffer.in)
         rownames(buffer.datafr)<-paste0("#_Flimitfraction_m",1:input$forecast_num)
         forecast.file$Flimitfraction_m<-buffer.datafr      
       }
@@ -3604,22 +3615,23 @@ if(input$Sel_choice=="Dome-shaped")
       minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase),length(PeakDesc),length(PeakDesc_phase),length(LtPeakFinal),length(LtPeakFinal_phase),length(FinalSel),length(FinalSel_phase))
     }
-
+#browser()
 #Search for errors in inputs      
       #Throw warning if not enough selectivity inputs
-      if(!all(Nfleets==sel.inputs.lts))
+      #if(!all(Nfleets==sel.inputs.lts))
+      if(!all(Nfleets==sel.inputs.lts)|any(c(is.na(Sel50),is.na(Selpeak))))
       {
       #Throw warning if not enough selectivity inputs
          sendSweetAlert(
           session = session,
           title = "Selectivity input warning",
-          text = "Please check to see if you have provided filled in the inputs correctly. Especially check selectivity for missing fleets (both in parameter and phases). Total fleets includes fishing fleets and surveys.",
+          text = "Please check to see if you have filled in the selectivity inputs correctly. Especially check selectivity for NA values or missing fleets (both in parameter and phases). A input is needed for all fishing fleets and fishery-independent surveys.",
           type = "error")
          remove_modal_spinner()
       }
 
 
-  if(all(Nfleets==sel.inputs.lts))
+  if(all(Nfleets==sel.inputs.lts)&!any(c(is.na(Sel50),is.na(Selpeak))))
   {     
         checkmod<-1  #add object to verify no errors in inputs and model can be run
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
@@ -3709,7 +3721,7 @@ if(input$Sel_choice=="Dome-shaped")
     if (!is.null(rv.Index$data)) {
     Index.data<-rv.Index$data
     data.file$N_cpue<-unique(rv.Index$data[,3])
-    data.file$CPUE<-data.frame(year=rv.Index$data[,1],seas=rv.Index$data[,2],index=rv.Index$data[,3],obs=rv.Index$data[,4],se_log=rv.Index$data[,5])
+    data.file$CPUE<-data.frame(year=rv.Index$data[,1],month=rv.Index$data[,2],index=rv.Index$data[,3],obs=rv.Index$data[,4],se_log=rv.Index$data[,5])
     }
 
 
@@ -3868,9 +3880,11 @@ if(input$Sel_choice=="Dome-shaped")
       data.file$agebin_vector<-as.numeric(colnames(Age.comp.data[,9:ncol(Age.comp.data)]))
       data.file$ageerror<-data.frame(matrix(c(rep(-1,(Plus_age+1)),rep(0.001,(Plus_age+1))),2,(Plus_age+1),byrow=TRUE))
       
-      if(!is.null(input$Ageing_error_choice)){       
-      if(input$Ageing_error_choice)
-        {
+      if(!is.null(rv.AgeErr$data)){       
+      
+      #if(!is.null(input$Ageing_error_choice)){       
+      #if(input$Ageing_error_choice)
+        #{
           data.file$ageerror<-data.frame((rv.AgeErr$data))
 
        if(ncol(data.frame((rv.AgeErr$data)))!=(Plus_age+1))
@@ -3884,7 +3898,7 @@ if(input$Sel_choice=="Dome-shaped")
       }
 
           data.file$N_ageerror_definitions<-nrow(rv.AgeErr$data)/2
-        }
+       # }
       }
 
       #Label object for r4ss
@@ -3892,7 +3906,7 @@ if(input$Sel_choice=="Dome-shaped")
       rownames(data.file$ageerror)<-c(1:nrow(data.file$ageerror))
       # data.file$ageerror<-data.frame(matrix(c(rep(-1,(Nages()+1)),rep(0.001,(Nages()+1))),2,(Nages()+1),byrow=TRUE))
       # colnames(data.file$ageerror)<-paste0("age",1:Nages())         
-      age.data.names<-c(c("Yr","Month","Fleet","Sex","Part","Ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
+      age.data.names<-c(c("year","month","fleet","sex","part","ageerr","Lbin_lo","Lbin_hi","Nsamp"),paste0("f",data.file$agebin_vector),paste0("m",data.file$agebin_vector))
       age.data.females<-age.data.males<-age.data.unknowns<-age.data.sex3<-data.frame(matrix(rep(NA,length(age.data.names)),nrow=1))
       colnames(Age.comp.data)[1:8]<-c("Year","Month","Fleet","Sex","AgeErr","Lbin_low","Lbin_hi","Nsamps")
     #female ages
@@ -4149,13 +4163,20 @@ if(input$Sel_choice=="Dome-shaped")
 
     if(input$male_parms)
       {   
+        browser()
         male_vbgf<-VBGF(input$Linf_m,input$k_m,input$t0_m,c(input$t0_f:Nages()))
         ctl.file$MG_parms[13,3]<-input$M_m           #M
+        if(input$M_m==0){ctl.file$MG_parms[13,3:6]<-0}           #M
         ctl.file$MG_parms[14,3:4]<-male_vbgf[1]      #L0
+        if(male_vbgf[1]==0){ctl.file$MG_parms[14,3:6]<-0}      #L0
         ctl.file$MG_parms[15,3:4]<-input$Linf_m      #Linf
+        if(input$Linf_m==0){ctl.file$MG_parms[15,3:6]<-0}      #Linf
         ctl.file$MG_parms[16,3:4]<-input$k_m         #k
+        if(input$k_m==0){ctl.file$MG_parms[16,3:6]<-0}         #k
         ctl.file$MG_parms[17,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[1]     #CV
+        if(as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[1]==0){ctl.file$MG_parms[17,3:6]<-0}     #CV
         ctl.file$MG_parms[18,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[2]     #CV
+        if(as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[2]==0){ctl.file$MG_parms[18,3:6]<-0}     #CV
 #        ctl.file$MG_parms[19,3:4]<-input$WLa_m       #coefficient
 #        ctl.file$MG_parms[20,3:4]<-input$WLb_m       #exponent  
       }
@@ -4754,6 +4775,7 @@ if(input$Sel_choice=="Dome-shaped")
 			}
     ctl.file$Comments <- c(ctl.file$Comments, input$scenario_description_input)
 		SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)
+#		if(!any(c(is.na(Sel50),is.na(Selpeak)))){SS_writectl(ctl.file,paste0("Scenarios/",input$Scenario_name,"/controlfile.ctl"),overwrite=TRUE)}
   #}
 #}
 }
@@ -4763,48 +4785,60 @@ if(input$user_model)
 {
   starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
   #Use par file
-    if(input$use_par)
-    {
-      starter.file$init_values_src<-1
-    }
-    if(!input$use_par|is.null(input$use_par))
-    {
-      starter.file$init_values_src<-0
-    }
-
-
-#Use datanew file
-    if(input$use_datanew)
-    {
-      starter.file$datfile<-"data_echo.ss_new"
-    }
-
-    if(!input$use_datanew|is.null(input$use_datanew))
-    {
-      if(!input$user_model|is.null(input$use_datanew)){starter.file$datfile<-"datafile.dat"}
-    }
-
-#Use controlnew file
-    if(input$use_controlnew)
-    {
-      starter.file$ctlfile<-"control.ss_new"
-    }
-
-if(input$use_forecastnew)
+  if(input$use_par)
   {
-    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
-    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+    starter.file$init_values_src<-1
   }
+  if(!input$use_par|is.null(input$use_par))
+  {
+    starter.file$init_values_src<-0
+  }
+  
+  #Use datanew file
+  if(input$use_datanew)
+  {
+    starter.file$datfile<-"data_echo.ss_new"
+  }
+  
+  if(!input$use_datanew|is.null(input$use_datanew))
+  {
+    if(!input$user_model|is.null(input$use_datanew)){starter.file$datfile<-"datafile.dat"}
+  }
+  
+  #Use controlnew file
+  if(input$use_controlnew)
+  {
+    starter.file$ctlfile<-"control.ss_new"
+  }
+
+  # Add description to data and control file if user chooses to do so
+  if(input$scenario_description == TRUE)
+  {
+    data.file_user<-SS_readdat(file.path("Scenarios", input$Scenario_name, starter.file$datfile)) 
+    data.file_user$Comments <- c(data.file_user$Comments, input$scenario_description_input)
+    SS_writedat(data.file_user, file.path("Scenarios", input$Scenario_name, starter.file$datfile), overwrite=TRUE)
+    
+    ctl.file_user<-SS_readctl(file.path("Scenarios", input$Scenario_name, starter.file$ctlfile)) 
+    ctl.file_user$Comments <- c(ctl.file_user$Comments, input$scenario_description_input)
+    SS_writectl(ctl.file_user, file.path("Scenarios", input$Scenario_name, starter.file$ctlfile), overwrite=TRUE)
+  }  
+  
+  if(input$use_forecastnew)
+    {
+      forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
+      SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)  
+    }
 
 #    if(!input$use_controlnew|is.null(input$use_controlnew))
  #   {
  #     if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
  #   }
-SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
+  SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
 }
-
+#browser()
 if(exists("checkmod")|input$user_model)
+#if(any(exists("checkmod"),input$user_model)&!any(c(is.na(Sel50),is.na(Selpeak))))
   {
       starter.file<-SS_readstarter(paste0("Scenarios/",input$Scenario_name,"/starter.ss"))
 
@@ -4855,7 +4889,7 @@ if(input$Forecast_choice)
     if(length(buffer.in)>1)
       {
         forecast.file$Flimitfraction<--1
-        buffer.datafr<-data.frame(Year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),Fraction=buffer.in)
+        buffer.datafr<-data.frame(year=c((data.file$endyr+1):(data.file$endyr+input$forecast_num)),fraction=buffer.in)
         #rownames(buffer.datafr)<-paste0("#_Flimitfraction_m",1:input$forecast_num)
         forecast.file$Flimitfraction_m<-buffer.datafr      
       }
@@ -4872,7 +4906,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     if(input$Data_wt=="Dirichlet-multinomial"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
- 				    
+    	    
 #RUN SS3 MODELS
     if(is.null(input$user_model))
     {
@@ -5261,16 +5295,21 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
  			})
 		#Time series output
  		output$SSout_table <- render_gt({
-        Output_table<-Model.output$sprseries[,c(1,3,4,23,24,7,8,9,10,12,13,25,53,54)]
+ 		    Output_table <- Model.output$sprseries |>
+ 		      dplyr::select(Yr, `SSBfished/R`, SPR, YPR) |>
+ 		      dplyr::left_join(Model.output$annual_time_series, by = c("Yr" = "year")) |>
+ 		      dplyr::select(Yr, Bio_all_an, Bio_Smry_an, SSB, recruits, `SSBfished/R`, SPR, SPR_std, YPR, Depletion_std, F_std, tot_exploit, sum_fleet_F,`F=Z-M`)
+ 		  
         Output_table<-mutate_if(Output_table,is.numeric, round, 2)  
-       gt(Output_table)%>%
+        
+       gt(Output_table) |>
         tab_header(
         title = "Time Series of Derived Model Outputs",
         subtitle = ""
-        ) %>%
-        data_color(columns = c(4,7,10,12), method = "auto", palette = "viridis",reverse=TRUE) %>%
+        ) |>
+        data_color(columns = c(4,7,10,12), method = "auto", palette = "viridis", reverse=TRUE) |>
         tab_style(style = list(cell_text(weight = "bold")),
-                locations = cells_body(columns = c(Deplete))) %>%
+                locations = cells_body(columns = c(Depletion_std))) |>
         opt_interactive(use_search = TRUE,
                       use_highlight = TRUE,
                       use_page_size_select = TRUE)
@@ -5355,7 +5394,7 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
         text = "Model did not run or Hessian did not invert. Double check data files for errors and each input for missing values (or for 0 SD for lognormal priors) and/or re-run model using a different model specification (e.g., starting values).",
         type = "warning")
      }
-    remove_modal_spinner()
+   
     
     observeEvent(exists("Model.output"), {
     updateTabsetPanel(session, "tabs",
@@ -5364,6 +5403,7 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
 
     updateCheckboxInput(inputId=input$user_model,value=FALSE)
   }  
+   remove_modal_spinner()
  })
 
 
@@ -5421,7 +5461,7 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
 #   })
 
  observeEvent(req(input$run_adnuts),{
- #browser()
+ 
  #output$RetroPath <- renderText({paste0("Selected model folder:\n", pathRetro())})
  modeff.mod.dir<-pathModeff() #pathModEff()
  #modeff.mod.dir<-parseDirPath(roots, input$ModEff_dir) #pathModEff()

@@ -81,7 +81,7 @@ ui <- function(request) {
             )
           ),
 
-       fluidRow(column(width=12,fileInput('file33', 'Optional ageing error file. No file assumes age data are unbiased and precise.',
+       fluidRow(column(width=12,fileInput('file33', span('Optional ageing error file. No file assumes age data are unbiased and precise. Software to calculate ageing error matrices from multiple age reads is available ', tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), "."),
                            accept = c(
                              'text/csv',
                              'text/comma-separated-values',
@@ -90,8 +90,8 @@ ui <- function(request) {
                              '.csv'
                            )
               ))),
-fluidRow(h4("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
-#fluidRow(style = "padding-right:0px;padding-left:25px;padding-top:0px; padding-bottom:0px;", h4("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
+#fluidRow(h4("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
+#fluidRow(style = "padding-right:0px;padding-left:25px;padding-top:0px; padding-bottom:0px;", h5("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
 
           h4(strong("Clear data files")),
           fluidRow(
@@ -210,7 +210,7 @@ fluidRow(h4("Software to calculate ageing error matrices from multiple age reads
           ),
           h4(strong(em("Male"))),
           h5("Enter male specific values. Otherwise, males are assumed equal to females"),
-          h5("If estimating any female life history parameters and you want males to equal the females estimated values, use the offset option and pre-specify the male parameter(s) to 0 to ensure males = females. If you don't do this, the males values will stay at the female starting values."),
+          h5("If estimating any female life history parameters and you want males to equal the females estimated values, you have two options. 1) Set the male value to 0 or 2) use the offset option and pre-specify the male parameter(s) to 0 to ensure males = females. If you don't do either of these, the males values will stay at the female starting values."),
           fluidRow(
             column(width = 6, div(checkboxInput("male_parms", "Males specific values?", FALSE), style = "font-size: 16px !important;")),
             column(width = 6, checkboxInput("male_offset", "Males offset from females (log(m/f))?", FALSE))

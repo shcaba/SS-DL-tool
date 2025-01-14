@@ -210,7 +210,7 @@ ui <- function(request) {
           ),
           h4(strong(em("Male"))),
           h5("Enter male specific values. Otherwise, males are assumed equal to females"),
-          h5("If estimating any female life history parameters and you want males to equal the females estimated values, use the offset option and pre-specify the male parameter(s) to 0 to ensure males = females. If you don't do this, the males values will stay at the female starting values."),
+          h5("If estimating any female life history parameters and you want males to equal the females estimated values, you have two options. 1) Set the male value to 0 or 2) use the offset option and pre-specify the male parameter(s) to 0 to ensure males = females. If you don't do either of these, the males values will stay at the female starting values."), # nolint: line_length_linter.
           fluidRow(
             column(width = 6, div(checkboxInput("male_parms", "Males specific values?", FALSE), style = "font-size: 16px !important;")),
             column(width = 6, checkboxInput("male_offset", "Males offset from females (log(m/f))?", FALSE))

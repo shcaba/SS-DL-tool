@@ -4165,11 +4165,17 @@ if(input$Sel_choice=="Dome-shaped")
       {   
         male_vbgf<-VBGF(input$Linf_m,input$k_m,input$t0_m,c(input$t0_f:Nages()))
         ctl.file$MG_parms[13,3]<-input$M_m           #M
+        if(input$M_m==0){ctl.file$MG_parms[13,3:6]<-0}           #M
         ctl.file$MG_parms[14,3:4]<-male_vbgf[1]      #L0
+        if(male_vbgf[1]==0){ctl.file$MG_parms[14,3:6]<-0}      #L0
         ctl.file$MG_parms[15,3:4]<-input$Linf_m      #Linf
+        if(input$Linf_m==0){ctl.file$MG_parms[15,3:6]<-0}      #Linf
         ctl.file$MG_parms[16,3:4]<-input$k_m         #k
+        if(input$k_m==0){ctl.file$MG_parms[16,3:6]<-0}         #k
         ctl.file$MG_parms[17,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[1]     #CV
+        if(as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[1]==0){ctl.file$MG_parms[17,3:6]<-0}     #CV
         ctl.file$MG_parms[18,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[2]     #CV
+        if(as.numeric(trimws(unlist(strsplit(input$CV_lt_m,","))))[2]==0){ctl.file$MG_parms[18,3:6]<-0}     #CV
 #        ctl.file$MG_parms[19,3:4]<-input$WLa_m       #coefficient
 #        ctl.file$MG_parms[20,3:4]<-input$WLb_m       #exponent  
       }
@@ -4233,11 +4239,17 @@ if(input$Sel_choice=="Dome-shaped")
       {   
         male_vbgf<-VBGF(input$Linf_m_fix,input$k_m_fix,input$t0_m_fix,c(input$t0_f_fix:Nages()))
         ctl.file$MG_parms[13,3]<-input$M_m_fix        #M
+        if(input$M_m_fix==0){ctl.file$MG_parms[13,3:6]<-0}        #M
         ctl.file$MG_parms[14,3:4]<-male_vbgf[1]       #L0
+        if(male_vbgf[1]==0){ctl.file$MG_parms[14,3:6]<-0}       #L0
         ctl.file$MG_parms[15,3:4]<-input$Linf_m_fix   #Linf
+        if(input$Linf_m_fix==0){ctl.file$MG_parms[15,3:6]<-0}   #Linf
         ctl.file$MG_parms[16,3:4]<-input$k_m_fix      #k
+        if(input$k_m_fix==0){ctl.file$MG_parms[16,3:4]<-0}      #k
         ctl.file$MG_parms[17,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m_fix,","))))[1]  #CV
+        if(as.numeric(trimws(unlist(strsplit(input$CV_lt_m_fix,","))))[1]==0){ctl.file$MG_parms[17,3:6]<-0}  #CV
         ctl.file$MG_parms[18,3:4]<-as.numeric(trimws(unlist(strsplit(input$CV_lt_m_fix,","))))[2]  #CV
+        if(as.numeric(trimws(unlist(strsplit(input$CV_lt_m_fix,","))))[2]==0){ctl.file$MG_parms[18,3:6]<-0}  #CV
         #Weight-length
         ctl.file$MG_parms[19,3:4]<-input$WLa_m_fix       #coefficient
         ctl.file$MG_parms[20,3:4]<-input$WLb_m_fix       #exponent  

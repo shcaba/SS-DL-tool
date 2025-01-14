@@ -65,16 +65,7 @@ ui <- function(request) {
             )
           ))),
 
-       fluidRow(column(width=12,fileInput('file33', 'Ageing error file',
-                           accept = c(
-                             'text/csv',
-                             'text/comma-separated-values',
-                             'text/tab-separated-values',
-                             'text/plain',
-                             '.csv'
-                           )
-              ))),
-
+          
 #popify(uiOutput("AdvancedSS_ageerror"), "Ageing error matrices.", "Add as many custom ageing error matrices as needed. See the folders Example data files --> ageing error matrices for examples of the ageing error input."),
  #         uiOutput("AdvancedSS_ageerror_in"),
           
@@ -89,13 +80,26 @@ ui <- function(request) {
               ".csv"
             )
           ),
+
+       fluidRow(column(width=12,fileInput('file33', span('Optional ageing error file. No file assumes age data are unbiased and precise. Software to calculate ageing error matrices from multiple age reads is available ', tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), "."),
+                           accept = c(
+                             'text/csv',
+                             'text/comma-separated-values',
+                             'text/tab-separated-values',
+                             'text/plain',
+                             '.csv'
+                           )
+              ))),
+#fluidRow(h4("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
+#fluidRow(style = "padding-right:0px;padding-left:25px;padding-top:0px; padding-bottom:0px;", h5("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
+
           h4(strong("Clear data files")),
           fluidRow(
-            column(width = 3, actionButton("reset_ct", "Catches")),
-            column(width = 3, actionButton("reset_lt", "Length")),
-            column(width = 3, actionButton("reset_age", "Ages")),
-            column(width = 3, actionButton("reset_age_err", "Ages Error")),
-            column(width = 3, actionButton("reset_index", "Index"))
+            column(width = 2, actionButton("reset_ct", "Catches")),
+            column(width = 2, actionButton("reset_lt", "Length")),
+            column(width = 2, actionButton("reset_age", "Ages")),
+            column(width = 3, actionButton("reset_age_err", "Ageing Error")),
+            column(width = 2, actionButton("reset_index", "Index"))
           ),
         )),
         shinyjs::hidden(wellPanel(
@@ -206,7 +210,7 @@ ui <- function(request) {
           ),
           h4(strong(em("Male"))),
           h5("Enter male specific values. Otherwise, males are assumed equal to females"),
-          h5("If estimating any female life history parameters and you want males to equal the females estimated values, use the offset option and pre-specify the male parameter(s) to 0 to ensure males = females. If you don't do this, the males values will stay at the female starting values."),
+          h5("If estimating any female life history parameters and you want males to equal the females estimated values, you have two options. 1) Set the male value to 0 or 2) use the offset option and pre-specify the male parameter(s) to 0 to ensure males = females. If you don't do either of these, the males values will stay at the female starting values."),
           fluidRow(
             column(width = 6, div(checkboxInput("male_parms", "Males specific values?", FALSE), style = "font-size: 16px !important;")),
             column(width = 6, checkboxInput("male_offset", "Males offset from females (log(m/f))?", FALSE))
@@ -784,7 +788,7 @@ ui <- function(request) {
           # popify(uiOutput("AdvancedSS_AgeSex3"),"Sex=3 option for ages","This switch changes the per sex age compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the age compositions by sex."),
           #popify(uiOutput("AdvancedSS_ageerror"), "Ageing error matrices.", "Add as many custom ageing error matrices as needed. See the folders Example data files --> ageing error matrices for examples of the ageing error input."),
           #uiOutput("AdvancedSS_ageerror_in"),
-          fluidRow(style = "padding-right:50px;padding-left:50px;padding-top:-1000px; padding-bottom:0px;", h6("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
+          #fluidRow(style = "padding-right:50px;padding-left:50px;padding-top:-1000px; padding-bottom:0px;", h6("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
           # uiOutput("AdvancedSS_retro_choice"),
           # uiOutput("AdvancedSS_retro_years"),
           br(),
