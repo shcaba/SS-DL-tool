@@ -148,8 +148,8 @@
 #
 #_age_selex_types
 #_Pattern Discard Male Special
- 10 0 0 0 # 1 Fishery
- 10 0 0 0 # 2 Depl
+ 0 0 0 0 # 1 Fishery
+ 0 0 0 0 # 2 Depl
 #
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name
            10            91       30.7974            36            99             0         -1          0          0          0          0          0          0          0  #  Size_DblN_peak_Fishery(1)

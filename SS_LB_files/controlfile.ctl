@@ -224,7 +224,7 @@
 #Pattern:_42; parm=2+special+3; // cubic spline; with 2 additional param for scaling (mean over bin range)
 #Age patterns entered with value >100 create Min_selage from first digit and pattern from remainder
 #_Pattern Discard Male Special
- 10 0 0 0 # 1 Fishery
+ 0 0 0 0 # 1 Fishery
 #
 #_          LO            HI          INIT         PRIOR         PR_SD       PR_type      PHASE    env-var    use_dev   dev_mnyr   dev_mxyr     dev_PH      Block    Blk_Fxn  #  parm_name
 # 1   Fishery LenSelex
