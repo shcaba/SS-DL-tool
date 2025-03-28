@@ -1765,9 +1765,16 @@ output$Jitter_value <- renderUI({
 #Choose reference points
 output$RP_selection1<- renderUI({ 
     if(input$RP_choices){ 
-        fluidRow(column(width=6, numericInput("SPR_target", "SPR target",  
+        fluidRow(column(width=4,selectInput("ForeF_type","Forecast F",
+                                            c("-1: None",
+                                              "0: Simple 1yr",
+                                              "1: F(SPR)",
+                                              "2: F(MSY)",
+                                              "3: F(Btgt)",
+                                              "4: Ave F"),selected = "1: F(SPR)")),
+                 column(width=4, numericInput("SPR_target", "SPR target",  
                                               value=0.5, min=0, max=1, step=0.001)), 
-        	       column(width=6, numericInput("B_target", "Biomass target", 
+        	       column(width=4, numericInput("B_target", "Biomass target", 
         	                                    value=0.4, min=0, max=1, step=0.001)))    
     	} 
 	}) 
@@ -1776,10 +1783,11 @@ output$RP_selection1<- renderUI({
 output$RP_selection2<- renderUI({ 
     if(input$RP_choices){ 
         fluidRow(column(width=6,selectInput("CR_Ct_F","Control rule type",
-            c("1: Catch fxn of SSB, buffer on F",
+            c("0: None",
+              "1: Catch fxn of SSB, buffer on F",
               "2: F fxn of SSB, buffer on F",
               "3: Catch fxn of SSB, buffer on catch",
-              "4: F fxn of SSB, buffer on catch"))),
+              "4: F fxn of SSB, buffer on catch"),selected="3: Catch fxn of SSB, buffer on catch")),
           #column(width=4, numericInput("CR_Ct_F", "Control rule type",  
            #                                   value=1, min=0, max=1, step=0.001)), 
         	       column(width=3, numericInput("slope_hi", "Upper ratio value",  
@@ -3288,11 +3296,21 @@ if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
     forecast.file$Btarget<-input$B_target
 
-    CR_choices<-c("1: Catch fxn of SSB, buffer on F",
+    ForeF_choices<- c("-1: None",
+                  "0: Simple 1yr",
+                  "1: F(SPR)",
+                  "2: F(MSY)",
+                  "3: F(Btgt)",
+                  "4: Ave F")
+    FF_choices_num.vec<-c(-1:4)
+    forecast.file$Forecast<-FF_choices_num.vec[ForeF_choices==input$ForeF_type]
+    
+    CR_choices<-c("0: None",
+              "1: Catch fxn of SSB, buffer on F",
               "2: F fxn of SSB, buffer on F",
               "3: Catch fxn of SSB, buffer on catch",
               "4: F fxn of SSB, buffer on catch")
-    CR_choices_num.vec<-c(1:4)
+    CR_choices_num.vec<-c(0:4)
     forecast.file$ControlRuleMethod<-CR_choices_num.vec[CR_choices==input$CR_Ct_F]
     forecast.file$SBforconstantF<-input$slope_hi
     forecast.file$BfornoF<-input$slope_low  
@@ -4866,7 +4884,7 @@ if(exists("checkmod")|input$user_model)
  				SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
 
-#Forecast file modfications
+#Forecast file modifications
 #Reference points
 #if(is.null(input$use_forecastnew)|!input$use_forecastnew)
 #{
@@ -4875,12 +4893,21 @@ forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecas
 if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
     forecast.file$Btarget<-input$B_target
-
-    CR_choices<-c("1: Catch fxn of SSB, buffer on F",
-              "2: F fxn of SSB, buffer on F",
-              "3: Catch fxn of SSB, buffer on catch",
-              "4: F fxn of SSB, buffer on catch")
-    CR_choices_num.vec<-c(1:4)
+    ForeF_choices<- c("-1: None",
+                      "0: Simple 1yr",
+                      "1: F(SPR)",
+                      "2: F(MSY)",
+                      "3: F(Btgt)",
+                      "4: Ave F")
+    FF_choices_num.vec<-c(-1:4)
+    forecast.file$Forecast<-FF_choices_num.vec[ForeF_choices==input$ForeF_type]
+    
+    CR_choices<-c("0: None",
+                  "1: Catch fxn of SSB, buffer on F",
+                  "2: F fxn of SSB, buffer on F",
+                  "3: Catch fxn of SSB, buffer on catch",
+                  "4: F fxn of SSB, buffer on catch")
+    CR_choices_num.vec<-c(0:4)
     forecast.file$ControlRuleMethod<-CR_choices_num.vec[CR_choices==input$CR_Ct_F]
     forecast.file$SBforconstantF<-input$slope_hi
     forecast.file$BfornoF<-input$slope_low  

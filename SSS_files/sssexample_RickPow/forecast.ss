@@ -15,9 +15,9 @@
  0	0	0	0	0	0
 0 # Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)
 1 # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) 
-0.40 # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) 
+0.4 # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) 
 0.1 # Control rule Biomass level for no F (as frac of Bzero, e.g. 0.10) 
-0.956 # Control rule target as fraction of Flimit (e.g. 0.75) 
+1 # Control rule target as fraction of Flimit (e.g. 0.75) 
 3 #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)
 3 #_First forecast loop with stochastic recruitment
 -1 #_Forecast loop control #3 (reserved for future bells&whistles) 
