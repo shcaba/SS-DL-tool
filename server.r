@@ -115,7 +115,10 @@ saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
   if(!is.null(rv.Index$data)){
     file.copy(from = input$file4$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file4$name), overwrite=TRUE)
   }
- 
+  if(!is.null(rv.AgeErr$data)){
+    file.copy(from = input$file33$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file33$name), overwrite=TRUE)
+  }
+  
   dir_delete(bookmarkPath) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
 }
 
