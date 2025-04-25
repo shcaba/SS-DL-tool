@@ -1906,7 +1906,7 @@ output$AdvancedSS_plots_RP_inputs_user<- renderUI({
 output$AdvancedSS_noestabs<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_tables", label = "No exectutive summary tables",
+        inputId = "no_tables", label = "No tables",
         shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
@@ -1914,7 +1914,7 @@ output$AdvancedSS_noestabs<- renderUI({
 output$AdvancedSS_noestabs_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_tables", label = "No exectutive summary tables",
+        inputId = "no_tables", label = "No tables",
         shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
@@ -5097,7 +5097,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(is.null(input$no_tables))
         {      
           show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
-          try(SSexecutivesummary(Model.output))   
+          #try(SSexecutivesummary(Model.output))
+          try(table_all(Model.output))
         }
 
    if(!is.null(input$no_plots_tables)){      
@@ -5115,7 +5116,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       {      
         #Make SS3 tables
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
-        try(SSexecutivesummary(Model.output))   
+        #try(SSexecutivesummary(Model.output))   
+        try(table_all(Model.output))  
       }
     }
     
@@ -5220,7 +5222,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
          RPs_4_plots<-as.numeric(trimws(unlist(strsplit(input$plot_RPs_inputs,","))))
          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
-         try(SSexecutivesummary(Model.output))                 
+         #try(SSexecutivesummary(Model.output))
+         try(table_all(Model.output))
     }   
     setwd(main.dir)
   }
