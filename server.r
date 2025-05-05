@@ -4937,7 +4937,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 ########
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
-		if(input$Data_wt=="None"){DataWT_opt<-"none"}
+		if(input$Data_wt=="None/Current weighting"){DataWT_opt<-"none"}
     if(input$Data_wt=="Dirichlet-multinomial"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
@@ -5071,7 +5071,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
           Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
         }
 
-      if(input$Data_wt!="None")
+      if(input$Data_wt!="None/Current weighting")
          {
            if(Model.output$inputs$covar==TRUE)
              {
