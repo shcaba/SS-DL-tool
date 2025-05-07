@@ -5369,25 +5369,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
                       use_highlight = TRUE,
                       use_page_size_select = TRUE)
       })
-      		
- #Sigma R report
- 		output$sigmaR_table <- render_gt({
- 		    Output_table <- Model.output$sigma_R_info |>
- 		      dplyr::select(period, N_devs, alternative_sigma_R)
- 		      
-        Output_table<-mutate_if(Output_table,is.numeric, round, 2)  
-        
-       gt(Output_table) |>
-        tab_header(
-        title = "Alternative sigma R recommendation",
-        subtitle = ""
-        ) |>
-        opt_interactive(use_search = TRUE,
-                      use_highlight = TRUE,
-                      use_page_size_select = TRUE)
-      })
 
-#Selectivity conversion output
 output$Sel_transform_table <- render_gt({
 
 Est.sel.tranformed<-Model.output$parameters[grep("Size_",Model.output$parameters$Label),c(2,3,8)]
@@ -6158,6 +6140,11 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        Runs<-length(Sensi_model_dir_out())
        for(i in 1:Runs) {zz[[i]]<-SS_output(paste0(Sensi_model_dir_out()[i]))}
        modsummary.sensi<- SSsummarize(zz)
+       
+       SStableComparisons(modsummary.sensi,
+                   names = c(modsummary.sensi[["pars"]]$Label,
+                    "SmryBio_unfished", "SSB_Virg", "SSB_2025", "Bratio_2025","SPRratio_2024", "SSB_MSY", "SPR_MSY", "ForeCatch_2025"
+        ))
 
        col.vec = rc(n=length(modelnames), alpha = 1)
        shade = adjustcolor(col.vec[1], alpha.f = 0.10)
@@ -6171,17 +6158,6 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        #Sensi_uncertainty_choice<-input$Sensi_uncertainty_choice
        #if (all(is.na(quantsSD[, i]) | quantsSD[, i] == 0))
        Sensi_uncertainty_choice<-TRUE
-
-       SStableComparisons(modsummary.sensi,
-                   names = c(modsummary.sensi$pars$Label,
-                    "SmryBio_unfished", "SSB_Virg", "SSB_Btgt", "SPR_Btgt","annF_Btgt", "Dead_Catch_Btgt", 
-                    "SSB_SPR", "annF_SPR","Dead_Catch_SPR",
-                    "SSB_MSY","SPR_MSY","annF_MSY","Dead_Catch_MSY","B_MSY/SSB_unfished"),
-                    csv = TRUE,
-                    csvdir = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
-                    csvfile = "parameter_comparison_table.csv",
-                    verbose = FALSE
-        )
 
        pngfun(wd = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
        par(mfrow = c(1,3))

@@ -115,7 +115,10 @@ saveInputs <- function(input, bookmarkPath, bookmarkURL, session){
   if(!is.null(rv.Index$data)){
     file.copy(from = input$file4$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file4$name), overwrite=TRUE)
   }
- 
+  if(!is.null(rv.AgeErr$data)){
+    file.copy(from = input$file33$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input$file33$name), overwrite=TRUE)
+  }
+  
   dir_delete(bookmarkPath) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
 }
 
@@ -1765,9 +1768,16 @@ output$Jitter_value <- renderUI({
 #Choose reference points
 output$RP_selection1<- renderUI({ 
     if(input$RP_choices){ 
-        fluidRow(column(width=6, numericInput("SPR_target", "SPR target",  
+        fluidRow(column(width=4,selectInput("ForeF_type","Forecast F",
+                                            c("-1: None",
+                                              "0: Simple 1yr",
+                                              "1: F(SPR)",
+                                              "2: F(MSY)",
+                                              "3: F(Btgt)",
+                                              "4: Ave F"),selected = "1: F(SPR)")),
+                 column(width=4, numericInput("SPR_target", "SPR target",  
                                               value=0.5, min=0, max=1, step=0.001)), 
-        	       column(width=6, numericInput("B_target", "Biomass target", 
+        	       column(width=4, numericInput("B_target", "Biomass target", 
         	                                    value=0.4, min=0, max=1, step=0.001)))    
     	} 
 	}) 
@@ -1776,10 +1786,11 @@ output$RP_selection1<- renderUI({
 output$RP_selection2<- renderUI({ 
     if(input$RP_choices){ 
         fluidRow(column(width=6,selectInput("CR_Ct_F","Control rule type",
-            c("1: Catch fxn of SSB, buffer on F",
+            c("0: None",
+              "1: Catch fxn of SSB, buffer on F",
               "2: F fxn of SSB, buffer on F",
               "3: Catch fxn of SSB, buffer on catch",
-              "4: F fxn of SSB, buffer on catch"))),
+              "4: F fxn of SSB, buffer on catch"),selected="3: Catch fxn of SSB, buffer on catch")),
           #column(width=4, numericInput("CR_Ct_F", "Control rule type",  
            #                                   value=1, min=0, max=1, step=0.001)), 
         	       column(width=3, numericInput("slope_hi", "Upper ratio value",  
@@ -1895,7 +1906,7 @@ output$AdvancedSS_plots_RP_inputs_user<- renderUI({
 output$AdvancedSS_noestabs<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_tables", label = "No exectutive summary tables",
+        inputId = "no_tables", label = "No tables",
         shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
@@ -1903,7 +1914,7 @@ output$AdvancedSS_noestabs<- renderUI({
 output$AdvancedSS_noestabs_user<- renderUI({ 
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
-        inputId = "no_tables", label = "No exectutive summary tables",
+        inputId = "no_tables", label = "No tables",
         shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
@@ -3288,11 +3299,21 @@ if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
     forecast.file$Btarget<-input$B_target
 
-    CR_choices<-c("1: Catch fxn of SSB, buffer on F",
+    ForeF_choices<- c("-1: None",
+                  "0: Simple 1yr",
+                  "1: F(SPR)",
+                  "2: F(MSY)",
+                  "3: F(Btgt)",
+                  "4: Ave F")
+    FF_choices_num.vec<-c(-1:4)
+    forecast.file$Forecast<-FF_choices_num.vec[ForeF_choices==input$ForeF_type]
+    
+    CR_choices<-c("0: None",
+              "1: Catch fxn of SSB, buffer on F",
               "2: F fxn of SSB, buffer on F",
               "3: Catch fxn of SSB, buffer on catch",
               "4: F fxn of SSB, buffer on catch")
-    CR_choices_num.vec<-c(1:4)
+    CR_choices_num.vec<-c(0:4)
     forecast.file$ControlRuleMethod<-CR_choices_num.vec[CR_choices==input$CR_Ct_F]
     forecast.file$SBforconstantF<-input$slope_hi
     forecast.file$BfornoF<-input$slope_low  
@@ -4866,7 +4887,7 @@ if(exists("checkmod")|input$user_model)
  				SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
 
-#Forecast file modfications
+#Forecast file modifications
 #Reference points
 #if(is.null(input$use_forecastnew)|!input$use_forecastnew)
 #{
@@ -4875,12 +4896,21 @@ forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecas
 if(input$RP_choices){
     forecast.file$SPRtarget<-input$SPR_target
     forecast.file$Btarget<-input$B_target
-
-    CR_choices<-c("1: Catch fxn of SSB, buffer on F",
-              "2: F fxn of SSB, buffer on F",
-              "3: Catch fxn of SSB, buffer on catch",
-              "4: F fxn of SSB, buffer on catch")
-    CR_choices_num.vec<-c(1:4)
+    ForeF_choices<- c("-1: None",
+                      "0: Simple 1yr",
+                      "1: F(SPR)",
+                      "2: F(MSY)",
+                      "3: F(Btgt)",
+                      "4: Ave F")
+    FF_choices_num.vec<-c(-1:4)
+    forecast.file$Forecast<-FF_choices_num.vec[ForeF_choices==input$ForeF_type]
+    
+    CR_choices<-c("0: None",
+                  "1: Catch fxn of SSB, buffer on F",
+                  "2: F fxn of SSB, buffer on F",
+                  "3: Catch fxn of SSB, buffer on catch",
+                  "4: F fxn of SSB, buffer on catch")
+    CR_choices_num.vec<-c(0:4)
     forecast.file$ControlRuleMethod<-CR_choices_num.vec[CR_choices==input$CR_Ct_F]
     forecast.file$SBforconstantF<-input$slope_hi
     forecast.file$BfornoF<-input$slope_low  
@@ -4907,7 +4937,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
 ########
 	#Run Stock Synthesis and plot output
     show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[2],text="Model run in progress")
-		if(input$Data_wt=="None"){DataWT_opt<-"none"}
+		if(input$Data_wt=="None/Current weighting"){DataWT_opt<-"none"}
     if(input$Data_wt=="Dirichlet-multinomial"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
@@ -5041,7 +5071,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
           Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
         }
 
-      if(input$Data_wt!="None")
+      if(input$Data_wt!="None/Current weighting")
          {
            if(Model.output$inputs$covar==TRUE)
              {
@@ -5067,7 +5097,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(is.null(input$no_tables))
         {      
           show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
-          try(SSexecutivesummary(Model.output))   
+          #try(SSexecutivesummary(Model.output))
+          try(table_all(Model.output))
         }
 
    if(!is.null(input$no_plots_tables)){      
@@ -5085,7 +5116,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       {      
         #Make SS3 tables
         show_modal_spinner(spin="flower",color=wes_palettes$Zissou1[5],text="Making tables")
-        try(SSexecutivesummary(Model.output))   
+        #try(SSexecutivesummary(Model.output))   
+        try(table_all(Model.output))  
       }
     }
     
@@ -5190,7 +5222,8 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
          RPs_4_plots<-as.numeric(trimws(unlist(strsplit(input$plot_RPs_inputs,","))))
          SS_plots(Model.output,maxyr=data.file$endyr+1,verbose=FALSE,btarg=RPs_4_plots[1],minbthresh=RPs_4_plots[2])
          show_modal_spinner(spin="flower",color=wes_palettes$Moonrise1[4],text="Making tables")
-         try(SSexecutivesummary(Model.output))                 
+         #try(SSexecutivesummary(Model.output))
+         try(table_all(Model.output))
     }   
     setwd(main.dir)
   }
@@ -5336,7 +5369,25 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
                       use_highlight = TRUE,
                       use_page_size_select = TRUE)
       })
+      		
+ #Sigma R report
+ 		output$sigmaR_table <- render_gt({
+ 		    Output_table <- Model.output$sigma_R_info |>
+ 		      dplyr::select(period, N_devs, alternative_sigma_R)
+ 		      
+        Output_table<-mutate_if(Output_table,is.numeric, round, 2)  
+        
+       gt(Output_table) |>
+        tab_header(
+        title = "Alternative sigma R recommendation",
+        subtitle = ""
+        ) |>
+        opt_interactive(use_search = TRUE,
+                      use_highlight = TRUE,
+                      use_page_size_select = TRUE)
+      })
 
+#Selectivity conversion output
 output$Sel_transform_table <- render_gt({
 
 Est.sel.tranformed<-Model.output$parameters[grep("Size_",Model.output$parameters$Label),c(2,3,8)]
@@ -5413,7 +5464,7 @@ if(length(grep("end_logit",rownames(Model.output$parameters)))>0)
 
 
 ###############################################################
-### Likelihood profiles, Sensitivities, and Ensemble models ###
+### Model Efficiency, Likelihood profiles, Retrospectives, Sensitivities, and Ensemble models ###
 ###############################################################
 
   roots <- getVolumes()()  
@@ -6121,6 +6172,17 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        #if (all(is.na(quantsSD[, i]) | quantsSD[, i] == 0))
        Sensi_uncertainty_choice<-TRUE
 
+       SStableComparisons(modsummary.sensi,
+                   names = c(modsummary.sensi$pars$Label,
+                    "SmryBio_unfished", "SSB_Virg", "SSB_Btgt", "SPR_Btgt","annF_Btgt", "Dead_Catch_Btgt", 
+                    "SSB_SPR", "annF_SPR","Dead_Catch_SPR",
+                    "SSB_MSY","SPR_MSY","annF_MSY","Dead_Catch_MSY","B_MSY/SSB_unfished"),
+                    csv = TRUE,
+                    csvdir = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
+                    csvfile = "parameter_comparison_table.csv",
+                    verbose = FALSE
+        )
+
        pngfun(wd = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
        par(mfrow = c(1,3))
        try(SSplotComparisons(modsummary.sensi, legendlabels = modelnames, ylimAdj = 1.30, subplot = c(2,4),col = col.vec, new = FALSE,btarg=TRP.in,minbthresh=LRP.in,uncertainty=Sensi_uncertainty_choice))
@@ -6165,7 +6227,8 @@ SensiRE_ycenter_in<-as.numeric(trimws(unlist(strsplit(input$SensiRE_ycenter,",")
 SensiRE_headers_in<-trimws(unlist(strsplit(input$SensiRE_headers,",")))
 yminmax_sensi<-rep(c(input$SensiRE_ymin,input$SensiRE_ymax),5)
 #r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
-Sensi_plot_horiz(model.summaries=modsummary.sensi,
+
+try(Sensi_plot_horiz(model.summaries=modsummary.sensi,
               dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
               current.year=modsummary.sensi$endyrs[1]+1,
               mod.names=modelnames, #List the names of the sensitivity runs
@@ -6183,7 +6246,7 @@ Sensi_plot_horiz(model.summaries=modsummary.sensi,
               anno.lab=SensiRE_headers_in, #Sensitivity types labels
               header.text=input$SensiRE_headers_text,
               horizontal = TRUE
-)
+))
 
        output$SensiRE_comp_plot <- renderImage({
        image.path<-normalizePath(file.path(paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/Sensi_REplot_SB_Dep_F_Yield.png")),mustWork=FALSE)

@@ -1305,6 +1305,8 @@ ui <- function(request) {
             br(),
             # h4("Time series"),
             tableOutput("SSout_table"),
+            #Report sigma R tuning
+            tableOutput("sigmaR_table"),
             value = 2
           ),
           tabPanel("Model efficiency",

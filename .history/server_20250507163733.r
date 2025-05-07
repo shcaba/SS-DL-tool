@@ -6158,6 +6158,17 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        Runs<-length(Sensi_model_dir_out())
        for(i in 1:Runs) {zz[[i]]<-SS_output(paste0(Sensi_model_dir_out()[i]))}
        modsummary.sensi<- SSsummarize(zz)
+       
+       SStableComparisons(modsummary.sensi,
+                   names = c(modsummary.sensi$pars$Label,
+                    "SmryBio_unfished", "SSB_Virg", "SSB_Btgt", "SPR_Btgt","annF_Btgt", "Dead_Catch_Btgt", 
+                    "SSB_SPR", "annF_SPR","Dead_Catch_SPR",
+                    "SSB_MSY","SPR_MSY","annF_MSY","Dead_Catch_MSY","B_MSY/SSB_unfished"),
+                    csv = TRUE,
+                    csvdir = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
+                    csvfile = "parameter_comparison_table.csv",
+                    verbose = FALSE
+        ))
 
        col.vec = rc(n=length(modelnames), alpha = 1)
        shade = adjustcolor(col.vec[1], alpha.f = 0.10)
@@ -6171,17 +6182,6 @@ Sensi_model_dir_out<-eventReactive(req(input$run_Sensi_comps&!is.null(input$myPi
        #Sensi_uncertainty_choice<-input$Sensi_uncertainty_choice
        #if (all(is.na(quantsSD[, i]) | quantsSD[, i] == 0))
        Sensi_uncertainty_choice<-TRUE
-
-       SStableComparisons(modsummary.sensi,
-                   names = c(modsummary.sensi$pars$Label,
-                    "SmryBio_unfished", "SSB_Virg", "SSB_Btgt", "SPR_Btgt","annF_Btgt", "Dead_Catch_Btgt", 
-                    "SSB_SPR", "annF_SPR","Dead_Catch_SPR",
-                    "SSB_MSY","SPR_MSY","annF_MSY","Dead_Catch_MSY","B_MSY/SSB_unfished"),
-                    csv = TRUE,
-                    csvdir = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
-                    csvfile = "parameter_comparison_table.csv",
-                    verbose = FALSE
-        )
 
        pngfun(wd = paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file), file = paste0(input$Sensi_comp_file,".png"), h = 7,w = 12)
        par(mfrow = c(1,3))

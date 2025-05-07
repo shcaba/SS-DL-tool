@@ -81,7 +81,7 @@ ui <- function(request) {
             )
           ),
 
-       fluidRow(column(width=12,fileInput('file33', span('Optional ageing error file. No file assumes age data are unbiased and precise. Software to calculate ageing error matrices from multiple age reads is available ', tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), "."),
+       fluidRow(column(width=12,fileInput('file33', span('Optional ageing error file. No file assumes age data are unbiased and precise. Software to calculate ageing error matrices from multiple age reads is available ', tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ". A", tags$a(href = "https://github.com/shcaba/Ageing_Error_app", "Shiny app", target = "_blank")," is also available to access the multiple versions of this software"),
                            accept = c(
                              'text/csv',
                              'text/comma-separated-values',
@@ -156,8 +156,8 @@ ui <- function(request) {
           awesomeRadio(
             inputId = "Data_wt",
             label = "Choose data-weighting option",
-            choices = c("None", "Dirichlet-multinomial", "Francis", "McAllister-Ianelli"),
-            selected = "None",
+            choices = c("None/Current weighting", "Dirichlet-multinomial", "Francis", "McAllister-Ianelli"),
+            selected = "None/Current weighting",
             status = "warning"
           )
 
@@ -210,7 +210,7 @@ ui <- function(request) {
           ),
           h4(strong(em("Male"))),
           h5("Enter male specific values. Otherwise, males are assumed equal to females"),
-          h5("If estimating any female life history parameters and you want males to equal the females estimated values, you have two options. 1) Set the male value to 0 or 2) use the offset option and pre-specify the male parameter(s) to 0 to ensure males = females. If you don't do either of these, the males values will stay at the female starting values."),
+          h5("If estimating any female life history parameters and you want males to equal the estimated females values, you have two options. 1) Set the male initial and SD values to 0 and the prior to 'no prior' or 2) use the offset option and pre-specify the male parameter(s) to 0 to ensure males = females. If you don't do either of these, the males values will remain at the female starting values."),
           fluidRow(
             column(width = 6, div(checkboxInput("male_parms", "Males specific values?", FALSE), style = "font-size: 16px !important;")),
             column(width = 6, checkboxInput("male_offset", "Males offset from females (log(m/f))?", FALSE))
@@ -788,7 +788,7 @@ ui <- function(request) {
           # popify(uiOutput("AdvancedSS_AgeSex3"),"Sex=3 option for ages","This switch changes the per sex age compositions (sex = 1 for females and 2 for males) into a two sex length composition that retains the overall length composition of the sample. This may add additional information on the underlying sex ratio of the population, but should be tested against using the age compositions by sex."),
           #popify(uiOutput("AdvancedSS_ageerror"), "Ageing error matrices.", "Add as many custom ageing error matrices as needed. See the folders Example data files --> ageing error matrices for examples of the ageing error input."),
           #uiOutput("AdvancedSS_ageerror_in"),
-          #fluidRow(style = "padding-right:50px;padding-left:50px;padding-top:-1000px; padding-bottom:0px;", h6("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ".")),
+          #fluidRow(style = "padding-right:50px;padding-left:50px;padding-top:-1000px; padding-bottom:0px;", h6("Software to calculate ageing error matrices from multiple age reads is available ", tags$a(href = "https://github.com/pfmc-assessments/nwfscAgeingError", "here", target = "_blank"), ". A", tags$a(href = "https://github.com/shcaba/Ageing_Error_app", "Shiny app", target = "_blank")," is also available to access the multiple versions of this software")),
           # uiOutput("AdvancedSS_retro_choice"),
           # uiOutput("AdvancedSS_retro_years"),
           br(),
@@ -1305,6 +1305,8 @@ ui <- function(request) {
             br(),
             # h4("Time series"),
             tableOutput("SSout_table"),
+            #Report sigma R tuning
+            tableOutput("SSout_sigmaR"),
             value = 2
           ),
           tabPanel("Model efficiency",
