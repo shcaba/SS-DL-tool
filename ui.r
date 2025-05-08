@@ -156,8 +156,7 @@ ui <- function(request) {
           awesomeRadio(
             inputId = "Data_wt",
             label = "Choose data-weighting option",
-            choices = c("None/Current weighting", "Dirichlet-multinomial", "Francis", "McAllister-Ianelli"),
-            selected = "None/Current weighting",
+            choices = c("None or Current weighting", "Dirichlet-multinomial", "Francis", "McAllister-Ianelli"),
             status = "warning"
           )
 

@@ -1907,7 +1907,7 @@ output$AdvancedSS_noestabs<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_tables", label = "No tables",
-        shape = "round", outline = TRUE, status = "info",value=FALSE))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -1915,7 +1915,7 @@ output$AdvancedSS_noestabs_user<- renderUI({
     # if(input$advance_ss_click){ 
         fluidRow(column(width=6, prettyCheckbox(
         inputId = "no_tables", label = "No tables",
-        shape = "round", outline = TRUE, status = "info",value=FALSE))) 
+        shape = "round", outline = TRUE, status = "info",value=TRUE))) 
       # } 
   }) 
 
@@ -5071,7 +5071,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
           Model.output<-SS_output(paste0("Scenarios/",input$Scenario_name),verbose=FALSE,printstats = FALSE,covar=FALSE)
         }
 
-      if(input$Data_wt!="None or Current weighting")
+      if(input$Data_wt!="None/Current weighting")
          {
            if(Model.output$inputs$covar==TRUE)
              {
