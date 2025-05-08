@@ -467,8 +467,8 @@ ui <- function(request) {
             h5(strong("Natural mortality")),
             dropdownButton(
               selectInput("M_prior_sss", "Prior type for M", c("lognormal", "normal", "uniform", "no prior")),
-              numericInput("M_f_mean_sss", "Mean", value = NA, min = 0, max = 10000, step = 0.00001),
-              numericInput("M_f_SD_sss", "SD", value = 0.44, min = 0, max = 10000, step = 0.00001),
+              numericInput("M_f_mean_sss", "Mean or lower bound for uniform", value = NA, min = 0, max = 10000, step = 0.00001),
+              numericInput("M_f_SD_sss", "SD or upper bound for uniform", value = 0.44, min = 0, max = 10000, step = 0.00001),
               circle = FALSE, right = TRUE, status = "danger", icon = icon("skull-crossbones"), width = "300px", label = "Natural mortality"
             ),
             h5(strong("Growth")),
