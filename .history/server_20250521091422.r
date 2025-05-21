@@ -5015,13 +5015,13 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     {
     if(is.null(input$no_hess_user)){
       cmd.in<-""
-      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=input$add_comms_in_user}}
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
 
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
         {
       cmd.in<-" -nohess"
-      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(cmd.in,input$add_comms_in_user)}}
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
         }
     }
@@ -5031,13 +5031,13 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(input$no_hess_user)
       {
       cmd.in<-" -nohess"
-      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(cmd.in,input$add_comms_in_user)}}
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
       }
       if(!input$no_hess_user)
       {
       cmd.in<-""
-      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=input$add_comms_in_user}}
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" ",input$add_comms_in_user)}}
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
       }
     }
