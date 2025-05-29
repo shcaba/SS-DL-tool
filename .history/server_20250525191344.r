@@ -33,7 +33,6 @@ require(parallel)
 require(parallelly)
 require(fs)
 require(tools)
-require(here)
 #require(SSMSE)
 #require(geomtextpath)
 
@@ -5139,16 +5138,15 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
           ncores <- parallelly::availableCores(omit = 1)
           future::plan(future::multisession, workers = ncores)
          }
-
-         exe_loc <- here::here(paste0(getwd(),"/Scenarios/",input$Scenario_name), os_exe)
+         browser()
          jits<-r4ss::jitter(
                       dir=paste0(getwd(),"/Scenarios/",input$Scenario_name),
                       Njitter=input$Njitter,
                       printlikes = TRUE,
                       jitter_fraction=input$jitter_fraction,
-                      init_values_src=NULL,
+                      init_values_src=0,
                       verbose=TRUE,
-                      exe = exe_loc,
+                      exe = os_exe,
                       extras = "-nohess"
                       )
          

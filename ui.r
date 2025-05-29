@@ -817,7 +817,8 @@ ui <- function(request) {
         shinyjs::hidden(wellPanel(
           id = "panel_advanced_user_SS",
           h4(strong("Additional SS3 options")),
-          # fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS3 options",FALSE))),
+          h5(p(strong("Additional SS3 commands can be found ", tags$a(href = "javascript:window.open('SS_commands.pdf', '_blank','width=600,height=400')", " here")))),
+# fluidRow(column(width=10,checkboxInput("advance_ss_click","Advanced SS3 options",FALSE))),
           popify(uiOutput("AdvancedSS_nohess_user"), "Run -nohess option", "Turning off the Hessian option skips over asymptotic variance and speeds the model up. Use this option to more quickly explore models. Estimate variance once you are done exploring."),
           popify(uiOutput("AdvancedSS_addcomms_user"), "Custom SS3 run commands", "Click the advanced SS3 commands link above to get options. One interesting option is -hess_step which attempts to make the model gradient 0. This should be run once a final model is found."),
           popify(uiOutput("AdvancedSS_addcomms_comms_user"), "Custom SS3 run commands", "Click the advanced SS3 commands link above to get options. One interesting option is -hess_step which attempts to make the model gradient 0. This should be run once a final model is found."),
