@@ -4942,7 +4942,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     if(input$Data_wt=="Dirichlet-multinomial"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
-    	    
+  browser()  	    
 #RUN SS3 MODELS
     if(is.null(input$user_model))
     {
@@ -5022,7 +5022,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(!file.exists(paste0("Scenarios/",input$Scenario_name,"data_echo.ss_new")))
         {
       cmd.in<-" -nohess"
-      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in_user)}}
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(cmd.in,input$add_comms_in_user)}}
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
         }
     }
@@ -5032,7 +5032,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
       if(input$no_hess_user)
       {
       cmd.in<-" -nohess"
-      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(" -nohess ",input$add_comms_in_user)}}
+      if(!is.null(input$add_comms_user)){if(input$add_comms_user==TRUE){cmd.in=paste0(cmd.in,input$add_comms_in_user)}}
       RUN.SS(paste0("Scenarios/",input$Scenario_name),ss.cmd=cmd.in)
       }
       if(!input$no_hess_user)

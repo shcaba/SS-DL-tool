@@ -4942,7 +4942,7 @@ SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrit
     if(input$Data_wt=="Dirichlet-multinomial"){DataWT_opt<-"DM"}
     if(input$Data_wt=="Francis"){DataWT_opt<-"Francis"}
     if(input$Data_wt=="McAllister-Ianelli"){DataWT_opt<-"MI"}
-    	    
+  browser()  	    
 #RUN SS3 MODELS
     if(is.null(input$user_model))
     {
