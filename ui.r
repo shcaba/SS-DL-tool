@@ -1140,7 +1140,7 @@ ui <- function(request) {
           uiOutput("Sensi_model_Ref"),
           uiOutput("Sensi_model_picks"),
           # fluidRow(column(width=10,checkboxInput("Sensi_uncertainty_choice","Include uncertainty intervals in plots?",TRUE))),
-          h5(strong("Add reference points to spawning output plots. Blank input adds no line.")),
+          h5(strong("Add reference points to the relative spawning output plots. Blank input will add no reference point markers.")),
           fluidRow(
             column(width = 5, numericInput("Sensi_TRP", "Target", value = NA, min = 0, max = 1, step = 0.001)),
             column(width = 5, numericInput("Sensi_LRP", "Limit", value = NA, min = 0, max = 1, step = 0.001))
@@ -1197,6 +1197,11 @@ ui <- function(request) {
           fluidRow(column(width = 8, textInput("Ensemble_file", strong("Label ensemble model file"), value = "Ensemble 1"))),
           uiOutput("Ensemble_model_picks"),
           fluidRow(column(width = 10, textInput("Ensemble_wts", "Relative scenario weights", value = ""))),
+                   h5(strong("Add reference points to the relative spawning output plots. Blank input will add no reference point markers.")),
+          fluidRow(
+            column(width = 5, numericInput("Ensm_TRP", "Target", value = NA, min = 0, max = 1, step = 0.001)),
+            column(width = 5, numericInput("Ensm_LRP", "Limit", value = NA, min = 0, max = 1, step = 0.001))
+          ),
           actionButton("run_Ensemble", strong("Create Ensemble Model"),
             width = "100%",
             icon("circle-play"),
