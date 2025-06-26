@@ -3637,7 +3637,7 @@ if(input$Sel_choice=="Dome-shaped")
       minmaxbin<-c(Selpeak[1]-min(data.file$lbin_vector),max(data.file$lbin_vector)-Selpeak[1])
       sel.inputs.lts<-c(length(Sel50),length(Sel50_phase),length(Selpeak),length(Selpeak_phase),length(PeakDesc),length(PeakDesc_phase),length(LtPeakFinal),length(LtPeakFinal_phase),length(FinalSel),length(FinalSel_phase))
     }
-#browser()
+
 #Search for errors in inputs      
       #Throw warning if not enough selectivity inputs
       #if(!all(Nfleets==sel.inputs.lts))
@@ -4863,7 +4863,7 @@ if(input$user_model)
   SS_writestarter(starter.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
 
 }
-#browser()
+
 if(exists("checkmod")|input$user_model)
 #if(any(exists("checkmod"),input$user_model)&!any(c(is.na(Sel50),is.na(Selpeak))))
   {
@@ -6427,38 +6427,59 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
        gg1<-ggplot(SO_0,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("Initial Spawning Output")+
+        scale_y_continuous(limits = c(0, NA))+
         theme(legend.position = "none")
        gg2<-ggplot(SO_t,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("Terminal Year Spawning Output")+
+        scale_y_continuous(limits = c(0, NA))+
         theme(legend.position = "none")
        gg3<-ggplot(Bratio_t,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("Relative stock status")+
+        scale_y_continuous(limits = c(0, NA))+
+        geom_hline(yintercept=c(input$Ensm_TRP,input$Ensm_LRP),col=c("green","red"),linetype=c("dashed","solid"))+
         theme(legend.position = "none")
        gg4<-ggplot(F_t,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("Fishing mortality")+
+        scale_y_continuous(limits = c(0, NA))+
         theme(legend.position = "none")
        gg5<-ggplot(SPR_t,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("1-SPR")+
+        scale_y_continuous(limits = c(0, 1))+
         theme(legend.position = "none")
 
         ggarrange(gg1,gg2,gg3,gg4,gg5)
         ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots.png"),width=20,height=10)
-             output$Ensemble_plots <- renderPlot({ 
-       ggarrange(gg1,gg2,gg3,gg4,gg5)})
+        output$Ensemble_plots <- renderPlot({ggarrange(gg1,gg2,gg3,gg4,gg5)})
+
+        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots_SOinit.png"),plot=gg1,width=20,height=10)
+        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots_SOterm.png"),plot=gg2,width=20,height=10)
+        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots_RSS.png"),plot=gg3,width=20,height=10)
+        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots_F.png"),plot=gg4,width=20,height=10)
+        ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_comp_plots_SO_1_SPR.png"),plot=gg5,width=20,height=10)
 
       #Spawning Output plot
       Ensemble_SO_plot<-reshape2::melt(Ensemble_SO,value.name="SO")
       colnames(Ensemble_SO_plot)<-c("Year","SO")
+      max.yr<-max(modsummary.ensemble$SpawnBio$Yr)
+      min.yr<-min(modsummary.ensemble$SpawnBio$Yr)
       Ensemble_SO_plot$Year<-as.factor(Ensemble_SO_plot$Year)
+      #x-axis labels 
+      xlab.yr.short<-NA
+      xlab.yr.short[as.character(modsummary.ensemble$SpawnBio$Yr)%in%as.character(seq(min.yr,max.yr,floor((max.yr-min.yr)/10)))]<-as.character(seq(min.yr,max.yr,floor((max.yr-min.yr)/10)))
+      xlab.yr.short[is.na(xlab.yr.short)]<-""
+
       SO.ts.plot<-ggplot(Ensemble_SO_plot,aes(Year,SO,fill=Year))+
         geom_violin(scale="count")+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
-        ylab("Spawning Output")
+        #theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        ylab("Spawning Output")+
+        scale_x_discrete(labels=xlab.yr.short)+
+        scale_y_continuous(limits = c(0, NA))
+        theme(axis.text = element_text(size = 14))
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SO.png"),width=20,height=10)
          output$Ensemble_plots_SO_ts <- renderPlot({ 
        SO.ts.plot})
@@ -6470,8 +6491,12 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       Bratio.ts.plot<-ggplot(Ensemble_Bratio_plot,aes(Year,Bratio,fill=Year))+
         geom_violin(bw=0.01)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
-        ylab("SBt/SO0")
+        #theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        ylab("SOt/SO0")+
+        geom_hline(yintercept=c(input$Ensm_TRP,input$Ensm_LRP),col=c("green","red"),linetype=c("dashed","solid"))+
+        scale_x_discrete(labels=xlab.yr.short)+
+        scale_y_continuous(limits = c(0, NA))+
+        theme(axis.text = element_text(size = 14))
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_Bratio.png"),width=20,height=10)
          output$Ensemble_plots_Bratio_ts <- renderPlot({ 
        Bratio.ts.plot})
@@ -6483,7 +6508,9 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       ggplot(Ensemble_F_plot,aes(Year,F,fill=Year))+
         geom_violin(bw=0.001)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        #theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        scale_x_discrete(labels=xlab.yr.short)+
+        scale_y_continuous(limits = c(0, NA))+
         ylab("Fishing mortality")
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_F.png"),width=20,height=10)
 
@@ -6494,7 +6521,9 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       ggplot(Ensemble_SPR_plot,aes(Year,SPR,fill=Year))+
         geom_violin(bw=0.01)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        #theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        scale_x_discrete(labels=xlab.yr.short)+
+        scale_y_continuous(limits = c(0, NA))+
         ylab("1-SPR")
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SPR.png"),width=20,height=10)
 
