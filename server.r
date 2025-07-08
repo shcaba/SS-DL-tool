@@ -41,7 +41,8 @@ require(here)
 #require(RColorBrewer)
 #require(ggthemes)
 #devtools::load_all("C:/Users/Jason.Cope/Documents/Github/nwfscDiag")
-
+#packageVersion("r4ss")
+remotes::install_github("r4ss/r4ss")
 source('Functions.r',local = FALSE)
 source('SSS.r',local = FALSE)
 
@@ -3508,6 +3509,7 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
 ### END SSS ###
 ###############
 
+
 ##################################################################
 ### PREPARE FILES and RUN Length and Age-based Stock Synthsis ###
 ##################################################################
@@ -3550,8 +3552,8 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
       #Copy and move files
 	  	if(file.exists(paste0("Scenarios/",input$Scenario_name)))
 			{
-				unlink(paste0("Scenarios/",input$Scenario_name),recursive=TRUE)   #Deletes previous run
-#				file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+				unlink(paste0("Scenarios/",input$Scenario_name),recursive=TRUE,force=TRUE)   #Deletes previous run
+				#file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
 			}
 	  	if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){
           file.copy(paste0("SS_LO_F_files"),paste0("Scenarios"),recursive=TRUE,overwrite=TRUE)
