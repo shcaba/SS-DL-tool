@@ -34,6 +34,7 @@ require(parallelly)
 require(fs)
 require(tools)
 require(here)
+require(remotes)
 #require(SSMSE)
 #require(geomtextpath)
 
@@ -41,7 +42,8 @@ require(here)
 #require(RColorBrewer)
 #require(ggthemes)
 #devtools::load_all("C:/Users/Jason.Cope/Documents/Github/nwfscDiag")
-
+#packageVersion("r4ss")
+#remotes::install_github("r4ss/r4ss")
 source('Functions.r',local = FALSE)
 source('SSS.r',local = FALSE)
 
@@ -3508,6 +3510,7 @@ if(exists(load(paste0("Scenarios/",input$Scenario_name,"/SSS_out.DMP"))))
 ### END SSS ###
 ###############
 
+
 ##################################################################
 ### PREPARE FILES and RUN Length and Age-based Stock Synthsis ###
 ##################################################################
@@ -3550,8 +3553,9 @@ if(!any(input$use_par,input$use_datanew,input$use_controlnew,input$user_model))
       #Copy and move files
 	  	if(file.exists(paste0("Scenarios/",input$Scenario_name)))
 			{
-				unlink(paste0("Scenarios/",input$Scenario_name),recursive=TRUE)   #Deletes previous run
-#				file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
+	  	  
+				unlink(paste0("Scenarios/",input$Scenario_name),recursive=TRUE,force=TRUE)   #Deletes previous run
+				#file.remove(paste0(getwd(),"/Scenarios/",input$Scenario_name))
 			}
 	  	if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data)){
           file.copy(paste0("SS_LO_F_files"),paste0("Scenarios"),recursive=TRUE,overwrite=TRUE)
@@ -4637,8 +4641,17 @@ if(input$Sel_choice=="Dome-shaped")
 
 
     #Remove surveys from initial F lines and add q and xtra variance lines
-    if(!is.null(rv.Index$data)|data.file$Nfleets>catch.fleets)
+          if(is.null(rv.Index$data)&data.file$Nfleets>catch.fleets)
       {
+       sendSweetAlert(
+        session = session,
+        title = "Data Warning",
+        text = "You have a fleet that is not assigned to either a fishery or survey. Check your biological data for the additional fleet and either assign it to a fishery (even if it has a catch history of zero) or add an survey index file associated with those data.",
+        type = "warning")
+     }
+   
+    if(!is.null(rv.Index$data)|data.file$Nfleets>catch.fleets)
+       {
         if(data.file$Nfleets>catch.fleets)
           {
             noncatch.fleets<-c((catch.fleets+1):data.file$Nfleets)
@@ -4647,6 +4660,7 @@ if(input$Sel_choice=="Dome-shaped")
           }
  
         #q set-up
+        browser()
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
         q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,0,0,1)))
         if(input$Indexvar){q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,1,0,1)))}
@@ -6427,22 +6441,28 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
        gg1<-ggplot(SO_0,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("Initial Spawning Output")+
+        scale_y_continuous(limits = c(0, NA))+
         theme(legend.position = "none")
        gg2<-ggplot(SO_t,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("Terminal Year Spawning Output")+
+        scale_y_continuous(limits = c(0, NA))+
         theme(legend.position = "none")
        gg3<-ggplot(Bratio_t,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("Relative stock status")+
+        scale_y_continuous(limits = c(0, NA))+
+        geom_hline(yintercept=c(input$Ensm_TRP,input$Ensm_LRP),col=c("green","red"),linetype=c("dashed","solid"))+
         theme(legend.position = "none")
        gg4<-ggplot(F_t,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("Fishing mortality")+
+        scale_y_continuous(limits = c(0, NA))+
         theme(legend.position = "none")
        gg5<-ggplot(SPR_t,aes(Model.labs,Metric,fill=Model))+
         geom_violin()+
         ylab("1-SPR")+
+        scale_y_continuous(limits = c(0, 1))+
         theme(legend.position = "none")
 
         ggarrange(gg1,gg2,gg3,gg4,gg5)
@@ -6458,17 +6478,22 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       #Spawning Output plot
       Ensemble_SO_plot<-reshape2::melt(Ensemble_SO,value.name="SO")
       colnames(Ensemble_SO_plot)<-c("Year","SO")
-      max.yr<-max(as.numeric(Ensemble_SO_plot$Year))
-      min.yr<-min(as.numeric(Ensemble_SO_plot$Year))
+      max.yr<-max(modsummary.ensemble$SpawnBio$Yr)
+      min.yr<-min(modsummary.ensemble$SpawnBio$Yr)
       Ensemble_SO_plot$Year<-as.factor(Ensemble_SO_plot$Year)
+      #x-axis labels 
+      xlab.yr.short<-NA
+      xlab.yr.short[as.character(modsummary.ensemble$SpawnBio$Yr)%in%as.character(seq(min.yr,max.yr,floor((max.yr-min.yr)/10)))]<-as.character(seq(min.yr,max.yr,floor((max.yr-min.yr)/10)))
+      xlab.yr.short[is.na(xlab.yr.short)]<-""
+
       SO.ts.plot<-ggplot(Ensemble_SO_plot,aes(Year,SO,fill=Year))+
         geom_violin(scale="count")+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        #theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("Spawning Output")+
-        scale_x_discrete(breaks =as.character(seq(min.yr,max.yr,floor((max.yr-min.yr)/10))))+
+        scale_x_discrete(labels=xlab.yr.short)+
         scale_y_continuous(limits = c(0, NA))
-        theme(axis.text = element_text(size = 12))
+        theme(axis.text = element_text(size = 14))
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SO.png"),width=20,height=10)
          output$Ensemble_plots_SO_ts <- renderPlot({ 
        SO.ts.plot})
@@ -6480,11 +6505,12 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       Bratio.ts.plot<-ggplot(Ensemble_Bratio_plot,aes(Year,Bratio,fill=Year))+
         geom_violin(bw=0.01)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        #theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
         ylab("SOt/SO0")+
-        scale_x_discrete(breaks =as.character(seq(min.yr,max.yr,floor((max.yr-min.yr)/10))))+
+        geom_hline(yintercept=c(input$Ensm_TRP,input$Ensm_LRP),col=c("green","red"),linetype=c("dashed","solid"))+
+        scale_x_discrete(labels=xlab.yr.short)+
         scale_y_continuous(limits = c(0, NA))+
-        theme(axis.text = element_text(size = 12))
+        theme(axis.text = element_text(size = 14))
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_Bratio.png"),width=20,height=10)
          output$Ensemble_plots_Bratio_ts <- renderPlot({ 
        Bratio.ts.plot})
@@ -6496,7 +6522,9 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       ggplot(Ensemble_F_plot,aes(Year,F,fill=Year))+
         geom_violin(bw=0.001)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        #theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        scale_x_discrete(labels=xlab.yr.short)+
+        scale_y_continuous(limits = c(0, NA))+
         ylab("Fishing mortality")
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_F.png"),width=20,height=10)
 
@@ -6507,7 +6535,9 @@ show_modal_spinner(spin="flower",color=wes_palettes$Rushmore[1],text="Prepare mo
       ggplot(Ensemble_SPR_plot,aes(Year,SPR,fill=Year))+
         geom_violin(bw=0.01)+
         theme(legend.position="none")+
-        theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        #theme(axis.text.x = element_text(angle = 65, hjust = 0.1,vjust=0))+
+        scale_x_discrete(labels=xlab.yr.short)+
+        scale_y_continuous(limits = c(0, NA))+
         ylab("1-SPR")
       ggsave(paste0(Ensemble_model_dir_out,"/Ensemble_SPR.png"),width=20,height=10)
 
