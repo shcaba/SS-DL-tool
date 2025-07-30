@@ -101,7 +101,7 @@ if(!check_github('r4ss/r4ss')$up_to_date)
       sendSweetAlert(
         session = session,
         title = "r4ss Warning",
-        text = "Your version of r4ss is outdate. It is highly recommended you update your version using remotes::install_github('r4ss/r4ss')",
+        text = "Your version of r4ss is outdated. It is highly recommended you update your version using remotes::install_github('r4ss/r4ss')",
         type = "warning")      
 }
 
