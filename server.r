@@ -4673,7 +4673,7 @@ if(input$Sel_choice=="Dome-shaped")
             ctl.file$init_F<-ctl.file$init_F[-noncatch.fleets,]
 #            ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
           }
- 
+     
         #q set-up
         q.setup.names<-c("fleet","link","link_info","extra_se","biasadj", "float")
         q.setup.lines<-data.frame(t(c(unique(rv.Index$data[,3])[1],1,0,0,0,1)))
@@ -4694,13 +4694,25 @@ if(input$Sel_choice=="Dome-shaped")
             if(input$Indexvar)
             {
               q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,3])[q],1,0,1,0,1))
+              q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0))))          
               #if(unique(rv.Index$data[,6])[q]!="RSS"){q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,3])[q],1,0,1,0,1))}
               #if(unique(rv.Index$data[,6])[q]=="RSS"){q.setup.lines<-rbind(q.setup.lines,c(unique(rv.Index$data[,3])[q],1,0,0,0,1))}
-              if(unique(rv.Index$data[,6])[q]!="RSS"){q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0))))}          
-              if(unique(rv.Index$data[,6])[q]=="RSS"){q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,-3,0,0,0,0,0,0,0))))}          
+#              if(unique(rv.Index$data[,6])[q]!="RSS"){q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,3,0,0,0,0,0,0,0))))}          
+#              if(unique(rv.Index$data[,6])[q]=="RSS"){q.lines<-rbind(q.lines,data.frame(rbind(c(-15,15,1,0,1,0,-1,rep(0,7)),c(0,5,0,0,99,0,-3,0,0,0,0,0,0,0))))}          
             }  
           }
         }
+
+      #Go back and fix the q lines if using the RSS. This changes the float to 0 and the initial value to 0.
+      for(qq in 1:length(unique(rv.Index$data[,3])))
+        {
+        if(unique(rv.Index$data[,6])[qq]=="RSS")
+          {
+            q.setup.lines[unique(rv.Index$data[,6])[qq]=="RSS",6]<-0
+            q.lines[unique(rv.Index$data[,6])[qq]=="RSS",3]<-0
+          }
+        }
+        
         names(q.setup.lines)<-q.setup.names
         rownames(q.setup.lines)<-unique(rv.Index$data[,6])
         ctl.file$Q_options<-q.setup.lines
