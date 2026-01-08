@@ -17,7 +17,7 @@ RUN.SS <- function(path, ss.cmd = " -nohess -nox") {
     os_exe <- "ss3_osx"
   }
   if (substr(R.version[["os"]], 1, 6) == "darwin" && R.version[["arch"]] == "aarch64") {
-    os_exe <- "ss3_osx"
+    os_exe <- "ss3_osx_arm64"
   }
   if (R.version[["os"]] == "linux-gnu") {
     os_exe <- "ss3_linux"
