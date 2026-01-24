@@ -2161,10 +2161,11 @@ output$AdvancedSS_Ltbin <- renderUI({
     # if(input$advance_ss_click){       
       if(!is.null(rv.Lt$data)){bin.step<-as.numeric(colnames(rv.Lt$data)[7])-as.numeric(colnames(rv.Lt$data)[6])}
       if(is.null(rv.Lt$data)){bin.step<-2}
+  
       fluidRow(column(width=4, numericInput("lt_bin_size", "bin size",  
                                               value=bin.step, min=0, max=10000, step=1)), 
               column(width=4, numericInput("lt_min_bin", "minimum bin",  
-                                              value=4, min=0, max=10000, step=0.01)), 
+                                              value=as.numeric(colnames(rv.Lt$data)[6]), min=0, max=10000, step=0.01)), 
               column(width=4, numericInput("lt_max_bin", "maximum bin",  
                                               value=2*(round((Linf()+(Linf()*0.2326))/2))+2, min=0, max=10000, step=0.01))) 
     # } 
