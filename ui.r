@@ -265,15 +265,7 @@ ui <- function(request) {
           h5(em(
             "If using an existing model, chose 'None' to maintain the same weighting as the existing model"
           )),
-          # fluidRow(column(width=10,prettyCheckbox(
-          #   inputId = "dirichlet",
-          #   label = "Use Dirichlet multinomial weighting?",
-          #   value=FALSE,
-          #   shape="curve",
-          #   icon = icon("check"),
-          #   animation="smooth"),
-          #   bigger=TRUE),
-          #   fill=TRUE),
+
           awesomeRadio(
             inputId = "Data_wt",
             label = "Choose data-weighting option",
@@ -285,28 +277,6 @@ ui <- function(request) {
             ),
             status = "warning"
           )
-
-          # fluidRow(column(width=6, prettyCheckbox(
-          #   inputId = "dirichlet",
-          #   label = "Use Dirichlet weighting?",
-          #   shape = "round",
-          #   outline = TRUE,
-          #   status = "info"))),
-          # fluidRow(column(width=6, prettyCheckbox(
-          #   inputId = "Francis_wt",
-          #   label = "Use Francis weighting?",
-          #   shape = "round",
-          #   outline = TRUE,
-          #   status = "info"))),
-          # fluidRow(column(width=6, prettyCheckbox(
-          #   inputId = "MI_wt",
-          #   label = "Use McAllister and Ianelli?",
-          #   shape = "round",
-          #   outline = TRUE,
-          #   status = "info"))),
-
-          # h5(em("After the first run, you can check the Francis or harmonic mean methods for suggested weightings")),
-          # fluidRow(column(width=6,textInput("Lt_datawts", "Lengths weights by fleet", value=""))),
         )),
         shinyjs::hidden(wellPanel(
           id = "panel_SSLO_LH",
