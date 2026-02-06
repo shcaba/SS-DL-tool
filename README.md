@@ -490,7 +490,11 @@ A complete compliment of comparison plots are saved in the chosen directory in a
 
 # References
 
-  Cope J.M. (2020). The Stock Synthesis Data-limited Tool (SS-DL tool). https://github.com/shcaba/SS-DL-tool#the-stock-synthesis-data-limited-tool-ss-dl-tool (Accessed 01 May 2023).
+  Cope, J.M. (2024). The good practices of practicable alchemy in the stock assessment continuum: Fundamentals and principles of analytical methods to support science-based fisheries management under data and resource limitations. Fisheries Research 270, 106859. https://doi.org/10.1016/j.fishres.2023.106859
+
+  Cope J.M. (2020). The Stock Synthesis Data-limited Tool (SS-DL tool). https://github.com/shcaba/SS-DL-tool#the-stock-synthesis-data-limited-tool-ss-dl-tool.
+
+  Cope, J.M. (2013). Implementing a statistical catch-at-age model (Stock Synthesis) as a tool for deriving overfishing limits in data-limited situations. Fisheries Research 142, 3–14. https://doi.org/10.1016/j.fishres.2012.03.006
 
   Hordyk, A., Ono, K., Valencia, S., Loneragan, N., & Prince, J. (2015). A novel length-based empirical estimation method of spawning potential ratio (SPR), and tests of its performance, for small-scale, data-poor fisheries. ICES Journal of Marine Science, 72(1), 217-231.
 
