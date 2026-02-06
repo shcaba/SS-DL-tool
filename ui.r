@@ -2751,11 +2751,11 @@ ui <- function(request) {
               value = "Ensemble 1"
             )
           )),
+
           uiOutput("Ensemble_model_picks"),
-          fluidRow(column(
-            width = 10,
-            textInput("Ensemble_wts", "Relative scenario weights", value = "")
-          )),
+
+          uiOutput("Ensemble_model_nums"),
+
           h5(strong(
             "Add reference points to the relative spawning output plots. Blank input will add no reference point markers."
           )),

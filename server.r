@@ -10913,7 +10913,31 @@ shinyServer(function(input, output, session) {
       )
     })
   })
-  #Ensemble_model_dir_out<-eventReactive(req(input$run_Ensemble&!is.null(input$myEnsemble)&as.numeric(input$tabs)==6),{
+
+  output$Ensemble_model_nums <- renderUI(
+    {
+      Ensemble_model_nums <- 3
+      if (!is.null(input$myEnsemble)) {
+        Ensemble_model_nums <- length(input$myEnsemble)
+      }
+      fluidRow(column(
+        width = 10,
+        textInput(
+          "Ensemble_wts",
+          "Relative scenario weights",
+          # value = ""
+          value = paste(
+            rep(
+              1,
+              Ensemble_model_nums
+            ),
+            collapse = ","
+          )
+        )
+      ))
+    }
+  )
+
   observeEvent(
     req(
       input$run_Ensemble &
@@ -10921,11 +10945,29 @@ shinyServer(function(input, output, session) {
         as.numeric(input$tabs) == 7
     ),
     {
+      #Add warning message for wrong number of model weightings
+      if (
+        length(input$myEnsemble) !=
+          length(as.numeric(trimws(unlist(strsplit(
+            input$Ensemble_wts,
+            ","
+          )))))
+      ) {
+        sendSweetAlert(
+          session = session,
+          title = "Model weighting error",
+          text = "The number of weightings does not match the number of models. Please give a weight for each model selected. This will automatically update if you are changing the number of models.",
+          type = "error"
+        )
+        req(FALSE)
+      }
+
       show_modal_spinner(
         spin = "flower",
         color = wes_palettes$Rushmore[1],
         text = "Prepare models to combine into ensembles"
       )
+
       #Ensemble_model_dir_out<-eventReactive(input$run_Ensemble,{
       #Ensemble.outputs<-eventReactive(input$run_Ensemble,{
       if (!file.exists(paste0(pathEnsemble(), "/Ensemble outputs"))) {
@@ -11300,6 +11342,7 @@ shinyServer(function(input, output, session) {
       #        stat_summary(geom = "line", fun  = median)+
       #        ylim(0,1)+
       #        stat_summary(geom = "ribbon", fun.data = mean_cl_quantile, alpha = 0.3)
+
       #Make outputs
       show_modal_spinner(
         spin = "flower",
@@ -11336,8 +11379,8 @@ shinyServer(function(input, output, session) {
         Ensemble.outputs.plots,
         file = paste0(Ensemble_model_dir_out, "/Ensemble_results_plots", ".rds")
       )
+
       remove_modal_spinner()
-      #       return(Ensemble.outputs)
     }
   )
 
