@@ -200,7 +200,10 @@ ui <- function(request) {
         shinyjs::hidden(wellPanel(
           id = "panel_Ct_F_LO",
           h4(strong(
-            "Use constant catch or estimate fishing mortality directly?"
+            "Use constant catch (either hybrid or Pope's approximation) or estimate fishing mortality directly?"
+          )),
+          h5(em(
+            "The constant catch hybrid or estimating fishing mortality are best used with multiple years of data. Constant Catch using Pope's approximation is good for a single year of length composition."
           )),
           h5(em(
             "Using constant catch assumes the same catch in all years in order to fit the length composition data (similar to LBSPR, but the model integrates the fit of each year, not each year separately)"
@@ -220,7 +223,7 @@ ui <- function(request) {
             selectInput(
               "Ct_F_LO_select",
               "Approach",
-              c("Constant Catch", "Estimate F")
+              c("Constant Catch Hybrid", "Constant Catch Pope's", "Estimate F")
             )
           )),
         )),

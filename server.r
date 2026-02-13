@@ -6277,6 +6277,19 @@ shinyServer(function(input, output, session) {
           paste0("Scenarios/SS_LO_F_files"),
           paste0("Scenarios/", input$Scenario_name)
         )
+      } else if (
+        input$Ct_F_LO_select == "Constant Catch Pope's" & is.null(rv.Ct$data)
+      ) {
+        file.copy(
+          paste0("SS_LO_CC_P_files"),
+          paste0("Scenarios"),
+          recursive = TRUE,
+          overwrite = TRUE
+        )
+        file.rename(
+          paste0("Scenarios/SS_LO_CC_P_files"),
+          paste0("Scenarios/", input$Scenario_name)
+        )
       } else {
         file.copy(
           paste0("SS_LB_files"),
