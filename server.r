@@ -7558,6 +7558,8 @@ shinyServer(function(input, output, session) {
                 male_vbgf_est[1],
                 log(male_vbgf_est[1] + 0.000000001)
               )
+            } else if (input$male_offset_est) {
+              ctl.file$MG_parms[14, 3:4] <- input$t0_m_mean
             } else {
               ctl.file$MG_parms[14, 3:4] <- male_vbgf_est[1]
             }
