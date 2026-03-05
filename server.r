@@ -7509,15 +7509,15 @@ shinyServer(function(input, output, session) {
 
           if (input$male_offset_est) {
             ctl.file$parameter_offset_approach <- 2 #Change to offset approach
-            ctl.file$MG_parms[13, 3:4] <- 0 #M
-            ctl.file$MG_parms[14, 3:4] <- 0 #L0
-            ctl.file$MG_parms[15, 3:4] <- 0 #Linf
-            ctl.file$MG_parms[16, 3:4] <- 0 #k
-            ctl.file$MG_parms[17, 3:4] <- 0 #CV
-            ctl.file$MG_parms[18, 3:4] <- 0 #CV
+            ctl.file$MG_parms[13, c(1, 3:4)] <- c(-100, 0, 0) #M
+            ctl.file$MG_parms[14, c(1, 3:4)] <- c(-100, 0, 0) #L0
+            ctl.file$MG_parms[15, c(1, 3:4)] <- c(-100, 0, 0) #Linf
+            ctl.file$MG_parms[16, c(1, 3:4)] <- c(-100, 0, 0) #k
+            ctl.file$MG_parms[17, c(1, 3:4)] <- c(-100, 0, 0) #CV
+            ctl.file$MG_parms[18, c(1, 3:4)] <- c(-100, 0, 0) #CV
             #Weight-length
-            ctl.file$MG_parms[19, 3:4] <- 0 #coefficient
-            ctl.file$MG_parms[20, 3:4] <- 0 #exponent
+            # ctl.file$MG_parms[19, c(1, 3:4)] <- c(-100, 0, 0) #coefficient
+            # ctl.file$MG_parms[20, c(1, 3:4)] <- c(-100, 0, 0) #exponent
           }
 
           if (input$male_parms_est) {
