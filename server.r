@@ -7559,7 +7559,25 @@ shinyServer(function(input, output, session) {
                 log(male_vbgf_est[1] + 0.000000001)
               )
             } else if (input$male_offset_est) {
-              ctl.file$MG_parms[14, 3:4] <- input$t0_m_mean
+              #browser()
+              Lmin_age <- 0
+              ctl.file$Growth_Age_for_L1 <- Lmin_age
+              male_vbgf_est_offset <- VBGF(
+                exp(input$Linf_m_mean) * input$Linf_f_mean,
+                exp(input$k_m_mean) * input$k_f_mean,
+                exp(input$t0_m_mean) * input$t0_f_mean,
+                Lmin_age
+              )
+              female_vbgf_est_offset <- VBGF(
+                input$Linf_f_mean,
+                input$k_f_mean,
+                input$t0_f_mean,
+                Lmin_age
+              )
+              ctl.file$MG_parms[2, 3:4] <- female_vbgf_est_offset
+              ctl.file$MG_parms[14, 3:4] <- log(
+                male_vbgf_est_offset / female_vbgf_est_offset
+              )
             } else {
               ctl.file$MG_parms[14, 3:4] <- male_vbgf_est[1]
             }
