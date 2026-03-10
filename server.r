@@ -8700,6 +8700,7 @@ shinyServer(function(input, output, session) {
           input$Scenario_name,
           "/data_echo.ss_new"
         ))
+
         #No plots or figures
         if (is.null(input$no_plots_tables)) {
           show_modal_spinner(
@@ -8711,13 +8712,24 @@ shinyServer(function(input, output, session) {
             input$plot_RPs_inputs,
             ","
           ))))
-          SS_plots(
-            Model.output,
-            maxyr = data.file$endyr + 1,
-            verbose = FALSE,
-            btarg = RPs_4_plots[1],
-            minbthresh = RPs_4_plots[2]
-          )
+          if (input$Forecast_choice) {
+            SS_plots(
+              Model.output,
+              #maxyr = data.file$endyr + 1,
+              verbose = FALSE,
+              btarg = RPs_4_plots[1],
+              minbthresh = RPs_4_plots[2],
+              forecastplot = TRUE
+            )
+          } else {
+            SS_plots(
+              Model.output,
+              maxyr = data.file$endyr + 1,
+              verbose = FALSE,
+              btarg = RPs_4_plots[1],
+              minbthresh = RPs_4_plots[2]
+            )
+          }
         }
 
         if (is.null(input$no_tables)) {
@@ -8742,13 +8754,24 @@ shinyServer(function(input, output, session) {
               input$plot_RPs_inputs,
               ","
             ))))
-            SS_plots(
-              Model.output,
-              maxyr = data.file$endyr + 1,
-              verbose = FALSE,
-              btarg = RPs_4_plots[1],
-              minbthresh = RPs_4_plots[2]
-            )
+            if (input$Forecast_choice) {
+              SS_plots(
+                Model.output,
+                #maxyr = data.file$endyr + 1,
+                verbose = FALSE,
+                btarg = RPs_4_plots[1],
+                minbthresh = RPs_4_plots[2],
+                forecastplot = TRUE
+              )
+            } else {
+              SS_plots(
+                Model.output,
+                maxyr = data.file$endyr + 1,
+                verbose = FALSE,
+                btarg = RPs_4_plots[1],
+                minbthresh = RPs_4_plots[2]
+              )
+            }
           }
         }
 
