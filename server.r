@@ -7560,12 +7560,13 @@ shinyServer(function(input, output, session) {
               )
             } else if (input$male_offset_est) {
               #browser()
-              Lmin_age <- 0
+              male_t0 <- exp(input$t0_m_mean) * input$t0_f_mean
+              Lmin_age <- min(input$t0_f_mean, male_t0) * 1.0001
               ctl.file$Growth_Age_for_L1 <- Lmin_age
               male_vbgf_est_offset <- VBGF(
                 exp(input$Linf_m_mean) * input$Linf_f_mean,
                 exp(input$k_m_mean) * input$k_f_mean,
-                exp(input$t0_m_mean) * input$t0_f_mean,
+                male_t0,
                 Lmin_age
               )
               female_vbgf_est_offset <- VBGF(
