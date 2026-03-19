@@ -53,7 +53,7 @@ source('SSS.r', local = FALSE)
 
 theme_report <- function(base_size = 11) {
   half_line <- base_size / 2
-
+  
   theme_light(base_size = base_size) +
     theme(
       panel.grid.major = element_blank(),
@@ -73,10 +73,10 @@ theme_set(theme_report())
 
 shinyServer(function(input, output, session) {
   useShinyjs()
-
+  
   theme_report <- function(base_size = 11) {
     half_line <- base_size / 2
-
+    
     theme_light(base_size = base_size) +
       theme(
         panel.grid.major = element_blank(),
@@ -92,7 +92,7 @@ shinyServer(function(input, output, session) {
       )
   }
   theme_set(theme_report())
-
+  
   if (!check_github('r4ss/r4ss')$up_to_date) {
     sendSweetAlert(
       session = session,
@@ -101,7 +101,7 @@ shinyServer(function(input, output, session) {
       type = "warning"
     )
   }
-
+  
   #################
   ### FUNCTIONS ###
   #################
@@ -112,7 +112,7 @@ shinyServer(function(input, output, session) {
       bookmarkURL,
       "input.rds"
     )
-
+    
     if (
       !dir.exists(dirname(file.path(
         "Scenarios",
@@ -131,7 +131,7 @@ shinyServer(function(input, output, session) {
         recursive = TRUE
       )
     }
-
+    
     file.copy(
       from = bookmarkInputPath,
       to = file.path(
@@ -142,7 +142,7 @@ shinyServer(function(input, output, session) {
       ),
       overwrite = TRUE
     )
-
+    
     #save files that are being used for model run
     if (!is.null(rv.Lt$data)) {
       file.copy(
@@ -204,17 +204,17 @@ shinyServer(function(input, output, session) {
         overwrite = TRUE
       )
     }
-
+    
     dir_delete(bookmarkPath) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
   }
-
+  
   ########## Clear data files and plots ############
   rv.Lt <- reactiveValues(data = NULL, clear = FALSE)
   rv.Age <- reactiveValues(data = NULL, clear = FALSE)
   rv.Ct <- reactiveValues(data = NULL, clear = FALSE)
   rv.Index <- reactiveValues(data = NULL, clear = FALSE)
   rv.AgeErr <- reactiveValues(data = NULL, clear = FALSE)
-
+  
   ########
   #Reset catches
   observe({
@@ -228,7 +228,7 @@ shinyServer(function(input, output, session) {
     #L <- readLines(input$file2$datapath, n = 1)
     #if(grepl(";", L)) {rv.Ct$data <- read.csv2(input$file2$datapath,check.names=FALSE)}
   })
-
+  
   observeEvent(
     input$file2,
     {
@@ -236,7 +236,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   observeEvent(
     input$reset_ct,
     {
@@ -246,7 +246,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   #Reset lengths
   observe({
     req(input$file1)
@@ -260,7 +260,7 @@ shinyServer(function(input, output, session) {
     #rv.Lt$data <- read.csv(input$file1$datapath,check.names=FALSE)
     #if(grepl(";", L)) {rv.Lt$data <- read.csv2(input$file1$datapath,check.names=FALSE)}
   })
-
+  
   observeEvent(
     input$file1,
     {
@@ -268,7 +268,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   observeEvent(
     input$reset_lt,
     {
@@ -278,7 +278,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   #Reset ages
   observe({
     req(input$file3)
@@ -291,7 +291,7 @@ shinyServer(function(input, output, session) {
     #L <- readLines(input$file3$datapath, n = 1)
     #if(grepl(";", L)) {rv.Age$data <- read.csv2(input$file3$datapath,check.names=FALSE)}
   })
-
+  
   observeEvent(
     input$file3,
     {
@@ -299,7 +299,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   observeEvent(
     input$reset_age,
     {
@@ -309,7 +309,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   #Reset ageing error
   observe({
     req(input$file33)
@@ -323,7 +323,7 @@ shinyServer(function(input, output, session) {
     #L <- readLines(input$file33$datapath, n = 1)
     #if(grepl(";", L)) {rv.AgeErr$data <- read.csv2(input$file33$datapath,check.names=FALSE,header=FALSE)}
   })
-
+  
   observeEvent(
     input$file33,
     {
@@ -331,7 +331,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   observeEvent(
     input$reset_age_err,
     {
@@ -341,7 +341,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   # observeEvent(input$file33, {
   #   rv.AgeErr$clear <- FALSE
   #    if(!input$Ageing_error_choice){
@@ -349,7 +349,7 @@ shinyServer(function(input, output, session) {
   #   rv.AgeErr$clear <- TRUE
   #   reset('file33')}
   # }, priority = 1000)
-
+  
   # #  if(!is.null(input$Ageing_error_choice)){
   #   observeEvent(input$file33, {
   #     if(!input$Ageing_error_choice){
@@ -358,7 +358,7 @@ shinyServer(function(input, output, session) {
   #     reset('file33') #}
   #   }, priority = 1000)
   # }
-
+  
   #Reset index
   observe({
     req(input$file4)
@@ -372,7 +372,7 @@ shinyServer(function(input, output, session) {
     #rv.Index$data <- read.csv(input$file4$datapath,check.names=FALSE)
     #if(grepl(";", L)) {rv.Index$data <- read.csv2(input$file4$datapath,check.names=FALSE,header=FALSE)}
   })
-
+  
   observeEvent(
     input$file4,
     {
@@ -380,7 +380,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   observeEvent(
     input$reset_index,
     {
@@ -390,7 +390,7 @@ shinyServer(function(input, output, session) {
     },
     priority = 1000
   )
-
+  
   #Throw an error if fleets are not consecutively represented in all loaded data sets.
   observeEvent(
     req(any(
@@ -413,7 +413,7 @@ shinyServer(function(input, output, session) {
       if (!is.null(rv.Index$data)) {
         index.flt <- rv.Index$data[, 3]
       }
-
+      
       fleets.no.negs <- unique(na.omit(c(ct.flt, lt.flt, age.flt, index.flt)))[
         unique(na.omit(c(ct.flt, lt.flt, age.flt, index.flt))) > 0
       ] #remove any negative fleets
@@ -427,44 +427,44 @@ shinyServer(function(input, output, session) {
       }
     }
   )
-
+  
   #######
-
+  
   # observeEvent(input$reset_lt, {
   #   rv.Lt$data <- NULL
   #   shinyjs::reset('file1')
   # })
-
+  
   # # observeEvent(input$reset_lt, {
   # # output$Ltplot<-renderPlot({
   # # rv.Lt$data <- NULL
   # # if (is.null(rv.Lt$data)) return(NULL)
   # # })
   # # })
-
+  
   # observeEvent(input$reset_age, {
   #   rv.Age$data <- NULL
   #   shinyjs::reset('file3')
   # })
-
+  
   # observeEvent(input$reset_ct, {
   #   rv.Ct$data <- NULL
   #     shinyjs::reset('file2')
   # })
-
+  
   #####################################################
   onclick("est_LHparms", id = "panel_SS_est")
-
+  
   observe({
     shinyjs::show("Data_panel")
     shinyjs::show("Bookmark_panel")
     hideTab(inputId = "tabs", target = "11")
   })
-
+  
   #To get the ObserveEvent to work, each statement in req needs to be unique.
   #This explains the workaround of ((as.numeric(input$tabs)*x)/x)<4, where x is the unique type of assessment being run
   #This input allows other tabs to have different side panels.
-
+  
   #Switch back to data from different tabs
   observeEvent(req(((as.numeric(input$tabs) * 99) / 99) < 4), {
     shinyjs::show("Bookmark_panel")
@@ -474,7 +474,7 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("panel_Ct_F_LO")
     shinyjs::hide("panel_data_wt_lt")
     shinyjs::hide("panel_ct_wt_LO")
-
+    
     shinyjs::hide("panel_SSS")
     shinyjs::hide("panel_SSLO_LH")
     shinyjs::hide("panel_SSLO_fixed")
@@ -486,46 +486,46 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("Male_parms_fix_noWL")
     shinyjs::hide("panel_SS_LH_est")
     shinyjs::hide("panel_SS_est")
-
+    
     shinyjs::hide("panel_SS_stock_status")
-
+    
     shinyjs::hide("panel_SSS_prod")
     shinyjs::hide("panel_SS_LO_prod")
     shinyjs::hide("panel_SS_prod_fixed")
     shinyjs::hide("panel_SS_prod_est")
-
+    
     shinyjs::hide("panel_selectivity")
     shinyjs::hide("panel_selectivity_sss")
-
+    
     shinyjs::hide("panel_SS_recdevs")
-
+    
     shinyjs::hide("panel_SS_jitter")
-
+    
     shinyjs::hide("panel_RPs")
     shinyjs::hide("panel_Forecasts")
-
+    
     shinyjs::hide("panel_Mod_dims")
-
+    
     shinyjs::hide("panel_advanced_SS")
     shinyjs::hide("panel_advanced_user_SS")
     shinyjs::hide("panel_advanced_SSS")
-
+    
     shinyjs::hide("panel_SSS_reps")
-
+    
     shinyjs::hide("OS_choice")
     shinyjs::hide("Scenario_panel")
-
+    
     shinyjs::hide("SaveSession_panel")
-
+    
     shinyjs::hide("run_SSS")
     shinyjs::hide("run_SS")
-
+    
     shinyjs::hide("Modeff_panel")
     shinyjs::hide("Profile_panel")
     shinyjs::hide("Retro_panel")
     shinyjs::hide("Sensi_Comparison_panel")
     shinyjs::hide("Ensemble_panel")
-
+    
     hideTab(inputId = "tabs", target = "11")
     showTab(inputId = "tabs", target = "2")
     #        hideTab(inputId = "tabs", target = "3")
@@ -533,7 +533,7 @@ shinyServer(function(input, output, session) {
     #        hideTab(inputId = "tabs", target = "5")
     #        hideTab(inputId = "tabs", target = "6")
   })
-
+  
   #Reset when all things are clicked off
   observeEvent(
     req(
@@ -552,7 +552,7 @@ shinyServer(function(input, output, session) {
       shinyjs::hide("panel_Ct_F_LO")
       shinyjs::hide("panel_data_wt_lt")
       shinyjs::hide("panel_ct_wt_LO")
-
+      
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -564,51 +564,51 @@ shinyServer(function(input, output, session) {
       shinyjs::hide("Male_parms_fix_noWL")
       shinyjs::hide("panel_SS_LH_est")
       shinyjs::hide("panel_SS_est")
-
+      
       shinyjs::hide("panel_SS_stock_status")
-
+      
       shinyjs::hide("panel_SSS_prod")
       shinyjs::hide("panel_SS_LO_prod")
       shinyjs::hide("panel_SS_prod_fixed")
       shinyjs::hide("panel_SS_prod_est")
-
+      
       shinyjs::hide("panel_selectivity")
       shinyjs::hide("panel_selectivity_sss")
-
+      
       shinyjs::hide("panel_SS_recdevs")
-
+      
       shinyjs::hide("panel_SS_jitter")
-
+      
       shinyjs::hide("panel_RPs")
       shinyjs::hide("panel_Forecasts")
-
+      
       shinyjs::hide("panel_Mod_dims")
-
+      
       shinyjs::hide("panel_advanced_SS")
       shinyjs::hide("panel_advanced_user_SS")
       shinyjs::hide("panel_advanced_SSS")
-
+      
       shinyjs::hide("panel_SSS_reps")
-
+      
       shinyjs::hide("OS_choice")
       shinyjs::hide("Scenario_panel")
-
+      
       shinyjs::hide("SaveSession_panel")
-
+      
       shinyjs::hide("run_SSS")
       shinyjs::hide("run_SS")
-
+      
       shinyjs::hide("Modeff_panel")
       shinyjs::hide("Profile_panel")
       shinyjs::hide("Retro_panel")
       shinyjs::hide("Sensi_Comparison_panel")
       shinyjs::hide("Ensemble_panel")
-
+      
       hideTab(inputId = "tabs", target = "11")
       showTab(inputId = "tabs", target = "2")
     }
   )
-
+  
   #User chosen model
   observeEvent(req(!is.null(input$user_model) & input$user_model), {
     shinyjs::show("Bookmark_panel")
@@ -618,7 +618,7 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("panel_Ct_F_LO")
     shinyjs::show("panel_data_wt_lt")
     shinyjs::hide("panel_ct_wt_LO")
-
+    
     shinyjs::hide("panel_SSS")
     shinyjs::hide("panel_SSLO_LH")
     shinyjs::hide("panel_SSLO_fixed")
@@ -630,51 +630,51 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("Male_parms_fix_noWL")
     shinyjs::hide("panel_SS_LH_est")
     shinyjs::hide("panel_SS_est")
-
+    
     shinyjs::hide("panel_SS_stock_status")
-
+    
     shinyjs::hide("panel_SSS_prod")
     shinyjs::hide("panel_SS_LO_prod")
     shinyjs::hide("panel_SS_prod_fixed")
     shinyjs::hide("panel_SS_prod_est")
-
+    
     shinyjs::hide("panel_selectivity")
     shinyjs::hide("panel_selectivity_sss")
-
+    
     shinyjs::hide("panel_SS_recdevs")
-
+    
     shinyjs::show("panel_SS_jitter")
-
+    
     shinyjs::show("panel_RPs")
     shinyjs::show("panel_Forecasts")
-
+    
     shinyjs::hide("panel_Mod_dims")
-
+    
     shinyjs::hide("panel_SSS_reps")
-
+    
     shinyjs::hide("panel_advanced_SS")
     shinyjs::show("panel_advanced_user_SS")
     shinyjs::hide("panel_advanced_SSS")
-
+    
     shinyjs::show("OS_choice")
     shinyjs::show("Scenario_panel")
-
+    
     shinyjs::show("SaveSession_panel")
-
+    
     shinyjs::hide("run_SSS")
     shinyjs::show("run_SS")
-
+    
     shinyjs::hide("Modeff_panel")
     shinyjs::hide("Profile_panel")
     shinyjs::hide("Retro_panel")
     shinyjs::hide("Sensi_Comparison_panel")
     shinyjs::hide("Ensemble_panel")
-
+    
     #shinyjs::show("tab_sss")
     hideTab(inputId = "tabs", target = "11")
     showTab(inputId = "tabs", target = "2")
   })
-
+  
   #SSS panels
   observeEvent(
     req(
@@ -693,7 +693,7 @@ shinyServer(function(input, output, session) {
       shinyjs::hide("panel_Ct_F_LO")
       shinyjs::hide("panel_data_wt_lt")
       shinyjs::hide("panel_ct_wt_LO")
-
+      
       shinyjs::show("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -705,52 +705,52 @@ shinyServer(function(input, output, session) {
       shinyjs::hide("Male_parms_fix_noWL")
       shinyjs::hide("panel_SS_LH_est")
       shinyjs::hide("panel_SS_est")
-
+      
       shinyjs::show("panel_SS_stock_status")
-
+      
       shinyjs::show("panel_SSS_prod")
       shinyjs::hide("panel_SS_LO_prod")
       shinyjs::hide("panel_SS_prod_fixed")
       shinyjs::hide("panel_SS_prod_est")
-
+      
       shinyjs::hide("panel_selectivity")
       shinyjs::show("panel_selectivity_sss")
-
+      
       shinyjs::hide("panel_SS_recdevs")
-
+      
       shinyjs::hide("panel_SS_jitter")
-
+      
       shinyjs::show("panel_RPs")
       shinyjs::show("panel_Forecasts")
-
+      
       shinyjs::show("panel_Mod_dims")
-
+      
       shinyjs::show("panel_SSS_reps")
-
+      
       shinyjs::hide("panel_advanced_SS")
       shinyjs::hide("panel_advanced_user_SS")
       shinyjs::show("panel_advanced_SSS")
-
+      
       shinyjs::show("OS_choice")
       shinyjs::show("Scenario_panel")
-
+      
       shinyjs::show("SaveSession_panel")
-
+      
       shinyjs::show("run_SSS")
       shinyjs::hide("run_SS")
-
+      
       shinyjs::hide("Modeff_panel")
       shinyjs::hide("Profile_panel")
       shinyjs::hide("Retro_panel")
       shinyjs::hide("Sensi_Comparison_panel")
       shinyjs::hide("Ensemble_panel")
-
+      
       #shinyjs::show("tab_sss")
       showTab(inputId = "tabs", target = "11")
       hideTab(inputId = "tabs", target = "2")
     }
   )
-
+  
   #SS-LO panels
   observeEvent(
     req(
@@ -767,13 +767,13 @@ shinyServer(function(input, output, session) {
       shinyjs::show("panel_data_wt_lt")
       if (
         length(unique(rv.Lt$data[, 3])) > 1 |
-          length(unique(rv.Age$data[, 3])) > 1
+        length(unique(rv.Age$data[, 3])) > 1
       ) {
         shinyjs::show("panel_ct_wt_LO")
       }
       if (
         length(unique(rv.Lt$data[, 3])) == 1 |
-          length(unique(rv.Age$data[, 3])) == 1
+        length(unique(rv.Age$data[, 3])) == 1
       ) {
         shinyjs::hide("panel_ct_wt_LO")
       }
@@ -792,46 +792,46 @@ shinyServer(function(input, output, session) {
       shinyjs::hide("panel_SS_est")
       shinyjs::hide("Male_parms_est")
       shinyjs::hide("Male_parms_est_noWL")
-
+      
       shinyjs::hide("panel_SS_stock_status")
-
+      
       shinyjs::hide("panel_SSS_prod")
       shinyjs::show("panel_SS_LO_prod")
       shinyjs::hide("panel_SS_prod_fixed")
       shinyjs::hide("panel_SS_prod_est")
-
+      
       shinyjs::show("panel_selectivity")
       shinyjs::hide("panel_selectivity_sss")
-
+      
       shinyjs::show("panel_SS_recdevs")
-
+      
       shinyjs::show("panel_SS_jitter")
-
+      
       shinyjs::show("panel_RPs")
       shinyjs::show("panel_Forecasts")
-
+      
       shinyjs::show("panel_Mod_dims")
-
+      
       shinyjs::show("panel_advanced_SS")
       shinyjs::hide("panel_advanced_user_SS")
       shinyjs::hide("panel_advanced_SSS")
-
+      
       shinyjs::hide("panel_SSS_reps")
-
+      
       shinyjs::show("OS_choice")
       shinyjs::show("Scenario_panel")
-
+      
       shinyjs::show("SaveSession_panel")
-
+      
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
-
+      
       shinyjs::hide("Modeff_panel")
       shinyjs::hide("Profile_panel")
       shinyjs::hide("Retro_panel")
       shinyjs::hide("Sensi_Comparison_panel")
       shinyjs::hide("Ensemble_panel")
-
+      
       hideTab(inputId = "tabs", target = "11")
       showTab(inputId = "tabs", target = "2")
       # showTab(inputId = "tabs", target = "3")
@@ -840,7 +840,7 @@ shinyServer(function(input, output, session) {
       # showTab(inputId = "tabs", target = "6")
     }
   )
-
+  
   #SS-CL fixed parameters
   observeEvent(
     req(
@@ -867,7 +867,7 @@ shinyServer(function(input, output, session) {
         (shinyjs::hide("panel_data_wt_lt"))
       }
       shinyjs::hide("panel_ct_wt_LO")
-
+      
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -879,46 +879,46 @@ shinyServer(function(input, output, session) {
       shinyjs::hide("Male_parms_fix_noWL")
       shinyjs::hide("panel_SS_LH_est")
       shinyjs::hide("panel_SS_est")
-
+      
       shinyjs::hide("panel_SS_stock_status")
-
+      
       shinyjs::hide("panel_SSS_prod")
       shinyjs::hide("panel_SS_LO_prod")
       shinyjs::show("panel_SS_prod_fixed")
       shinyjs::hide("panel_SS_prod_est")
-
+      
       shinyjs::show("panel_selectivity")
       shinyjs::hide("panel_selectivity_sss")
-
+      
       shinyjs::show("panel_SS_recdevs")
-
+      
       shinyjs::show("panel_SS_jitter")
-
+      
       shinyjs::show("panel_RPs")
       shinyjs::show("panel_Forecasts")
-
+      
       shinyjs::show("panel_Mod_dims")
-
+      
       shinyjs::show("panel_advanced_SS")
       shinyjs::hide("panel_advanced_user_SS")
       shinyjs::hide("panel_advanced_SSS")
-
+      
       shinyjs::show("OS_choice")
       shinyjs::show("Scenario_panel")
-
+      
       shinyjs::hide("panel_SSS_reps")
-
+      
       shinyjs::show("SaveSession_panel")
-
+      
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
-
+      
       shinyjs::hide("Modeff_panel")
       shinyjs::hide("Profile_panel")
       shinyjs::hide("Retro_panel")
       shinyjs::hide("Sensi_Comparison_panel")
       shinyjs::hide("Ensemble_panel")
-
+      
       #shinyjs::hide(selector = "#navbar li a[data-value=11]")
       hideTab(inputId = "tabs", target = "11")
       showTab(inputId = "tabs", target = "2")
@@ -932,7 +932,7 @@ shinyServer(function(input, output, session) {
       shinyjs::hide("panel_SSLO_LH")
     }
   )
-
+  
   #SS-CL with parameter estimates
   observeEvent(
     req(
@@ -959,7 +959,7 @@ shinyServer(function(input, output, session) {
         (shinyjs::hide("panel_data_wt_lt"))
       }
       shinyjs::hide("panel_ct_wt_LO")
-
+      
       shinyjs::hide("panel_SSS")
       shinyjs::hide("panel_SSLO_LH")
       shinyjs::hide("panel_SSLO_fixed")
@@ -971,46 +971,46 @@ shinyServer(function(input, output, session) {
       shinyjs::hide("Male_parms_fix_noWL")
       shinyjs::show("panel_SS_LH_est")
       shinyjs::show("panel_SS_est")
-
+      
       shinyjs::hide("panel_SS_stock_status")
-
+      
       shinyjs::hide("panel_SSS_prod")
       shinyjs::hide("panel_SS_LO_prod")
       shinyjs::hide("panel_SS_prod_fixed")
       shinyjs::show("panel_SS_prod_est")
-
+      
       shinyjs::show("panel_selectivity")
       shinyjs::hide("panel_selectivity_sss")
-
+      
       shinyjs::show("panel_SS_recdevs")
-
+      
       shinyjs::show("panel_SS_jitter")
-
+      
       shinyjs::show("panel_RPs")
       shinyjs::show("panel_Forecasts")
-
+      
       shinyjs::show("panel_Mod_dims")
-
+      
       shinyjs::show("panel_advanced_SS")
       shinyjs::hide("panel_advanced_user_SS")
       shinyjs::hide("panel_advanced_SSS")
-
+      
       shinyjs::show("OS_choice")
       shinyjs::show("Scenario_panel")
-
+      
       shinyjs::hide("panel_SSS_reps")
-
+      
       shinyjs::show("SaveSession_panel")
-
+      
       shinyjs::hide("run_SSS")
       shinyjs::show("run_SS")
-
+      
       shinyjs::hide("Modeff_panel")
       shinyjs::hide("Profile_panel")
       shinyjs::hide("Retro_panel")
       shinyjs::hide("Sensi_Comparison_panel")
       shinyjs::hide("Ensemble_panel")
-
+      
       hideTab(inputId = "tabs", target = "11")
       showTab(inputId = "tabs", target = "2")
       # showTab(inputId = "tabs", target = "3")
@@ -1019,7 +1019,7 @@ shinyServer(function(input, output, session) {
       # showTab(inputId = "tabs", target = "6")
     }
   )
-
+  
   #Model Efficiency
   observeEvent(req((as.numeric(input$tabs) * 12 / 12) == 12), {
     shinyjs::hide("Bookmark_panel")
@@ -1029,7 +1029,7 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("panel_Ct_F_LO")
     shinyjs::hide("panel_data_wt_lt")
     shinyjs::hide("panel_ct_wt_LO")
-
+    
     shinyjs::hide("panel_SSS")
     shinyjs::hide("panel_SSLO_LH")
     shinyjs::hide("panel_SSLO_fixed")
@@ -1041,47 +1041,47 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("Male_parms_fix_noWL")
     shinyjs::hide("panel_SS_LH_est")
     shinyjs::hide("panel_SS_est")
-
+    
     shinyjs::hide("panel_SS_stock_status")
-
+    
     shinyjs::hide("panel_SSS_prod")
     shinyjs::hide("panel_SS_LO_prod")
     shinyjs::hide("panel_SS_prod_fixed")
     shinyjs::hide("panel_SS_prod_est")
-
+    
     shinyjs::hide("panel_selectivity")
     shinyjs::hide("panel_selectivity_sss")
-
+    
     shinyjs::hide("panel_SS_recdevs")
-
+    
     shinyjs::hide("panel_SS_jitter")
-
+    
     shinyjs::hide("panel_RPs")
     shinyjs::hide("panel_Forecasts")
-
+    
     shinyjs::hide("panel_Mod_dims")
-
+    
     shinyjs::hide("panel_advanced_SS")
     shinyjs::hide("panel_advanced_user_SS")
     shinyjs::hide("panel_advanced_SSS")
-
+    
     shinyjs::hide("OS_choice")
     shinyjs::hide("Scenario_panel")
-
+    
     shinyjs::hide("panel_SSS_reps")
-
+    
     shinyjs::hide("SaveSession_panel")
-
+    
     shinyjs::hide("run_SSS")
     shinyjs::hide("run_SS")
-
+    
     shinyjs::show("Modeff_panel")
-
+    
     shinyjs::hide("Profile_panel")
     shinyjs::hide("Retro_panel")
     shinyjs::hide("Sensi_Comparison_panel")
     shinyjs::hide("Ensemble_panel")
-
+    
     hideTab(inputId = "tabs", target = "11")
     showTab(inputId = "tabs", target = "2")
     # showTab(inputId = "tabs", target = "3")
@@ -1089,7 +1089,7 @@ shinyServer(function(input, output, session) {
     # showTab(inputId = "tabs", target = "5")
     # showTab(inputId = "tabs", target = "6")
   })
-
+  
   #Profiles
   observeEvent(req((as.numeric(input$tabs) * 4 / 4) == 4), {
     shinyjs::hide("Bookmark_panel")
@@ -1099,7 +1099,7 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("panel_Ct_F_LO")
     shinyjs::hide("panel_data_wt_lt")
     shinyjs::hide("panel_ct_wt_LO")
-
+    
     shinyjs::hide("panel_SSS")
     shinyjs::hide("panel_SSLO_LH")
     shinyjs::hide("panel_SSLO_fixed")
@@ -1111,46 +1111,46 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("Male_parms_fix_noWL")
     shinyjs::hide("panel_SS_LH_est")
     shinyjs::hide("panel_SS_est")
-
+    
     shinyjs::hide("panel_SS_stock_status")
-
+    
     shinyjs::hide("panel_SSS_prod")
     shinyjs::hide("panel_SS_LO_prod")
     shinyjs::hide("panel_SS_prod_fixed")
     shinyjs::hide("panel_SS_prod_est")
-
+    
     shinyjs::hide("panel_selectivity")
     shinyjs::hide("panel_selectivity_sss")
-
+    
     shinyjs::hide("panel_SS_recdevs")
-
+    
     shinyjs::hide("panel_SS_jitter")
-
+    
     shinyjs::hide("panel_RPs")
     shinyjs::hide("panel_Forecasts")
-
+    
     shinyjs::hide("panel_Mod_dims")
-
+    
     shinyjs::hide("panel_advanced_SS")
     shinyjs::hide("panel_advanced_user_SS")
     shinyjs::hide("panel_advanced_SSS")
-
+    
     shinyjs::hide("OS_choice")
     shinyjs::hide("Scenario_panel")
-
+    
     shinyjs::hide("panel_SSS_reps")
-
+    
     shinyjs::hide("SaveSession_panel")
-
+    
     shinyjs::hide("run_SSS")
     shinyjs::hide("run_SS")
-
+    
     shinyjs::hide("Modeff_panel")
     shinyjs::show("Profile_panel")
     shinyjs::hide("Retro_panel")
     shinyjs::hide("Sensi_Comparison_panel")
     shinyjs::hide("Ensemble_panel")
-
+    
     hideTab(inputId = "tabs", target = "11")
     showTab(inputId = "tabs", target = "2")
     # showTab(inputId = "tabs", target = "3")
@@ -1158,7 +1158,7 @@ shinyServer(function(input, output, session) {
     # showTab(inputId = "tabs", target = "5")
     # showTab(inputId = "tabs", target = "6")
   })
-
+  
   #Retrospecitves
   observeEvent(req((as.numeric(input$tabs) * 5 / 5) == 5), {
     shinyjs::hide("Bookmark_panel")
@@ -1168,7 +1168,7 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("panel_Ct_F_LO")
     shinyjs::hide("panel_data_wt_lt")
     shinyjs::hide("panel_ct_wt_LO")
-
+    
     shinyjs::hide("panel_SSS")
     shinyjs::hide("panel_SSLO_LH")
     shinyjs::hide("panel_SSLO_fixed")
@@ -1180,46 +1180,46 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("Male_parms_fix_noWL")
     shinyjs::hide("panel_SS_LH_est")
     shinyjs::hide("panel_SS_est")
-
+    
     shinyjs::hide("panel_SS_stock_status")
-
+    
     shinyjs::hide("panel_SSS_prod")
     shinyjs::hide("panel_SS_LO_prod")
     shinyjs::hide("panel_SS_prod_fixed")
     shinyjs::hide("panel_SS_prod_est")
-
+    
     shinyjs::hide("panel_selectivity")
     shinyjs::hide("panel_selectivity_sss")
-
+    
     shinyjs::hide("panel_SS_recdevs")
-
+    
     shinyjs::hide("panel_SS_jitter")
-
+    
     shinyjs::hide("panel_RPs")
     shinyjs::hide("panel_Forecasts")
-
+    
     shinyjs::hide("panel_Mod_dims")
-
+    
     shinyjs::hide("panel_advanced_SS")
     shinyjs::hide("panel_advanced_user_SS")
     shinyjs::hide("panel_advanced_SSS")
-
+    
     shinyjs::hide("OS_choice")
     shinyjs::hide("Scenario_panel")
-
+    
     shinyjs::hide("panel_SSS_reps")
-
+    
     shinyjs::hide("SaveSession_panel")
-
+    
     shinyjs::hide("run_SSS")
     shinyjs::hide("run_SS")
-
+    
     shinyjs::hide("Modeff_panel")
     shinyjs::hide("Profile_panel")
     shinyjs::show("Retro_panel")
     shinyjs::hide("Sensi_Comparison_panel")
     shinyjs::hide("Ensemble_panel")
-
+    
     hideTab(inputId = "tabs", target = "11")
     showTab(inputId = "tabs", target = "2")
     # showTab(inputId = "tabs", target = "3")
@@ -1227,7 +1227,7 @@ shinyServer(function(input, output, session) {
     # showTab(inputId = "tabs", target = "5")
     # showTab(inputId = "tabs", target = "6")
   })
-
+  
   #Sensitivities
   observeEvent(req((as.numeric(input$tabs) * 6 / 6) == 6), {
     shinyjs::hide("Bookmark_panel")
@@ -1237,7 +1237,7 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("panel_Ct_F_LO")
     shinyjs::hide("panel_data_wt_lt")
     shinyjs::hide("panel_ct_wt_LO")
-
+    
     shinyjs::hide("panel_SSS")
     shinyjs::hide("panel_SSLO_LH")
     shinyjs::hide("panel_SSLO_fixed")
@@ -1249,46 +1249,46 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("Male_parms_fix_noWL")
     shinyjs::hide("panel_SS_LH_est")
     shinyjs::hide("panel_SS_est")
-
+    
     shinyjs::hide("panel_SS_stock_status")
-
+    
     shinyjs::hide("panel_SSS_prod")
     shinyjs::hide("panel_SS_LO_prod")
     shinyjs::hide("panel_SS_prod_fixed")
     shinyjs::hide("panel_SS_prod_est")
-
+    
     shinyjs::hide("panel_selectivity")
     shinyjs::hide("panel_selectivity_sss")
-
+    
     shinyjs::hide("panel_SS_recdevs")
-
+    
     shinyjs::hide("panel_SS_jitter")
-
+    
     shinyjs::hide("panel_RPs")
     shinyjs::hide("panel_Forecasts")
-
+    
     shinyjs::hide("panel_Mod_dims")
-
+    
     shinyjs::hide("panel_advanced_SS")
     shinyjs::hide("panel_advanced_user_SS")
     shinyjs::hide("panel_advanced_SSS")
-
+    
     shinyjs::hide("OS_choice")
     shinyjs::hide("Scenario_panel")
-
+    
     shinyjs::hide("panel_SSS_reps")
-
+    
     shinyjs::hide("SaveSession_panel")
-
+    
     shinyjs::hide("run_SSS")
     shinyjs::hide("run_SS")
-
+    
     shinyjs::hide("Modeff_panel")
     shinyjs::hide("Profile_panel")
     shinyjs::hide("Retro_panel")
     shinyjs::show("Sensi_Comparison_panel")
     shinyjs::hide("Ensemble_panel")
-
+    
     hideTab(inputId = "tabs", target = "11")
     showTab(inputId = "tabs", target = "2")
     # showTab(inputId = "tabs", target = "3")
@@ -1296,7 +1296,7 @@ shinyServer(function(input, output, session) {
     # showTab(inputId = "tabs", target = "5")
     # showTab(inputId = "tabs", target = "6")
   })
-
+  
   #Ensembles
   observeEvent(req((as.numeric(input$tabs) * 7 / 7) == 7), {
     shinyjs::hide("Bookmark_panel")
@@ -1306,7 +1306,7 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("panel_Ct_F_LO")
     shinyjs::hide("panel_data_wt_lt")
     shinyjs::hide("panel_ct_wt_LO")
-
+    
     shinyjs::hide("panel_SSS")
     shinyjs::hide("panel_SSLO_LH")
     shinyjs::hide("panel_SSLO_fixed")
@@ -1318,46 +1318,46 @@ shinyServer(function(input, output, session) {
     shinyjs::hide("Male_parms_fix_noWL")
     shinyjs::hide("panel_SS_LH_est")
     shinyjs::hide("panel_SS_est")
-
+    
     shinyjs::hide("panel_SS_stock_status")
-
+    
     shinyjs::hide("panel_SSS_prod")
     shinyjs::hide("panel_SS_LO_prod")
     shinyjs::hide("panel_SS_prod_fixed")
     shinyjs::hide("panel_SS_prod_est")
-
+    
     shinyjs::hide("panel_selectivity")
     shinyjs::hide("panel_selectivity_sss")
-
+    
     shinyjs::hide("panel_SS_recdevs")
-
+    
     shinyjs::hide("panel_SS_jitter")
-
+    
     shinyjs::hide("panel_RPs")
     shinyjs::hide("panel_Forecasts")
-
+    
     shinyjs::hide("panel_Mod_dims")
-
+    
     shinyjs::hide("panel_advanced_SS")
     shinyjs::hide("panel_advanced_user_SS")
     shinyjs::hide("panel_advanced_SSS")
-
+    
     shinyjs::hide("panel_SSS_reps")
-
+    
     shinyjs::hide("OS_choice")
     shinyjs::hide("Scenario_panel")
-
+    
     shinyjs::hide("SaveSession_panel")
-
+    
     shinyjs::hide("run_SSS")
     shinyjs::hide("run_SS")
-
+    
     shinyjs::hide("Modeff_panel")
     shinyjs::hide("Profile_panel")
     shinyjs::hide("Retro_panel")
     shinyjs::hide("Sensi_Comparison_panel")
     shinyjs::show("Ensemble_panel")
-
+    
     hideTab(inputId = "tabs", target = "11")
     showTab(inputId = "tabs", target = "2")
     # showTab(inputId = "tabs", target = "3")
@@ -1365,13 +1365,13 @@ shinyServer(function(input, output, session) {
     # showTab(inputId = "tabs", target = "5")
     # showTab(inputId = "tabs", target = "6")
   })
-
+  
   ########################################
-
+  
   #############################
   ######### UI INPUTS #########
   #############################
-
+  
   # User activated pop-up parameter values ---------------
   #Model dimensions
   output$Model_dims1 <- renderUI({
@@ -1398,8 +1398,8 @@ shinyServer(function(input, output, session) {
     #If lengths or ages with catches
     if (
       !is.null(inFile1) &
-        !is.null(inFile2) |
-        !is.null(inFile3) & !is.null(inFile2)
+      !is.null(inFile2) |
+      !is.null(inFile3) & !is.null(inFile2)
     ) {
       styr.in <- min(inFile1[, 1], inFile2[, 1], inFile3[, 1])
       endyr.in <- max(inFile1[, 1], inFile2[, 1], inFile3[, 1])
@@ -1428,7 +1428,7 @@ shinyServer(function(input, output, session) {
         )
       )
     )
-
+    
     # if (!is.null(inFile2)){
     #       fluidRow(column(width=4, numericInput("styr", "Starting year",
     #                                            value=min(inFile2[,1]), min=1, max=10000, step=1)),
@@ -1438,7 +1438,7 @@ shinyServer(function(input, output, session) {
     #         print(styr.in)
     #         print(endyr.in)
   })
-
+  
   output$Model_dims2 <- renderUI({
     Ct.data = rv.Ct$data
     #        if (is.null(Ct.data)) return(NULL)
@@ -1469,7 +1469,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   # output$Female_parms_inputs_label <- reactive({
   # if(!is.null(input$file1))
   # 	{
@@ -1479,7 +1479,7 @@ shinyServer(function(input, output, session) {
   # 			      }))
   # 		}
   # })
-
+  
   output$Wt_fleet_Ct <- renderUI({
     ct.flt <- lt.flt <- age.flt <- index.flt <- NA
     if (!is.null(rv.Ct$data)) {
@@ -1511,7 +1511,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   output$Eq_Ct_fleet <- renderUI({
     fluidRow(column(
       width = 10,
@@ -1522,7 +1522,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   #Load life history values via csv
   output$LH_load_file <- renderUI({
     if (!is.null(input$LH_in_file)) {
@@ -1544,14 +1544,14 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
   #Male life history parameters
   output$Male_parms_inputs_label <- renderUI({
     if (input$male_parms) {
       h5(em("Male"))
     }
   })
-
+  
   output$Male_parms_inputs1 <- renderUI({
     if (input$male_parms) {
       fluidRow(
@@ -1580,7 +1580,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs2 <- renderUI({
     if (input$male_parms) {
       fluidRow(
@@ -1609,7 +1609,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs3 <- renderUI({
     if (input$male_parms) {
       fluidRow(column(
@@ -1618,7 +1618,7 @@ shinyServer(function(input, output, session) {
       ))
     }
   })
-
+  
   output$Male_parms_inputs4 <- renderUI({
     if (input$male_parms) {
       fluidRow(
@@ -1647,13 +1647,13 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_label_fix <- renderUI({
     if (input$male_parms_fix) {
       h5(em("Male"))
     }
   })
-
+  
   output$Male_parms_inputs1_fix <- renderUI({
     if (input$male_parms_fix) {
       fluidRow(
@@ -1682,7 +1682,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs2_fix <- renderUI({
     if (input$male_parms_fix) {
       fluidRow(
@@ -1711,7 +1711,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs3_fix <- renderUI({
     if (input$male_parms_fix) {
       fluidRow(column(
@@ -1724,7 +1724,7 @@ shinyServer(function(input, output, session) {
       ))
     }
   })
-
+  
   output$Male_parms_inputs4_fix <- renderUI({
     if (input$male_parms_fix) {
       fluidRow(
@@ -1753,13 +1753,13 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_label_est <- renderUI({
     if (input$male_parms_est) {
       h4(em("Male"))
     }
   })
-
+  
   output$Male_parms_inputs_M_est <- renderUI({
     if (input$male_parms_est) {
       dropdownButton(
@@ -1808,7 +1808,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_space1 <- renderUI({
     if (input$male_parms_est) {
       br()
@@ -1824,25 +1824,25 @@ shinyServer(function(input, output, session) {
       br()
     }
   })
-
+  
   output$Male_parms_inputs_space4 <- renderUI({
     if (input$male_parms_est) {
       br()
     }
   })
-
+  
   output$Male_parms_inputs_space5 <- renderUI({
     if (input$male_parms_est) {
       br()
     }
   })
-
+  
   output$Male_parms_inputs_Growth_label <- renderUI({
     if (input$male_parms_est) {
       h5(strong("Growth"))
     }
   })
-
+  
   output$Male_parms_inputs_Linf_est <- renderUI({
     if (input$male_parms_est) {
       dropdownButton(
@@ -1891,7 +1891,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_k_est <- renderUI({
     if (input$male_parms_est) {
       dropdownButton(
@@ -1940,7 +1940,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_t0_est <- renderUI({
     if (input$male_parms_est) {
       dropdownButton(
@@ -1989,7 +1989,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_CV_est_young <- renderUI({
     if (input$male_parms_est) {
       dropdownButton(
@@ -2038,7 +2038,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_CV_est_old <- renderUI({
     if (input$male_parms_est) {
       dropdownButton(
@@ -2087,7 +2087,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_WL_est <- renderUI({
     if (input$male_parms_est) {
       fluidRow(
@@ -2116,7 +2116,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   #h5(strong("M")),
   #     fluidRow(column(width=4,style='padding:1px;',align="center", selectInput("M_m_prior","Prior type",c("no prior","symmetric beta", "beta","lognormal","gamma","normal"))),
   #             column(width=3,style='padding:2px;',align="center",numericInput("M_m_mean", "Mean", value=NA,min=0, max=10000, step=0.001)),
@@ -2124,7 +2124,7 @@ shinyServer(function(input, output, session) {
   #             column(width=2,style='padding:2px;',align="center",numericInput("M_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))
   #   }
   # })
-
+  
   # output$Male_parms_inputs_Linf_est <- renderUI({
   #   if(input$male_parms_est){
   #    #h5(strong("Linf")),
@@ -2134,7 +2134,7 @@ shinyServer(function(input, output, session) {
   #               column(width=2,style='padding:2px;',align="center",numericInput("Linf_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))
   #        }
   #   })
-
+  
   # output$Male_parms_inputs_k_est <- renderUI({
   #   if(input$male_parms_est){
   #      #h5(strong("k")),
@@ -2144,7 +2144,7 @@ shinyServer(function(input, output, session) {
   #               column(width=2,style='padding:2px;',align="center",numericInput("k_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))
   #        }
   #   })
-
+  
   # output$Male_parms_inputs_t0_est <- renderUI({
   #   if(input$male_parms_est){
   #   #h5(strong("t0")),
@@ -2154,7 +2154,7 @@ shinyServer(function(input, output, session) {
   #               column(width=2,style='padding:2px;',align="center",numericInput("t0_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))
   #     }
   #   })
-
+  
   # output$Male_parms_inputs_CV_est <- renderUI({
   #   if(input$male_parms_est){
   #      #h5(strong("Length CV")),
@@ -2164,14 +2164,14 @@ shinyServer(function(input, output, session) {
   #               column(width=2,style='padding:2px;',align="center",numericInput("CV_lt_m_phase", "Phase", value=-1,min=-999, max=10, step=0.001)))
   #     }
   #   })
-
+  
   #Male life history parameters
   output$Male_parms_inputs_label_SSS <- renderUI({
     if (input$male_parms_SSS) {
       h5(em("Male"))
     }
   })
-
+  
   output$Male_parms_inputs_M_SSS <- renderUI({
     if (input$male_parms_SSS) {
       dropdownButton(
@@ -2205,7 +2205,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_space1_SSS <- renderUI({
     if (input$male_parms_SSS) {
       br()
@@ -2226,19 +2226,19 @@ shinyServer(function(input, output, session) {
       br()
     }
   })
-
+  
   output$Male_parms_inputs_space5_SSS <- renderUI({
     if (input$male_parms_SSS) {
       br()
     }
   })
-
+  
   output$Male_parms_inputs_Growth_label_SSS <- renderUI({
     if (input$male_parms_SSS) {
       h5(strong("Growth"))
     }
   })
-
+  
   output$Male_parms_inputs_Linf_SSS <- renderUI({
     if (input$male_parms_SSS) {
       dropdownButton(
@@ -2268,7 +2268,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_k_SSS <- renderUI({
     if (input$male_parms_SSS) {
       dropdownButton(
@@ -2298,7 +2298,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_t0_SSS <- renderUI({
     if (input$male_parms_SSS) {
       dropdownButton(
@@ -2328,7 +2328,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_CV_young_SSS <- renderUI({
     if (input$male_parms_SSS) {
       dropdownButton(
@@ -2358,7 +2358,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_CV_old_SSS <- renderUI({
     if (input$male_parms_SSS) {
       dropdownButton(
@@ -2388,7 +2388,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Male_parms_inputs_WL_SSS <- renderUI({
     if (input$male_parms_SSS) {
       fluidRow(
@@ -2417,7 +2417,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$status_year <- renderUI({
     fluidRow(column(
       width = 6,
@@ -2431,7 +2431,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   #Selectivity paramters
   output$Sel_parms1 <- renderUI({
     ct.flt <- lt.flt <- age.flt <- index.flt <- NA
@@ -2482,7 +2482,7 @@ shinyServer(function(input, output, session) {
       )
     )
   })
-
+  
   output$Sel_parms2 <- renderUI({
     ct.flt <- lt.flt <- age.flt <- index.flt <- NA
     if (!is.null(rv.Ct$data)) {
@@ -2532,7 +2532,7 @@ shinyServer(function(input, output, session) {
       )
     )
   })
-
+  
   output$Sel_parms3 <- renderUI({
     if (input$Sel_choice == "Dome-shaped") {
       ct.flt <- lt.flt <- age.flt <- index.flt <- NA
@@ -2584,7 +2584,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Sel_parms4 <- renderUI({
     if (input$Sel_choice == "Dome-shaped") {
       ct.flt <- lt.flt <- age.flt <- index.flt <- NA
@@ -2636,7 +2636,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Sel_parms5 <- renderUI({
     if (input$Sel_choice == "Dome-shaped") {
       ct.flt <- lt.flt <- age.flt <- index.flt <- NA
@@ -2688,7 +2688,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Sel_parms1_sss <- renderUI({
     ct.flt <- lt.flt <- age.flt <- index.flt <- NA
     if (!is.null(rv.Ct$data)) {
@@ -2738,7 +2738,7 @@ shinyServer(function(input, output, session) {
       )
     )
   })
-
+  
   output$Sel_parms2_sss <- renderUI({
     if (input$Sel_choice_sss == "Dome-shaped") {
       ct.flt <- lt.flt <- age.flt <- index.flt <- NA
@@ -2790,7 +2790,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Sel_parms3_sss <- renderUI({
     if (input$Sel_choice_sss == "Dome-shaped") {
       ct.flt <- lt.flt <- age.flt <- index.flt <- NA
@@ -2824,7 +2824,7 @@ shinyServer(function(input, output, session) {
       ))
     }
   })
-
+  
   #Recruitment parameter inputs
   output$Rec_options1 <- renderUI({
     if (input$rec_choice) {
@@ -2869,7 +2869,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Rec_options3 <- renderUI({
     if (input$biasC_choice) {
       fluidRow(
@@ -2898,7 +2898,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Rec_options4 <- renderUI({
     if (input$biasC_choice) {
       fluidRow(
@@ -2927,7 +2927,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Rec_options5 <- renderUI({
     if (input$biasC_choice) {
       fluidRow(column(
@@ -2943,7 +2943,7 @@ shinyServer(function(input, output, session) {
       ))
     }
   })
-
+  
   output$Rec_options6 <- renderUI({
     if (input$rec_choice) {
       fluidRow(column(
@@ -2962,7 +2962,7 @@ shinyServer(function(input, output, session) {
       ))
     }
   })
-
+  
   #Jitter value
   output$Jitter_value <- renderUI({
     if (input$jitter_choice) {
@@ -2992,7 +2992,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   #Choose reference points
   output$RP_selection1 <- renderUI({
     if (input$RP_choices) {
@@ -3038,7 +3038,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$RP_selection2 <- renderUI({
     if (input$RP_choices) {
       fluidRow(
@@ -3084,7 +3084,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$Forecasts <- renderUI({
     if (input$Forecast_choice) {
       fluidRow(
@@ -3106,7 +3106,7 @@ shinyServer(function(input, output, session) {
       )
     }
   })
-
+  
   output$AdvancedSS_nohess <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3122,7 +3122,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_nohess_user <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3138,7 +3138,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_addcomms <- renderUI({
     fluidRow(column(
       width = 6,
@@ -3151,7 +3151,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   output$AdvancedSS_addcomms_comms <- renderUI({
     if (!is.null(input$add_comms)) {
       if (input$add_comms) {
@@ -3162,7 +3162,7 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
   output$AdvancedSS_addcomms_user <- renderUI({
     fluidRow(column(
       width = 6,
@@ -3175,7 +3175,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   output$AdvancedSS_addcomms_comms_user <- renderUI({
     if (!is.null(input$add_comms_user)) {
       if (input$add_comms_user) {
@@ -3190,7 +3190,7 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
   output$AdvancedSS_noplots <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3205,7 +3205,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_plots_RP <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3220,7 +3220,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_plots_RP_inputs <- renderUI({
     #if(!is.null(input$plot_RPs)){
     # if(input$plot_RPs){
@@ -3232,7 +3232,7 @@ shinyServer(function(input, output, session) {
     # }
     #}
   })
-
+  
   output$AdvancedSS_noplots_user <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3247,7 +3247,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_plots_RP_user <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3262,7 +3262,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_plots_RP_inputs_user <- renderUI({
     #if(!is.null(input$plot_RPs_user)){
     #  if(input$plot_RPs_user){
@@ -3274,7 +3274,7 @@ shinyServer(function(input, output, session) {
     # }
     #}
   })
-
+  
   output$AdvancedSS_noestabs <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3290,7 +3290,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_noestabs_user <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3306,7 +3306,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_par <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3321,7 +3321,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_par_user <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3336,7 +3336,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_phase0 <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3351,7 +3351,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_phase0_user <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3366,7 +3366,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_datanew <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3381,7 +3381,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_datanew_user <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3396,7 +3396,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_controlnew <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3411,7 +3411,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_controlnew_user <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3426,7 +3426,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_forecastnew <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3441,7 +3441,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_forecastnew_user <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3456,7 +3456,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_GT1 <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3471,7 +3471,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_GT5_SSS <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3486,7 +3486,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_Sex3options <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3501,7 +3501,7 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   output$AdvancedSS_Sex3 <- renderUI({
     if (!is.null(input$Sex3options)) {
       if (input$Sex3options) {
@@ -3521,7 +3521,7 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
   output$AdvancedSS_AgeSex3 <- renderUI({
     if (!is.null(input$Sex3options)) {
       if (input$Sex3options) {
@@ -3541,7 +3541,7 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
   output$AdvancedSS_Indexvar <- renderUI({
     # if(input$advance_ss_click){
     fluidRow(column(
@@ -3556,13 +3556,13 @@ shinyServer(function(input, output, session) {
     ))
     # }
   })
-
+  
   #output$AdvancedSS_ageerror<- renderUI({
   #       fluidRow(column(width=12, prettyCheckbox(
   #       inputId = "Ageing_error_choice", label = "Add custom ageing error matrices?",
   #       shape = "round", outline = TRUE, status = "info")))
   # })
-
+  
   #output$AdvancedSS_ageerror_in <- renderUI({
   #    if(!is.null(input$Ageing_error_choice)){
   #      if(input$Ageing_error_choice){
@@ -3579,7 +3579,7 @@ shinyServer(function(input, output, session) {
   #      }
   #    }
   #  })
-
+  
   output$AdvancedSS_Ctunits <- renderUI({
     fluidRow(column(
       width = 12,
@@ -3592,7 +3592,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   output$AdvancedSS_Ctunitsfleets <- renderUI({
     if (!is.null(input$Ct_units_choice)) {
       if (input$Ct_units_choice) {
@@ -3607,7 +3607,7 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
   output$AdvancedSS_Ctunits_SSS <- renderUI({
     fluidRow(column(
       width = 12,
@@ -3620,7 +3620,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   output$AdvancedSS_Ctunitsfleets_SSS <- renderUI({
     if (!is.null(input$Ct_units_choice_SSS)) {
       if (input$Ct_units_choice_SSS) {
@@ -3635,7 +3635,7 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
   output$AdvancedSS_retro_choice <- renderUI({
     fluidRow(column(
       width = 6,
@@ -3648,7 +3648,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   output$AdvancedSS_retro_years <- renderUI({
     if (!is.null(input$Retro_choice)) {
       if (input$Retro_choice) {
@@ -3679,7 +3679,7 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
   output$AdvancedSS_retro_choice_user <- renderUI({
     fluidRow(column(
       width = 6,
@@ -3692,7 +3692,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   output$AdvancedSS_retro_years_user <- renderUI({
     if (!is.null(input$Retro_choice)) {
       if (input$Retro_choice) {
@@ -3723,7 +3723,7 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
   output$AdvancedSS_Ltbin <- renderUI({
     # if(input$advance_ss_click){
     if (!is.null(rv.Lt$data)) {
@@ -3733,7 +3733,7 @@ shinyServer(function(input, output, session) {
     if (is.null(rv.Lt$data)) {
       bin.step <- 2
     }
-
+    
     fluidRow(
       column(
         width = 4,
@@ -3771,7 +3771,7 @@ shinyServer(function(input, output, session) {
     )
     # }
   })
-
+  
   output$AdvancedSSS_Nages <- renderUI({
     fluidRow(column(
       width = 6,
@@ -3785,7 +3785,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   output$AdvancedSS_Nages <- renderUI({
     fluidRow(column(
       width = 6,
@@ -3799,7 +3799,7 @@ shinyServer(function(input, output, session) {
       )
     ))
   })
-
+  
   output$Profile_multi_values <- renderUI({
     #if(!is.null(input$multi_profile)){
     #  if(input$multi_profile){
@@ -3821,7 +3821,7 @@ shinyServer(function(input, output, session) {
     #   }
     # }
   })
-
+  
   output$scenario_description_text <- renderUI({
     if (input$scenario_description) {
       fluidRow(column(
@@ -3836,16 +3836,16 @@ shinyServer(function(input, output, session) {
       ))
     }
   })
-
+  
   #  roots <- getVolumes()()
-
+  
   ###############################################
   ###############################################
-
+  
   ###############################################
   ################# PARAMETERS ##################
   ###############################################
-
+  
   FleetNs <- reactive({
     if (
       all(c(is.null(
@@ -3865,7 +3865,7 @@ shinyServer(function(input, output, session) {
     #print(FleetNs)
     FleetNs
   })
-
+  
   Nages <- reactive({
     Nages <- NA
     if (
@@ -3902,7 +3902,7 @@ shinyServer(function(input, output, session) {
     }
     Nages
   })
-
+  
   M_f_in <- reactive({
     M_f_in <- NA
     if (
@@ -3929,7 +3929,7 @@ shinyServer(function(input, output, session) {
     }
     M_f_in
   })
-
+  
   M_m_in <- reactive({
     M_m_in <- NA
     if (
@@ -3956,7 +3956,7 @@ shinyServer(function(input, output, session) {
     }
     M_m_in
   })
-
+  
   Linf <- reactive({
     Linf <- NA
     if (
@@ -3983,7 +3983,7 @@ shinyServer(function(input, output, session) {
     }
     Linf
   })
-
+  
   Linf_m_in <- reactive({
     Linf_m_in <- NA
     #if(all(c(is.null(input$Linf_m),is.null(input$Linf_m_fix),is.null(input$Linf_m_mean),is.null(input$Linf_m_mean_sss)))) return(NULL)
@@ -4001,7 +4001,7 @@ shinyServer(function(input, output, session) {
     }
     Linf_m_in
   })
-
+  
   k_vbgf <- reactive({
     k_vbgf <- NA
     if (
@@ -4028,7 +4028,7 @@ shinyServer(function(input, output, session) {
     }
     k_vbgf
   })
-
+  
   #Process life history input for plots
   k_vbgf_m_in <- reactive({
     k_vbgf_m_in <- NA
@@ -4056,7 +4056,7 @@ shinyServer(function(input, output, session) {
     }
     k_vbgf_m_in
   })
-
+  
   t0_vbgf <- reactive({
     t0_vbgf <- NA
     if (
@@ -4083,7 +4083,7 @@ shinyServer(function(input, output, session) {
     }
     t0_vbgf
   })
-
+  
   t0_vbgf_m_in <- reactive({
     t0_vbgf_m_in <- NA
     if (
@@ -4110,7 +4110,7 @@ shinyServer(function(input, output, session) {
     }
     t0_vbgf_m_in
   })
-
+  
   L50 <- reactive({
     L50 <- NA
     if (
@@ -4137,7 +4137,7 @@ shinyServer(function(input, output, session) {
     }
     L50
   })
-
+  
   L95 <- reactive({
     L95 <- NA
     if (
@@ -4164,7 +4164,7 @@ shinyServer(function(input, output, session) {
     }
     L95
   })
-
+  
   LatAmax <- reactive({
     LatAmax <- NA
     if (
@@ -4189,7 +4189,7 @@ shinyServer(function(input, output, session) {
     }
     LatAmax
   })
-
+  
   lt.bins.sels <- reactive({
     Lt.dat.sel <- rv.Lt$data
     lt.bins.freq <- Lt.dat.sel[, 6:ncol(Lt.dat.sel)]
@@ -4220,11 +4220,40 @@ shinyServer(function(input, output, session) {
     lt.bins.sels <- rbind(lt.bins.sel50, lt.bins.sel95, lt.bins.selmax)
     lt.bins.sels
   })
-
+  
   #############
   ### PLOTS ###
   #############
+  
+  
+  #####################
+  ### Fleet colours ###
+  #####################
+  
+  base_colours <- c(
+    "#30123B", "#FB7F07", "#1AE4B6", "#E1DC37", "#7A0403",
+    "#3FBC73", "#C6E833", "#4686FB", "#A92395", "#1CCFD4",
+    "#F1A91E", "#6B1CFB", "#EC3D27", "#0DB4CA", "#AADA32",
+    "#5B1EA1", "#F66B19", "#23E8BC", "#C3E533", "#3F51C1",
+    "#BC1A89", "#12E8C7", "#E8CC35", "#6818DC", "#F24B23",
+    "#17CFD0", "#B8E331", "#8B0FBB", "#FCA127", "#28D9C3"
+  )
 
+ 
+  rv.FleetCols <- reactiveValues(colour_map = c())
+  
+  # Create colour palette each time catch or index data are added for consistent colours
+  update_palette <- function(new_names) {
+    existing_fleets <- rv.FleetCols$colour_map
+    new_fleets <- setdiff(new_names, names(existing_fleets))
+    if (length(new_fleets) > 0) {
+      n_existing <- length(existing_fleets)
+      new_colours <- base_colours[(n_existing:(n_existing + length(new_fleets) - 1) %% length(base_colours)) + 1]
+      names(new_colours) <- new_fleets
+      rv.FleetCols$colour_map <- c(existing_fleets, new_colours)
+    }
+  }
+  
   ##################
   ### CATCH PLOT ###
   ##################
@@ -4235,7 +4264,7 @@ shinyServer(function(input, output, session) {
       })
     )
   })
-
+  
   observeEvent(req(!is.null(rv.Ct$data)), {
     output$Ctplot_it <- renderUI({
       if (!is.null(rv.Ct$data)) {
@@ -4243,20 +4272,25 @@ shinyServer(function(input, output, session) {
           if (is.null(rv.Ct$data)) {
             return(NULL)
           }
+          
+          
+          update_palette(colnames(rv.Ct$data)[-1])  # Add new fleets to existing colour palette
+          
           rv.Ct$data %>%
             pivot_longer(-1, names_to = "Fleet", values_to = "catch") %>%
+            mutate(Fleet = factor(Fleet,levels = names(rv.Ct$data))) %>%
             ggplot(aes_string(names(.)[1], "catch", color = "Fleet")) +
             geom_point() +
             geom_line(lwd = 1.5) +
             ylab("Removals") +
             xlab("Year") +
-            scale_color_viridis_d()
+            scale_color_manual(values = rv.FleetCols$colour_map)
         })
         plotOutput("Ctplot")
       }
     })
   })
-
+  
   ##########################
   ### LENGTH COMPS PLOTS ###
   ##########################
@@ -4267,7 +4301,7 @@ shinyServer(function(input, output, session) {
       })
     )
   })
-
+  
   observeEvent(req(!is.null(rv.Lt$data)), {
     shinyjs::show(
       output$lt_comp_sel_plots_label <- renderText({
@@ -4275,7 +4309,7 @@ shinyServer(function(input, output, session) {
       })
     )
   })
-
+  
   observeEvent(req(!is.null(rv.Lt$data)), {
     output$Ltplot_it <- renderUI({
       if (!is.null(rv.Lt$data)) {
@@ -4291,7 +4325,7 @@ shinyServer(function(input, output, session) {
           #     rv.Lt$data$Fleet[rv.Lt$data$Fleet==xx]<-fleetnames.ct[xx]
           #   }
           #  }
-
+          
           Lt.dat.plot <- rv.Lt$data %>%
             rename_all(tolower) %>%
             dplyr::select(-nsamps) %>%
@@ -4357,7 +4391,7 @@ shinyServer(function(input, output, session) {
               Lt.dat.plot.LAmax$sex == 0 | Lt.dat.plot.L50$sex == 1
             ] <- LatAmax()
           }
-
+          
           ggplot(Lt.dat.plot) +
             geom_line(aes(name, value, color = Year)) +
             #geom_col(position="dodge") +
@@ -4405,7 +4439,7 @@ shinyServer(function(input, output, session) {
           if (is.null(rv.Lt$data)) {
             return(NULL)
           }
-
+          
           LtSelplot.out <- ggplot(lt.bins.sels.in) +
             geom_point(aes(Year, Sel, col = SelType)) +
             guides(color = guide_legend(title = " ")) +
@@ -4419,7 +4453,7 @@ shinyServer(function(input, output, session) {
             ylab("Size (cm)") +
             scale_fill_viridis_d() +
             ylim(min(lt.bins.sels.in$Sel), NA)
-
+          
           #        if(!is.na(Linf())){
           #
           #         lt.bins.sels.in$Linf[lt.bins.sels.in$Sex==0|lt.bins.sels.in$Sex==1]<-Linf()
@@ -4439,9 +4473,9 @@ shinyServer(function(input, output, session) {
           #                     na.rm = TRUE)
           #                     #scale_linetype_manual(name = NULL, values = 1)
           #         }
-
+          
           #        new_scale("linetype") +
-
+          
           #   if(!is.na(L50())){LtSelplot.out<-LtSelplot.out+geom_hline(yintercept = L50(),
           #           colour = "darkgreen",lty=1,linetype="dashed")+
           #           annotate("text", x = min(lt.bins.sels()$Year)+1, y = L50(), label = "Lmat50", hjust = 1)}
@@ -4450,7 +4484,7 @@ shinyServer(function(input, output, session) {
       }
     })
   })
-
+  
   # observeEvent(req(!is.null(input$file1)), {
   # 		output$Ltplot<-renderPlot({
   # 		inFile<- input$file1
@@ -4475,7 +4509,7 @@ shinyServer(function(input, output, session) {
   # 		# }
   # 		})
   # 	})
-
+  
   #################
   ### AGE PLOTS ###
   #################
@@ -4486,7 +4520,7 @@ shinyServer(function(input, output, session) {
       })
     )
   })
-
+  
   observeEvent(req(!is.null(rv.Age$data)), {
     shinyjs::show(
       output$conditional_age_comp_plots_label <- renderText({
@@ -4494,11 +4528,11 @@ shinyServer(function(input, output, session) {
       })
     )
   })
-
+  
   observeEvent(req(!is.null(rv.Age$data)), {
     marginal_ages <- subset(rv.Age$data, Lbin_hi < 0)
     Cond_ages <- subset(rv.Age$data, Lbin_hi >= 0)
-
+    
     output$Ageplot_it_marginal <- renderUI({
       if (!is.null(rv.Age$data)) {
         output$Ageplot_marginal <- renderPlot({
@@ -4507,7 +4541,7 @@ shinyServer(function(input, output, session) {
           if (nrow(marginal_ages) == 0) {
             return(NULL)
           }
-
+          
           # rv.Age$data %>%
           marginal_ages %>%
             rename_all(tolower) %>%
@@ -4531,7 +4565,7 @@ shinyServer(function(input, output, session) {
         plotOutput("Ageplot_marginal")
       }
     })
-
+    
     output$Ageplot_it_cond <- renderUI({
       if (!is.null(rv.Age$data)) {
         output$Ageplot_conditional <- renderPlot({
@@ -4539,13 +4573,13 @@ shinyServer(function(input, output, session) {
           if (nrow(Cond_ages) == 0) {
             return(NULL)
           }
-
+          
           Cond_ages_plots <- reshape2::melt(
             Cond_ages[, c(1, 3, 4, 7, 9:ncol(Cond_ages))],
             id.vars = c("Year", "Fleet", "Sex", "Lbin_hi")
           )
           Cond_ages_plots_pos <- subset(Cond_ages_plots, value > 0)
-
+          
           ggplot(
             Cond_ages_plots_pos,
             aes(x = as.numeric(variable), y = as.numeric(Lbin_hi), color = Year)
@@ -4571,7 +4605,7 @@ shinyServer(function(input, output, session) {
   # 					xlab("Age bin") +
   # 					ylab("Frequency")
   # 	})
-
+  
   ##################
   ### INDEX PLOT ###
   ##################
@@ -4582,7 +4616,7 @@ shinyServer(function(input, output, session) {
       })
     )
   })
-
+  
   observeEvent(req(!is.null(rv.Index$data)), {
     output$Indexplot_it <- renderUI({
       if (!is.null(rv.Index$data)) {
@@ -4590,6 +4624,10 @@ shinyServer(function(input, output, session) {
           if (is.null(rv.Index$data)) {
             return(NULL)
           }
+       
+          
+          update_palette(unique(rv.Index$data$Label))  # Add new fleets to existing colour palette
+          
           plot.Index <- rv.Index$data
           plot.Index[, 3] <- as.factor(plot.Index[, 3])
           plot.Index.zscore <- list()
@@ -4598,35 +4636,36 @@ shinyServer(function(input, output, session) {
               plot.Index$Fleet %in% unique(plot.Index$Fleet)[i],
             ]
             plot.Index.temp$Index <- (plot.Index.temp$Index -
-              mean(plot.Index.temp$Index)) /
+                                        mean(plot.Index.temp$Index)) /
               sd(plot.Index.temp$Index)
             plot.Index.zscore[[i]] <- plot.Index.temp
           }
-          plot.Index.zs <- do.call("rbind", plot.Index.zscore)
+          plot.Index.zs <- do.call("rbind", plot.Index.zscore)%>% 
+            mutate(Label = factor(Label,levels = unique(rv.Index$data$Label)))
           ggplot(
             plot.Index.zs,
-            aes(x = Year, y = Index, group = Fleet, colour = Fleet)
+            aes(x = Year, y = Index, group = Label, colour = Label)
           ) +
             geom_line(lwd = 1.1) +
             geom_errorbar(
               aes(
                 ymin = qlnorm(0.0275, log(Index), CV),
                 ymax = qlnorm(0.975, log(Index), CV),
-                group = Fleet
+                group = Label
               ),
               width = 0,
               size = 1
             ) +
-            geom_point(aes(colour = Fleet), size = 4) +
+            geom_point(aes(colour = Label), size = 4) +
             ylab("Z-score") +
             xlab("Year") +
-            scale_color_viridis_d()
+            scale_color_manual(values = rv.FleetCols$colour_map, name = "Fleet")
         })
         plotOutput("Indexplot")
       }
     })
   })
-
+  
   #####################
   ### Plot M by age ###
   #####################
@@ -4665,7 +4704,7 @@ shinyServer(function(input, output, session) {
       ylab("Cohort decline by M") +
       annotation_custom(Nage_4_plot)
   })
-
+  
   ##############################
   ### Plot VBGF and maturity ###
   ##############################
@@ -4676,7 +4715,7 @@ shinyServer(function(input, output, session) {
     f_L50 = L50()
     f_L95 = L95()
     maxage = Nages()
-
+    
     #if(any(input$male_parms,input$male_parms_SSS,input$male_parms_fix,input$male_parms_est))
     if (
       all(
@@ -4703,7 +4742,7 @@ shinyServer(function(input, output, session) {
       rbind(vbgf_female, vbgf_male) %>%
         ggplot(aes(Age, Length, color = Sex)) +
         geom_line(aes(linetype = Sex), lwd = 2) -> vbgf.plot
-
+      
       if (any(is.na(c(f_L50, f_L95))) == "FALSE") {
         age.mat = data.frame(
           Age = VBGF.age(f_Linf, f_k, f_t0, c(f_L50, f_L95)),
@@ -4727,32 +4766,32 @@ shinyServer(function(input, output, session) {
       vbgf.plot
     }
   })
-
+  
   ########################
   ### Depletion Plot ###
   ########################
-
+  
   output$Dep_plot_title <- renderUI({
     if (
       ((as.numeric(input$tabs) * 1) / 1) < 4 &
-        is.null(rv.Lt$data) &
-        !is.null(rv.Ct$data) &
-        is.null(rv.Age$data) &
-        is.null(rv.Index$data) &
-        any(is.null(input$user_model), !input$user_model)
+      is.null(rv.Lt$data) &
+      !is.null(rv.Ct$data) &
+      is.null(rv.Age$data) &
+      is.null(rv.Index$data) &
+      any(is.null(input$user_model), !input$user_model)
     ) {
       h4("Relative Stock Status Prior")
     }
   })
-
+  
   output$Dep_plot_it <- renderUI({
     if (
       ((as.numeric(input$tabs) * 1) / 1) < 4 &
-        is.null(rv.Lt$data) &
-        !is.null(rv.Ct$data) &
-        is.null(rv.Age$data) &
-        is.null(rv.Index$data) &
-        any(is.null(input$user_model), !input$user_model)
+      is.null(rv.Lt$data) &
+      !is.null(rv.Ct$data) &
+      is.null(rv.Age$data) &
+      is.null(rv.Index$data) &
+      any(is.null(input$user_model), !input$user_model)
     ) {
       if (is.na(input$Depl_mean_sss)) {
         return(NULL)
@@ -4809,33 +4848,33 @@ shinyServer(function(input, output, session) {
       plotOutput("Depletion_plot")
     }
   })
-
+  
   ########################
   ### Selectivity Plot ###
   ########################
   # observeEvent(req(input$Sel50,input$Selpeak), {
   #      shinyjs::show(output$Sel_plots_label<-renderText({"Selectivity"}))
   #  })
-
+  
   #h4("Selectivity")
-
+  
   output$Selplot <- renderPlot({
     if (!is.null(input$Sel50) & !is.null(input$Selpeak)) {
       if (
         input$Sel_choice == "Logistic" &
-          any(
-            any(input$Sel50[1] == "", is.null(input$Sel50)),
-            any(input$Selpeak[1] == "", is.null(input$Selpeak))
-          )
+        any(
+          any(input$Sel50[1] == "", is.null(input$Sel50)),
+          any(input$Selpeak[1] == "", is.null(input$Selpeak))
+        )
       ) {
         return(NULL)
       }
-
+      
       if (input$Sel_choice == "Logistic") {
         if (
           all(
             length(as.numeric(trimws(unlist(strsplit(input$Sel50, ","))))) ==
-              length(as.numeric(trimws(unlist(strsplit(input$Selpeak, ","))))),
+            length(as.numeric(trimws(unlist(strsplit(input$Selpeak, ","))))),
             all(input$Sel50 != ""),
             all(!is.null(input$Sel50)),
             all(!str_detect(input$Sel50, "NA")),
@@ -4849,7 +4888,7 @@ shinyServer(function(input, output, session) {
           PeakDesc <- rep(10000, length(Selpeak))
           LtPeakFinal <- rep(0.0001, length(Selpeak))
           FinalSel <- rep(0.999, length(Selpeak))
-
+          
           # if(input$Sel_choice=="Logistic")
           #   {
           #   }
@@ -4859,7 +4898,7 @@ shinyServer(function(input, output, session) {
           #   LtPeakFinal<-as.numeric(trimws(unlist(strsplit(input$LtPeakFinal,","))))
           #   FinalSel<-as.numeric(trimws(unlist(strsplit(input$FinalSel,","))))
           # }
-
+          
           #if(!is.null(rv.Ct$data))
           #{
           # fleetnames.ct<-colnames(rv.Ct$data)[-1]
@@ -4868,7 +4907,7 @@ shinyServer(function(input, output, session) {
           #{
           # fleetnames.index<-unique(rv.Ct$data$Labels)
           #}
-
+          
           Sel.out <- doubleNorm24.sel(
             Sel50 = Sel50[1],
             Selpeak = Selpeak[1],
@@ -4907,21 +4946,21 @@ shinyServer(function(input, output, session) {
             scale_color_viridis_d()
         }
       }
-
+      
       if (input$Sel_choice == "Dome-shaped") {
         if (
           all(
             length(as.numeric(trimws(unlist(strsplit(input$Sel50, ","))))) ==
-              length(as.numeric(trimws(unlist(strsplit(input$Selpeak, ","))))),
+            length(as.numeric(trimws(unlist(strsplit(input$Selpeak, ","))))),
             length(as.numeric(trimws(unlist(strsplit(input$Sel50, ","))))) ==
-              length(as.numeric(trimws(unlist(strsplit(input$PeakDesc, ","))))),
+            length(as.numeric(trimws(unlist(strsplit(input$PeakDesc, ","))))),
             length(as.numeric(trimws(unlist(strsplit(input$Sel50, ","))))) ==
-              length(as.numeric(trimws(unlist(strsplit(
-                input$LtPeakFinal,
-                ","
-              ))))),
+            length(as.numeric(trimws(unlist(strsplit(
+              input$LtPeakFinal,
+              ","
+            ))))),
             length(as.numeric(trimws(unlist(strsplit(input$Sel50, ","))))) ==
-              length(as.numeric(trimws(unlist(strsplit(input$FinalSel, ","))))),
+            length(as.numeric(trimws(unlist(strsplit(input$FinalSel, ","))))),
             all(input$Sel50 != ""),
             all(!is.null(input$Sel50)),
             all(input$Selpeak != ""),
@@ -4936,7 +4975,7 @@ shinyServer(function(input, output, session) {
             ","
           ))))
           FinalSel <- as.numeric(trimws(unlist(strsplit(input$FinalSel, ","))))
-
+          
           # if(input$Sel_choice=="Logistic")
           #   {
           #     PeakDesc<-rep(10000,length(Selpeak))
@@ -4946,7 +4985,7 @@ shinyServer(function(input, output, session) {
           # if(input$Sel_choice=="Dome-shaped")
           #   {
           # }
-
+          
           Sel.out <- doubleNorm24.sel(
             Sel50 = Sel50[1],
             Selpeak = Selpeak[1],
@@ -4990,29 +5029,29 @@ shinyServer(function(input, output, session) {
       (return(NULL))
     }
   })
-
+  
   output$Selplot_SSS <- renderPlot({
     if (!is.null(input$Sel50_sss) & !is.null(input$Selpeak_sss)) {
       if (
         input$Sel_choice_sss == "Logistic" &
+        any(
           any(
-            any(
-              any(is.na(as.numeric(trimws(unlist(strsplit(
-                input$Sel50_sss,
-                ","
-              )))))),
-              input$Sel50_sss[1] == "",
-              is.null(input$Sel50_sss)
-            ),
-            any(
-              any(is.na(as.numeric(trimws(unlist(strsplit(
-                input$Selpeak_sss,
-                ","
-              )))))),
-              input$Selpeak_sss[1] == "",
-              is.null(input$Selpeak_sss)
-            )
+            any(is.na(as.numeric(trimws(unlist(strsplit(
+              input$Sel50_sss,
+              ","
+            )))))),
+            input$Sel50_sss[1] == "",
+            is.null(input$Sel50_sss)
+          ),
+          any(
+            any(is.na(as.numeric(trimws(unlist(strsplit(
+              input$Selpeak_sss,
+              ","
+            )))))),
+            input$Selpeak_sss[1] == "",
+            is.null(input$Selpeak_sss)
           )
+        )
       ) {
         return(NULL)
       }
@@ -5023,10 +5062,10 @@ shinyServer(function(input, output, session) {
               input$Sel50_sss,
               ","
             ))))) ==
-              length(as.numeric(trimws(unlist(strsplit(
-                input$Selpeak_sss,
-                ","
-              ))))),
+            length(as.numeric(trimws(unlist(strsplit(
+              input$Selpeak_sss,
+              ","
+            ))))),
             all(input$Sel50_sss != ""),
             all(!str_detect(input$Sel50_sss, "NA")),
             all(!is.null(input$Sel50_sss)),
@@ -5079,7 +5118,7 @@ shinyServer(function(input, output, session) {
             scale_color_viridis_d()
         }
       }
-
+      
       if (input$Sel_choice_sss == "Dome-shaped") {
         if (
           all(
@@ -5087,34 +5126,34 @@ shinyServer(function(input, output, session) {
               input$Sel50_sss,
               ","
             ))))) ==
-              length(as.numeric(trimws(unlist(strsplit(
-                input$Selpeak_sss,
-                ","
-              ))))),
+            length(as.numeric(trimws(unlist(strsplit(
+              input$Selpeak_sss,
+              ","
+            ))))),
             length(as.numeric(trimws(unlist(strsplit(
               input$Sel50_sss,
               ","
             ))))) ==
-              length(as.numeric(trimws(unlist(strsplit(
-                input$PeakDesc_sss,
-                ","
-              ))))),
+            length(as.numeric(trimws(unlist(strsplit(
+              input$PeakDesc_sss,
+              ","
+            ))))),
             length(as.numeric(trimws(unlist(strsplit(
               input$Sel50_sss,
               ","
             ))))) ==
-              length(as.numeric(trimws(unlist(strsplit(
-                input$LtPeakFinal_sss,
-                ","
-              ))))),
+            length(as.numeric(trimws(unlist(strsplit(
+              input$LtPeakFinal_sss,
+              ","
+            ))))),
             length(as.numeric(trimws(unlist(strsplit(
               input$Sel50_sss,
               ","
             ))))) ==
-              length(as.numeric(trimws(unlist(strsplit(
-                input$FinalSel_sss,
-                ","
-              ))))),
+            length(as.numeric(trimws(unlist(strsplit(
+              input$FinalSel_sss,
+              ","
+            ))))),
             all(input$Sel50_sss != ""),
             all(!is.null(input$Sel50_sss)),
             all(input$Selpeak_sss != ""),
@@ -5138,7 +5177,7 @@ shinyServer(function(input, output, session) {
             input$FinalSel_sss,
             ","
           ))))
-
+          
           Sel.out <- doubleNorm24.sel(
             Sel50 = Sel50[1],
             Selpeak = Selpeak[1],
@@ -5182,11 +5221,11 @@ shinyServer(function(input, output, session) {
       (return(NULL))
     }
   })
-
+  
   #############################################
   ###              END PLOTS                ###
   #############################################
-
+  
   #############################################
   ######## PREPARE FILES andD RUN SSS #########
   #############################################
@@ -5199,15 +5238,15 @@ shinyServer(function(input, output, session) {
     print(1)
     # progress <- shiny::Progress$new(session, min=1, max=2)
     #        on.exit(progress$close())
-
+    
     #        progress$set(message = 'Model run in progress',
     #                     detail = '')
-
+    
     #        for (i in 1:2) {
     #          progress$set(value = i)
     #          Sys.sleep(0.5)
     #        }
-
+    
     #Copy and move files
     if (file.exists(paste0("Scenarios/", input$Scenario_name))) {
       unlink(paste0("Scenarios/", input$Scenario_name), recursive = TRUE)
@@ -5226,10 +5265,10 @@ shinyServer(function(input, output, session) {
         paste0("Scenarios/", input$Scenario_name)
       )
     }
-
+    
     #BOOKMARKING: copy inputs rds and uploaded csvs into scenarios folder
     saveInputs(input, bookmarkFilePath(), latestBookmarkURL(), session)
-
+    
     # session$doBookmark()
     # bookmarkInputPath <- file.path(dirname(bookmarkFilePath()), latestBookmarkURL(), "input.rds")
     # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")))) {
@@ -5241,9 +5280,9 @@ shinyServer(function(input, output, session) {
     #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
     #   }
     # }
-
+    
     # dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
-
+    
     #if()
     #	  		{
     #	  			file.copy(paste0(getwd(),"/SSS_files/sssexample_RickPow"),paste0(getwd(),"/Scenarios"),recursive=TRUE,overwrite=TRUE)
@@ -5268,7 +5307,7 @@ shinyServer(function(input, output, session) {
     data.file$styr <- input$styr
     data.file$endyr <- input$endyr
     data.file$Nages <- input$Nages_in_sss #Nages()
-
+    
     #Catches
     Catch.data <- rv.Ct$data
     catch.dep.fleets <- ncol(Catch.data)
@@ -5285,7 +5324,7 @@ shinyServer(function(input, output, session) {
         data.file$Nfleets <- catch.dep.fleets
       }
     }
-
+    
     if ((data.file$Nfleets - 1) > 1) {
       for (i in 1:(data.file$Nfleets - 2)) {
         data.file$fleetinfo <- rbind(
@@ -5318,10 +5357,10 @@ shinyServer(function(input, output, session) {
     }
     data.file$catch <- list.rbind(catch_temp)
     colnames(data.file$catch) <- catch.cols
-
+    
     #Relative stock status
     data.file$CPUE$year <- c(input$styr, input$status_year)
-
+    
     #Length composition data
     if (input$Linf_f_mean_sss > 30) {
       data.file$binwidth <- 2
@@ -5352,14 +5391,14 @@ shinyServer(function(input, output, session) {
       #data.file$fleetinfo[ct.units,4]<-2 #use this when just specifying which are fleets are numbers
       data.file$fleetinfo[, 4] <- c(ct.units, 1)
     }
-
+    
     SS_writedat(
       data.file,
       paste0("Scenarios/", input$Scenario_name, "/sss_example.dat"),
       overwrite = TRUE
     )
     ####################### END DATA FILE #####################################
-
+    
     ####################### START SSS CTL FILE #####################################
     ctl.file$Comments <- c(ctl.file$Comments, input$scenario_description_input)
     if (!is.null(input$GT5)) {
@@ -5369,7 +5408,7 @@ shinyServer(function(input, output, session) {
         ctl.file$submorphdist <- c(-1, 0.25, 0.5, 0.25, 0.125)
       }
     }
-
+    
     #if(all(any(input$est_parms==TRUE,input$est_parms2==FALSE),any(all(!is.null(rv.Lt$data),!is.null(rv.Ct$data)),all(!is.null(rv.Age$data),!is.null(rv.Ct$data))))==TRUE)
     #{
     fem_vbgf <- VBGF(
@@ -5398,7 +5437,7 @@ shinyServer(function(input, output, session) {
     } else {
       ctl.file$MG_parms[1, 3:4] <- c(input$M_f_mean_sss, input$M_f_mean_sss)
     }
-
+    
     #L0
     ctl.file$Growth_Age_for_L1 <- input$t0_f_mean_sss
     ctl.file$Growth_Age_for_L1 <- 0
@@ -5409,7 +5448,7 @@ shinyServer(function(input, output, session) {
     } else {
       ctl.file$MG_parms[2, 3:4] <- 0
     }
-
+    
     #Linf
     if (input$Linf_f_prior == "lognormal") {
       ctl.file$MG_parms[3, 3:4] <- c(
@@ -5419,7 +5458,7 @@ shinyServer(function(input, output, session) {
     } else {
       ctl.file$MG_parms[3, 3:4] <- input$Linf_f_mean_sss
     }
-
+    
     #k
     if (input$k_f_prior == "lognormal") {
       ctl.file$MG_parms[4, 3:4] <- c(
@@ -5429,7 +5468,7 @@ shinyServer(function(input, output, session) {
     } else {
       ctl.file$MG_parms[4, 3:4] <- input$k_f_mean_sss
     }
-
+    
     #CV young
     if (input$CV_lt_f_young_prior == "lognormal") {
       ctl.file$MG_parms[5, 3:4] <- c(
@@ -5439,7 +5478,7 @@ shinyServer(function(input, output, session) {
     } else {
       ctl.file$MG_parms[5, 3:4] <- input$CV_lt_f_young_mean_sss
     }
-
+    
     #CV old
     if (input$CV_lt_f_old_prior == "lognormal") {
       ctl.file$MG_parms[6, 3:4] <- c(
@@ -5449,16 +5488,16 @@ shinyServer(function(input, output, session) {
     } else {
       ctl.file$MG_parms[6, 3:4] <- input$CV_lt_f_old_mean_sss
     }
-
+    
     #Weight-length
     ctl.file$MG_parms[7, 3:4] <- input$WLa_f_sss #coefficient
     ctl.file$MG_parms[8, 3:4] <- input$WLb_f_sss #exponent
-
+    
     #Maturity
     ctl.file$MG_parms[9, 3:4] <- input$L50_f_sss #Lmat50%
     ctl.file$MG_parms[10, 3:4] <- log(0.05 / 0.95) /
       (input$L95_f_sss - input$L50_f_sss) #Maturity slope
-
+    
     #Males
     ctl.file$MG_parms[13, 3:4] <- c(input$M_f_mean_sss, log(input$M_f_mean_sss)) #M
     #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]                                      #L0
@@ -5472,7 +5511,7 @@ shinyServer(function(input, output, session) {
     ctl.file$MG_parms[20, 3:4] <- input$WLb_f_sss #exponent
     ctl.file$MG_parms[11, 3:4] <- input$Fec_a_f_sss #coefficient
     ctl.file$MG_parms[12, 3:4] <- input$Fec_b_f_sss #exponent
-
+    
     if (input$male_offset_SSS) {
       ctl.file$parameter_offset_approach <- 2 #Change to offset approach
       ctl.file$MG_parms[13, c(1, 3:4)] <- 0 #M
@@ -5485,7 +5524,7 @@ shinyServer(function(input, output, session) {
       ctl.file$MG_parms[19, c(1, 3:4)] <- input$WLa_f_sss #coefficient
       ctl.file$MG_parms[20, c(1, 3:4)] <- input$WLb_f_sss #exponent
     }
-
+    
     if (input$male_parms_SSS) {
       male_vbgf_sss <- VBGF(
         input$Linf_m_mean_sss,
@@ -5493,7 +5532,7 @@ shinyServer(function(input, output, session) {
         input$t0_m_mean_sss,
         c(input$t0_f_mean_sss:Nages())
       )
-
+      
       #M
       if (input$M_m_prior_sss == "lognormal") {
         ctl.file$MG_parms[13, 3:4] <- c(
@@ -5503,7 +5542,7 @@ shinyServer(function(input, output, session) {
       } else {
         ctl.file$MG_parms[13, 3:4] <- c(input$M_m_mean_sss, input$M_m_mean_sss)
       }
-
+      
       #L0
       if (input$t0_f_prior_sss == "lognormal") {
         ctl.file$MG_parms[14, 3:4] <- c(male_vbgf_sss[1], log(male_vbgf_sss[1]))
@@ -5512,7 +5551,7 @@ shinyServer(function(input, output, session) {
       }
       # if(input$t0_f_prior_sss=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(0,log(0.0000001))}
       #else {ctl.file$MG_parms[14,3:4]<-c(0,0)}
-
+      
       #Linf
       if (input$Linf_f_prior_sss == "lognormal") {
         ctl.file$MG_parms[15, 3:4] <- c(
@@ -5525,7 +5564,7 @@ shinyServer(function(input, output, session) {
           input$Linf_m_mean_sss
         )
       }
-
+      
       #k
       if (input$k_f_prior_sss == "lognormal") {
         ctl.file$MG_parms[16, 3:4] <- c(
@@ -5535,7 +5574,7 @@ shinyServer(function(input, output, session) {
       } else {
         ctl.file$MG_parms[16, 3:4] <- c(input$k_m_mean_sss, input$k_m_mean_sss)
       }
-
+      
       #CV young
       if (input$CV_lt_f_young_prior_sss == "lognormal") {
         ctl.file$MG_parms[17, 3:4] <- c(
@@ -5548,7 +5587,7 @@ shinyServer(function(input, output, session) {
           input$CV_lt_m_young_mean_sss
         )
       }
-
+      
       #CV old
       if (input$CV_lt_f_old_prior_sss == "lognormal") {
         ctl.file$MG_parms[18, 3:4] <- c(
@@ -5561,15 +5600,15 @@ shinyServer(function(input, output, session) {
           input$CV_lt_m_old_mean_sss
         )
       }
-
+      
       #Weight-length
       ctl.file$MG_parms[19, 3:4] <- input$WLa_m_sss #coefficient
       ctl.file$MG_parms[20, 3:4] <- input$WLb_m_sss #exponent
     }
-
+    
     #S-R
     #ctl.file$SR_parms[1,3:4]<-input$lnR0  #lnR0
-
+    
     if (input$h_ss_prior == "lognormal") {
       ctl.file$SR_parms[2, 3:4] <- c(input$h_mean_ss, log(h_mean_ss))
     } else {
@@ -5578,14 +5617,14 @@ shinyServer(function(input, output, session) {
     #}
     ctl.file$MainRdevYrFirst <- input$styr #Start year of recruitment estimation
     ctl.file$MainRdevYrLast <- input$endyr #Last year of recruitment estimation
-
+    
     #
     ctl.file$Q_options[1] <- data.file$Nfleets
     #Selectivity
     Sel50 <- as.numeric(trimws(unlist(strsplit(input$Sel50_sss, ","))))
     Selpeak <- as.numeric(trimws(unlist(strsplit(input$Selpeak_sss, ","))))
     bin.width <- data.file$lbin_vector[2] - data.file$lbin_vector[1]
-
+    
     if (input$Sel_choice_sss == "Logistic") {
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       ctl.file$size_selex_parms[1, 1:2] <- c(
@@ -5607,7 +5646,7 @@ shinyServer(function(input, output, session) {
         ","
       ))))
       FinalSel <- as.numeric(trimws(unlist(strsplit(input$FinalSel_sss, ","))))
-
+      
       #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
       ctl.file$size_selex_parms[1, 1:2] <- c(
         min(data.file$lbin_vector),
@@ -5626,7 +5665,7 @@ shinyServer(function(input, output, session) {
         (1 / (FinalSel[1] + 0.000000001) - 1)
       )
     }
-
+    
     #Add other fleets
     if ((data.file$Nfleets - 1) > 1) {
       for (i in 1:(data.file$Nfleets - 2)) {
@@ -5643,7 +5682,7 @@ shinyServer(function(input, output, session) {
           ctl.file$size_selex_parms,
           ctl.file$size_selex_parms[1:6, ]
         )
-
+        
         if (input$Sel_choice_sss == "Logistic") {
           #ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
           ctl.file$size_selex_parms[6 * i + 1, 1:2] <- c(
@@ -5658,7 +5697,7 @@ shinyServer(function(input, output, session) {
           ctl.file$size_selex_parms[6 * i + 4, 3:4] <- -15
           ctl.file$size_selex_parms[6 * i + 6, 3:4] <- 15
         }
-
+        
         if (input$Sel_choice_sss == "Dome-shaped") {
           ctl.file$size_selex_parms[6 * i + 1, 1:2] <- c(
             min(data.file$lbin_vector),
@@ -5679,10 +5718,10 @@ shinyServer(function(input, output, session) {
           )
         }
       }
-
+      
       ctl.file$size_selex_types[, 1] <- c(rep(24, data.file$Nfleets - 1), 0)
       ctl.file$age_selex_types[, 1] <- 10
-
+      
       #Re-label so r4ss can interpret these new entries
       #rownames(ctl.file$init_F)<-paste0("InitF_seas_1_flt_",1:data.file$Nfleets,"Fishery",1:data.file$Nfleets)
       rownames(ctl.file$age_selex_types) <- rownames(
@@ -5702,13 +5741,13 @@ shinyServer(function(input, output, session) {
       size_selex_parms_rownames <- unlist(size_selex_parms_rownames)
       rownames(ctl.file$size_selex_parms) <- size_selex_parms_rownames
     }
-
+    
     SS_writectl(
       ctl.file,
       paste0("Scenarios/", input$Scenario_name, "/sss_example.ctl"),
       overwrite = TRUE
     )
-
+    
     #Forecast file modfications
     #Reference points
     #if(!input$use_forecastnew)
@@ -5718,11 +5757,11 @@ shinyServer(function(input, output, session) {
       input$Scenario_name,
       "/forecast.ss"
     ))
-
+    
     if (input$RP_choices) {
       forecast.file$SPRtarget <- input$SPR_target
       forecast.file$Btarget <- input$B_target
-
+      
       ForeF_choices <- c(
         "-1: None",
         "0: Simple 1yr",
@@ -5735,7 +5774,7 @@ shinyServer(function(input, output, session) {
       forecast.file$Forecast <- FF_choices_num.vec[
         ForeF_choices == input$ForeF_type
       ]
-
+      
       CR_choices <- c(
         "0: None",
         "1: Catch fxn of SSB, buffer on F",
@@ -5750,7 +5789,7 @@ shinyServer(function(input, output, session) {
       forecast.file$SBforconstantF <- input$slope_hi
       forecast.file$BfornoF <- input$slope_low
     }
-
+    
     if (input$Forecast_choice) {
       forecast.file$Nforecastyrs <- input$forecast_num
       buffer.in <- as.numeric(trimws(unlist(strsplit(
@@ -5775,20 +5814,20 @@ shinyServer(function(input, output, session) {
         forecast.file$Flimitfraction_m <- buffer.datafr
       }
     }
-
+    
     SS_writeforecast(
       forecast.file,
       paste0("Scenarios/", input$Scenario_name),
       overwrite = TRUE
     )
     #}
-
+    
     #if(input$use_forecastnew)
     #  {
     #    forecast.file<-SS_readforecast(paste0("Scenarios/",input$Scenario_name,"/forecast.ss_new"))
     #    SS_writeforecast(forecast.file,paste0("Scenarios/",input$Scenario_name),overwrite=TRUE)
     #  }
-
+    
     #Set prior inputs
     #0 = normal
     #10 = truncated normal
@@ -5798,7 +5837,7 @@ shinyServer(function(input, output, session) {
     #30 = truncated lognormal
     #4 = uniform
     #99 = used only for the steepness parameter. Indicates h will come from FMSY/M prior
-
+    
     sss.prior.name <- c(
       "no prior",
       "symmetric beta",
@@ -5810,13 +5849,13 @@ shinyServer(function(input, output, session) {
       "uniform"
     )
     sss.prior.type <- c(-1, 1, 2, 0, 10, 3, 30, 4)
-
+    
     Dep.in_sss <- c(
       sss.prior.type[sss.prior.name == input$Depl_prior_sss],
       input$Depl_mean_sss,
       input$Depl_SD_sss
     )
-
+    
     h.in_sss <- c(
       sss.prior.type[sss.prior.name == input$h_prior_sss],
       input$h_mean_sss,
@@ -5856,7 +5895,7 @@ shinyServer(function(input, output, session) {
         input$t0_f_SD_sss
       )
     }
-
+    
     if (input$male_offset_SSS) {
       M.in_sss <- c(
         sss.prior.type[sss.prior.name == input$M_prior_sss],
@@ -5891,7 +5930,7 @@ shinyServer(function(input, output, session) {
         0
       )
     }
-
+    
     if (input$male_parms_SSS) {
       M.in_sss <- c(
         sss.prior.type[sss.prior.name == input$M_prior_sss],
@@ -5931,7 +5970,7 @@ shinyServer(function(input, output, session) {
       color = wes_palettes$Zissou1[2],
       text = "Model run in progress"
     )
-
+    
     #Run SSS
     if (is.na(input$Depl_mean_sss) | input$Depl_mean_sss < 0) {
       #Throw warning if not enough selectivity inputs
@@ -5981,7 +6020,7 @@ shinyServer(function(input, output, session) {
         color = wes_palettes$Zissou1[3],
         text = "Process model output"
       )
-
+      
       if (
         exists(load(paste0("Scenarios/", input$Scenario_name, "/SSS_out.rds")))
       ) {
@@ -6035,7 +6074,7 @@ shinyServer(function(input, output, session) {
               )
             )
             sss.vals.out <- rbind(sss.M.f, sss.M.m, sss.h, sss.Dep)
-
+            
             ggplot(sss.vals.out, aes(x = value, color = type, fill = type)) +
               geom_histogram(position = "dodge", alpha = 0.5) +
               theme(legend.position = "bottom") +
@@ -6049,7 +6088,7 @@ shinyServer(function(input, output, session) {
             return(NULL)
           }
         })
-
+        
         output$SSS_growth_priors_post <- renderPlot({
           if (
             exists(load(paste0(
@@ -6139,7 +6178,7 @@ shinyServer(function(input, output, session) {
               sss.Linf_m,
               sss.k_m
             )
-
+            
             ggplot(
               sss.vals.growth.out,
               aes(x = value, color = type, fill = type)
@@ -6152,7 +6191,7 @@ shinyServer(function(input, output, session) {
             return(NULL)
           }
         })
-
+        
         output$SSS_OFL_plot <- renderPlot({
           if (
             exists(load(paste0(
@@ -6178,7 +6217,7 @@ shinyServer(function(input, output, session) {
             return(NULL)
           }
         })
-
+        
         output$SSS_ABC_plot <- renderPlot({
           if (
             exists(load(paste0(
@@ -6208,11 +6247,11 @@ shinyServer(function(input, output, session) {
       remove_modal_spinner()
     }
   })
-
+  
   ###############
   ### END SSS ###
   ###############
-
+  
   ##################################################################
   ### PREPARE FILES and RUN Length and Age-based Stock Synthsis ###
   ##################################################################
@@ -6234,20 +6273,20 @@ shinyServer(function(input, output, session) {
     # 							input$L95_m,
     # 							))
     # {
-
+    
     updateTabsetPanel(session, "tabs", selected = '1')
-
+    
     # progress <- shiny::Progress$new(session, min=1, max=2)
     #          on.exit(progress$close())
-
+    
     #          progress$set(message = 'Model run in progress',
     #                       detail = '')
-
+    
     #          for (i in 1:2) {
     #            progress$set(value = i)
     #            Sys.sleep(0.5)
     #          }
-
+    
     if (
       !any(
         input$use_par,
@@ -6303,26 +6342,26 @@ shinyServer(function(input, output, session) {
         )
       }
     }
-
+    
     #BOOKMARKING: copy inputs rds and uploaded csvs into scenarios folder
     saveInputs(input, bookmarkFilePath(), latestBookmarkURL(), session)
-
+    
     # session$doBookmark()
     # bookmarkInputPath <- file.path(dirname(bookmarkFilePath()), latestBookmarkURL(), "input.rds")
-
+    
     # if(!dir.exists(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")))) {
     #   dir.create(dirname(file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds")), recursive = TRUE)
     # }
-
+    
     # file.copy(from = bookmarkInputPath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", "input.rds"), overwrite=TRUE)
     # for(i in 1:4){
     #   if(!is.null(input[[paste0("file",i)]])){
     #     file.copy(from = input[[paste0("file",i)]]$datapath,  to = file.path("Scenarios", input$Scenario_name, "Scenario_Inputs", input[[paste0("file",i)]]$name), overwrite=TRUE)
     #   }
     # }
-
+    
     # dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to create the query string and grab the filepath
-
+    
     # if(!input$use_customfile)
     #   {
     #   }
@@ -6339,18 +6378,18 @@ shinyServer(function(input, output, session) {
         datlist = data.file
       )
     }
-
+    
     # if(input$use_datanew)
     #   {
     #     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new"))
     #   }
-
+    
     # if(input$use_controlnew)
     #   {
     #     data.file<-SS_readdat(paste0("Scenarios/",input$Scenario_name,"/data_echo.ss_new"))
     #     ctl.file<-SS_readctl(paste0("Scenarios/",input$Scenario_name,"/control.ss_new"),use_datlist = TRUE, datlist=data.file)
     #   }
-
+    
     # data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat"))
     # ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)
     #if(input$Ct_F_LO_select=="Estimate F" & is.null(rv.Ct$data))
@@ -6358,7 +6397,7 @@ shinyServer(function(input, output, session) {
     #    data.file<-SS_readdat(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.dat"))
     #    ctl.file<-SS_readctl(paste0(getwd(),"/Scenarios/",input$Scenario_name,"/SS_LB.ctl"),use_datlist = TRUE, datlist=data.file)
     #  }
-
+    
     if (!input$user_model) {
       #Prepare inputs to evaluate any errors
       Sel50 <- as.numeric(trimws(unlist(strsplit(input$Sel50, ","))))
@@ -6389,7 +6428,7 @@ shinyServer(function(input, output, session) {
         rv.Age$data[, 3],
         rv.Index$data[, 3]
       )
-
+      
       if (input$Sel_choice == "Dome-shaped") {
         PeakDesc <- as.numeric(trimws(unlist(strsplit(input$PeakDesc, ","))))
         PeakDesc_phase <- as.numeric(trimws(unlist(strsplit(
@@ -6426,7 +6465,7 @@ shinyServer(function(input, output, session) {
           length(FinalSel_phase)
         )
       }
-
+      
       #Search for errors in inputs
       #Throw warning if not enough selectivity inputs
       #if(!all(Nfleets==sel.inputs.lts))
@@ -6442,7 +6481,7 @@ shinyServer(function(input, output, session) {
         )
         remove_modal_spinner()
       }
-
+      
       if (
         all(Nfleets == sel.inputs.lts) & !any(c(is.na(Sel50), is.na(Selpeak)))
       ) {
@@ -6491,7 +6530,7 @@ shinyServer(function(input, output, session) {
           rv.Age$data[, 3],
           rv.Index$data[, 3]
         )
-
+        
         #########
         #Catches#
         #########
@@ -6541,7 +6580,7 @@ shinyServer(function(input, output, session) {
           data.file$catch <- list.rbind(catch_temp)
           colnames(data.file$catch) <- catch.cols
         }
-
+        
         if (!is.null(rv.Ct$data)) {
           Catch.data <- rv.Ct$data
           #data.file$Nfleets<-max(ncol(Catch.data)-1,data.file$Nfleets)
@@ -6567,7 +6606,7 @@ shinyServer(function(input, output, session) {
             data.file$catch$year == -999 & data.file$catch$catch == 0
           ] <- 0.00000000000000000001
         }
-
+        
         #Index data
         if (!is.null(rv.Index$data)) {
           Index.data <- rv.Index$data
@@ -6580,7 +6619,7 @@ shinyServer(function(input, output, session) {
             se_log = rv.Index$data[, 5]
           )
         }
-
+        
         #########################
         #Length composition data#
         #########################
@@ -6603,7 +6642,7 @@ shinyServer(function(input, output, session) {
         data.file$maximum_size <- input$lt_max_bin
         # }
         #inFile<- rv.Lt$data
-
+        
         if (is.null(rv.Lt$data)) {
           if (input$est_parms == FALSE) {
             Linf_bins <- input$Linf_f_fix
@@ -6623,7 +6662,7 @@ shinyServer(function(input, output, session) {
           data.file$N_lbins <- length(data.file$lbin_vector)
           data.file$lencomp <- NULL
         }
-
+        
         if (!is.null(rv.Lt$data)) {
           Lt.comp.data <- rv.Lt$data
           data.file$N_lbins <- ncol(Lt.comp.data) - 5
@@ -6632,7 +6671,7 @@ shinyServer(function(input, output, session) {
           ]) #as.numeric(colnames(Lt.comp.data[,5:ncol(Lt.comp.data)]))
           if (data.file$maximum_size < max(data.file$lbin_vector)) {
             data.file$maximum_size <- (2 *
-              round(max(data.file$lbin_vector) / 2)) +
+                                         round(max(data.file$lbin_vector) / 2)) +
               2
           }
           lt.data.names <- c(
@@ -6733,7 +6772,7 @@ shinyServer(function(input, output, session) {
           colnames(lt.data.females) <- colnames(lt.data.males) <- colnames(
             lt.data.unknowns
           ) <- colnames(lt.data.sex3) <- lt.data.names
-
+          
           data.file$lencomp <- na.omit(rbind(
             lt.data.unknowns,
             lt.data.females,
@@ -6756,7 +6795,7 @@ shinyServer(function(input, output, session) {
         # 	byrow=FALSE))[,,drop=FALSE]
         # }
         #		colnames(data.file$lencomp)<-lt.data.names
-
+        
         ######################
         #Age composition data#
         ######################
@@ -6773,7 +6812,7 @@ shinyServer(function(input, output, session) {
           ))
           colnames(data.file$ageerror) <- paste0("age", 0:Plus_age)
         }
-
+        
         if (!is.null(Age.comp.data)) {
           if (ncol(Age.comp.data) - 8 > (Plus_age + 1)) {
             sendSweetAlert(
@@ -6784,10 +6823,10 @@ shinyServer(function(input, output, session) {
             )
             remove_modal_spinner()
           }
-
+          
           data.file$N_agebins <- ncol(Age.comp.data) - 8
           data.file$agebin_vector <- as.numeric(colnames(Age.comp.data[,
-            9:ncol(Age.comp.data)
+                                                                       9:ncol(Age.comp.data)
           ]))
           data.file$ageerror <- data.frame(matrix(
             c(rep(-1, (Plus_age + 1)), rep(0.001, (Plus_age + 1))),
@@ -6795,13 +6834,13 @@ shinyServer(function(input, output, session) {
             (Plus_age + 1),
             byrow = TRUE
           ))
-
+          
           if (!is.null(rv.AgeErr$data)) {
             #if(!is.null(input$Ageing_error_choice)){
             #if(input$Ageing_error_choice)
             #{
             data.file$ageerror <- data.frame((rv.AgeErr$data))
-
+            
             if (ncol(data.frame((rv.AgeErr$data))) != (Plus_age + 1)) {
               sendSweetAlert(
                 session = session,
@@ -6811,11 +6850,11 @@ shinyServer(function(input, output, session) {
               )
               remove_modal_spinner()
             }
-
+            
             data.file$N_ageerror_definitions <- nrow(rv.AgeErr$data) / 2
             # }
           }
-
+          
           #Label object for r4ss
           colnames(data.file$ageerror) <- paste0("age", 0:Plus_age)
           rownames(data.file$ageerror) <- c(1:nrow(data.file$ageerror))
@@ -6907,7 +6946,7 @@ shinyServer(function(input, output, session) {
               Age.comp.data_unknown[, 9:ncol(Age.comp.data_unknown)] * 0
             ))
           }
-
+          
           #Maintain sample sex ratio
           if (input$Sex3options) {
             if (input$AgeSex3) {
@@ -6950,7 +6989,7 @@ shinyServer(function(input, output, session) {
               age.data.males <- age.data.males[!age_sex3_match_male, ]
             }
           }
-
+          
           #if(nrow(subset(Age.comp.data,Sex==0))>0){age.data.unknowns<-data.frame(cbind(
           #  age.data.unknowns,
           #  Age.comp.data[1,7:ncol(Age.comp.data_unknown)],
@@ -6966,7 +7005,7 @@ shinyServer(function(input, output, session) {
             age.data.sex3
           ))
         }
-
+        
         # 	inFile_age<- rv.Age$data
         # if (is.null(inFile_age)){
         # data.file$N_agebins<-Nages()
@@ -7017,7 +7056,7 @@ shinyServer(function(input, output, session) {
         # }
         # colnames(data.file$agecomp)<-age.data.names
         # }
-
+        
         #Create data info
         if (data.file$Nfleets > 1) {
           for (i in 1:(data.file$Nfleets - 1)) {
@@ -7038,14 +7077,14 @@ shinyServer(function(input, output, session) {
               data.file$age_info[1, ]
             )
           }
-
+          
           #Set Dirichlet on
           #      data.file$age_info[,5]<-data.file$len_info[,5]<-1
-
+          
           #Set up the correct fleet enumeration
           #      data.file$len_info[,6]<-1:data.file$Nfleets #Used for Dirichlet set-up
           #      data.file$age_info[,6]<-(data.file$Nfleets+1):(2*data.file$Nfleets) #Used for Dirichlet set-up
-
+          
           #Survey names
           if (is.null(rv.Ct$data)) {
             data.file$fleetinfo$fleetname <- paste0(
@@ -7066,7 +7105,7 @@ shinyServer(function(input, output, session) {
             }
             if (
               is.null(rv.Index$data) |
-                all(!is.null(rv.Index$data) & data.file$Nfleets == catch.fleets)
+              all(!is.null(rv.Index$data) & data.file$Nfleets == catch.fleets)
             ) {
               data.file$fleetinfo$fleetname[
                 1:length(fishery.names)
@@ -7086,17 +7125,17 @@ shinyServer(function(input, output, session) {
           }
           data.file$CPUEinfo[, 1] <- 1:data.file$Nfleets
         }
-
+        
         if (!is.null(rv.Index$data) & data.file$Nfleets > catch.fleets) {
           if (any(fleet.survey.names == "RSS")) {
             data.file$CPUEinfo[grep("RSS", fleet.survey.names), 2] <- 34
           }
         }
-
+        
         #Change survey timing to 1
-
+        
         data.file$fleetinfo$surveytiming[data.file$fleetinfo$type %in% 3] <- 1
-
+        
         #Catch units
         if (input$Ct_units_choice) {
           ct.units <- as.numeric(trimws(unlist(strsplit(
@@ -7128,14 +7167,14 @@ shinyServer(function(input, output, session) {
             ctl.file$N_platoon <- 1
           }
         }
-
+        
         #LENGTH or AGE-ONLY
         if (
           all(
             !is.null(c(rv.Lt$data, rv.Age$data, rv.Index$data)),
             is.null(rv.Ct$data)
           ) ==
-            TRUE
+          TRUE
         ) {
           fem_vbgf <- VBGF(input$Linf_f, input$k_f, input$t0_f, c(0:Nages()))
           #Females
@@ -7175,7 +7214,7 @@ shinyServer(function(input, output, session) {
           ))))[2] #CV
           #ctl.file$MG_parms[19,3:4]<-input$WLa_f       #coefficient
           #ctl.file$MG_parms[20,3:4]<-input$WLb_f      #exponent
-
+          
           if (input$male_offset) {
             ctl.file$parameter_offset_approach <- 2 #Change to offset approach
             ctl.file$MG_parms[13, 3:4] <- 0 #M
@@ -7188,7 +7227,7 @@ shinyServer(function(input, output, session) {
             ctl.file$MG_parms[19, 3:4] <- 0 #coefficient
             ctl.file$MG_parms[20, 3:4] <- 0 #exponent
           }
-
+          
           if (input$male_parms) {
             male_vbgf <- VBGF(
               input$Linf_m,
@@ -7239,13 +7278,13 @@ shinyServer(function(input, output, session) {
           if (input$Ct_F_LO_select == "Constant Catch") {
             ctl.file$SR_parms[1, 7] = 1
           } #lnR0
-
+          
           ctl.file$SR_function <- c(3, 2)[
             c("Beverton-Holt", "Ricker") == input$SR_choice_LO
           ]
           ctl.file$SR_parms[2, 3:4] <- input$h_LO #steepness
         }
-
+        
         #LENGTH and CATCH with fixed parameters
         if (
           all(
@@ -7256,7 +7295,7 @@ shinyServer(function(input, output, session) {
               all(!is.null(rv.Index$data), !is.null(rv.Ct$data))
             )
           ) ==
-            TRUE
+          TRUE
         ) {
           fem_vbgf <- VBGF(
             input$Linf_f_fix,
@@ -7288,7 +7327,7 @@ shinyServer(function(input, output, session) {
             (input$L95_f_fix - input$L50_f_fix) #Maturity slope
           ctl.file$MG_parms[11, 3:4] <- input$Fec_a_f_fix #coefficient
           ctl.file$MG_parms[12, 3:4] <- input$Fec_b_f_fix #exponent
-
+          
           #Males
           ctl.file$MG_parms[13, 3] <- input$M_f_fix #M
           #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]          #L0
@@ -7305,7 +7344,7 @@ shinyServer(function(input, output, session) {
           ))))[2] #CV
           ctl.file$MG_parms[19, 3:4] <- input$WLa_f_fix #coefficient
           ctl.file$MG_parms[20, 3:4] <- input$WLb_f_fix #exponent
-
+          
           if (input$male_offset_fix) {
             ctl.file$parameter_offset_approach <- 2 #Change to offset approach
             ctl.file$MG_parms[13, 3:4] <- 0 #M
@@ -7318,7 +7357,7 @@ shinyServer(function(input, output, session) {
             ctl.file$MG_parms[19, 3:4] <- 0 #coefficient
             ctl.file$MG_parms[20, 3:4] <- 0 #exponent
           }
-
+          
           if (input$male_parms_fix) {
             male_vbgf <- VBGF(
               input$Linf_m_fix,
@@ -7348,7 +7387,7 @@ shinyServer(function(input, output, session) {
             ))))[1] #CV
             if (
               as.numeric(trimws(unlist(strsplit(input$CV_lt_m_fix, ","))))[1] ==
-                0
+              0
             ) {
               ctl.file$MG_parms[17, 3:6] <- 0
             } #CV
@@ -7358,7 +7397,7 @@ shinyServer(function(input, output, session) {
             ))))[2] #CV
             if (
               as.numeric(trimws(unlist(strsplit(input$CV_lt_m_fix, ","))))[2] ==
-                0
+              0
             ) {
               ctl.file$MG_parms[18, 3:6] <- 0
             } #CV
@@ -7366,7 +7405,7 @@ shinyServer(function(input, output, session) {
             ctl.file$MG_parms[19, 3:4] <- input$WLa_m_fix #coefficient
             ctl.file$MG_parms[20, 3:4] <- input$WLb_m_fix #exponent
           }
-
+          
           #S-R
           ctl.file$SR_function <- c(3, 2)[
             c("Beverton-Holt", "Ricker") == input$SR_choice_fixed
@@ -7374,7 +7413,7 @@ shinyServer(function(input, output, session) {
           ctl.file$SR_parms[1, 3:4] <- input$lnR0 #lnR0
           ctl.file$SR_parms[2, 3:4] <- input$h #steepnes
         }
-
+        
         #LENGTH and CATCH with estimated parameters
         if (
           all(
@@ -7385,7 +7424,7 @@ shinyServer(function(input, output, session) {
               all(!is.null(rv.Index$data), !is.null(rv.Ct$data))
             )
           ) ==
-            TRUE
+          TRUE
         ) {
           fem_vbgf <- VBGF(
             input$Linf_f_mean,
@@ -7413,10 +7452,10 @@ shinyServer(function(input, output, session) {
           ctl.file$MG_parms[1, 5] <- input$M_f_SD
           ctl.file$MG_parms[1, 6] <- prior.type[prior.name == input$M_f_prior]
           ctl.file$MG_parms[1, 7] <- input$M_f_phase
-
+          
           #L0
           ctl.file$Growth_Age_for_L1 <- input$t0_f_mean
-
+          
           # if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[2,3:4]<-c(fem_vbgf[1],log(fem_vbgf[1]))}
           # else {ctl.file$MG_parms[2,3:4]<-fem_vbgf[1]}
           if (input$t0_f_prior == "lognormal") {
@@ -7427,7 +7466,7 @@ shinyServer(function(input, output, session) {
           ctl.file$MG_parms[2, 5] <- input$t0_f_SD
           ctl.file$MG_parms[2, 6] <- prior.type[prior.name == input$t0_f_prior]
           ctl.file$MG_parms[2, 7] <- input$t0_f_phase
-
+          
           #Linf
           if (input$Linf_f_prior == "lognormal") {
             ctl.file$MG_parms[3, 3:4] <- c(
@@ -7442,7 +7481,7 @@ shinyServer(function(input, output, session) {
             prior.name == input$Linf_f_prior
           ]
           ctl.file$MG_parms[3, 7] <- input$Linf_f_phase
-
+          
           #k
           if (input$k_f_prior == "lognormal") {
             ctl.file$MG_parms[4, 3:4] <- c(input$k_f_mean, log(input$k_f_mean))
@@ -7452,7 +7491,7 @@ shinyServer(function(input, output, session) {
           ctl.file$MG_parms[4, 5] <- input$k_f_SD
           ctl.file$MG_parms[4, 6] <- prior.type[prior.name == input$k_f_prior]
           ctl.file$MG_parms[4, 7] <- input$k_f_phase
-
+          
           #CV young
           if (input$CV_lt_f_young_prior == "lognormal") {
             ctl.file$MG_parms[5, 3:4] <- c(
@@ -7467,7 +7506,7 @@ shinyServer(function(input, output, session) {
             prior.name == input$CV_lt_f_young_prior
           ]
           ctl.file$MG_parms[5, 7] <- input$CV_lt_f_young_phase
-
+          
           #CV old
           if (input$CV_lt_f_old_prior == "lognormal") {
             ctl.file$MG_parms[6, 3:4] <- c(
@@ -7483,18 +7522,18 @@ shinyServer(function(input, output, session) {
             prior.name == input$CV_lt_f_old_prior
           ]
           ctl.file$MG_parms[6, 7] <- input$CV_lt_f_old_phase
-
+          
           #Weight-length
           ctl.file$MG_parms[7, 3:4] <- input$WLa_f_est #coefficient
           ctl.file$MG_parms[8, 3:4] <- input$WLb_f_est #exponent
-
+          
           #Maturity
           ctl.file$MG_parms[9, 3:4] <- input$L50_f_est #Lmat50%
           ctl.file$MG_parms[10, 3:4] <- log(0.05 / 0.95) /
             (input$L95_f_est - input$L50_f_est) #Maturity slope
           ctl.file$MG_parms[11, 3:4] <- input$Fec_a_f_est #coefficient
           ctl.file$MG_parms[12, 3:4] <- input$Fec_b_f_est #exponent
-
+          
           #Males
           ctl.file$MG_parms[13, 3:4] <- c(input$M_f_mean, log(input$M_f_mean)) #M
           #ctl.file$MG_parms[14,3:4]<-fem_vbgf[1]                              #L0
@@ -7506,7 +7545,7 @@ shinyServer(function(input, output, session) {
           #Weight-length
           ctl.file$MG_parms[19, 3:4] <- input$WLa_f_est #coefficient
           ctl.file$MG_parms[20, 3:4] <- input$WLb_f_est #exponent
-
+          
           if (input$male_offset_est) {
             ctl.file$parameter_offset_approach <- 2 #Change to offset approach
             ctl.file$MG_parms[13, c(1, 3:4)] <- c(-100, 0, 0) #M
@@ -7519,7 +7558,7 @@ shinyServer(function(input, output, session) {
             # ctl.file$MG_parms[19, c(1, 3:4)] <- c(-100, 0, 0) #coefficient
             # ctl.file$MG_parms[20, c(1, 3:4)] <- c(-100, 0, 0) #exponent
           }
-
+          
           if (input$male_parms_est) {
             male_vbgf_est <- VBGF(
               input$Linf_m_mean,
@@ -7527,14 +7566,14 @@ shinyServer(function(input, output, session) {
               input$t0_m_mean,
               c(input$t0_f_mean:Nages())
             )
-
+            
             # ctl.file$MG_parms[13,3]<-input$M_m_mean        #M
             # ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]    #L0
             # ctl.file$MG_parms[15,3:4]<-input$Linf_m_mean   #Linf
             # ctl.file$MG_parms[16,3:4]<-input$k_m_mean      #k
             # ctl.file$MG_parms[17,3:4]<-input$CV_lt_m_mean  #CV
             # ctl.file$MG_parms[18,3:4]<-input$CV_lt_m_mean  #CV
-
+            
             #M
             if (input$M_m_prior == "lognormal") {
               ctl.file$MG_parms[13, 3:4] <- c(
@@ -7549,7 +7588,7 @@ shinyServer(function(input, output, session) {
               prior.name == input$M_m_prior
             ]
             ctl.file$MG_parms[13, 7] <- input$M_m_phase
-
+            
             #L0
             #if(input$t0_f_prior=="lognormal"){ctl.file$MG_parms[14,3:4]<-c(male_vbgf_est[1],log(male_vbgf_est[1]+0.000000001))}
             #else {ctl.file$MG_parms[14,3:4]<-male_vbgf_est[1]}
@@ -7587,7 +7626,7 @@ shinyServer(function(input, output, session) {
               prior.name == input$t0_m_prior
             ]
             ctl.file$MG_parms[14, 7] <- input$t0_m_phase
-
+            
             #Linf
             if (input$Linf_m_prior == "lognormal") {
               ctl.file$MG_parms[15, 3:4] <- c(
@@ -7602,7 +7641,7 @@ shinyServer(function(input, output, session) {
               prior.name == input$Linf_m_prior
             ]
             ctl.file$MG_parms[15, 7] <- input$Linf_m_phase
-
+            
             #k
             if (input$k_m_prior == "lognormal") {
               ctl.file$MG_parms[16, 3:4] <- c(
@@ -7617,7 +7656,7 @@ shinyServer(function(input, output, session) {
               prior.name == input$k_m_prior
             ]
             ctl.file$MG_parms[16, 7] <- input$k_m_phase
-
+            
             #CV young
             if (input$CV_lt_m_young_prior == "lognormal") {
               ctl.file$MG_parms[17, 3:4] <- c(
@@ -7632,7 +7671,7 @@ shinyServer(function(input, output, session) {
               prior.name == input$CV_lt_m_young_prior
             ]
             ctl.file$MG_parms[17, 7] <- input$CV_lt_m_young_phase
-
+            
             #CV old
             if (input$CV_lt_m_old_prior == "lognormal") {
               ctl.file$MG_parms[18, 3:4] <- c(
@@ -7647,12 +7686,12 @@ shinyServer(function(input, output, session) {
               prior.name == input$CV_lt_m_old_prior
             ]
             ctl.file$MG_parms[18, 7] <- input$CV_lt_m_old_phase
-
+            
             #Weight-length
             ctl.file$MG_parms[19, 3:4] <- input$WLa_m_est #coefficient
             ctl.file$MG_parms[20, 3:4] <- input$WLb_m_est #exponent
           }
-
+          
           #S-R
           ctl.file$SR_function <- c(3, 2)[
             c("Beverton-Holt", "Ricker") == input$SR_choice_est
@@ -7667,7 +7706,7 @@ shinyServer(function(input, output, session) {
           ctl.file$SR_parms[2, 6] <- prior.type[prior.name == input$h_ss_prior]
           ctl.file$SR_parms[2, 7] <- input$h_phase
         }
-
+        
         #Recruitment estimation
         ctl.file$do_recdev <- 0
         ctl.file$recdev_phase <- -1
@@ -7677,7 +7716,7 @@ shinyServer(function(input, output, session) {
         ctl.file$first_yr_fullbias_adj <- input$styr #First year full bias
         ctl.file$last_yr_fullbias_adj <- input$endyr #Last year full bias
         ctl.file$first_recent_yr_nobias_adj <- input$endyr #First year recent no bias
-
+        
         if (input$rec_choice) {
           ctl.file$SR_parms[3, 3:4] <- input$sigmaR #sigma R
           if (input$RecDevChoice == "1: Devs sum to zero") {
@@ -7707,7 +7746,7 @@ shinyServer(function(input, output, session) {
             ctl.file$max_bias_adj <- input$BiasC #Max bias adjustment
           }
         }
-
+        
         #SELECTIVITY
         #Length Selectivity
         if (input$Ct_F_LO_select == "Estimate F" & is.null(rv.Ct$data)) {
@@ -7738,7 +7777,7 @@ shinyServer(function(input, output, session) {
           length(Selpeak),
           length(Selpeak_phase)
         )
-
+        
         if (input$Sel_choice == "Logistic") {
           #Throw warning if not enough selectivity inputs
           if (!all(data.file$Nfleets == sel.inputs.lts)) {
@@ -7751,7 +7790,7 @@ shinyServer(function(input, output, session) {
             remove_modal_spinner()
             stopApp()
           }
-
+          
           #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
           #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
           ctl.file$size_selex_parms[1, 1:2] <- c(
@@ -7806,7 +7845,7 @@ shinyServer(function(input, output, session) {
             remove_modal_spinner()
             break
           }
-
+          
           PeakDesc <- as.numeric(trimws(unlist(strsplit(input$PeakDesc, ","))))
           PeakDesc_phase <- as.numeric(trimws(unlist(strsplit(
             input$PeakDesc_phase,
@@ -7829,7 +7868,7 @@ shinyServer(function(input, output, session) {
             Selpeak[1] - min(data.file$lbin_vector),
             max(data.file$lbin_vector) - Selpeak[1]
           )
-
+          
           #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector)+2*bin.width,max(data.file$lbin_vector)-2*bin.width)
           #ctl.file$size_selex_parms[1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
           ctl.file$size_selex_parms[1, 1:2] <- c(
@@ -7855,14 +7894,14 @@ shinyServer(function(input, output, session) {
           ctl.file$size_selex_parms[4, 7] <- LtPeakFinal_phase[1]
           ctl.file$size_selex_parms[6, 7] <- FinalSel_phase[1]
         }
-
+        
         # if(input$dirichlet)
         # {
         #   dirichlet.index<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+3))
         #   ctl.file$dirichlet_parms[dirichlet.index,3:4]<-0
         #   ctl.file$dirichlet_parms[dirichlet.index,7]<-2
         # }
-
+        
         #Add other fleets
         if (data.file$Nfleets > 1) {
           for (i in 1:(data.file$Nfleets - 1)) {
@@ -7886,7 +7925,7 @@ shinyServer(function(input, output, session) {
               Selpeak[i + 1] - min(data.file$lbin_vector),
               max(data.file$lbin_vector) - Selpeak[i + 1]
             )
-
+            
             if (input$Sel_choice == "Logistic") {
               ctl.file$size_selex_parms[6 * i + 3, 3:4] <- log(
                 -((Sel50[i + 1] - Selpeak[i + 1])^2 / log(0.5))
@@ -7907,7 +7946,7 @@ shinyServer(function(input, output, session) {
               ctl.file$size_selex_parms[6 * i + 6, 3:4] <- 15
               ctl.file$size_selex_parms[6 * i + 6, 7] <- -1
             }
-
+            
             if (input$Sel_choice == "Dome-shaped") {
               # ctl.file$size_selex_parms[6*i+1,1:2]<-c(min(data.file$lbin_vector),max(data.file$lbin_vector))
               ctl.file$size_selex_parms[6 * i + 1, 1:2] <- c(
@@ -7936,11 +7975,11 @@ shinyServer(function(input, output, session) {
               )
               ctl.file$size_selex_parms[6 * i + 6, 7] <- FinalSel_phase[i + 1]
             }
-
+            
             #Dirichlet data-weighting
             #        ctl.file$dirichlet_parms<-rbind(ctl.file$dirichlet_parms,ctl.file$dirichlet_parms[1:2,])
           }
-
+          
           #Re-label so r4ss can interpret these new entries
           rownames(ctl.file$init_F) <- paste0(
             "InitF_seas_1_flt_",
@@ -7965,7 +8004,7 @@ shinyServer(function(input, output, session) {
           size_selex_parms_rownames <- unlist(size_selex_parms_rownames)
           rownames(ctl.file$size_selex_parms) <- size_selex_parms_rownames
         }
-
+        
         #Remove surveys from initial F lines and add q and xtra variance lines
         if (is.null(rv.Index$data) & data.file$Nfleets > catch.fleets) {
           sendSweetAlert(
@@ -7977,14 +8016,14 @@ shinyServer(function(input, output, session) {
           remove_modal_spinner()
           return()
         }
-
+        
         if (!is.null(rv.Index$data) | data.file$Nfleets > catch.fleets) {
           if (data.file$Nfleets > catch.fleets) {
             noncatch.fleets <- c((catch.fleets + 1):data.file$Nfleets)
             ctl.file$init_F <- ctl.file$init_F[-noncatch.fleets, ]
             #            ctl.file$init_F<-ctl.file$init_F[-survey.fleets,]
           }
-
+          
           #q set-up
           q.setup.names <- c(
             "fleet",
@@ -8044,7 +8083,7 @@ shinyServer(function(input, output, session) {
                 )
                 q.lines <- rbind(q.lines, c(-15, 15, 1, 0, 1, 0, -1, rep(0, 7)))
               }
-
+              
               if (input$Indexvar) {
                 q.setup.lines <- rbind(
                   q.setup.lines,
@@ -8064,7 +8103,7 @@ shinyServer(function(input, output, session) {
               }
             }
           }
-
+          
           #Go back and fix the q lines if using the RSS. This changes the float to 0 and the initial value to 0.
           for (qq in 1:length(unique(rv.Index$data[, 3]))) {
             if (unique(rv.Index$data[, 6])[qq] == "RSS") {
@@ -8072,7 +8111,7 @@ shinyServer(function(input, output, session) {
               q.lines[unique(rv.Index$data[, 6])[qq] == "RSS", 3] <- 0
             }
           }
-
+          
           names(q.setup.lines) <- q.setup.names
           rownames(q.setup.lines) <- unique(rv.Index$data[, 6])
           ctl.file$Q_options <- q.setup.lines
@@ -8125,7 +8164,7 @@ shinyServer(function(input, output, session) {
             }
           }
         }
-
+        
         # if(input$Data_wt=="Dirichlet")
         # {
         #     Dirichlet.fleets<-c(unique(data.file$lencomp[,3]),(unique(data.file$agecomp[,3])+data.file$Nfleets))
@@ -8136,11 +8175,11 @@ shinyServer(function(input, output, session) {
         #     ctl.file$dirichlet_parms[Dirichlet.fleets,3:4]<-0.5
         #     ctl.file$dirichlet_parms[Dirichlet.fleets,7]<-2
         # }
-
+        
         #Change data weights
         # Lt_dat_wts<-as.numeric(trimws(unlist(strsplit(input$Lt_datawts,","))))
         # ctl.file$Variance_adjustments[1,]<-Lt_dat_wts
-
+        
         #Change likelihood component weight of catch
         if (is.null(rv.Ct$data)) {
           lts.lambdas <- ctl.file$lambdas[1, ]
@@ -8196,14 +8235,14 @@ shinyServer(function(input, output, session) {
           )
           ctl.file$lambdas <- rbind(lts.lambdas, ct.lambdas, init.ct.lambdas)
           ctl.file$N_lambdas <- nrow(ctl.file$lambdas)
-
+          
           #        ctl.file$lambdas[1,4]<-0
         }
-
+        
         if (!is.null(rv.Ct$data)) {
           ct.lambdas <- ctl.file$lambdas[2, ]
           init.ct.lambdas <- ctl.file$lambdas[3, ]
-
+          
           if (data.file$Nfleets > 1) {
             for (i_lam in 2:data.file$Nfleets) {
               ct.lambdas_temp <- ct.lambdas[1, ]
@@ -8229,7 +8268,7 @@ shinyServer(function(input, output, session) {
           ctl.file$N_lambdas <- data.file$Nfleets * 2
           #ctl.file$lambdas[1,4]<-1
           # ctl.file$lambdas[2,4]<-0
-
+          
           ctl.file$init_F$INIT <- 0.00000000000000000001
           ctl.file$init_F$PHASE <- -1
           #Turn on if equilibrium catch > 0
@@ -8276,23 +8315,23 @@ shinyServer(function(input, output, session) {
       if (!input$use_par | is.null(input$use_par)) {
         starter.file$init_values_src <- 0
       }
-
+      
       #Use datanew file
       if (input$use_datanew) {
         starter.file$datfile <- "data_echo.ss_new"
       }
-
+      
       if (!input$use_datanew | is.null(input$use_datanew)) {
         if (!input$user_model | is.null(input$use_datanew)) {
           starter.file$datfile <- "datafile.dat"
         }
       }
-
+      
       #Use controlnew file
       if (input$use_controlnew) {
         starter.file$ctlfile <- "control.ss_new"
       }
-
+      
       # Add description to data and control file if user chooses to do so
       if (input$scenario_description == TRUE) {
         data.file_user <- SS_readdat(file.path(
@@ -8309,7 +8348,7 @@ shinyServer(function(input, output, session) {
           file.path("Scenarios", input$Scenario_name, starter.file$datfile),
           overwrite = TRUE
         )
-
+        
         ctl.file_user <- SS_readctl(file.path(
           "Scenarios",
           input$Scenario_name,
@@ -8325,7 +8364,7 @@ shinyServer(function(input, output, session) {
           overwrite = TRUE
         )
       }
-
+      
       if (input$use_forecastnew) {
         forecast.file <- SS_readforecast(paste0(
           "Scenarios/",
@@ -8338,7 +8377,7 @@ shinyServer(function(input, output, session) {
           overwrite = TRUE
         )
       }
-
+      
       #    if(!input$use_controlnew|is.null(input$use_controlnew))
       #   {
       #     if(!input$user_model|is.null(input$use_controlnew)){starter.file$ctlfile<-"controlfile.ctl"}
@@ -8349,7 +8388,7 @@ shinyServer(function(input, output, session) {
         overwrite = TRUE
       )
     }
-
+    
     if (exists("checkmod") | input$user_model) {
       #if(any(exists("checkmod"),input$user_model)&!any(c(is.na(Sel50),is.na(Selpeak))))
       starter.file <- SS_readstarter(paste0(
@@ -8357,7 +8396,7 @@ shinyServer(function(input, output, session) {
         input$Scenario_name,
         "/starter.ss"
       ))
-
+      
       #Phase 0
       if (input$use_phase0) {
         starter.file$last_estimation_phase <- 0
@@ -8365,10 +8404,10 @@ shinyServer(function(input, output, session) {
         #if(!input$use_par|is.null(input$use_par))
         starter.file$last_estimation_phase <- 10
       }
-
+      
       #Jitter selection
       starter.file$jitter_fraction <- 0
-
+      
       #  if(input$jitter_choice)
       # {
       # 	starter.file$jitter_fraction<-input$jitter_fraction
@@ -8379,7 +8418,7 @@ shinyServer(function(input, output, session) {
         paste0("Scenarios/", input$Scenario_name),
         overwrite = TRUE
       )
-
+      
       #Forecast file modifications
       #Reference points
       #if(is.null(input$use_forecastnew)|!input$use_forecastnew)
@@ -8389,7 +8428,7 @@ shinyServer(function(input, output, session) {
         input$Scenario_name,
         "/forecast.ss"
       ))
-
+      
       if (input$RP_choices) {
         forecast.file$SPRtarget <- input$SPR_target
         forecast.file$Btarget <- input$B_target
@@ -8405,7 +8444,7 @@ shinyServer(function(input, output, session) {
         forecast.file$Forecast <- FF_choices_num.vec[
           ForeF_choices == input$ForeF_type
         ]
-
+        
         CR_choices <- c(
           "0: None",
           "1: Catch fxn of SSB, buffer on F",
@@ -8420,7 +8459,7 @@ shinyServer(function(input, output, session) {
         forecast.file$SBforconstantF <- input$slope_hi
         forecast.file$BfornoF <- input$slope_low
       }
-
+      
       if (input$Forecast_choice) {
         forecast.file$Nforecastyrs <- input$forecast_num
         buffer.in <- as.numeric(trimws(unlist(strsplit(
@@ -8442,14 +8481,14 @@ shinyServer(function(input, output, session) {
           forecast.file$Flimitfraction_m <- buffer.datafr
         }
       }
-
+      
       SS_writeforecast(
         forecast.file,
         paste0("Scenarios/", input$Scenario_name),
         overwrite = TRUE
       )
       #}
-
+      
       ########
       #Run Stock Synthesis and plot output
       show_modal_spinner(
@@ -8469,7 +8508,7 @@ shinyServer(function(input, output, session) {
       if (input$Data_wt == "McAllister-Ianelli") {
         DataWT_opt <- "MI"
       }
-
+      
       #RUN SS3 MODELS
       if (is.null(input$user_model)) {
         if (is.null(input$no_hess)) {
@@ -8480,7 +8519,7 @@ shinyServer(function(input, output, session) {
             }
           }
           RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
-
+          
           if (
             !file.exists(paste0(
               "Scenarios/",
@@ -8497,7 +8536,7 @@ shinyServer(function(input, output, session) {
             RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
           }
         }
-
+        
         if (!is.null(input$no_hess)) {
           if (input$no_hess) {
             cmd.in <- " -nohess"
@@ -8519,7 +8558,7 @@ shinyServer(function(input, output, session) {
           }
         }
       }
-
+      
       ###
       if (!is.null(input$user_model)) {
         if (input$user_model == FALSE) {
@@ -8531,7 +8570,7 @@ shinyServer(function(input, output, session) {
               }
             }
             RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
-
+            
             if (
               !file.exists(paste0(
                 "Scenarios/",
@@ -8548,7 +8587,7 @@ shinyServer(function(input, output, session) {
               RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
             }
           }
-
+          
           if (!is.null(input$no_hess)) {
             if (input$no_hess) {
               cmd.in <- " -nohess"
@@ -8570,7 +8609,7 @@ shinyServer(function(input, output, session) {
             }
           }
         }
-
+        
         if (input$user_model == TRUE) {
           if (is.null(input$no_hess_user)) {
             cmd.in <- ""
@@ -8580,7 +8619,7 @@ shinyServer(function(input, output, session) {
               }
             }
             RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
-
+            
             if (
               !file.exists(paste0(
                 "Scenarios/",
@@ -8597,7 +8636,7 @@ shinyServer(function(input, output, session) {
               RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
             }
           }
-
+          
           if (!is.null(input$no_hess_user)) {
             if (input$no_hess_user) {
               cmd.in <- " -nohess"
@@ -8620,9 +8659,9 @@ shinyServer(function(input, output, session) {
           }
         }
       }
-
+      
       ###
-
+      
       #  observeEvent(input$add_comms, {
       #     updatePrettyCheckbox(
       #       session = session,
@@ -8630,7 +8669,7 @@ shinyServer(function(input, output, session) {
       #       value = FALSE
       #     )
       #   })
-
+      
       # observeEvent(input$add_comms_user, {
       #     updatePrettyCheckbox(
       #       session = session,
@@ -8638,7 +8677,7 @@ shinyServer(function(input, output, session) {
       #       value = FALSE
       #     )
       #   })
-
+      
       if (
         file.exists(paste0(
           "Scenarios/",
@@ -8651,7 +8690,7 @@ shinyServer(function(input, output, session) {
           verbose = FALSE,
           printstats = FALSE
         ))
-
+        
         if (class(Model.output) == "try-error") {
           Model.output <- SS_output(
             paste0("Scenarios/", input$Scenario_name),
@@ -8660,7 +8699,7 @@ shinyServer(function(input, output, session) {
             covar = FALSE
           )
         }
-
+        
         if (input$Data_wt != "None or Current weighting") {
           if (Model.output$inputs$covar == TRUE) {
             tune_comps(
@@ -8695,13 +8734,13 @@ shinyServer(function(input, output, session) {
             )
           }
         }
-
+        
         data.file <- SS_readdat(paste0(
           "Scenarios/",
           input$Scenario_name,
           "/data_echo.ss_new"
         ))
-
+        
         #No plots or figures
         if (is.null(input$no_plots_tables)) {
           show_modal_spinner(
@@ -8732,7 +8771,7 @@ shinyServer(function(input, output, session) {
             )
           }
         }
-
+        
         if (is.null(input$no_tables)) {
           show_modal_spinner(
             spin = "flower",
@@ -8742,7 +8781,7 @@ shinyServer(function(input, output, session) {
           #try(SSexecutivesummary(Model.output))
           try(table_all(Model.output))
         }
-
+        
         if (!is.null(input$no_plots_tables)) {
           if (input$no_plots_tables == FALSE) {
             #Make SS plots
@@ -8775,7 +8814,7 @@ shinyServer(function(input, output, session) {
             }
           }
         }
-
+        
         if (!is.null(input$no_tables)) {
           if (input$no_tables == FALSE) {
             #Make SS3 tables
@@ -8788,27 +8827,27 @@ shinyServer(function(input, output, session) {
             try(table_all(Model.output))
           }
         }
-
+        
         #Run multiple jitters
         if (.Platform[["OS.type"]] == "windows") {
           os_exe <- "ss3"
         }
         if (
           substr(R.version[["os"]], 1, 6) == "darwin" &&
-            R.version[["arch"]] == "x86_64"
+          R.version[["arch"]] == "x86_64"
         ) {
           os_exe <- "ss3_osx"
         }
         if (
           substr(R.version[["os"]], 1, 6) == "darwin" &&
-            R.version[["arch"]] == "aarch64"
+          R.version[["arch"]] == "aarch64"
         ) {
           os_exe <- "ss3_osx_arm64"
         }
         if (R.version[["os"]] == "linux-gnu") {
           os_exe <- "ss3_linux"
         }
-
+        
         if (input$jitter_choice) {
           if (input$Njitter > 0) {
             show_modal_spinner(
@@ -8821,7 +8860,7 @@ shinyServer(function(input, output, session) {
               ncores <- parallelly::availableCores(omit = 1)
               future::plan(future::multisession, workers = ncores)
             }
-
+            
             exe_loc <- here::here(
               paste0(getwd(), "/Scenarios/", input$Scenario_name),
               os_exe
@@ -8836,7 +8875,7 @@ shinyServer(function(input, output, session) {
               exe = exe_loc,
               extras = "-nohess"
             )
-
+            
             profilemodels <- r4ss::SSgetoutput(
               dirvec = paste0(getwd(), "/Scenarios/", input$Scenario_name),
               keyvec = 0:input$Njitter,
@@ -8861,7 +8900,7 @@ shinyServer(function(input, output, session) {
               -length(profilesummary$likelihoods)
             ]
             ref.like <- min(jitter.likes, na.rm = TRUE)
-
+            
             #Make plot and save to folder
             main.dir <- getwd()
             if (
@@ -8933,7 +8972,7 @@ shinyServer(function(input, output, session) {
               print = TRUE,
               plotdir = getwd()
             )
-
+            
             output$Jitterplot <- renderPlot({
               # if(input$Njitter==1){return(NULL)}
               # if(input$Njitter>1)
@@ -8989,7 +9028,7 @@ shinyServer(function(input, output, session) {
                 new = FALSE
               )
             })
-
+            
             #R-run to get new best fit model
             show_modal_spinner(
               spin = "flower",
@@ -9059,14 +9098,14 @@ shinyServer(function(input, output, session) {
           }
           setwd(main.dir)
         }
-
+        
         #Add retro runs
         #    if(input$Retro_choice){
         #    mydir<-paste0(getwd(),"/Scenarios/")
         #    model_settings = get_settings(settings = list(base_name = input$Scenario_name,
         #                       run = "retro",
         #                       retro_yrs = input$first_retro_year:input$final_retro_year))
-
+        
         #   # tryCatch({
         #       run_diagnostics(mydir = mydir, model_settings = model_settings)
         #   # },
@@ -9077,7 +9116,7 @@ shinyServer(function(input, output, session) {
         #   #     showNotification(paste0(err), type = 'err')
         #   # })
         # }
-
+        
         #Convergence diagnostics
         output$converge.grad <- renderText({
           max.grad <- paste0(
@@ -9085,25 +9124,25 @@ shinyServer(function(input, output, session) {
             Model.output$maximum_gradient_component
           )
         })
-
+        
         output$converge.covar <- renderText({
           covar <- paste0(
             "Was covariance file created? ",
             Model.output$inputs$covar
           )
         })
-
+        
         output$converge.dec <- renderText({
           if (
             Model.output$maximum_gradient_component < 0.1 &
-              Model.output$inputs$covar == TRUE
+            Model.output$inputs$covar == TRUE
           ) {
             converge.dec <- "Model appears converged. Please check outputs for nonsense."
           } else {
             converge.dec <- "Model may not have converged or inputs are missing. Please use the Jitter option or check/change starting values before re-running model."
           }
         })
-
+        
         #Relative biomass
         output$SSout_relSB_table <- render_gt({
           SB_indices <- c(
@@ -9164,7 +9203,7 @@ shinyServer(function(input, output, session) {
               use_highlight = TRUE,
               use_page_size_select = TRUE
             )
-
+          
           # rownames=c(expression(SO[input$endyr]/SO[0]),
           # 					  expression(SO[MSY]/SO[0]),
           # 					  expression(SPR[input$endyr]),
@@ -9178,7 +9217,7 @@ shinyServer(function(input, output, session) {
           # 						  expression('ABC'[input$endyr])
           # 						  )
         })
-
+        
         #F estimate and relative to FMSY and proxies
         output$SSout_F_table <- render_gt({
           F_indices <- c(
@@ -9230,9 +9269,9 @@ shinyServer(function(input, output, session) {
               sum_fleet_F,
               `F=Z-M`
             )
-
+          
           Output_table <- mutate_if(Output_table, is.numeric, round, 2)
-
+          
           gt(Output_table) |>
             tab_header(
               title = "Time Series of Derived Model Outputs",
@@ -9254,7 +9293,7 @@ shinyServer(function(input, output, session) {
               use_page_size_select = TRUE
             )
         })
-
+        
         #Parameters
         output$Parameters_table <- render_gt({
           parm_tab <- cbind(
@@ -9278,14 +9317,14 @@ shinyServer(function(input, output, session) {
               use_page_size_select = TRUE
             )
         })
-
+        
         #Sigma R report
         output$sigmaR_table <- render_gt({
           Output_table <- Model.output$sigma_R_info |>
             dplyr::select(period, N_devs, alternative_sigma_R)
-
+          
           Output_table <- mutate_if(Output_table, is.numeric, round, 2)
-
+          
           gt(Output_table) |>
             tab_header(
               title = "Alternative sigma R recommendation",
@@ -9297,7 +9336,7 @@ shinyServer(function(input, output, session) {
               use_page_size_select = TRUE
             )
         })
-
+        
         #Selectivity conversion output
         output$Sel_transform_table <- render_gt({
           Est.sel.tranformed <- Model.output$parameters[
@@ -9318,7 +9357,7 @@ shinyServer(function(input, output, session) {
               Est.sel.tranformed$Label
             )] <- "Length at Peak Selectivity"
           }
-
+          
           if (length(grep("ascend_", rownames(Model.output$parameters))) > 0) {
             Est.sel.Sel50 <- Est.sel.tranformed$Value[grep(
               "ascend_",
@@ -9333,7 +9372,7 @@ shinyServer(function(input, output, session) {
               Est.sel.tranformed$Label
             )] <- "Length at 50% Selectivity"
           }
-
+          
           if (
             length(grep("top_logit", rownames(Model.output$parameters))) > 0
           ) {
@@ -9345,14 +9384,14 @@ shinyServer(function(input, output, session) {
               "top_logit",
               Est.sel.tranformed$Label
             )] <- ((max(data.file$lbin_vector) - Est.sel.peak - bin.width) /
-              -exp(Est.sel.Decline1)) +
+                     -exp(Est.sel.Decline1)) +
               (Est.sel.peak + bin.width)
             Est.sel.tranformed$Label[grep(
               "top_logit",
               Est.sel.tranformed$Label
             )] <- "Length at 1st declining selectivity"
           }
-
+          
           if (length(grep("descend", rownames(Model.output$parameters))) > 0) {
             Est.sel.Width <- Est.sel.tranformed$Value[grep(
               "descend",
@@ -9367,7 +9406,7 @@ shinyServer(function(input, output, session) {
               Est.sel.tranformed$Label
             )] <- "Width of declining selectivity"
           }
-
+          
           if (
             length(grep("end_logit", rownames(Model.output$parameters))) > 0
           ) {
@@ -9384,7 +9423,7 @@ shinyServer(function(input, output, session) {
               Est.sel.tranformed$Label
             )] <- "Selectivity at max bin size"
           }
-
+          
           Est.sel.tranformed <- mutate_if(
             Est.sel.tranformed,
             is.numeric,
@@ -9407,7 +9446,7 @@ shinyServer(function(input, output, session) {
             )
         })
       }
-
+      
       if (
         !file.exists(paste0(
           "Scenarios/",
@@ -9422,28 +9461,28 @@ shinyServer(function(input, output, session) {
           type = "warning"
         )
       }
-
+      
       observeEvent(exists("Model.output"), {
         updateTabsetPanel(session, "tabs", selected = '2')
       })
-
+      
       updateCheckboxInput(inputId = input$user_model, value = FALSE)
     }
     remove_modal_spinner()
   })
-
+  
   ###############################################################
   ### Model Efficiency, Likelihood profiles, Retrospectives, Sensitivities, and Ensemble models ###
   ###############################################################
-
+  
   roots <- getVolumes()()
-
+  
   #CODE TO ALLOW USERS TO SAVE OUTPUT SOMEWHERE OTHER THAN SCENARIOS FOLDER
   # pathModelout <- reactive({
   #     shinyDirChoose(input, "Modelout_dir", roots= roots,session=session, filetypes=c('', 'txt'))
   #     return(parseDirPath(roots, input$Modelout_dir))
   #   })
-
+  
   # observeEvent(as.numeric(input$tabs)==2,{
   # #observeEvent(exists("Model.output"),{
   #   pathModelout.dir <-pathModelout()
@@ -9454,11 +9493,11 @@ shinyServer(function(input, output, session) {
   #   if(input$Retro_choice){file.copy(paste0("Scenarios/",input$Scenario_name,"_retro"), pathModelout.dir,recursive=TRUE,overwrite=TRUE)}
   # }
   # })
-
+  
   ########################
   ### Model efficiency ###
   ########################
-
+  
   shinyDirChoose(
     input,
     "ModEff_dir",
@@ -9469,7 +9508,7 @@ shinyServer(function(input, output, session) {
   pathModeff <- reactive({
     return(parseDirPath(roots, input$ModEff_dir))
   })
-
+  
   # if(exists("ModEff_dir")){print(ModEff_dir)}
   #  observeEvent(as.numeric(input$tabs)==12,{
   #   output$ModEff_model_pick<-renderUI({
@@ -9486,7 +9525,7 @@ shinyServer(function(input, output, session) {
   #       )
   #     })
   #   })
-
+  
   observeEvent(req(input$run_adnuts), {
     #output$RetroPath <- renderText({paste0("Selected model folder:\n", pathRetro())})
     modeff.mod.dir <- pathModeff() #pathModEff()
@@ -9503,7 +9542,7 @@ shinyServer(function(input, output, session) {
       overwrite = TRUE
     )
     #}
-
+    
     #optimize model
     if (input$Opt_mod == TRUE) {
       show_modal_spinner(
@@ -9512,10 +9551,10 @@ shinyServer(function(input, output, session) {
         text = paste0("Run initial optimization?")
       )
       RUN.SS(file.path(modeff.dir, modeff.name), ss.cmd = "-nox -mcmc 100 -hbf")
-
+      
       remove_modal_spinner()
     }
-
+    
     #Set mcmc model
     show_modal_spinner(
       spin = "flower",
@@ -9528,13 +9567,13 @@ shinyServer(function(input, output, session) {
     }
     if (
       substr(R.version[["os"]], 1, 6) == "darwin" &&
-        R.version[["arch"]] == "x86_64"
+      R.version[["arch"]] == "x86_64"
     ) {
       os_exe <- "ss3_osx"
     }
     if (
       substr(R.version[["os"]], 1, 6) == "darwin" &&
-        R.version[["arch"]] == "aarch64"
+      R.version[["arch"]] == "aarch64"
     ) {
       os_exe <- "ss3_osx_arm64"
     }
@@ -9555,7 +9594,7 @@ shinyServer(function(input, output, session) {
         duration = NULL
       )
     }
-
+    
     if (input$ModEff_choice == "Nuts") {
       fit_model <- adnuts::sample_nuts(
         model = m,
@@ -9568,27 +9607,27 @@ shinyServer(function(input, output, session) {
         mceval = TRUE
       )
     }
-
+    
     fit.mod.summary <- utils::capture.output(summary(fit_model), file = NULL)
-
+    
     output$fit.model.summary <- renderText({
       #paste0(fit.mod.summary[1],fit.mod.summary[2],fit.mod.summary[3])
       fit.mod.summary
     })
-
+    
     parmax <- 10
     if (length(fit_model$par_names) < 10) {
       parmax <- length(fit_model$par_names)
     }
-
+    
     png(paste0(p, "/pairs_plot_slow.png"), width = 600, height = 350)
     pairs_admb(fit_model, pars = 1:parmax, order = 'slow')
     dev.off()
-
+    
     png(paste0(p, "/pairs_plot_fast.png"), width = 600, height = 350)
     pairs_admb(fit_model, pars = 1:parmax, order = 'fast')
     dev.off()
-
+    
     output$pairs_slow <- renderImage(
       {
         #region image.path1<-normalizePath(paste0(p,"/pairs_plot_fast.png"),mustWork=FALSE)
@@ -9602,7 +9641,7 @@ shinyServer(function(input, output, session) {
       },
       deleteFile = FALSE
     )
-
+    
     output$pairs_fast <- renderImage(
       {
         #region image.path1<-normalizePath(paste0(p,"/pairs_plot_fast.png"),mustWork=FALSE)
@@ -9616,18 +9655,18 @@ shinyServer(function(input, output, session) {
       },
       deleteFile = FALSE
     )
-
+    
     save(fit_model, file = paste0(p, "/fit_model.RData"))
-
+    
     remove_modal_spinner()
-
+    
     #if(input$run_stanout==TRUE){launch_shinyadmb(fit_model)}
   })
-
+  
   ###########################
   ### Likelihood profiles ###
   ###########################
-
+  
   pathLP <- reactive({
     shinyDirChoose(
       input,
@@ -9638,13 +9677,13 @@ shinyServer(function(input, output, session) {
     )
     return(parseDirPath(roots, input$LP_dir))
   })
-
+  
   observeEvent(input$LP_dir, {
     output$LikeProfPath <- renderText({
       paste0("Selected scenario folder:\n", pathLP())
     })
   })
-
+  
   observeEvent(as.numeric(input$tabs) == 4, {
     pathLP.dir <- pathLP()
     output$LikeProf_model_picks <- renderUI({
@@ -9674,7 +9713,7 @@ shinyServer(function(input, output, session) {
       )
     })
   })
-
+  
   observeEvent(input$run_Profiles, {
     show_modal_spinner(
       spin = "flower",
@@ -9712,7 +9751,7 @@ shinyServer(function(input, output, session) {
         type = "warning"
       )
     }
-
+    
     if (!is.null(parmnames)) {
       parmnames_vec <- c(
         "Steepness",
@@ -9729,7 +9768,7 @@ shinyServer(function(input, output, session) {
         "CV@Lt old male"
       )
       prof_parms_names <- SS_parm_names[parmnames_vec %in% parmnames]
-
+      
       #  prior_like<-starter.file$prior_like
       #  use_prior_like_in<-rep(0,length(prof_parms_names))
       #  if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
@@ -9745,26 +9784,26 @@ shinyServer(function(input, output, session) {
         )
         #use_prior_like = use_prior_like_in
       )
-
+      
       if (.Platform[["OS.type"]] == "windows") {
         os_exe <- "ss3"
       }
       if (
         substr(R.version[["os"]], 1, 6) == "darwin" &&
-          R.version[["arch"]] == "x86_64"
+        R.version[["arch"]] == "x86_64"
       ) {
         os_exe <- "ss3_osx"
       }
       if (
         substr(R.version[["os"]], 1, 6) == "darwin" &&
-          R.version[["arch"]] == "aarch64"
+        R.version[["arch"]] == "aarch64"
       ) {
         os_exe <- "ss3_osx_arm64"
       }
       if (R.version[["os"]] == "linux-gnu") {
         os_exe <- "ss3_linux"
       }
-
+      
       model_settings = get_settings(
         settings = list(
           base_name = basename(pathLP()),
@@ -9774,11 +9813,11 @@ shinyServer(function(input, output, session) {
           prior_check = FALSE
         )
       )
-
+      
       try(run_diagnostics(mydir = mydir, model_settings = model_settings))
-
+      
       #file.remove(paste0(dirname(mydir),"/run_diag_warning.txt"))
-
+      
       output$LikeProf_plot_modout <- renderImage(
         {
           image.path1 <- normalizePath(
@@ -9802,7 +9841,7 @@ shinyServer(function(input, output, session) {
         },
         deleteFile = FALSE
       )
-
+      
       output$LikeProf_plot_Piner <- renderImage(
         {
           image.path2 <- normalizePath(
@@ -9826,7 +9865,7 @@ shinyServer(function(input, output, session) {
         },
         deleteFile = FALSE
       )
-
+      
       output$LikeProf_plot_SO <- renderImage(
         {
           image.path3 <- normalizePath(
@@ -9850,7 +9889,7 @@ shinyServer(function(input, output, session) {
         },
         deleteFile = FALSE
       )
-
+      
       output$LikeProf_plot_SOt_SO0 <- renderImage(
         {
           image.path4 <- normalizePath(
@@ -9877,7 +9916,7 @@ shinyServer(function(input, output, session) {
     }
     remove_modal_spinner()
   })
-
+  
   observeEvent(input$run_MultiProfiles, {
     show_modal_spinner(
       spin = "flower",
@@ -9952,7 +9991,7 @@ shinyServer(function(input, output, session) {
       to = profile_dir,
       overwrite = TRUE
     )
-
+    
     #Set-up the starter file control file
     starter.file <- SS_readstarter(paste0(profile_dir, "/starter.ss"))
     ctlfile.in <- starter.file$ctlfile
@@ -9970,20 +10009,20 @@ shinyServer(function(input, output, session) {
     }
     if (
       substr(R.version[["os"]], 1, 6) == "darwin" &&
-        R.version[["arch"]] == "x86_64"
+      R.version[["arch"]] == "x86_64"
     ) {
       os_exe <- "ss3_osx"
     }
     if (
       substr(R.version[["os"]], 1, 6) == "darwin" &&
-        R.version[["arch"]] == "aarch64"
+      R.version[["arch"]] == "aarch64"
     ) {
       os_exe <- "ss3_osx_arm64"
     }
     if (R.version[["os"]] == "linux-gnu") {
       os_exe <- "ss3_linux"
     }
-
+    
     if (input$Hess_multi_like == FALSE) {
       profile <- profile_multi(
         dir = profile_dir, # directory
@@ -9998,7 +10037,7 @@ shinyServer(function(input, output, session) {
         show_in_console = TRUE
       )
     }
-
+    
     if (input$Hess_multi_like == TRUE) {
       profile <- profile_multi(
         dir = profile_dir, # directory
@@ -10012,7 +10051,7 @@ shinyServer(function(input, output, session) {
         show_in_console = TRUE
       )
     }
-
+    
     # get model output
     profilemodels <- SSgetoutput(
       dirvec = profile_dir,
@@ -10065,7 +10104,7 @@ shinyServer(function(input, output, session) {
       par.df,
       file = paste0(profile_dir, "/multiprofilelikelihoods.csv")
     )
-
+    
     #Extract component likelihoods
     #Likelihoods
     likes_non0 <- rowSums(profilesummary$likelihoods[, 1:nrow(par.df)]) > 0
@@ -10081,7 +10120,7 @@ shinyServer(function(input, output, session) {
     }
     colnames(likes_non0_par.min) <- c(par.df[, 1], "Label")
     like.comps.plot <- reshape2::melt(likes_non0_par.min, id = "Label")
-
+    
     #Plots
     LC.plot <- ggplot(
       like.comps.plot,
@@ -10104,7 +10143,7 @@ shinyServer(function(input, output, session) {
       height = 10,
       units = "in"
     )
-
+    
     #Lengths
     likes_length <- profilesummary$likelihoods_by_fleet[
       profilesummary$likelihoods_by_fleet$Label == "Length_like",
@@ -10116,7 +10155,7 @@ shinyServer(function(input, output, session) {
         likes_length_short[, colSums(likes_length[, 3:ncol(likes_length)]) != 0]
       )
       likes_length_non0$model <- likes_length_non0.min$model <- as.numeric(par.df[,
-        1
+                                                                                  1
       ])
       for (ii in 2:ncol(likes_length_non0)) {
         likes_length_non0.min[, ii] <- likes_length_non0[, ii] -
@@ -10126,7 +10165,7 @@ shinyServer(function(input, output, session) {
         likes_length_non0.min,
         id.vars = "model"
       )
-
+      
       #Plots
       LC_lt.plot <- ggplot(
         likes_length_non0.min.melt,
@@ -10150,7 +10189,7 @@ shinyServer(function(input, output, session) {
         units = "in"
       )
     }
-
+    
     #Ages
     likes_age <- profilesummary$likelihoods_by_fleet[
       profilesummary$likelihoods_by_fleet$Label == "Age_like",
@@ -10162,7 +10201,7 @@ shinyServer(function(input, output, session) {
         likes_age_short[, colSums(likes_age[, 3:ncol(likes_age)]) != 0]
       )
       likes_age_non0$model <- likes_age_non0.min$model <- as.numeric(par.df[,
-        1
+                                                                            1
       ])
       for (ii in 2:ncol(likes_age_non0)) {
         likes_age_non0.min[, ii] <- likes_age_non0[, ii] -
@@ -10172,7 +10211,7 @@ shinyServer(function(input, output, session) {
         likes_age_non0.min,
         id.vars = "model"
       )
-
+      
       #Plots
       LC_age.plot <- ggplot(
         likes_age_non0.min.melt,
@@ -10196,7 +10235,7 @@ shinyServer(function(input, output, session) {
         units = "in"
       )
     }
-
+    
     #Survey
     likes_survey <- profilesummary$likelihoods_by_fleet[
       profilesummary$likelihoods_by_fleet$Label == "Surv_like",
@@ -10208,7 +10247,7 @@ shinyServer(function(input, output, session) {
         likes_survey_short[, colSums(likes_survey[, 3:ncol(likes_survey)]) != 0]
       )
       likes_survey_non0$model <- likes_survey_non0.min$model <- as.numeric(par.df[,
-        1
+                                                                                  1
       ])
       for (ii in 2:ncol(likes_survey_non0)) {
         likes_survey_non0.min[, ii] <- likes_survey_non0[, ii] -
@@ -10218,7 +10257,7 @@ shinyServer(function(input, output, session) {
         likes_survey_non0.min,
         id.vars = "model"
       )
-
+      
       #Plot
       LC_survey.plot <- ggplot(
         likes_survey_non0.min.melt,
@@ -10242,7 +10281,7 @@ shinyServer(function(input, output, session) {
         units = "in"
       )
     }
-
+    
     #This reactive object is needed to get the plots to work
     plot.dat <- reactive({
       plot.dat <- reshape2::melt(
@@ -10357,16 +10396,16 @@ shinyServer(function(input, output, session) {
       multiplot
     })
     #}
-
+    
     # output$LikeProf_multiplot <- renderPlot({
     #   plotPNG(func=multiprofplotfun(plot.dat()),paste0(profile_dir,"/",paste(parmnames,collapse="_"),"_multilikelihood_profile.png"))
     #   })
-
+    
     #   plot.dat2<-reactive({
     #       plot.dat2<-melt(par.df,id.vars=c( colnames(par.df)[1:2]),measure.vars=c("Likelihood_difference",paste0("SB",profilesummary$endyrs[1]-1,"/SB0"),"SB0",paste0("SB",profilesummary$endyrs[1]-1)))
     #       plot.dat2
     #       })
-
+    
     #     png(file = paste0(profile_dir,"/","multilikelihood_profile.png"),width = 10, height = 10, units = "in", res = 300, pointsize = pt)
     # #    multiplot
     #      ggplot(plot.dat2(),aes(plot.dat2()[,1],value))+
@@ -10383,7 +10422,7 @@ shinyServer(function(input, output, session) {
     #       theme_bw()      # multiprofplot
     #dev.off()
     # png(file = paste0(profile_dir,"/",paste(parmnames,collapse="_"),"_multilikelihood_profile.png"),width = 10, height = 10, units = "in", res = 300, pointsize = pt)
-
+    
     # output$LikeProf_multiplot <- renderImage({
     #    image.path<-normalizePath(file.path(paste0(profile_dir,paste0("\\",paste(parmnames,collapse="_"),"_multilikelihood_profile.png"))),mustWork=FALSE)
     #    return(list(
@@ -10393,17 +10432,17 @@ shinyServer(function(input, output, session) {
     #    # height = 300,
     #    style='height:60vh'))
     #   },deleteFile=FALSE)
-
+    
     # reshape data frame into a matrix for use with contour
-
+    
     # pngfun(wd = mydir, file = paste0("contour_profile.png"), h = 7,w = 12)
     # contour(x = as.numeric(rownames(like_matrix)),
     #         y = as.numeric(colnames(like_matrix)),
     #         z = like_matrix)
     # dev.off()
-
+    
     # make contour plot
-
+    
     #  output$LikeProf_multi_contour <- renderPlot({
     #   like_matrix <- reshape2::acast(par.df, colnames(par.df)[1]~colnames()[2], value.var="like")
     #   pngfun(wd = mydir, file = paste0("contour_profile.png"), h = 7,w = 12)
@@ -10414,9 +10453,9 @@ shinyServer(function(input, output, session) {
     # })
     remove_modal_spinner()
   })
-
+  
   #################
-
+  
   ###############################
   ####### Retrospectives ########
   ###############################
@@ -10430,26 +10469,26 @@ shinyServer(function(input, output, session) {
   pathRetro <- reactive({
     return(parseDirPath(roots, input$Retro_dir))
   })
-
+  
   observeEvent(input$Retro_dir, {
     output$RetroPath <- renderText({
       paste0("Selected model folder:\n", pathRetro())
     })
   })
-
+  
   observeEvent(input$run_Retro_comps, {
     if (.Platform[["OS.type"]] == "windows") {
       os_exe <- "ss3"
     }
     if (
       substr(R.version[["os"]], 1, 6) == "darwin" &&
-        R.version[["arch"]] == "x86_64"
+      R.version[["arch"]] == "x86_64"
     ) {
       os_exe <- "ss3_osx"
     }
     if (
       substr(R.version[["os"]], 1, 6) == "darwin" &&
-        R.version[["arch"]] == "aarch64"
+      R.version[["arch"]] == "aarch64"
     ) {
       os_exe <- "ss3_osx_arm64"
     }
@@ -10483,7 +10522,7 @@ shinyServer(function(input, output, session) {
     #     showNotification(paste0(err), type = 'err')
     # })
     #}
-
+    
     output$Retro_comp_plotSB <- renderImage(
       {
         image.path <- normalizePath(
@@ -10503,7 +10542,7 @@ shinyServer(function(input, output, session) {
       },
       deleteFile = FALSE
     )
-
+    
     output$Retro_comp_plotBratio <- renderImage(
       {
         image.path <- normalizePath(
@@ -10523,16 +10562,16 @@ shinyServer(function(input, output, session) {
       },
       deleteFile = FALSE
     )
-
+    
     remove_modal_spinner()
   })
-
+  
   ##############################
-
+  
   ###############################
   ### Sensitivity comparisons ###
   ###############################
-
+  
   pathSensi <- reactive({
     shinyDirChoose(
       input,
@@ -10543,13 +10582,13 @@ shinyServer(function(input, output, session) {
     )
     return(parseDirPath(roots, input$Sensi_dir))
   })
-
+  
   observeEvent(input$Sensi_dir, {
     output$SensiPath <- renderText({
       paste0("Selected model scenario folder:\n", pathSensi())
     })
   })
-
+  
   observeEvent(as.numeric(input$tabs) == 6, {
     output$Sensi_model_Ref <- renderUI({
       #dirinfo <- parseDirPath(roots, input$Sensi_dir)
@@ -10567,7 +10606,7 @@ shinyServer(function(input, output, session) {
       )
     })
   })
-
+  
   observeEvent(!is.null(input$myPicker_Ref), {
     #   observeEvent(as.numeric(input$tabs)==6,{
     output$Sensi_model_picks <- renderUI({
@@ -10586,7 +10625,7 @@ shinyServer(function(input, output, session) {
       )
     })
   })
-
+  
   #SS.comparisons<-observeEvent(as.numeric(input$tabs)==5,{
   Sensi_model_dir_out <- eventReactive(
     req(
@@ -10604,7 +10643,7 @@ shinyServer(function(input, output, session) {
       Sensi_model_dir
     }
   )
-
+  
   #&exists(Sensi_model_dir_out())
   observeEvent(req(input$run_Sensi_comps), {
     show_modal_spinner(
@@ -10612,7 +10651,7 @@ shinyServer(function(input, output, session) {
       color = wes_palettes$Rushmore[1],
       text = "Comparisons running"
     )
-
+    
     modelnames <- c(input$myPicker_Ref, input$myPicker)
     zz <- list()
     Runs <- length(Sensi_model_dir_out())
@@ -10620,10 +10659,10 @@ shinyServer(function(input, output, session) {
       zz[[i]] <- SS_output(paste0(Sensi_model_dir_out()[i]))
     }
     modsummary.sensi <- SSsummarize(zz)
-
+    
     col.vec = rc(n = length(modelnames), alpha = 1)
     shade = adjustcolor(col.vec[1], alpha.f = 0.10)
-
+    
     TRP.in <- input$Sensi_TRP
     LRP.in <- input$Sensi_LRP
     if (is.na(TRP.in)) {
@@ -10632,7 +10671,7 @@ shinyServer(function(input, output, session) {
     if (is.na(LRP.in)) {
       LRP.in <- 0
     }
-
+    
     dir.create(paste0(
       pathSensi(),
       "/Sensitivity Comparison Plots/",
@@ -10641,7 +10680,7 @@ shinyServer(function(input, output, session) {
     #Sensi_uncertainty_choice<-input$Sensi_uncertainty_choice
     #if (all(is.na(quantsSD[, i]) | quantsSD[, i] == 0))
     Sensi_uncertainty_choice <- TRUE
-
+    
     SStableComparisons(
       modsummary.sensi,
       names = c(
@@ -10671,7 +10710,7 @@ shinyServer(function(input, output, session) {
       csvfile = "parameter_comparison_table.csv",
       verbose = FALSE
     )
-
+    
     pngfun(
       wd = paste0(
         pathSensi(),
@@ -10735,7 +10774,7 @@ shinyServer(function(input, output, session) {
         ".rds"
       )
     )
-
+    
     pngfun(
       wd = paste0(
         pathSensi(),
@@ -10771,13 +10810,13 @@ shinyServer(function(input, output, session) {
       uncertainty = Sensi_uncertainty_choice
     ))
     dev.off()
-
+    
     output$Sensi_comp_plot <- renderImage(
       {
         if (
           all(
             is.na(modsummary.sensi$quantsSD[, 1]) |
-              modsummary.sensi$quantsSD[, 1] == 0
+            modsummary.sensi$quantsSD[, 1] == 0
           )
         ) {
           image.path <- normalizePath(
@@ -10821,7 +10860,7 @@ shinyServer(function(input, output, session) {
       },
       deleteFile = FALSE
     )
-
+    
     #Relative error sensitivity plots
     SensiRE_breaks_in <- as.numeric(trimws(unlist(strsplit(
       input$SensiRE_breaks,
@@ -10838,7 +10877,7 @@ shinyServer(function(input, output, session) {
     SensiRE_headers_in <- trimws(unlist(strsplit(input$SensiRE_headers, ",")))
     yminmax_sensi <- rep(c(input$SensiRE_ymin, input$SensiRE_ymax), 5)
     #r4ss::SS_Sensi_plot(dir=paste0(pathSensi(),"/Sensitivity Comparison Plots/",input$Sensi_comp_file,"/"),
-
+    
     try(Sensi_plot_horiz(
       model.summaries = modsummary.sensi,
       dir = paste0(
@@ -10864,7 +10903,7 @@ shinyServer(function(input, output, session) {
       header.text = input$SensiRE_headers_text,
       horizontal = TRUE
     ))
-
+    
     output$SensiRE_comp_plot <- renderImage(
       {
         image.path <- normalizePath(
@@ -10886,7 +10925,7 @@ shinyServer(function(input, output, session) {
       },
       deleteFile = FALSE
     )
-
+    
     output$SensiRElog_comp_plot <- renderImage(
       {
         image.path <- normalizePath(
@@ -10908,19 +10947,19 @@ shinyServer(function(input, output, session) {
       },
       deleteFile = FALSE
     )
-
+    
     remove_modal_spinner()
   })
   #############################
-
+  
   #############################
-
+  
   # image.path<-eventReactive(exists(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
   #                input$Sensi_comp_file, '.png'))),{
   #   image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
   #                input$Sensi_comp_file, '.png')),mustWork=FALSE)
   #   })
-
+  
   # output$Sensi_comp_plot <- renderImage({
   #        image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
   #                input$Sensi_comp_file, '.png')),mustWork=FALSE)
@@ -10933,11 +10972,11 @@ shinyServer(function(input, output, session) {
   #   print(input$run_Sensi_comps[1])
   # },deleteFile=FALSE)
   ####################################
-
+  
   ##########################
   ### Ensemble modelling ###
   ##########################
-
+  
   pathEnsemble <- reactive({
     shinyDirChoose(
       input,
@@ -10947,13 +10986,13 @@ shinyServer(function(input, output, session) {
     )
     return(parseDirPath(roots, input$Ensemble_dir))
   })
-
+  
   observeEvent(input$Ensemble_dir, {
     output$EnsemblePath <- renderText({
       paste0("Selected model scenario folder:\n", pathEnsemble())
     })
   })
-
+  
   #Used to have as.numeric(input$tabs)==4
   observeEvent(as.numeric(input$tabs) == 7, {
     output$Ensemble_model_picks <- renderUI({
@@ -10970,7 +11009,7 @@ shinyServer(function(input, output, session) {
       )
     })
   })
-
+  
   output$Ensemble_model_nums <- renderUI(
     {
       Ensemble_model_nums <- 3
@@ -10994,7 +11033,7 @@ shinyServer(function(input, output, session) {
       ))
     }
   )
-
+  
   observeEvent(
     req(
       input$run_Ensemble &
@@ -11005,10 +11044,10 @@ shinyServer(function(input, output, session) {
       #Add warning message for wrong number of model weightings
       if (
         length(input$myEnsemble) !=
-          length(as.numeric(trimws(unlist(strsplit(
-            input$Ensemble_wts,
-            ","
-          )))))
+        length(as.numeric(trimws(unlist(strsplit(
+          input$Ensemble_wts,
+          ","
+        )))))
       ) {
         sendSweetAlert(
           session = session,
@@ -11018,13 +11057,13 @@ shinyServer(function(input, output, session) {
         )
         req(FALSE)
       }
-
+      
       show_modal_spinner(
         spin = "flower",
         color = wes_palettes$Rushmore[1],
         text = "Prepare models to combine into ensembles"
       )
-
+      
       #Ensemble_model_dir_out<-eventReactive(input$run_Ensemble,{
       #Ensemble.outputs<-eventReactive(input$run_Ensemble,{
       if (!file.exists(paste0(pathEnsemble(), "/Ensemble outputs"))) {
@@ -11036,9 +11075,9 @@ shinyServer(function(input, output, session) {
         input$Ensemble_file
       )
       dir.create(Ensemble_model_dir_out)
-
+      
       #  })
-
+      
       # print(Ensemble_model_dir_out())
       # exists("Ensemble_model_dir_out()")
       #Ensemble_model_dir_out
@@ -11138,11 +11177,11 @@ shinyServer(function(input, output, session) {
           )
         )
       }
-
+      
       #Reduce(intersect,list(names(list1),names(list2),names(list3))) # Code to find matches in multiple vectors. For future option of mixing models with different dimensions.
-
+      
       #Assemble ensembles
-
+      
       Ensemble_SO <- do.call(rbind.data.frame, SpOt_en)
       colnames(Ensemble_SO) <- names(SpOt_en[[1]])
       Ensemble_Bratio <- do.call(rbind.data.frame, Bratio_en)
@@ -11158,7 +11197,7 @@ shinyServer(function(input, output, session) {
       #   Ensemble_F<-mapply(c,Ensemble_F,F_en[[ii]])
       #   Ensemble_SPR<-mapply(c,Ensemble_SPR,SPR_en[[ii]])
       # }
-
+      
       SO_0 <- rbind(
         SO_0[-1, ],
         data.frame(
@@ -11199,26 +11238,26 @@ shinyServer(function(input, output, session) {
           Model = "Ensemble"
         )
       )
-
+      
       SO_0$Year <- as.factor(SO_0$Year)
       SO_t$Year <- as.factor(SO_t$Year)
       Bratio_t$Year <- as.factor(Bratio_t$Year)
       F_t$Year <- as.factor(F_t$Year)
       SPR_t$Year <- as.factor(SPR_t$Year)
-
+      
       #       mean_cl_quantile <- function(x, q = c(0.1, 0.9), na.rm = TRUE){
       #                    dat <- data.frame(y = mean(x, na.rm = na.rm),
       #                    ymin = quantile(x, probs = q[1], na.rm = na.rm),
       #                    ymax = quantile(x, probs = q[2], na.rm = na.rm))
       #                    return(dat)
       #        }
-
+      
       show_modal_spinner(
         spin = "flower",
         color = wes_palettes$Rushmore[2],
         text = "Preparing ensemble plots"
       )
-
+      
       #Boxplots
       SO_0$Model.labs <- SO_t$Model.labs <- Bratio_t$Model.labs <- F_t$Model.labs <- SPR_t$Model.labs <- str_wrap(
         SO_0$Model,
@@ -11254,7 +11293,7 @@ shinyServer(function(input, output, session) {
         ylab("1-SPR") +
         scale_y_continuous(limits = c(0, 1)) +
         theme(legend.position = "none")
-
+      
       ggarrange(gg1, gg2, gg3, gg4, gg5)
       ggsave(
         paste0(Ensemble_model_dir_out, "/Ensemble_comp_plots.png"),
@@ -11264,7 +11303,7 @@ shinyServer(function(input, output, session) {
       output$Ensemble_plots <- renderPlot({
         ggarrange(gg1, gg2, gg3, gg4, gg5)
       })
-
+      
       ggsave(
         paste0(Ensemble_model_dir_out, "/Ensemble_comp_plots_SOinit.png"),
         plot = gg1,
@@ -11295,7 +11334,7 @@ shinyServer(function(input, output, session) {
         width = 20,
         height = 10
       )
-
+      
       #Spawning Output plot
       Ensemble_SO_plot <- reshape2::melt(Ensemble_SO, value.name = "SO")
       colnames(Ensemble_SO_plot) <- c("Year", "SO")
@@ -11309,7 +11348,7 @@ shinyServer(function(input, output, session) {
           as.character(seq(min.yr, max.yr, floor((max.yr - min.yr) / 10)))
       ] <- as.character(seq(min.yr, max.yr, floor((max.yr - min.yr) / 10)))
       xlab.yr.short[is.na(xlab.yr.short)] <- ""
-
+      
       SO.ts.plot <- ggplot(Ensemble_SO_plot, aes(Year, SO, fill = Year)) +
         geom_violin(scale = "count") +
         theme(legend.position = "none") +
@@ -11326,7 +11365,7 @@ shinyServer(function(input, output, session) {
       output$Ensemble_plots_SO_ts <- renderPlot({
         SO.ts.plot
       })
-
+      
       #Relative stock status plot
       Ensemble_Bratio_plot <- reshape2::melt(
         Ensemble_Bratio,
@@ -11358,7 +11397,7 @@ shinyServer(function(input, output, session) {
       output$Ensemble_plots_Bratio_ts <- renderPlot({
         Bratio.ts.plot
       })
-
+      
       #F plot
       Ensemble_F_plot <- reshape2::melt(Ensemble_F, value.name = "F")
       colnames(Ensemble_F_plot) <- c("Year", "F")
@@ -11375,7 +11414,7 @@ shinyServer(function(input, output, session) {
         width = 20,
         height = 10
       )
-
+      
       #1-SPR plot
       Ensemble_SPR_plot <- reshape2::melt(Ensemble_SPR, value.name = "SPR")
       colnames(Ensemble_SPR_plot) <- c("Year", "SPR")
@@ -11392,14 +11431,14 @@ shinyServer(function(input, output, session) {
         width = 20,
         height = 10
       )
-
+      
       #Get simpler plots for SB0, SBcurrent, RSS, F, and SPR in terminal year
-
+      
       #      ggplot(reshape2::melt(Ensemble_Bratio,value.name="Bratio"),aes(Var2,Bratio))+
       #        stat_summary(geom = "line", fun  = median)+
       #        ylim(0,1)+
       #        stat_summary(geom = "ribbon", fun.data = mean_cl_quantile, alpha = 0.3)
-
+      
       #Make outputs
       show_modal_spinner(
         spin = "flower",
@@ -11436,11 +11475,11 @@ shinyServer(function(input, output, session) {
         Ensemble.outputs.plots,
         file = paste0(Ensemble_model_dir_out, "/Ensemble_results_plots", ".rds")
       )
-
+      
       remove_modal_spinner()
     }
   )
-
+  
   observeEvent(input$loadInputs, {
     sessionName <- file_path_sans_ext(input$loadInputs$name)
     sessionName <- str_replace_all(sessionName, "[^[:alnum:]]", "")
@@ -11452,17 +11491,17 @@ shinyServer(function(input, output, session) {
       "input.rds"
     )
     dir_delete(bookmarkFilePath()) #delete bookmark created from session$doBookmark as we are just using it to grab the filepath
-
+    
     if (!dir.exists(dirname(targetPath))) {
       dir.create(dirname(targetPath), recursive = TRUE)
     }
-
+    
     file.copy(
       from = input$loadInputs$datapath,
       to = targetPath,
       overwrite = TRUE
     )
-
+    
     restoreURL <- paste0(
       session$clientData$url_protocol,
       "//",
@@ -11473,26 +11512,26 @@ shinyServer(function(input, output, session) {
       "?_state_id_=",
       sessionName
     )
-
+    
     # redirect user to restoreURL
     runjs(sprintf("window.location = '%s';", restoreURL))
   })
-
+  
   latestBookmarkURL <- reactiveVal()
   bookmarkFilePath <- reactiveVal()
-
+  
   onBookmark(function(state) {
     bookmarkFilePath(state$dir) #don't use dirname here as we need the specific folder name for deletion
   })
-
+  
   onBookmarked(
     fun = function(url) {
       latestBookmarkURL(parseQueryString(url))
     }
   )
-
+  
   setBookmarkExclude(c("file1", "file2", "file3", "file4", "run_SS", "run_SSS"))
-
+  
   onRestored(function(state) {
     output$input_file_text <- renderText({
       paste0(
@@ -11507,14 +11546,14 @@ shinyServer(function(input, output, session) {
     #     paste("Restored session:", basename(state$dir))
     #   ))
   })
-
+  
   #})
-
+  
   #observeEvent(req(input$run_Ensemble&exists("Ensemble.outputs()")),{
   #
   # })
   #Create figures of weighted values
-
+  
   #  output$Sensi_comp_plot <- renderImage({
   #  image.path<-normalizePath(file.path(paste0(path1(),"/Sensitivity Comparison Plots/",
   #          input$Sensi_comp_file, '.png')),mustWork=FALSE)
