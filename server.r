@@ -4225,6 +4225,61 @@ shinyServer(function(input, output, session) {
   ### PLOTS ###
   #############
 
+  #####################
+  ### Fleet colours ###
+  #####################
+
+  base_colours <- c(
+    "#30123B",
+    "#FB7F07",
+    "#1AE4B6",
+    "#E1DC37",
+    "#7A0403",
+    "#3FBC73",
+    "#C6E833",
+    "#4686FB",
+    "#A92395",
+    "#1CCFD4",
+    "#F1A91E",
+    "#6B1CFB",
+    "#EC3D27",
+    "#0DB4CA",
+    "#AADA32",
+    "#5B1EA1",
+    "#F66B19",
+    "#23E8BC",
+    "#C3E533",
+    "#3F51C1",
+    "#BC1A89",
+    "#12E8C7",
+    "#E8CC35",
+    "#6818DC",
+    "#F24B23",
+    "#17CFD0",
+    "#B8E331",
+    "#8B0FBB",
+    "#FCA127",
+    "#28D9C3"
+  )
+
+  rv.FleetCols <- reactiveValues(colour_map = c())
+
+  # Create colour palette each time catch or index data are added for consistent colours
+  update_palette <- function(new_names) {
+    existing_fleets <- rv.FleetCols$colour_map
+    new_fleets <- setdiff(new_names, names(existing_fleets))
+    if (length(new_fleets) > 0) {
+      n_existing <- length(existing_fleets)
+      new_colours <- base_colours[
+        (n_existing:(n_existing + length(new_fleets) - 1) %%
+          length(base_colours)) +
+          1
+      ]
+      names(new_colours) <- new_fleets
+      rv.FleetCols$colour_map <- c(existing_fleets, new_colours)
+    }
+  }
+
   ##################
   ### CATCH PLOT ###
   ##################
@@ -4243,14 +4298,18 @@ shinyServer(function(input, output, session) {
           if (is.null(rv.Ct$data)) {
             return(NULL)
           }
+
+          update_palette(colnames(rv.Ct$data)[-1]) # Add new fleets to existing colour palette
+
           rv.Ct$data %>%
             pivot_longer(-1, names_to = "Fleet", values_to = "catch") %>%
+            mutate(Fleet = factor(Fleet, levels = names(rv.Ct$data))) %>%
             ggplot(aes_string(names(.)[1], "catch", color = "Fleet")) +
             geom_point() +
             geom_line(lwd = 1.5) +
             ylab("Removals") +
             xlab("Year") +
-            scale_color_viridis_d()
+            scale_color_manual(values = rv.FleetCols$colour_map)
         })
         plotOutput("Ctplot")
       }
@@ -4590,6 +4649,9 @@ shinyServer(function(input, output, session) {
           if (is.null(rv.Index$data)) {
             return(NULL)
           }
+
+          update_palette(unique(rv.Index$data$Label)) # Add new fleets to existing colour palette
+
           plot.Index <- rv.Index$data
           plot.Index[, 3] <- as.factor(plot.Index[, 3])
           plot.Index.zscore <- list()
@@ -4602,25 +4664,26 @@ shinyServer(function(input, output, session) {
               sd(plot.Index.temp$Index)
             plot.Index.zscore[[i]] <- plot.Index.temp
           }
-          plot.Index.zs <- do.call("rbind", plot.Index.zscore)
+          plot.Index.zs <- do.call("rbind", plot.Index.zscore) %>%
+            mutate(Label = factor(Label, levels = unique(rv.Index$data$Label)))
           ggplot(
             plot.Index.zs,
-            aes(x = Year, y = Index, group = Fleet, colour = Fleet)
+            aes(x = Year, y = Index, group = Label, colour = Label)
           ) +
             geom_line(lwd = 1.1) +
             geom_errorbar(
               aes(
                 ymin = qlnorm(0.0275, log(Index), CV),
                 ymax = qlnorm(0.975, log(Index), CV),
-                group = Fleet
+                group = Label
               ),
               width = 0,
               size = 1
             ) +
-            geom_point(aes(colour = Fleet), size = 4) +
+            geom_point(aes(colour = Label), size = 4) +
             ylab("Z-score") +
             xlab("Year") +
-            scale_color_viridis_d()
+            scale_color_manual(values = rv.FleetCols$colour_map, name = "Fleet")
         })
         plotOutput("Indexplot")
       }
