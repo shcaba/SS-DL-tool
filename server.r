@@ -8702,6 +8702,11 @@ shinyServer(function(input, output, session) {
           "/data_echo.ss_new"
         ))
 
+        #plot.nums = 1:26
+        #if (any(!is.null(inFile1), !is.null(inFile3)) & is.null(inFile2)) {
+        #  plot.nums = c(1:26)
+        #}
+
         #No plots or figures
         if (is.null(input$no_plots_tables)) {
           show_modal_spinner(
@@ -8716,6 +8721,7 @@ shinyServer(function(input, output, session) {
           if (input$Forecast_choice) {
             SS_plots(
               Model.output,
+              plot = plot.nums,
               #maxyr = data.file$endyr + 1,
               verbose = FALSE,
               btarg = RPs_4_plots[1],
@@ -8725,6 +8731,7 @@ shinyServer(function(input, output, session) {
           } else {
             SS_plots(
               Model.output,
+              plot = plot.nums,
               maxyr = data.file$endyr + 1,
               verbose = FALSE,
               btarg = RPs_4_plots[1],
