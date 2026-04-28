@@ -10,43 +10,56 @@
 #' species <- c("Gadus morhua", "Centropristis striata", "Paralichthys dentatus")
 #' fishlife(species)
 #' @export
-#' 
+#'
 # install.packages("remotes")
 # remotes::install_github("James-Thorson/FishLife")
 # library(FishLife)
 
-fishlife <- function(species){
-
+fishlife <- function(species) {
   # Setup container
   spp <- sort(unique(species))
-  fl <- data.frame(species=spp, linf_cm=NA, k=NA, winf_g=NA, tmax_yr=NA, tmat_yr=NA,
-                   m=NA, lmat_cm=NA, temp_c=NA, stringsAsFactors=F)
+  fl <- data.frame(
+    species = spp,
+    linf_cm = NA,
+    k = NA,
+    winf_g = NA,
+    tmax_yr = NA,
+    tmat_yr = NA,
+    m = NA,
+    lmat_cm = NA,
+    temp_c = NA,
+    stringsAsFactors = F
+  )
 
   # Loop through species
-  for(i in 1:nrow(fl)){
-
+  for (i in 1:nrow(fl)) {
     # Get spp info
     sciname <- fl$species[i]
     genus <- stringr::word(sciname, 1)
     nwords_in_spp <- length(strsplit(sciname, " ")[[1]])
-    species <- stringr::word(sciname, start=2, end=nwords_in_spp)
-    species <- ifelse(species=="spp", "predictive", species)
+    species <- stringr::word(sciname, start = 2, end = nwords_in_spp)
+    species <- ifelse(species == "spp", "predictive", species)
 
     # Try looking up in FishLife
-    spp_info <- try(FishLife::Plot_taxa(FishLife::Search_species(Genus=genus, Species=species)$match_taxonomy))
-    if(inherits(spp_info, "try-error")){
+    spp_info <- try(FishLife::Plot_taxa(
+      FishLife::Search_species(Genus = genus, Species = species)$match_taxonomy
+    ))
+    if (inherits(spp_info, "try-error")) {
       # Record blanks
-#      fl[i,2:ncol(fl)] <- rep(NA, ncol(fl)-1)
-    }else{
+      #      fl[i,2:ncol(fl)] <- rep(NA, ncol(fl)-1)
+    } else {
       # Values are in log-scale except temperature
       spp_lh_vals_log <- spp_info[[1]]$Mean_pred
-      spp_lh_vals <- c(exp(spp_lh_vals_log[1:7]), spp_lh_vals_log[8],spp_lh_vals_log[9:20])
- #     fl[i,2:ncol(fl)] <- spp_lh_vals
+      spp_lh_vals <- c(
+        exp(spp_lh_vals_log[1:7]),
+        spp_lh_vals_log[8],
+        spp_lh_vals_log[9:20]
+      )
+      #     fl[i,2:ncol(fl)] <- spp_lh_vals
     }
-
   }
 
   # Return
-#  return(fl)
+  #  return(fl)
   return(spp_lh_vals)
 }
