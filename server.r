@@ -7627,7 +7627,6 @@ shinyServer(function(input, output, session) {
                 log(male_vbgf_est[1] + 0.000000001)
               )
             } else if (input$male_offset_est) {
-              #browser()
               male_t0 <- exp(input$t0_m_mean) * input$t0_f_mean
               Lmin_age <- min(input$t0_f_mean, male_t0) * 1.0001
               ctl.file$Growth_Age_for_L1 <- Lmin_age
@@ -8800,6 +8799,7 @@ shinyServer(function(input, output, session) {
             if (!is.null(input$user_model) & input$user_model) {
               forecast.plot.choice <- input$plot_forecast
             }
+
             SS_plots(
               Model.output,
               plot = plot.nums,
@@ -8821,7 +8821,7 @@ shinyServer(function(input, output, session) {
           #try(SSexecutivesummary(Model.output))
           try(table_all(Model.output))
         }
-
+        forecast.plot.choice <- FALSE
         if (!is.null(input$no_plots_tables)) {
           if (input$no_plots_tables == FALSE) {
             #Make SS plots
@@ -8847,6 +8847,7 @@ shinyServer(function(input, output, session) {
               if (!is.null(input$user_model) & input$user_model) {
                 forecast.plot.choice <- input$plot_forecast
               }
+
               SS_plots(
                 Model.output,
                 #maxyr = data.file$endyr + 1,
@@ -8857,6 +8858,37 @@ shinyServer(function(input, output, session) {
               )
             }
           }
+        }
+
+        #Remove scale plots if length only model
+        if (
+          !is.null(rv.Lt$data) &
+            is.null(rv.Age$data) &
+            is.null(rv.Index$data) &
+            is.null(rv.Ct$data)
+        ) {
+          dir.curr <- getwd()
+          setwd(paste0(
+            getwd(),
+            "/Scenarios/",
+            input$Scenario_name,
+            "/plots"
+          ))
+          scale.plots <- c(
+            "ts7_Spawning_output.png",
+            "ts7_Spawning_output_with_95_intervals.png",
+            "ts1_Total_biomass_(t).png",
+            "ts4_Summary_biomass_(t).png",
+            "ts11_Age-0_recruits_(1000s).png",
+            "ts11_Age-0_recruits_(1000s)_with_95_asymptotic_intervals.png",
+            "ts_DynamicB0.png"
+          )
+          file.remove(scale.plots)
+          plots.csv <- read.csv(list.files(pattern = "\\.csv$"))
+          plots.csv <- plots.csv[!plots.csv$file %in% scale.plots, ]
+          write.csv(plots.csv, file = list.files(pattern = "\\.csv$"))
+          SS_html(Model.output, plotdir = getwd())
+          setwd(dir.curr)
         }
 
         if (!is.null(input$no_tables)) {
@@ -9125,6 +9157,7 @@ shinyServer(function(input, output, session) {
               input$plot_RPs_inputs,
               ","
             ))))
+
             SS_plots(
               Model.output,
               maxyr = data.file$endyr + 1,
