@@ -3248,19 +3248,24 @@ shinyServer(function(input, output, session) {
     # }
   })
 
+  output$AdvancedSS_forecastplots_user <- renderUI({
+    prettyCheckbox(
+      inputId = "plot_forecast",
+      label = "Plot forcast?",
+      shape = "round",
+      outline = FALSE,
+      status = "info"
+    )
+  })
+
   output$AdvancedSS_plots_RP_user <- renderUI({
-    # if(input$advance_ss_click){
-    fluidRow(column(
-      width = 6,
-      prettyCheckbox(
-        inputId = "plot_RPs",
-        label = "Add RPs to plots?",
-        shape = "round",
-        outline = TRUE,
-        status = "info"
-      )
-    ))
-    # }
+    prettyCheckbox(
+      inputId = "plot_RPs",
+      label = "Add RPs to plots?",
+      shape = "round",
+      outline = TRUE,
+      status = "info"
+    )
   })
 
   output$AdvancedSS_plots_RP_inputs_user <- renderUI({
@@ -8792,13 +8797,17 @@ shinyServer(function(input, output, session) {
               forecastplot = TRUE
             )
           } else {
+            if (!is.null(input$user_model) & input$user_model) {
+              forecast.plot.choice <- input$plot_forecast
+            }
             SS_plots(
               Model.output,
               plot = plot.nums,
-              maxyr = data.file$endyr + 1,
+              #maxyr = data.file$endyr + 1,
               verbose = FALSE,
               btarg = RPs_4_plots[1],
-              minbthresh = RPs_4_plots[2]
+              minbthresh = RPs_4_plots[2],
+              forecastplot = forecast.plot.choice
             )
           }
         }
@@ -8835,12 +8844,16 @@ shinyServer(function(input, output, session) {
                 forecastplot = TRUE
               )
             } else {
+              if (!is.null(input$user_model) & input$user_model) {
+                forecast.plot.choice <- input$plot_forecast
+              }
               SS_plots(
                 Model.output,
-                maxyr = data.file$endyr + 1,
+                #maxyr = data.file$endyr + 1,
                 verbose = FALSE,
                 btarg = RPs_4_plots[1],
-                minbthresh = RPs_4_plots[2]
+                minbthresh = RPs_4_plots[2],
+                forecastplot = forecast.plot.choice
               )
             }
           }

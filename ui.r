@@ -2029,16 +2029,24 @@ ui <- function(request) {
           ),
           fluidRow(
             column(
-              width = 4,
+              width = 3,
               popify(
                 uiOutput("AdvancedSS_noplots_user"),
                 "Output plots",
                 "Diagnostic and results plots are produced by default. This switch turns those plots off in case you want to speed up the model run."
               )
             ),
+            column(
+              width = 3,
+              popify(
+                uiOutput("AdvancedSS_forecastplots_user"),
+                "Forecast plots",
+                "To include the forecast years in the time series plot, choose this option."
+              )
+            ),
             # popify(uiOutput("AdvancedSS_plots_RP_user"),"Target and limit reference points specification","Reference points are used to interpret the relative stock size plot compared to management objectives"),
             column(
-              width = 8,
+              width = 6,
               popify(
                 uiOutput("AdvancedSS_plots_RP_inputs_user"),
                 "Relative Stock Size target and limit reference points",
