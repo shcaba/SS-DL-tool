@@ -6662,8 +6662,8 @@ shinyServer(function(input, output, session) {
         if (!is.null(rv.Lt$data)) {
           data.file$minimum_size <- as.numeric(colnames(rv.Lt$data)[6])
         }
-        max.bin.in <- 2 * (round((Linf() + (Linf() * 0.25)) / 2)) + 2 #0.2326
-        data.file$maximum_size <- max.bin.in
+        #max.bin.in <- 2 * (round((Linf() + (Linf() * 0.25)) / 2)) + 2 #0.2326
+        #data.file$maximum_size <- max.bin.in
         # if(input$advance_ss_click)
         #   {
         data.file$binwidth <- input$lt_bin_size
@@ -6679,10 +6679,10 @@ shinyServer(function(input, output, session) {
           if (input$est_parms == TRUE) {
             Linf_bins <- input$Linf_f_mean
           }
-          data.file$binwidth <- 2
-          data.file$minimum_size <- 2
-          max.bin.in <- 2 * (round((Linf() + (Linf() * 0.25)) / 2)) + 2 #0.2326
-          data.file$maximum_size <- max.bin.in
+          #data.file$binwidth <- 2
+          #data.file$minimum_size <- 2
+          #max.bin.in <- 2 * (round((Linf() + (Linf() * 0.25)) / 2)) + 2 #0.2326
+          #data.file$maximum_size <- max.bin.in
           data.file$lbin_vector <- seq(
             data.file$minimum_size,
             data.file$maximum_size,
