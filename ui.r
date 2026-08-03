@@ -13,7 +13,7 @@ ui <- function(request) {
     theme = "bootstrap.css",
     useShinyjs(),
     titlePanel(
-      "Welcome to the Stock Assessment Continuum Tool, powered by Stock Synthesis (version 3.30.24)"
+      "Welcome to the Stock Assessment Continuum Tool, powered by Stock Synthesis (version 3.30.25)"
     ),
     h4(p(strong(
       "(Formerly known as the Stock Synthesis Data-Limited (SS-DL) tool), this tool uses the",
