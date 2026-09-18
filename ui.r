@@ -2420,7 +2420,30 @@ ui <- function(request) {
               textInput("Prof_step", "Sequence step", value = "")
             )
           ),
-
+          fluidRow(
+            column(
+              width = 6,
+              numericInput(
+                "TRP_likeprof",
+                "Target reference point (max = 1; 0 = no plot)",
+                value = 0,
+                min = 0,
+                max = 1,
+                step = 0.001
+              )
+            ),
+            column(
+              width = 6,
+              numericInput(
+                "LRP_likeprof",
+                "Limit reference point (max=1; 0 = no plot)",
+                value = 0,
+                min = 0,
+                max = 1,
+                step = 0.001
+              )
+            )
+          ),
           # br(),
           actionButton(
             "run_Profiles",
@@ -2446,10 +2469,10 @@ ui <- function(request) {
           uiOutput("Profile_multi_values"),
           fluidRow(
             column(
-              width = 5,
+              width = 6,
               numericInput(
                 "TRP_multi_like",
-                "Target reference point (max = 1; 0 = no plot)? ",
+                "Target reference point (max = 1; 0 = no plot)",
                 value = 0,
                 min = 0,
                 max = 1,
@@ -2457,10 +2480,10 @@ ui <- function(request) {
               )
             ),
             column(
-              width = 5,
+              width = 6,
               numericInput(
                 "LRP_multi_like",
-                "Limit reference point (max=1; 0 = no plot)?",
+                "Limit reference point (max=1; 0 = no plot)",
                 value = 0,
                 min = 0,
                 max = 1,

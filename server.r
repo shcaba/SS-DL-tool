@@ -1375,17 +1375,17 @@ shinyServer(function(input, output, session) {
   # User activated pop-up parameter values ---------------
   #Model dimensions
   output$Model_dims1 <- renderUI({
-    inFile1 = rv.Lt$data
-    inFile2 = rv.Ct$data
-    inFile3 = rv.Age$data
+    inFile1 <- rv.Lt$data
+    inFile2 <- rv.Ct$data
+    inFile3 <- rv.Age$data
     #No file inputs
     if (is.null(inFile1) & is.null(inFile2) & is.null(inFile3)) {
       return(NULL)
     }
     #If have lengths and/or ages, but no catches
     if (any(!is.null(inFile1), !is.null(inFile3)) & is.null(inFile2)) {
-      styr.in = min(inFile1[, 1], inFile3[, 1])
-      endyr.in = max(inFile1[, 1], inFile3[, 1])
+      styr.in <- min(inFile1[, 1], inFile3[, 1])
+      endyr.in <- max(inFile1[, 1], inFile3[, 1])
       #            if(!(anyNA(c(Linf(), k_vbgf(),t0_vbgf())))& input$Ct_F_LO_select=="Constant Catch"){
       #              styr.in = min(inFile1[,1],inFile3[,1])-round(VBGF.age(Linf(), k_vbgf(), t0_vbgf(), Linf()*0.95))
       #            }
@@ -1440,7 +1440,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$Model_dims2 <- renderUI({
-    Ct.data = rv.Ct$data
+    Ct.data <- rv.Ct$data
     #        if (is.null(Ct.data)) return(NULL)
     if (!is.null(Ct.data)) {
       fluidRow(
@@ -4699,23 +4699,23 @@ shinyServer(function(input, output, session) {
   ### Plot M by age ###
   #####################
   output$Mplot <- renderPlot({
-    mf.in = M_f_in() + 0.000000000000001
-    mm.in = M_f_in() + 0.000000000000001
+    mf.in <- M_f_in() + 0.000000000000001
+    mm.in <- M_f_in() + 0.000000000000001
     #      if(input$male_parms|input$male_parms_fix)
     #if(input$male_parms|input$male_parms_SSS|input$male_parms_fix|input$male_parms_est)
     if (!is.null(M_m_in())) {
-      mm.in = M_m_in() + 0.000000000000001
+      mm.in <- M_m_in() + 0.000000000000001
     }
     if (any(is.na(c(mf.in, mm.in))) | any(is.null(c(mf.in, mm.in)))) {
       return(NULL)
     }
     #if(any(is.na(c(mf.in, mm.in)))|any(is.null(c(mf.in, mm.in)))|all(is.null(rv.Ct$data),is.null(rv.Lt$data),is.null(rv.Age$data),is.null(rv.Index$data))) return(NULL)
-    Female_M = data.frame(
+    Female_M <- data.frame(
       Ages = 0:Nages(),
       PopN = exp(-mf.in * 0:Nages()),
       Sex = "Female"
     )
-    Male_M = data.frame(
+    Male_M <- data.frame(
       Ages = 0:Nages(),
       PopN = exp(-mm.in * 0:Nages()),
       Sex = "Male"
@@ -4738,12 +4738,12 @@ shinyServer(function(input, output, session) {
   ### Plot VBGF and maturity ###
   ##############################
   output$VBGFplot <- renderPlot({
-    f_Linf = m_Linf = Linf()
-    f_k = m_k = k_vbgf()
-    f_t0 = m_t0 = t0_vbgf()
-    f_L50 = L50()
-    f_L95 = L95()
-    maxage = Nages()
+    f_Linf <- m_Linf <- Linf()
+    f_k <- m_k <- k_vbgf()
+    f_t0 <- m_t0 <- t0_vbgf()
+    f_L50 <- L50()
+    f_L95 <- L95()
+    maxage <- Nages()
 
     #if(any(input$male_parms,input$male_parms_SSS,input$male_parms_fix,input$male_parms_est))
     if (
@@ -4753,17 +4753,17 @@ shinyServer(function(input, output, session) {
         is.numeric(t0_vbgf_m_in())
       )
     ) {
-      m_Linf = Linf_m_in()
-      m_k = k_vbgf_m_in()
-      m_t0 = t0_vbgf_m_in()
+      m_Linf <- Linf_m_in()
+      m_k <- k_vbgf_m_in()
+      m_t0 <- t0_vbgf_m_in()
     }
     if (any(is.na(c(f_Linf, f_k, f_t0))) == "FALSE") {
-      vbgf_female = data.frame(
+      vbgf_female <- data.frame(
         Age = c(f_t0:Nages()),
         Length = VBGF(f_Linf, f_k, f_t0, c(f_t0:Nages())),
         Sex = "Female"
       )
-      vbgf_male = data.frame(
+      vbgf_male <- data.frame(
         Age = f_t0:Nages(),
         Length = VBGF(m_Linf, m_k, m_t0, c(f_t0:Nages())),
         Sex = "Male"
@@ -4773,7 +4773,7 @@ shinyServer(function(input, output, session) {
         geom_line(aes(linetype = Sex), lwd = 2) -> vbgf.plot
 
       if (any(is.na(c(f_L50, f_L95))) == "FALSE") {
-        age.mat = data.frame(
+        age.mat <- data.frame(
           Age = VBGF.age(f_Linf, f_k, f_t0, c(f_L50, f_L95)),
           Length = c(f_L50, f_L95),
           Sex = "Female"
@@ -7302,10 +7302,10 @@ shinyServer(function(input, output, session) {
             #        ctl.file$MG_parms[20,3:4]<-input$WLb_m       #exponent
           }
           if (input$Ct_F_LO_select == "Estimate F") {
-            ctl.file$SR_parms[1, 7] = -1
+            ctl.file$SR_parms[1, 7] <- -1
           } #lnR0
           if (input$Ct_F_LO_select == "Constant Catch") {
-            ctl.file$SR_parms[1, 7] = 1
+            ctl.file$SR_parms[1, 7] <- 1
           } #lnR0
 
           ctl.file$SR_function <- c(3, 2)[
@@ -8543,7 +8543,7 @@ shinyServer(function(input, output, session) {
           cmd.in <- ""
           if (!is.null(input$add_comms)) {
             if (input$add_comms == TRUE) {
-              cmd.in = input$add_comms_in
+              cmd.in <- input$add_comms_in
             }
           }
           RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8558,7 +8558,7 @@ shinyServer(function(input, output, session) {
             cmd.in <- " -nohess"
             if (!is.null(input$add_comms)) {
               if (input$add_comms == TRUE) {
-                cmd.in = paste0(" -nohess ", input$add_comms_in)
+                cmd.in <- paste0(" -nohess ", input$add_comms_in)
               }
             }
             RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8570,7 +8570,7 @@ shinyServer(function(input, output, session) {
             cmd.in <- " -nohess"
             if (!is.null(input$add_comms)) {
               if (input$add_comms == TRUE) {
-                cmd.in = paste0(" -nohess ", input$add_comms_in)
+                cmd.in <- paste0(" -nohess ", input$add_comms_in)
               }
             }
             RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8579,7 +8579,7 @@ shinyServer(function(input, output, session) {
             cmd.in <- ""
             if (!is.null(input$add_comms)) {
               if (input$add_comms == TRUE) {
-                cmd.in = input$add_comms_in
+                cmd.in <- input$add_comms_in
               }
             }
             RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8594,7 +8594,7 @@ shinyServer(function(input, output, session) {
             cmd.in <- ""
             if (!is.null(input$add_comms)) {
               if (input$add_comms == TRUE) {
-                cmd.in = input$add_comms_in
+                cmd.in <- input$add_comms_in
               }
             }
             RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8609,7 +8609,7 @@ shinyServer(function(input, output, session) {
               cmd.in <- " -nohess"
               if (!is.null(input$add_comms)) {
                 if (input$add_comms == TRUE) {
-                  cmd.in = paste0(" -nohess ", input$add_comms_in)
+                  cmd.in <- paste0(" -nohess ", input$add_comms_in)
                 }
               }
               RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8621,7 +8621,7 @@ shinyServer(function(input, output, session) {
               cmd.in <- " -nohess"
               if (!is.null(input$add_comms)) {
                 if (input$add_comms == TRUE) {
-                  cmd.in = paste0(" -nohess ", input$add_comms_in)
+                  cmd.in <- paste0(" -nohess ", input$add_comms_in)
                 }
               }
               RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8630,7 +8630,7 @@ shinyServer(function(input, output, session) {
               cmd.in <- ""
               if (!is.null(input$add_comms)) {
                 if (input$add_comms == TRUE) {
-                  cmd.in = input$add_comms_in
+                  cmd.in <- input$add_comms_in
                 }
               }
               RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8643,7 +8643,7 @@ shinyServer(function(input, output, session) {
             cmd.in <- ""
             if (!is.null(input$add_comms_user)) {
               if (input$add_comms_user == TRUE) {
-                cmd.in = input$add_comms_in_user
+                cmd.in <- input$add_comms_in_user
               }
             }
             RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8658,7 +8658,7 @@ shinyServer(function(input, output, session) {
               cmd.in <- " -nohess"
               if (!is.null(input$add_comms_user)) {
                 if (input$add_comms_user == TRUE) {
-                  cmd.in = paste0(" -nohess ", input$add_comms_in_user)
+                  cmd.in <- paste0(" -nohess ", input$add_comms_in_user)
                 }
               }
               RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8670,7 +8670,7 @@ shinyServer(function(input, output, session) {
               cmd.in <- " -nohess"
               if (!is.null(input$add_comms_user)) {
                 if (input$add_comms_user == TRUE) {
-                  cmd.in = paste0(" -nohess ", input$add_comms_in_user)
+                  cmd.in <- paste0(" -nohess ", input$add_comms_in_user)
                 }
               }
               RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -8679,7 +8679,7 @@ shinyServer(function(input, output, session) {
               cmd.in <- ""
               if (!is.null(input$add_comms_user)) {
                 if (input$add_comms_user == TRUE) {
-                  cmd.in = input$add_comms_in_user
+                  cmd.in <- input$add_comms_in_user
                 }
               }
               RUN.SS(paste0("Scenarios/", input$Scenario_name), ss.cmd = cmd.in)
@@ -9849,8 +9849,8 @@ shinyServer(function(input, output, session) {
       #  prior_like<-starter.file$prior_like
       #  use_prior_like_in<-rep(0,length(prof_parms_names))
       #  if(prior_like==1){use_prior_like_in = rep(1,length(prof_parms_names))}
-      mydir = dirname(pathLP())
-      get = get_settings_profile(
+      mydir <- dirname(pathLP())
+      get <- get_settings_profile(
         parameters = prof_parms_names,
         low = as.numeric(trimws(unlist(strsplit(input$Prof_Low_val, ",")))),
         high = as.numeric(trimws(unlist(strsplit(input$Prof_Hi_val, ",")))),
@@ -9880,14 +9880,16 @@ shinyServer(function(input, output, session) {
       if (R.version[["os"]] == "linux-gnu") {
         os_exe <- "ss3_linux"
       }
-
-      model_settings = get_settings(
+      nprofmods <- length(seq(get[[2]], get[[3]], get[[4]]))
+      model_settings <- get_settings(
         settings = list(
           base_name = basename(pathLP()),
           run = "profile",
           profile_details = get,
           exe = os_exe,
-          prior_check = FALSE
+          prior_check = FALSE,
+          btarg = rep(input$TRP_likeprof, nprofmods),
+          minbthresh = rep(input$LRP_likeprof, nprofmods)
         )
       )
 
@@ -10113,6 +10115,8 @@ shinyServer(function(input, output, session) {
         exe = os_exe,
         show_in_console = TRUE
       )
+      LP_TRP <- input$TRP_likeprof
+      LP_LRP <- input$LRP_likeprof
     }
 
     if (input$Hess_multi_like == TRUE) {
@@ -10127,6 +10131,8 @@ shinyServer(function(input, output, session) {
         exe = os_exe,
         show_in_console = TRUE
       )
+      LP_TRP <- input$TRP_multi_like
+      LP_LRP <- input$LRP_multi_like
     }
 
     # get model output
@@ -10147,8 +10153,8 @@ shinyServer(function(input, output, session) {
       legendloc = 'topleft',
       uncertainty = TRUE,
       plotdir = profile_dir,
-      btarg = input$TRP_multi_like,
-      minbthresh = input$LRP_multi_like
+      btarg = LP_TRP,
+      minbthresh = LP_LRP
     ))
     save(profilesummary, file = paste0(profile_dir, "/multiprofile.rds"))
     # add total likelihood (row 1) to table created above
@@ -10580,7 +10586,7 @@ shinyServer(function(input, output, session) {
     )
     mydir_in <- dirname(pathRetro())
     scenario_in <- basename(pathRetro())
-    model_settings = get_settings(
+    model_settings <- get_settings(
       settings = list(
         base_name = scenario_in,
         run = "retro",
@@ -10737,8 +10743,8 @@ shinyServer(function(input, output, session) {
     }
     modsummary.sensi <- SSsummarize(zz)
 
-    col.vec = rc(n = length(modelnames), alpha = 1)
-    shade = adjustcolor(col.vec[1], alpha.f = 0.10)
+    col.vec <- rc(n = length(modelnames), alpha = 1)
+    shade <- adjustcolor(col.vec[1], alpha.f = 0.10)
 
     TRP.in <- input$Sensi_TRP
     LRP.in <- input$Sensi_LRP
