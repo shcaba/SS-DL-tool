@@ -503,3 +503,35 @@ A complete compliment of comparison plots are saved in the chosen directory in a
   Rudd, M. B., & Thorson, J. T. (2017). Accounting for variable recruitment and fishing mortality in length-based stock assessments for data-limited fisheries. Canadian Journal of Fisheries and Aquatic Sciences, 75(7), 1019-1035.
 
   Rudd, M. B., Cope, J. M., Wetzel, C. R., & Hastie, J. (2021). Catch and length models in the stock synthesis framework: expanded application to data-moderate stocks. Frontiers in Marine Science, 8, 663554.
+
+# Published work using SAC Tool
+## Jounral publications
+
+  Braccini, M., Hesp, A., Cope, J., Rynvis, L., Watt, M., Syers, C., Jackson, G., Newman, S., 2026. Multidecadal Management Ensures High Sustainability and Low Risk in a Global Shark Biodiversity Hotspot. Fish and Fisheries 27, 24–40. https://doi.org/10.1111/faf.70030
+
+  Coffill-Rivera, M.E., Liu, Z., Lehrter, J.C., Dzwonkowski, B., Cope, J.M., Gross, J.M., Mareska, J., Powers, S.P., 2026. Extreme environmental conditions are associated with poor recruitment of an estuarine sportfish. Fisheries Research 300, 107823. https://doi.org/10.1016/j.fishres.2026.107823
+
+  Cope, J.M., 2024. The good practices of practicable alchemy in the stock assessment continuum: Fundamentals and principles of analytical methods to support science-based fisheries management under data and resource limitations. Fisheries Research 270, 106859. https://doi.org/10.1016/j.fishres.2023.106859
+
+  Dichmont, C.M., Dowling, N.A., Punt, A.E., Pascoe, S., Deng, R.A., Van Putten, I., Cope, J.M., 2025. Helping to Build Stock Assessment Capacity in Australia: A Case Study. Fish and Fisheries 26, 1075–1086. https://doi.org/10.1111/faf.70018
+
+  Min, M.A., Cope, J., Lowry, D., Selleck, J., Tonnes, D., Andrews, K., Pacunski, R., Hennings, A., Scheuerell, M.D., 2023. Data-limited fishery assessment methods shed light on the exploitation history and population dynamics of Endangered Species Act-listed Yelloweye Rockfish in Puget Sound, Washington. Marine and Coastal Fisheries 15, e10251. https://doi.org/10.1002/mcf2.10251
+
+  Soares, A., Cope, J., Lourenço, M., Barreto, T., Ferreira, B., Olavo, G., Frédou, T., 2025. 20 Years Later: Updated Stock Assessment of Snappers in Northeast Brazil Using an Integrated Stock Assessment Framework. Fisheries Management Eco fme.70008. https://doi.org/10.1111/fme.70008
+
+  Tagliarolo, M., Cope, J., Blanchard, F., 2021. Stock assessment on fishery-dependent data: Effect of data quality and parametrisation for a red snapper fishery. Fisheries Management and Ecology 28, 592–603. https://doi.org/10.1111/fme.12508
+
+  Weyl, O.L., M’balaka, M.S., Sharma, R., Cope, J., Kafumbata, D., 2023. Modelling the current status of Lake Malawi fish stocks, an inland lake in East Africa. Aquatic Ecosystem Health & Management 26, 26–39. https://doi.org/10.14321/aehm.026.03.26
+  
+## Stock assessments
+  Cope, J.M., V. Gertseva, R.C. Rosemond, A.D. Whitman, and F.P. Caltabellotta. (2025) Status of the Rougheye and Blackspotted Rockfishes stock off the U.S. West Coast in 2025. Pacific Fishery Management Council. 356 pp.
+
+  Cope, J.M., L.K. Hillier, C.B. Niles , T. Tsou, K.E. Hinton, F.P. Caltabellotta. 2023. Status of Black Rockfish (Sebastes melanops) in 2023 in state and federal waters off Washington state. Pacific Fishery Management Council, Portland, Oregon. 217p.
+
+  Cope, J.M., T.-. Tsou, K. Hinton, C. Niles. 2021. Status of Vermilion rockfish (Sebastes miniatus) along the US West - Washington State coast in 2021. Pacific Fishery Management Council, Portland, Oregon. 99 p.
+
+  Cope J.M., CR Wetzel, BJ Langseth, JE Budrick. Stock assessment of the squarespot rockfish (Sebastes hopkinsi) along the California US West Coast in 2021 using catch, length, and fishery independent abundance data. Portland, Oregon. Pacific Fishery Management Council, Portland, OR, 2021
+
+  Cope, J.M., A.D. Whitman. 2021. Status of Vermilion rockfish (Sebastes miniatus) along the US West - Oregon coast in 2021. Pacific Fishery Management Council, Portland, Oregon. 131 p.
+
+  Cope, J.M., A.D. Whitman, A.M. Berger, L.K. Rasmuson, R. C. Rosemond. 2023. Status of Black Rockfish (Sebastes melanops) in 2023 in state and federal waters off Oregon. Pacific Fishery Management Council, Portland, Oregon. 248p.
