@@ -524,7 +524,7 @@ A complete compliment of comparison plots are saved in the chosen directory in a
   Weyl, O.L., M’balaka, M.S., Sharma, R., Cope, J., Kafumbata, D., 2023. Modelling the current status of Lake Malawi fish stocks, an inland lake in East Africa. Aquatic Ecosystem Health & Management 26, 26–39. https://doi.org/10.14321/aehm.026.03.26
   
 ## Stock assessments
-  Cope, J.M., V. Gertseva, R.C. Rosemond, A.D. Whitman, and F.P. Caltabellotta. (2025) Status of the Rougheye and Blackspotted Rockfishes stock off the U.S. West Coast in 2025. Pacific Fishery Management Council. 356 pp.
+  Cope, J.M., V. Gertseva, R.C. Rosemond, A.D. Whitman, and F.P. Caltabellotta. 2025. Status of the Rougheye and Blackspotted Rockfishes stock off the U.S. West Coast in 2025. Pacific Fishery Management Council. 356 pp.
 
   Cope, J.M., L.K. Hillier, C.B. Niles , T. Tsou, K.E. Hinton, F.P. Caltabellotta. 2023. Status of Black Rockfish (Sebastes melanops) in 2023 in state and federal waters off Washington state. Pacific Fishery Management Council, Portland, Oregon. 217p.
 
